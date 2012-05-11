@@ -1,9 +1,12 @@
 # Text Analysis in Julia
 
-* Create document-term matrices (DTM's) from a directory of files.
+* Create a corpus from a directory of text files.
+* Create document-term matrices from a corpus.
 
 # Example
 
-    load("text.jl")
-
-    (document_names, terms, dtm) = generate_corpus("documents")
+    load("src/init.jl")
+    
+    corpus = generate_corpus("documents")
+    
+    dtm = generate_dtm(corpus)
