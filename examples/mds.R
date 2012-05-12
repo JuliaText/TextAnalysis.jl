@@ -1,4 +1,4 @@
-dm <- read.csv("dm.csv", header = FALSE)
+dm <- read.csv("examples/dm.csv", header = FALSE)
 dm <- as.matrix(dm)
 
 mds <- cmdscale(dm)

@@ -1,4 +1,10 @@
+load("extras/Rmath.jl")
+
+load("src/types.jl")
 load("src/tokenize.jl")
 load("src/tokenize_file.jl")
-load("src/generate_dtm.jl")
 load("src/generate_corpus.jl")
+load("src/generate_dtm.jl")
+load("src/rng.jl")
+load("src/lda_inference.jl")
+load("src/lda_sampling.jl")

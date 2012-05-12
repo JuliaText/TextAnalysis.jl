@@ -1,5 +1,5 @@
 # Corpus contains files, all_tokens, documents
-function generate_dtm(corpus)
+function generate_sparse_dtm(corpus)
   # Create a map from keys(all_tokens) into ordered set of natural numbers.
   sorted_tokens = sort(keys(corpus.tokens))
   mapping = Dict()
@@ -7,12 +7,14 @@ function generate_dtm(corpus)
     mapping[sorted_tokens[i]] = i
   end
   
-  # Should use general 2d_array_to_dict() function.
   # Create a (sparse?) matrix that as many rows as files and as many columns as there are keys.
   # Then insert entries into this matrix for every file.
   n = length(corpus.files)
   m = length(sorted_tokens)
-  dtm = zeros(n, m)
+  
+  load("extras/sparse.jl")
+  
+  dtm = spzeros(n, m)
   
   for i = 1:n
     file = corpus.files[i]

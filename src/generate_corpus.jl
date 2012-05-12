@@ -3,22 +3,19 @@ function generate_corpus(directory_name)
   files = map(x -> "$directory_name/$x",
               map(chomp,
                   readlines(`ls $directory_name`)))
-  all_tokens = Dict()
+  tokens = Dict()
   documents = Dict()
   for file in files
-    file_tokens = parse_file(file)
+    file_tokens = tokenize_file(file)
     for file_token in file_tokens
-      if has(all_tokens, file_token[1])
-        all_tokens[file_token[1]] = all_tokens[file_token[1]] + file_token[2]
+      if has(tokens, file_token[1])
+        tokens[file_token[1]] = tokens[file_token[1]] + file_token[2]
       else
-        all_tokens[file_token[1]] = file_token[2]
+        tokens[file_token[1]] = file_token[2]
       end
     end
     documents[file] = file_tokens
   end
-  corpus = Dict()
-  corpus["files"] = files
-  corpus["tokens"] = all_tokens
-  corpus["documents"] = documents
+  corpus = TextCorpus(files, tokens, documents)
   corpus
 end
