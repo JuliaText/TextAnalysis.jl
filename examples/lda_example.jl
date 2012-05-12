@@ -13,7 +13,7 @@ xi = 1000.0
 alpha = [0.01, 0.01]
 beta = [0.45 0.05 0.05 0.45; 0.05 0.45 0.45 0.05;]
 
-(theta, document) = generate_document(xi, alpha, beta)
+(document_theta, document) = generate_document(xi, alpha, beta)
 (theta, corpus) = generate_corpus(50, xi, alpha, beta)
 
 # Perform 20 Gibbs sampling sweeps
@@ -23,3 +23,7 @@ beta = [0.45 0.05 0.05 0.45; 0.05 0.45 0.45 0.05;]
 
 mean(abs(beta - inferred_beta))
 sum(int(round(theta)) != int(round(inferred_theta)), 1)[1, 1] / size(corpus, 1)
+
+# theta estimates seem very poor, while beta is almost perfect.
+# Should text along with beta be used to estimate final value of
+# theta instead of Gibbs?
