@@ -18,8 +18,7 @@ function Document(filename::String)
   document
 end
 
-#function remove_words(document::Document, words::Array{String,1})
-function remove_words(document::Document, words)
+function remove_words{S<:String}(document::Document, words::Array{S,1})
   # Need to do some sort of tokenization first.
   for word in words
     document.text = replace(document.text, word, "")
@@ -27,7 +26,7 @@ function remove_words(document::Document, words)
 end
 
 function remove_numbers(document::Document)
-  # Remove all numeric characeters? Or just number tokens?
+  # Remove all numeric characters? Or just number tokens?
   document.text = replace(document.text, r"\d", "")
 end
 

@@ -17,8 +17,7 @@ function remove_document(corpus::Corpus, document::Document)
   del(corpus.documents, find(corpus.documents == document)[1])
 end
 
-#function Corpus(filenames::Array{String,1})
-function Corpus(filenames::Array{Any,1})
+function Corpus{S<:String}(filenames::Array{S,1})
   corpus = Corpus()
   for filename in filenames
     add_document(corpus, Document(filename))
@@ -31,12 +30,7 @@ function Corpus(directory_name::String)
   Corpus(filenames)
 end
 
-#function Corpus(generic_sources::Any)
-  # NO OP
-#end
-
-#function remove_words(corpus::Corpus, words::Array{String,1})
-function remove_words(corpus::Corpus, words)
+function remove_words{S<:String}(corpus::Corpus, words::Array{S,1})
   for document in corpus.documents
     remove_words(document, words)
   end

@@ -5,8 +5,18 @@ end
 function NGramCorpus()
   n_gram_documents = Array(NGramDocument, 1)
   del(n_gram_documents, 1)
-  corpus = NGramCorpus(n_gram_documents)
-  corpus
+  n_gram_corpus = NGramCorpus(n_gram_documents)
+  n_gram_corpus
+end
+
+function NGramCorpus(documents::Array{Document,1})
+  n_gram_corpus = NGramCorpus()
+  
+  for document in documents
+    add_document(n_gram_corpus, to_n_gram_document(document))
+  end
+  
+  n_gram_corpus
 end
 
 function add_document(n_gram_corpus::NGramCorpus, n_gram_document::NGramDocument)
@@ -18,19 +28,15 @@ function remove_document(n_gram_corpus::NGramCorpus, n_gram_document::NGramDocum
   del(n_gram_corpus.n_gram_documents, find(n_gram_corpus.n_gram_documents == n_gram_document)[1])
 end
 
-#function remove_words(n_gram_corpus::NGramCorpus, words::Array{String,1})
-function remove_words(n_gram_corpus::NGramCorpus, words)
+function remove_words{S<:String}(n_gram_corpus::NGramCorpus, words::Array{S,1})
   for n_gram_document in n_gram_corpus.n_gram_documents
-    remove_words(n_gram_documents, words)
+    remove_words(n_gram_document, words)
   end
 end
 
 function to_dtm(n_gram_corpus::NGramCorpus)
   aggregate_tokens = map(x -> keys(x.tokens), n_gram_corpus.n_gram_documents)
-  # Debate converting keys from Any to String.  
   all_tokens = reduce(append, aggregate_tokens)
-  # No intersect() method for this case. Will reduce() work?
-  # Yes, but now need to select unique elements out.
   tokens_dict = Dict()
   for token in sort(all_tokens)
     tokens_dict[token] = 0
@@ -43,8 +49,10 @@ function to_dtm(n_gram_corpus::NGramCorpus)
     mapping[sorted_tokens[i]] = i
   end
   
-  # Create a (sparse?) matrix that as many rows as files and as many columns as there are keys.
-  # Then insert entries into this matrix for every file.
+  # Create a (sparse?) matrix that as many rows as the corpus has documents
+  # and as many columns as the corpus has tokens.
+  #
+  # Then insert entries into this matrix for every document.
   n = length(n_gram_corpus.n_gram_documents)
   m = length(sorted_tokens)
   counts = zeros(Int, n, m)

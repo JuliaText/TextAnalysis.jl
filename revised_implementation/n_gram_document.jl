@@ -1,5 +1,5 @@
+# Contains n-gram as key, occurrence count as value
 type NGramDocument
-  # Contains n-gram as key, occurrence count as value
   n::Int
   tokens::Dict
 end
@@ -12,8 +12,7 @@ function NGramDocument()
   NGramDocument(1, Dict())
 end
 
-#function remove_words(n_gram_document::NGramDocument, words::Array{String,1})
-function remove_words(n_gram_document::NGramDocument, words)
+function remove_words{S<:String}(n_gram_document::NGramDocument, words::Array{S,1})
   for word in words
     if has(n_gram_document.tokens, word)
       del(n_gram_document.tokens, word)
