@@ -1,40 +1,38 @@
+# General
+
 * Support both sparse and non-sparse matrices.
 * Provide basic document similarity metrices.
-* Provide simple clustering:
+* Provide document clustering algorithms:
   * k-Means
   * TD-IDF
   * pLSA
   * Fixed Topic LDA
   * Infinite Topic LDA
 
-* Need to experiment with other data structures for representing a corpus.
 * Need to experiment with better tokenizers.
-* Need to decide when corpus cleaning should take place.
-  * Possible at corpus creation and also after. Allowing both will make EDA easier.
+* Provide methods for adding items to a DTM after the fact.
 
-* Provide methods for adding items to a corpus after the fact. (Extends lexicon)
-* Provide methods for adding items to a DTM after the fact. (Keeps existing lexicon? Extends lexicon?)
+* Implement generic ridge/LASSO and cross-validation, then implement text regression algorithms.
 
-* Implement LASSO and then implement text regression.
+* Figure out why inference for beta in LDA is acceptable, when theta inference is so poor.
 
-* Figure out why inference for beta in LDA is acceptable, but theta inference is very poor.
-
-# Revised Implementation
-* DTM, TDM, TD-IDF
+* Implement TD-IDF
 * Decide whether n-gram representation should include (n-1),(n-2),(...)-grams.
-* Add print(), show() and [] methods.
-* Switch over to type mechanism suggested by Stefan.
+* Add `print()`, `show()` and `[]` methods.
 
-* Add remove_ methods for NGramDocument and NGramCorpus.
-* Add Corpus(Document) and not just Corpus(Array{Document,1})
+* Add more `add_` and `remove_` methods for `NGramDocument` and `NGramCorpus`.
+* Add `Corpus(Document)` and not just `Corpus(Array{Document,1})`.
+* Add a `remove_sparse_terms(dtm)` method.
 
-# Stopwords
-* Provide stopwords. But also provide Wikipedia frequencies of top 100,000 words. Allow users to filter on frequencies, rather than "stopword" definition.
-* Provide pronouns, prepositions, articles, etc. Allow users to remove only those.
+# Stopword Removal
 
-# Remove Operations
-* `remove_sparse_terms(dtm)`
+* Provide generic lists of stopwords and tools for removing them.
+* Provide generic lists of Wikipedia frequencies of top 100,000 words. Allow users to filter out words based on frequencies, rather than using a "stopword" definition.
+* Provide generic lists of pronouns, prepositions, articles, etc. Allow users to remove only those words and not all stopwords.
 
 # Sparse Matrix Support
-* `load("extras/sparse.jl")`
-* `dtm = spzeros(n, m)`
+
+* Easily implemented:
+
+    load("extras/sparse.jl")
+    dtm = spzeros(n, m)
