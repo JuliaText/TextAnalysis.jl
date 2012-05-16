@@ -43,15 +43,3 @@ end
 function remove_case(document::Document)
   document.text = lowercase(document.text)
 end
-
-function to_n_gram_document(n::Int, document::Document)
-  n_gram_document = NGramDocument(n)
-  n_gram_document.tokens = tokenize(document.text, n)
-  n_gram_document
-end
-
-function to_n_gram_document(document::Document)
-  n_gram_document = NGramDocument(1)
-  n_gram_document.tokens = tokenize(document.text, 1)
-  n_gram_document
-end

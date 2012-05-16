@@ -1,6 +1,0 @@
-load("revised_implementation/tokenize.jl")
-load("revised_implementation/document.jl")
-load("revised_implementation/n_gram_document.jl")
-load("revised_implementation/corpus.jl")
-load("revised_implementation/n_gram_corpus.jl")
-load("revised_implementation/document_term_matrix.jl")

@@ -1,4 +1,4 @@
-load("revised_implementation/loader.jl")
+load("src/init.jl")
 
 # Tokenize a string.
 # Create a document.

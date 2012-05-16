@@ -34,34 +34,13 @@ function remove_words{S<:String}(n_gram_corpus::NGramCorpus, words::Array{S,1})
   end
 end
 
-function to_dtm(n_gram_corpus::NGramCorpus)
-  aggregate_tokens = map(x -> keys(x.tokens), n_gram_corpus.n_gram_documents)
-  all_tokens = reduce(append, aggregate_tokens)
-  tokens_dict = Dict()
-  for token in sort(all_tokens)
-    tokens_dict[token] = 0
-  end
-  sorted_tokens = sort(keys(tokens_dict))
+# Conversion tools.
+function to_n_gram_corpus(corpus::Corpus)
+  n_gram_corpus = NGramCorpus()
   
-  # Create a map from keys(all_tokens) into ordered set of natural numbers.
-  mapping = Dict()
-  for i = 1:length(sorted_tokens)
-    mapping[sorted_tokens[i]] = i
+  for document in corpus.documents
+    add_document(n_gram_corpus, to_n_gram_document(document))
   end
   
-  # Create a (sparse?) matrix that as many rows as the corpus has documents
-  # and as many columns as the corpus has tokens.
-  #
-  # Then insert entries into this matrix for every document.
-  n = length(n_gram_corpus.n_gram_documents)
-  m = length(sorted_tokens)
-  counts = zeros(Int, n, m)
-  
-  for i = 1:n
-    for token in n_gram_corpus.n_gram_documents[i].tokens
-      counts[i, mapping[token[1]]] = token[2]
-    end
-  end
-  
-  DocumentTermMatrix(sorted_tokens, counts)
+  n_gram_corpus
 end

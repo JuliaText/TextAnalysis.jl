@@ -53,17 +53,3 @@ function remove_case(corpus::Corpus)
     remove_case(document)
   end
 end
-
-function to_n_gram_corpus(corpus::Corpus)
-  n_gram_corpus = NGramCorpus()
-  
-  for document in corpus.documents
-    add_document(n_gram_corpus, to_n_gram_document(document))
-  end
-  
-  n_gram_corpus
-end
-
-function to_dtm(corpus::Corpus)
-  to_dtm(to_n_gram_corpus(corpus))
-end
