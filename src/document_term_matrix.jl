@@ -20,7 +20,7 @@ function remove_sparse_terms(dtm::DocumentTermMatrix)
 end
 
 # Conversion tools.
-function to_dtm(n_gram_corpus::NGramCorpus)
+function DocumentTermMatrix(n_gram_corpus::NGramCorpus)
   aggregate_tokens = map(x -> keys(x.tokens), n_gram_corpus.n_gram_documents)
   all_tokens = reduce(append, aggregate_tokens)
   tokens_dict = Dict()
@@ -52,6 +52,6 @@ function to_dtm(n_gram_corpus::NGramCorpus)
   DocumentTermMatrix(sorted_tokens, counts)
 end
 
-function to_dtm(corpus::Corpus)
-  to_dtm(to_n_gram_corpus(corpus))
+function DocumentTermMatrix(corpus::Corpus)
+  DocumentTermMatrix(NGramCorpus(corpus))
 end

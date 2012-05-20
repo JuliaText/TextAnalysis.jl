@@ -14,6 +14,7 @@ document.name
 document.date
 document.author
 document.text
+document.language
 
 # Now remove things from the Document.
 remove_words(document, ["government"])
@@ -30,7 +31,7 @@ document.text
 
 # Now we'll create an NGramDocument by converting a Document.
 document = Document("data/sotu/0001.txt")
-n_gram_document = to_n_gram_document(document)
+n_gram_document = NGramDocument(document)
 
 # Look at the NGramDocument's fields.
 n_gram_document.n
@@ -68,7 +69,7 @@ corpus.documents[1]
 
 # Create an NGramCorpus from an array of NGramDocument's.
 document = Document("data/sotu/0001.txt")
-n_gram_document = to_n_gram_document(document)
+n_gram_document = NGramDocument(document)
 n_gram_corpus = NGramCorpus([n_gram_document])
 n_gram_corpus.n_gram_documents[1]
 
@@ -80,7 +81,7 @@ n_gram_corpus.n_gram_documents[1]
 # Create an empty NGramCorpus, then add and remove Document's one-by-one.
 n_gram_corpus = NGramCorpus()
 document = Document("data/sotu/0001.txt")
-n_gram_document = to_n_gram_document(document)
+n_gram_document = NGramDocument(document)
 add_document(n_gram_corpus, n_gram_document)
 n_gram_corpus.n_gram_documents[1]
 remove_document(n_gram_corpus, n_gram_document)
@@ -95,7 +96,7 @@ n_gram_corpus.n_gram_documents[1].tokens["a"]
 
 # Convert a Corpus into an NGramCorpus.
 corpus = Corpus(["data/sotu/0001.txt", "data/sotu/0002.txt"])
-to_n_gram_corpus(corpus)
+NGramCorpus(corpus)
 
 # Create a toy DTM and examine its contents.
 tokens = {"one", "two"}
@@ -106,10 +107,10 @@ dtm.counts
 
 # Create a DTM from an NGramCorpus.
 n_gram_corpus = NGramCorpus()
-add_document(n_gram_corpus, to_n_gram_document(Document("data/sotu/0001.txt")))
-add_document(n_gram_corpus, to_n_gram_document(Document("data/sotu/0002.txt")))
-dtm = to_dtm(n_gram_corpus)
+add_document(n_gram_corpus, NGramDocument(Document("data/sotu/0001.txt")))
+add_document(n_gram_corpus, NGramDocument(Document("data/sotu/0002.txt")))
+dtm = DocumentTermMatrix(n_gram_corpus)
 
 # Create a DTM from a Corpus.
 corpus = Corpus([Document("data/sotu/0001.txt"), Document("data/sotu/0002.txt")])
-dtm = to_dtm(corpus)
+dtm = DocumentTermMatrix(corpus)

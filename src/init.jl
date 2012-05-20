@@ -1,5 +1,8 @@
 load("extras/Rmath.jl")
 
+# Language Specific features
+load("src/language.jl")
+
 load("src/tokenize.jl")
 load("src/document.jl")
 load("src/n_gram_document.jl")

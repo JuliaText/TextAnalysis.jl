@@ -1,3 +1,6 @@
+# Documentation
+* Update documentation to show `remove_articles`, `remove_prepositions`, `remove_pronouns` and `remove_stopwords`.
+
 # General
 
 * Support both sparse and non-sparse matrices.

@@ -1,6 +1,6 @@
 load("src/init.jl")
 
-dtm = generate_dtm(generate_corpus("data/sotu"))
+dtm = DocumentTermMatrix(Corpus("data/sotu"))
 
 # Compute similarity scores for documents.
 tdm = dtm.dtm'

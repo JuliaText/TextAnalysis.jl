@@ -13,7 +13,7 @@ function NGramCorpus(documents::Array{Document,1})
   n_gram_corpus = NGramCorpus()
   
   for document in documents
-    add_document(n_gram_corpus, to_n_gram_document(document))
+    add_document(n_gram_corpus, NGramDocument(document))
   end
   
   n_gram_corpus
@@ -28,19 +28,61 @@ function remove_document(n_gram_corpus::NGramCorpus, n_gram_document::NGramDocum
   del(n_gram_corpus.n_gram_documents, find(n_gram_corpus.n_gram_documents == n_gram_document)[1])
 end
 
+# Conversion tools.
+function NGramCorpus(corpus::Corpus)
+  n_gram_corpus = NGramCorpus()
+  
+  for document in corpus.documents
+    add_document(n_gram_corpus, NGramDocument(document))
+  end
+  
+  n_gram_corpus
+end
+
+function remove_numbers(n_gram_corpus::NGramCorpus)
+  for n_gram_document in n_gram_corpus.n_gram_documents
+    remove_numbers(n_gram_document)
+  end
+end
+
+function remove_punctuation(n_gram_corpus::NGramCorpus)
+  for n_gram_document in n_gram_corpus.n_gram_documents
+    remove_punctuation(n_gram_document)
+  end
+end
+
+function remove_case(n_gram_corpus::NGramCorpus)
+  for n_gram_document in n_gram_corpus.n_gram_documents
+    remove_case(n_gram_document)
+  end
+end
+
 function remove_words{S<:String}(n_gram_corpus::NGramCorpus, words::Array{S,1})
   for n_gram_document in n_gram_corpus.n_gram_documents
     remove_words(n_gram_document, words)
   end
 end
 
-# Conversion tools.
-function to_n_gram_corpus(corpus::Corpus)
-  n_gram_corpus = NGramCorpus()
-  
-  for document in corpus.documents
-    add_document(n_gram_corpus, to_n_gram_document(document))
+function remove_articles(n_gram_corpus::NGramCorpus)
+  for n_gram_document in n_gram_corpus.n_gram_documents
+    remove_words(n_gram_document, articles(n_gram_document.language))
   end
-  
-  n_gram_corpus
+end
+
+function remove_prepositions(n_gram_corpus::NGramCorpus)
+  for n_gram_document in n_gram_corpus.n_gram_documents
+    remove_words(n_gram_document, prepositions(n_gram_document.language))
+  end
+end
+
+function remove_pronouns(n_gram_corpus::NGramCorpus)
+  for n_gram_document in n_gram_corpus.n_gram_documents
+    remove_words(n_gram_document, pronouns(n_gram_document.language))
+  end
+end
+
+function remove_stopwords(n_gram_corpus::NGramCorpus)
+  for n_gram_document in n_gram_corpus.n_gram_documents
+    remove_words(n_gram_document, stopwords(n_gram_document.language))
+  end
 end

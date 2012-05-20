@@ -26,14 +26,8 @@ function Corpus{S<:String}(filenames::Array{S,1})
 end
 
 function Corpus(directory_name::String)
-  filenames = dir(directory_name)
+  filenames = ls(directory_name)
   Corpus(filenames)
-end
-
-function remove_words{S<:String}(corpus::Corpus, words::Array{S,1})
-  for document in corpus.documents
-    remove_words(document, words)
-  end
 end
 
 function remove_numbers(corpus::Corpus)
@@ -51,5 +45,35 @@ end
 function remove_case(corpus::Corpus)
   for document in corpus.documents
     remove_case(document)
+  end
+end
+
+function remove_words{S<:String}(corpus::Corpus, words::Array{S,1})
+  for document in corpus.documents
+    remove_words(document, words)
+  end
+end
+
+function remove_articles(corpus::Corpus)
+  for document in corpus.documents
+    remove_words(document, articles(document.language))
+  end
+end
+
+function remove_prepositions(corpus::Corpus)
+  for document in corpus.documents
+    remove_words(document, prepositions(document.language))
+  end
+end
+
+function remove_pronouns(corpus::Corpus)
+  for document in corpus.documents
+    remove_words(document, pronouns(document.language))
+  end
+end
+
+function remove_stopwords(corpus::Corpus)
+  for document in corpus.documents
+    remove_words(document, stopwords(document.language))
   end
 end

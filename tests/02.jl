@@ -19,9 +19,6 @@ document = Document("", "", "", "")
 document = Document()
 document = Document("data/sotu/0001.txt")
 
-remove_words(document, ["government"])
-document.text
-
 remove_numbers(document)
 document.text
 
@@ -29,6 +26,21 @@ remove_punctuation(document)
 document.text
 
 remove_case(document)
+document.text
+
+remove_words(document, ["government"])
+document.text
+
+remove_articles(document)
+document.text
+
+remove_prepositions(document)
+document.text
+
+remove_pronouns(document)
+document.text
+
+remove_stopwords(document)
 document.text
 
 #
@@ -46,10 +58,36 @@ remove_words(n_gram_document, ["this"])
 n_gram_document.tokens
 
 document = Document("data/sotu/0001.txt")
-to_n_gram_document(1, document)
+NGramDocument(1, document)
 
 document = Document("data/sotu/0001.txt")
-to_n_gram_document(document)
+NGramDocument(document)
+
+n_gram_document = NGramDocument(Document("data/sotu/0001.txt"))
+
+remove_numbers(n_gram_document)
+n_gram_document.tokens
+
+remove_punctuation(n_gram_document)
+n_gram_document.tokens
+
+remove_case(n_gram_document)
+n_gram_document.tokens
+
+remove_words(n_gram_document, ["government"])
+n_gram_document.tokens
+
+remove_articles(n_gram_document)
+n_gram_document.tokens
+
+remove_prepositions(n_gram_document)
+n_gram_document.tokens
+
+remove_pronouns(n_gram_document)
+n_gram_document.tokens
+
+remove_stopwords(n_gram_document)
+n_gram_document.tokens
 
 #
 # src/corpus.jl
@@ -73,18 +111,34 @@ filenames = convert(Array{String,1},
 corpus = Corpus(filenames)
 corpus.documents
 
-# This doesn't work because no dir() exists yet.
+# This doesn't work because ls() runs, rather than returns.
 #corpus = Corpus("data/mini")
 
 corpus = Corpus(["data/sotu/0001.txt", "data/sotu/0002.txt"])
 corpus.documents
-remove_words(corpus, ["a"])
-corpus.documents[1]
+
 remove_numbers(corpus)
 corpus.documents[1]
+
 remove_punctuation(corpus)
 corpus.documents[1]
+
 remove_case(corpus)
+corpus.documents[1]
+
+remove_words(corpus, ["government"])
+corpus.documents[1]
+
+remove_articles(corpus)
+corpus.documents[1]
+
+remove_prepositions(corpus)
+corpus.documents[1]
+
+remove_pronouns(corpus)
+corpus.documents[1]
+
+remove_stopwords(corpus)
 corpus.documents[1]
 
 #
@@ -92,7 +146,7 @@ corpus.documents[1]
 #
 
 document = Document("data/sotu/0001.txt")
-n_gram_document = to_n_gram_document(document)
+n_gram_document = NGramDocument(document)
 n_gram_corpus = NGramCorpus([n_gram_document])
 n_gram_corpus.n_gram_documents[1]
 
@@ -104,19 +158,40 @@ n_gram_corpus.n_gram_documents[1]
 
 n_gram_corpus = NGramCorpus()
 document = Document("data/sotu/0001.txt")
-n_gram_document = to_n_gram_document(document)
+n_gram_document = NGramDocument(document)
 add_document(n_gram_corpus, n_gram_document)
 n_gram_corpus.n_gram_documents[1]
 remove_document(n_gram_corpus, n_gram_document)
 n_gram_corpus.n_gram_documents
 add_document(n_gram_corpus, n_gram_document)
 n_gram_corpus.n_gram_documents[1]
-n_gram_corpus.n_gram_documents[1].tokens["a"]
-remove_words(n_gram_corpus, ["a"])
-n_gram_corpus.n_gram_documents[1].tokens["a"]
+
+remove_numbers(n_gram_corpus)
+n_gram_corpus.n_gram_documents[1].tokens
+
+remove_punctuation(n_gram_corpus)
+n_gram_corpus.n_gram_documents[1].tokens
+
+remove_case(n_gram_corpus)
+n_gram_corpus.n_gram_documents[1].tokens
+
+remove_words(n_gram_corpus, ["government"])
+n_gram_corpus.n_gram_documents[1].tokens
+
+remove_articles(n_gram_corpus)
+n_gram_corpus.n_gram_documents[1].tokens
+
+remove_prepositions(n_gram_corpus)
+n_gram_corpus.n_gram_documents[1].tokens
+
+remove_pronouns(n_gram_corpus)
+n_gram_corpus.n_gram_documents[1].tokens
+
+remove_stopwords(n_gram_corpus)
+n_gram_corpus.n_gram_documents[1].tokens
 
 corpus = Corpus(["data/sotu/0001.txt", "data/sotu/0002.txt"])
-to_n_gram_corpus(corpus)
+NGramCorpus(corpus)
 
 #
 # From src/document_term_matrix.jl
@@ -129,11 +204,11 @@ dtm = DocumentTermMatrix(tokens, counts)
 dtm = DocumentTermMatrix()
 
 n_gram_corpus = NGramCorpus()
-add_document(n_gram_corpus, to_n_gram_document(Document("data/sotu/0001.txt")))
-add_document(n_gram_corpus, to_n_gram_document(Document("data/sotu/0002.txt")))
-dtm = to_dtm(n_gram_corpus)
+add_document(n_gram_corpus, NGramDocument(Document("data/sotu/0001.txt")))
+add_document(n_gram_corpus, NGramDocument(Document("data/sotu/0002.txt")))
+dtm = DocumentTermMatrix(n_gram_corpus)
 
 corpus = Corpus([Document("data/sotu/0001.txt")])
-dtm = to_dtm(corpus)
+dtm = DocumentTermMatrix(corpus)
 
 # td_idf(dtm)
