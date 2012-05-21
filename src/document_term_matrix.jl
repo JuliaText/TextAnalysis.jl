@@ -10,7 +10,6 @@ function DocumentTermMatrix()
   dtm
 end
 
-# Conversion tools.
 function DocumentTermMatrix(n_gram_corpus::NGramCorpus)
   aggregate_terms = map(x -> keys(x.tokens), n_gram_corpus.n_gram_documents)
   all_terms = reduce(append, aggregate_terms)
@@ -27,9 +26,8 @@ function DocumentTermMatrix(n_gram_corpus::NGramCorpus)
   end
   
   # Create a (sparse?) matrix that as many rows as the corpus has documents
-  # and as many columns as the corpus has terms.
-  #
-  # Then insert entries into this matrix for every document.
+  # and as many columns as the corpus has terms. Then insert entries into
+  # this matrix for every document.
   n = length(n_gram_corpus.n_gram_documents)
   m = length(sorted_terms)
   counts = zeros(Int, n, m)
@@ -76,16 +74,14 @@ function remove_frequent_terms(dtm::DocumentTermMatrix)
 end
 
 function tf_idf(dtm::DocumentTermMatrix)
-  # Calculate TF.
   tf = zeros(Float64, size(dtm.counts))
   for i in 1:size(dtm.counts, 1)
     tf[i, :] = dtm.counts[i, :] ./ sum(dtm.counts, 2)[i]
   end
 
-  # Calculate IDF.
   idf = log(size(dtm.counts, 1) / sum(dtm.counts > 0, 1))
 
-  # Store TF-IDF in TF matrix.
+  # Store TF-IDF in TF matrix to save space.
   for i in 1:size(dtm.counts, 1)
     for j in 1:size(dtm.counts, 2)
       tf[i, j] = tf[i, j] * idf[1, j]

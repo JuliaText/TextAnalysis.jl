@@ -1,4 +1,4 @@
-# Split string into tokens.
+# Split string into tokens on whitespace.
 # Construct n-grams uses single space concatenation.
 function tokenize(s::String, n::Int)
   words = split(s, r"\s+")

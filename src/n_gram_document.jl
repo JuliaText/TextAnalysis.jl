@@ -1,4 +1,3 @@
-# Contains n-gram as key, occurrence count as value
 type NGramDocument
   n::Int
   tokens::Dict
@@ -17,7 +16,6 @@ function NGramDocument()
   NGramDocument(1, Dict(), "english")
 end
 
-# Conversion functions from Document's to NGramDocument's.
 function NGramDocument(n::Int, document::Document)
   n_gram_document = NGramDocument(n)
   n_gram_document.tokens = tokenize(document.text, n)
@@ -28,14 +26,6 @@ function NGramDocument(document::Document)
   n_gram_document = NGramDocument(1)
   n_gram_document.tokens = tokenize(document.text, 1)
   n_gram_document
-end
-
-function remove_words{S<:String}(n_gram_document::NGramDocument, words::Array{S,1})
-  for word in words
-    if has(n_gram_document.tokens, word)
-      del(n_gram_document.tokens, word)
-    end
-  end
 end
 
 function remove_numbers(n_gram_document::NGramDocument)
@@ -64,6 +54,14 @@ function remove_case(n_gram_document::NGramDocument)
         n_gram_document.tokens[lc_token] = n_gram_document.tokens[token]
       end
       del(n_gram_document.tokens, token)
+    end
+  end
+end
+
+function remove_words{S<:String}(n_gram_document::NGramDocument, words::Array{S,1})
+  for word in words
+    if has(n_gram_document.tokens, word)
+      del(n_gram_document.tokens, word)
     end
   end
 end

@@ -11,16 +11,18 @@
   * LSA
   * pLSA
   * Fixed Topic LDA
+    * Gibbs sampling already exists.
+	  * Figure out why inference for beta in LDA is acceptable, when theta inference is so poor.
+	* Add variational inference and SVD inference.
   * Infinite Topic LDA
-
 * Need to experiment with better tokenizers.
 * Provide methods for adding items to a DTM after the fact.
+* Add a []-hash like method for n-gram documents.
+* Improve removal operations like prepositions and punctuation.
+
+# Text Regression
 
 * Implement generic ridge/LASSO and cross-validation, then implement text regression algorithms.
-
-* Figure out why inference for beta in LDA is acceptable, when theta inference is so poor.
-
-* Add a []-hash like method for n-gram documents.
 
 # Word Removal
 

@@ -1,8 +1,3 @@
-# Need to code up inference procedure.
-# Gibbs
-# Variational
-# SVD
-
 function expanded_representation(word_counts)
   result = []
   

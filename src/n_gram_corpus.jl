@@ -28,7 +28,6 @@ function remove_document(n_gram_corpus::NGramCorpus, n_gram_document::NGramDocum
   del(n_gram_corpus.n_gram_documents, find(n_gram_corpus.n_gram_documents == n_gram_document)[1])
 end
 
-# Conversion tools.
 function NGramCorpus(corpus::Corpus)
   n_gram_corpus = NGramCorpus()
   
