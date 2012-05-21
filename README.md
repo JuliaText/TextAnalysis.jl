@@ -172,10 +172,10 @@ Hopefully you're now interested in learning how to use this package. To get you 
     NGramCorpus(corpus)
 
     # Create a toy DTM and examine its contents.
-    tokens = {"one", "two"}
+    terms = {"one", "two"}
     counts = zeros(Int, 2, 2)
-    dtm = DocumentTermMatrix(tokens, counts)
-    dtm.tokens
+    dtm = DocumentTermMatrix(terms, counts)
+    dtm.terms
     dtm.counts
 
     # Create a DTM from an NGramCorpus.
@@ -185,5 +185,5 @@ Hopefully you're now interested in learning how to use this package. To get you 
     dtm = DocumentTermMatrix(n_gram_corpus)
 
     # Create a DTM from a Corpus.
-    corpus = Corpus([Document("data/sotu/0001.txt"), Document("data/sotu/0002.txt")])
+    corpus = Corpus([Document("data/sotu/0001.txt"), Document("data/sotu/0002.txt"), Document("data/sotu/0003.txt")])
     dtm = DocumentTermMatrix(corpus)

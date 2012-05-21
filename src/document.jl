@@ -67,9 +67,14 @@ function remove_stopwords(document::Document)
 end
 
 function print(document::Document)
-  println("A document called $(document.name)")
+  println("Document:")
+  println("  Name: $(document.name)")
+  println("  Date: $(document.date)")
+  println("  Author: $(document.author)")
+  println("  Language: $(document.language)")
+  println("  Text: ...")  
 end
 
 function show(document::Document)
-  println("A document called $(document.name)")
+  print(document)
 end

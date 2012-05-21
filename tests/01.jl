@@ -6,4 +6,4 @@ remove_case(corpus)
 
 dtm = DocumentTermMatrix(corpus)
 
-@assert size(dtm.counts) == (3, 12) # Includes space as a token.
+@assert size(dtm.counts) == (3, 12) # Includes space as a term.

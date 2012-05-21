@@ -85,9 +85,12 @@ function remove_stopwords(n_gram_document::NGramDocument)
 end
 
 function print(n_gram_document::NGramDocument)
-  println("An NGramDocument with $(length(n_gram_document.tokens)) $(n_gram_document.n)-gram tokens")
+  println("NGramDocument:")
+  println("  N-Gram Level: $(n_gram_document.n)")
+  println("  Unique Tokens: $(length(n_gram_document.tokens))")
+  println("  Language: $(n_gram_document.language)")
 end
 
 function show(n_gram_document::NGramDocument)
-  println("An NGramDocument with $(length(n_gram_document.tokens)) $(n_gram_document.n)-gram tokens")
+  print(n_gram_document)
 end

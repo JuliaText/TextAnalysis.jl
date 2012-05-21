@@ -1,37 +1,37 @@
 type DocumentTermMatrix
-  tokens::Array{Any,1}
+  terms::Array{Any,1}
   counts::Array{Int,2}
 end
 
 function DocumentTermMatrix()
-  tokens = {}
+  terms = {}
   counts = zeros(Int, 0, 0)
-  dtm = DocumentTermMatrix(tokens, counts)
+  dtm = DocumentTermMatrix(terms, counts)
   dtm
 end
 
 # Conversion tools.
 function DocumentTermMatrix(n_gram_corpus::NGramCorpus)
-  aggregate_tokens = map(x -> keys(x.tokens), n_gram_corpus.n_gram_documents)
-  all_tokens = reduce(append, aggregate_tokens)
-  tokens_dict = Dict()
-  for token in sort(all_tokens)
-    tokens_dict[token] = 0
+  aggregate_terms = map(x -> keys(x.tokens), n_gram_corpus.n_gram_documents)
+  all_terms = reduce(append, aggregate_terms)
+  terms_dict = Dict()
+  for term in sort(all_terms)
+    terms_dict[term] = 0
   end
-  sorted_tokens = sort(keys(tokens_dict))
+  sorted_terms = sort(keys(terms_dict))
   
-  # Create a map from keys(all_tokens) into ordered set of natural numbers.
+  # Create a map from keys(all_terms) into ordered set of natural numbers.
   mapping = Dict()
-  for i = 1:length(sorted_tokens)
-    mapping[sorted_tokens[i]] = i
+  for i = 1:length(sorted_terms)
+    mapping[sorted_terms[i]] = i
   end
   
   # Create a (sparse?) matrix that as many rows as the corpus has documents
-  # and as many columns as the corpus has tokens.
+  # and as many columns as the corpus has terms.
   #
   # Then insert entries into this matrix for every document.
   n = length(n_gram_corpus.n_gram_documents)
-  m = length(sorted_tokens)
+  m = length(sorted_terms)
   counts = zeros(Int, n, m)
   
   for i = 1:n
@@ -40,21 +40,11 @@ function DocumentTermMatrix(n_gram_corpus::NGramCorpus)
     end
   end
   
-  DocumentTermMatrix(sorted_tokens, counts)
+  DocumentTermMatrix(sorted_terms, counts)
 end
 
 function DocumentTermMatrix(corpus::Corpus)
   DocumentTermMatrix(NGramCorpus(corpus))
-end
-
-function remove_sparse_tokens(dtm::DocumentTermMatrix, alpha::Float)
-  nonsparse_term_indices = find(sum(dtm.counts, 1) > size(dtm.counts, 1) * alpha)
-  dtm.tokens = dtm.tokens[nonsparse_term_indices]
-  dtm.counts = dtm.counts[:, nonsparse_term_indices]
-end
-
-function remove_sparse_tokens(dtm::DocumentTermMatrix)
-  remove_sparse_tokens(dtm, 0.05)
 end
 
 function term_frequencies(dtm::DocumentTermMatrix)
@@ -63,7 +53,7 @@ end
 
 function remove_infrequent_terms(dtm::DocumentTermMatrix, alpha::Float)
   frequent_term_indices = find(term_frequencies(dtm) > alpha)
-  dtm.tokens = dtm.tokens[frequent_term_indices]
+  dtm.terms = dtm.terms[frequent_term_indices]
   dtm.counts = dtm.counts[:, frequent_term_indices]
 end
 
@@ -75,7 +65,7 @@ end
 
 function remove_frequent_terms(dtm::DocumentTermMatrix, alpha::Float)
   infrequent_term_indices = find(term_frequencies(dtm) <= alpha)
-  dtm.tokens = dtm.tokens[infrequent_term_indices]
+  dtm.terms = dtm.terms[infrequent_term_indices]
   dtm.counts = dtm.counts[:, infrequent_term_indices]
 end
 
@@ -106,9 +96,15 @@ function tf_idf(dtm::DocumentTermMatrix)
 end
 
 function print(dtm::DocumentTermMatrix)
-  println("A DocumentTermMatrix with $(length(dtm.tokens)) tokens and $(size(dtm.counts, 1)) documents")
+  println("DocumentTermMatrix:")
+  println("  Terms: $(length(dtm.terms))")
+  println("  Documents: $(size(dtm.counts, 1))")
 end
 
 function show(dtm::DocumentTermMatrix)
-  println("A DocumentTermMatrix with $(length(dtm.tokens)) tokens and $(size(dtm.counts, 1)) documents")
+  print(dtm)
+end
+
+function ref(dtm::DocumentTermMatrix, i::Int, j::Int)
+  (dtm.terms[j], dtm.counts[i, j])
 end

@@ -88,9 +88,18 @@ function remove_stopwords(n_gram_corpus::NGramCorpus)
 end
 
 function print(n_gram_corpus::NGramCorpus)
-  println("An NGramCorpus with $(length(n_gram_corpus.n_gram_documents)) documents")
+  println("NGramCorpus:")
+  println("  N-Gram Documents: $(length(n_gram_corpus.n_gram_documents))")
 end
 
 function show(n_gram_corpus::NGramCorpus)
-  println("An NGramCorpus with $(length(n_gram_corpus.n_gram_documents)) documents")
+  print(n_gram_corpus)
+end
+
+function ref(n_gram_corpus::NGramCorpus, index::Int)
+  n_gram_corpus.n_gram_documents[index]
+end
+
+function assign(n_gram_corpus::NGramCorpus, n_gram_document::NGramDocument, index::Int)
+  n_gram_corpus.n_gram_documents[index] = n_gram_document
 end

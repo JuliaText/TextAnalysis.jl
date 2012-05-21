@@ -83,9 +83,18 @@ function remove_stopwords(corpus::Corpus)
 end
 
 function print(corpus::Corpus)
-  println("A Corpus with $(length(corpus.documents)) documents")
+  println("Corpus:")
+  println("  Documents: $(length(corpus.documents))")
 end
 
 function show(corpus::Corpus)
-  println("A Corpus with $(length(corpus.documents)) documents")
+  print(corpus)
+end
+
+function ref(corpus::Corpus, index::Int)
+  corpus.documents[index]
+end
+
+function assign(corpus::Corpus, document::Document, index::Int)
+  corpus.documents[index] = document
 end

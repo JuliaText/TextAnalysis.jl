@@ -197,9 +197,9 @@ NGramCorpus(corpus)
 # From src/document_term_matrix.jl
 #
 
-tokens = {"one", "two"}
+terms = {"one", "two"}
 counts = zeros(Int, 2, 2)
-dtm = DocumentTermMatrix(tokens, counts)
+dtm = DocumentTermMatrix(terms, counts)
 
 dtm = DocumentTermMatrix()
 

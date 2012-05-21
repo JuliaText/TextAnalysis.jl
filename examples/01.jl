@@ -99,10 +99,10 @@ corpus = Corpus(["data/sotu/0001.txt", "data/sotu/0002.txt"])
 NGramCorpus(corpus)
 
 # Create a toy DTM and examine its contents.
-tokens = {"one", "two"}
+terms = {"one", "two"}
 counts = zeros(Int, 2, 2)
-dtm = DocumentTermMatrix(tokens, counts)
-dtm.tokens
+dtm = DocumentTermMatrix(terms, counts)
+dtm.terms
 dtm.counts
 
 # Create a DTM from an NGramCorpus.

@@ -6,8 +6,9 @@
 
 * Support both sparse and non-sparse matrices.
 * Provide basic document similarity metrices.
-* Provide document clustering algorithms:
+* Provide document clustering/dimensionality reduction algorithms:
   * k-Means
+  * LSA
   * pLSA
   * Fixed Topic LDA
   * Infinite Topic LDA
@@ -19,10 +20,7 @@
 
 * Figure out why inference for beta in LDA is acceptable, when theta inference is so poor.
 
-* Add `[]` methods.
-
-* Rename `remove_sparse_terms` to `remove_sparse_tokens`.
-* Change most cases of tokens to terms, certainly for DTM's.
+* Add a []-hash like method for n-gram documents.
 
 # Word Removal
 
