@@ -112,5 +112,5 @@ add_document(n_gram_corpus, NGramDocument(Document("data/sotu/0002.txt")))
 dtm = DocumentTermMatrix(n_gram_corpus)
 
 # Create a DTM from a Corpus.
-corpus = Corpus([Document("data/sotu/0001.txt"), Document("data/sotu/0002.txt")])
+corpus = Corpus([Document("data/sotu/0001.txt"), Document("data/sotu/0002.txt"), Document("data/sotu/0003.txt")])
 dtm = DocumentTermMatrix(corpus)

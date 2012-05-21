@@ -22,9 +22,22 @@ Here, we create a document-term matrix for all of the State of the Union (SOTU) 
     
     corpus = Corpus(filenames)
     
+    remove_case(corpus)
+    remove_punctuation(corpus)
+    remove_stopwords(corpus)
+    
     dtm = DocumentTermMatrix(corpus)
-
+    
+    remove_infrequent_terms(dtm)
+    remove_frequent_terms(dtm)
+    
     similarity_matrix = cor(dtm.counts')
+    csvwrite("sim.csv", similarity_matrix)
+    
+    tf_idf_dtm = tf_idf(dtm)
+    
+    tf_idf_similarity_matrix = cor(tf_idf_dtm')
+    csvwrite("tfidf_sim.csv", tf_idf_similarity_matrix)
 
 ## LDA Analysis of a Simulated Corpus
 

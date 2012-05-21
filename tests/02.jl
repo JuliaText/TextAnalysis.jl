@@ -58,7 +58,7 @@ remove_words(n_gram_document, ["this"])
 n_gram_document.tokens
 
 document = Document("data/sotu/0001.txt")
-NGramDocument(1, document)
+NGramDocument(2, document)
 
 document = Document("data/sotu/0001.txt")
 NGramDocument(document)
@@ -208,7 +208,7 @@ add_document(n_gram_corpus, NGramDocument(Document("data/sotu/0001.txt")))
 add_document(n_gram_corpus, NGramDocument(Document("data/sotu/0002.txt")))
 dtm = DocumentTermMatrix(n_gram_corpus)
 
-corpus = Corpus([Document("data/sotu/0001.txt")])
+corpus = Corpus([Document("data/sotu/0001.txt"), Document("data/sotu/0002.txt")])
 dtm = DocumentTermMatrix(corpus)
 
-# td_idf(dtm)
+tf_idf(dtm)

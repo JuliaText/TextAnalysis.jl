@@ -5,12 +5,14 @@ function tokenize(s::String, n::Int)
   
   tokens = Dict()
   
-  for index in 1:(length(words) - n + 1)
-    token = join(words[index:(index + n - 1)], " ")
-    if has(tokens, token)
-      tokens[token] = tokens[token] + 1
-    else
-      tokens[token] = 1
+  for m in 1:n
+    for index in 1:(length(words) - m + 1)
+      token = join(words[index:(index + m - 1)], " ")
+      if has(tokens, token)
+        tokens[token] = tokens[token] + 1
+      else
+        tokens[token] = 1
+      end
     end
   end
   

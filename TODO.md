@@ -8,7 +8,6 @@
 * Provide basic document similarity metrices.
 * Provide document clustering algorithms:
   * k-Means
-  * TD-IDF
   * pLSA
   * Fixed Topic LDA
   * Infinite Topic LDA
@@ -20,8 +19,10 @@
 
 * Figure out why inference for beta in LDA is acceptable, when theta inference is so poor.
 
-* Decide whether n-gram representation should include (n-1),(n-2),(...)-grams.
-* Add `print()`, `show()` and `[]` methods.
+* Add `[]` methods.
+
+* Rename `remove_sparse_terms` to `remove_sparse_tokens`.
+* Change most cases of tokens to terms, certainly for DTM's.
 
 # Word Removal
 

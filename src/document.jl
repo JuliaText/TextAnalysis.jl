@@ -65,3 +65,11 @@ end
 function remove_stopwords(document::Document)
   remove_words(document, stopwords(document.language))
 end
+
+function print(document::Document)
+  println("A document called $(document.name)")
+end
+
+function show(document::Document)
+  println("A document called $(document.name)")
+end

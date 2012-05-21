@@ -57,9 +57,37 @@ function remove_sparse_tokens(dtm::DocumentTermMatrix)
   remove_sparse_tokens(dtm, 0.05)
 end
 
+function term_frequencies(dtm::DocumentTermMatrix)
+  sum(int(dtm.counts > 0), 1) / size(dtm.counts, 1)
+end
+
+function remove_infrequent_terms(dtm::DocumentTermMatrix, alpha::Float)
+  frequent_term_indices = find(term_frequencies(dtm) > alpha)
+  dtm.tokens = dtm.tokens[frequent_term_indices]
+  dtm.counts = dtm.counts[:, frequent_term_indices]
+end
+
+function remove_infrequent_terms(dtm::DocumentTermMatrix)
+  n = size(dtm.counts, 1)
+  alpha = 1.0 / float(n)
+  remove_infrequent_terms(dtm, alpha)
+end
+
+function remove_frequent_terms(dtm::DocumentTermMatrix, alpha::Float)
+  infrequent_term_indices = find(term_frequencies(dtm) <= alpha)
+  dtm.tokens = dtm.tokens[infrequent_term_indices]
+  dtm.counts = dtm.counts[:, infrequent_term_indices]
+end
+
+function remove_frequent_terms(dtm::DocumentTermMatrix)
+  n = size(dtm.counts, 1)
+  alpha = float(n - 1) / float(n)
+  remove_frequent_terms(dtm, alpha)
+end
+
 function tf_idf(dtm::DocumentTermMatrix)
   # Calculate TF.
-  tf = zeros(Float, size(dtm.counts))
+  tf = zeros(Float64, size(dtm.counts))
   for i in 1:size(dtm.counts, 1)
     tf[i, :] = dtm.counts[i, :] ./ sum(dtm.counts, 2)[i]
   end
@@ -78,11 +106,9 @@ function tf_idf(dtm::DocumentTermMatrix)
 end
 
 function print(dtm::DocumentTermMatrix)
-  println("DTM Tokens")
-  println("DTM Counts")
+  println("A DocumentTermMatrix with $(length(dtm.tokens)) tokens and $(size(dtm.counts, 1)) documents")
 end
 
 function show(dtm::DocumentTermMatrix)
-  println("DTM Tokens")
-  println("DTM Counts")
+  println("A DocumentTermMatrix with $(length(dtm.tokens)) tokens and $(size(dtm.counts, 1)) documents")
 end

@@ -86,3 +86,11 @@ function remove_stopwords(n_gram_corpus::NGramCorpus)
     remove_words(n_gram_document, stopwords(n_gram_document.language))
   end
 end
+
+function print(n_gram_corpus::NGramCorpus)
+  println("An NGramCorpus with $(length(n_gram_corpus.n_gram_documents)) documents")
+end
+
+function show(n_gram_corpus::NGramCorpus)
+  println("An NGramCorpus with $(length(n_gram_corpus.n_gram_documents)) documents")
+end

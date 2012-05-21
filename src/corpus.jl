@@ -81,3 +81,11 @@ function remove_stopwords(corpus::Corpus)
     remove_words(document, stopwords(document.language))
   end
 end
+
+function print(corpus::Corpus)
+  println("A Corpus with $(length(corpus.documents)) documents")
+end
+
+function show(corpus::Corpus)
+  println("A Corpus with $(length(corpus.documents)) documents")
+end
