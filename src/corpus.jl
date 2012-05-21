@@ -30,6 +30,10 @@ function Corpus(directory_name::String)
   Corpus(filenames)
 end
 
+function Corpus(document::Document)
+  Corpus([document])
+end
+
 function remove_numbers(corpus::Corpus)
   for document in corpus.documents
     remove_numbers(document)

@@ -10,15 +10,6 @@ function DocumentTermMatrix()
   dtm
 end
 
-function td_idf(dtm::DocumentTermMatrix)
-end
-
-function remove_sparse_terms(dtm::DocumentTermMatrix)
-  not_sparse_indices = sum(int(dtm.counts == 0), 1) > 0.05 * size(dtm.counts, 1)
-  dtm.counts = dtm.counts[:, not_sparse_indices]
-  dtm
-end
-
 # Conversion tools.
 function DocumentTermMatrix(n_gram_corpus::NGramCorpus)
   aggregate_tokens = map(x -> keys(x.tokens), n_gram_corpus.n_gram_documents)
@@ -54,4 +45,44 @@ end
 
 function DocumentTermMatrix(corpus::Corpus)
   DocumentTermMatrix(NGramCorpus(corpus))
+end
+
+function remove_sparse_tokens(dtm::DocumentTermMatrix, alpha::Float)
+  nonsparse_term_indices = find(sum(dtm.counts, 1) > size(dtm.counts, 1) * alpha)
+  dtm.tokens = dtm.tokens[nonsparse_term_indices]
+  dtm.counts = dtm.counts[:, nonsparse_term_indices]
+end
+
+function remove_sparse_tokens(dtm::DocumentTermMatrix)
+  remove_sparse_tokens(dtm, 0.05)
+end
+
+function tf_idf(dtm::DocumentTermMatrix)
+  # Calculate TF.
+  tf = zeros(Float, size(dtm.counts))
+  for i in 1:size(dtm.counts, 1)
+    tf[i, :] = dtm.counts[i, :] ./ sum(dtm.counts, 2)[i]
+  end
+
+  # Calculate IDF.
+  idf = log(size(dtm.counts, 1) / sum(dtm.counts > 0, 1))
+
+  # Store TF-IDF in TF matrix.
+  for i in 1:size(dtm.counts, 1)
+    for j in 1:size(dtm.counts, 2)
+      tf[i, j] = tf[i, j] * idf[1, j]
+    end
+  end
+  
+  tf
+end
+
+function print(dtm::DocumentTermMatrix)
+  println("DTM Tokens")
+  println("DTM Counts")
+end
+
+function show(dtm::DocumentTermMatrix)
+  println("DTM Tokens")
+  println("DTM Counts")
 end
