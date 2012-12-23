@@ -1,192 +1,350 @@
-# Text Analysis in Julia
+TextAnalysis.jl
+===============
 
-Using this package, you can do basic text analysis, including:
+# Preface
 
-* Creating a corpus from a directory of text files.
-* Creating a document-term matrix from a corpus.
-* Performing LDA on a document-term matrix.
+This manual is designed to get you started doing text analysis in Julia.
+It assumes that you already familiar with the basic methods of text analysis
+in order to present all of the available methods more quickly.
 
-# Real-World Usage Examples
+# Outline
 
-To show off, let's start with some real-world usage examples of this package. These examples are quite computationally intensive, so be prepared to wait a minute or two (or more) for the examples to finish running.
+* Installation
+* Getting Started
+* Creating Documents
+    * StringDocument
+    * FileDocument
+    * TokenDocument
+    * NGramDocument
+* Basic Functions for Working with Documents
+    * text
+    * tokens
+    * ngrams
+* Document Metadata
+    * language
+    * name
+    * author
+    * timestamp
+* Preprocessing Documents
+    * Removing Corrupt UTF8
+    * Removing Punctuation
+    * Removing Case Distinctions
+    * Removing Words
+        * Stop Words
+        * Articles
+        * Indefinite Articles
+        * Definite Articles
+        * Prepositions
+        * Pronouns
+    * Stemming
+    * Removing Rare Words
+    * Removing Sparse Words
+* Creating a Corpus
+* Processing a Corpus
+* Corpus Statistics
+    * Lexicon
+    * Inverse Index
+* Creating a Document Term Matrix
+* Creating Individual Rows of a Document Term Matrix
+* The Hash Trick
+    * Hashed DTV's
+    * Hashed DTM's
+* TF-IDF
+* LSA: Latent Semantic Analysis
+* LDA: Latent Dirichlet Allocation
+* Extended Usage Example: Analyzing the State of the Union Addresses
 
-## Analysis of a Corpus of State of the Union Addresses
+# Installation
 
-Here, we create a document-term matrix for all of the State of the Union (SOTU) addresses on record and then compute correlations betweens rows in this matrix to see which SOTU adddresses are most similar to each other:
+The TextAnalysis package can be installed using Julia's package manager:
 
-    load("src/init.jl")
-    
-    filenames = convert(Array{String,1},
-                        map(x -> strcat("data/sotu/", chomp(x)),
-                            readlines(`ls data/sotu`)))
-    
-    corpus = Corpus(filenames)
-    
-    remove_case(corpus)
-    remove_punctuation(corpus)
-    remove_stopwords(corpus)
-    
-    dtm = DocumentTermMatrix(corpus)
-    
-    remove_infrequent_terms(dtm)
-    remove_frequent_terms(dtm)
-    
-    similarity_matrix = cor(dtm.counts')
-    csvwrite("sim.csv", similarity_matrix)
-    
-    tf_idf_dtm = tf_idf(dtm)
-    
-    tf_idf_similarity_matrix = cor(tf_idf_dtm')
-    csvwrite("tfidf_sim.csv", tf_idf_similarity_matrix)
-    
-    (a, b, c) = svd(convert(Array{Int,2}, dtm.counts))
-    # Reduce to 1 dimensional representation of each document.
+    require("pkg")
+    Pkg.add("TextAnalysis")
 
-## LDA Analysis of a Simulated Corpus
+# Getting Started
 
-Here, we use a random number generator to create an artificial corpus of 50 documents according to the LDA model for generating random documents. We then use this simulated corpus to infer the parameters of our generative model as a way to test that our estimation strategy is accurate:
+In all of the examples that follow, we'll assume that you have the
+TextAnalysis package fully loaded:
 
-    load("src/init.jl")
-    
-    # Make sure all users get similar results.
-    srand(1)
-    
-    # Set the parameters of the LDA model.
-    xi = 1000.0
-    alpha = [0.01, 0.01]
-    beta = [0.45 0.05 0.05 0.45; 0.05 0.45 0.45 0.05;]
-    
-    (document_theta, document) = generate_document(xi, alpha, beta)
-    
-    (theta, corpus) = generate_corpus(50, xi, alpha, beta)
-    
-    # Run inference using Gibbs sampling.
-    # This will divide the corpus into 2 topics.
-    # We will use only 20 samples to infer the theta and beta parameters.
-    # We will have the system print out a trace of its state at each step.
-    (inferred_theta, inferred_beta) = lda(corpus, 2, 20, true)
-    
-    # Now we can check the accuracy of our results.
-    # These vary considerably between runs of the sampler.
-    # Inference for beta is quite reliable.
-    # Inference for theta is generally quite poor at best.
-    # We should also keep in mind that relabelling of the topics may occur.
-    mean(abs(beta - inferred_beta))
-    mean(round(theta) != round(inferred_theta), 1)
+    require("TextAnalysis")
+    using TextAnalysis
 
-# Package Walkthrough
+# Creating Documents
 
-Hopefully you're now interested in learning how to use this package. To get you started, we'll walk you through the basic data structures and functions.
+The basic unit of text analysis is a document. The TextAnalysis package
+allows one to work with documents stored in a variety of formats:
 
-    # Load all of this package's functionality.
-    load("src/init.jl")
+* _StringDocument_: A document represented using a UTF8String stored in RAM
+* _FileDocument_: A document represented using a plain text file on disk
+* _TokenDocument_: A document represented as a sequence of UTF8 tokens
+* _NGramDocument_: A document represented as a bag of n-grams
 
-    # Show how we currently tokenize a string.
-    sample_text = "this is some sample text"
-    tokenize(sample_text, 1)
-    tokenize(sample_text, 2)
+Creating these kind of documents is very easy when you already have the basic
+data available:
 
-    # Create a Document type variable.
-    document = Document("data/sotu/0001.txt")
+    str = "To be or not to be..."
+    sd = StringDocument(str)
 
-    # Look at the document's fields.
-    document.name
-    document.date
-    document.author
-    document.text
+    pathname = "/usr/share/dict/words"
+    fd = FileDocument(pathname)
 
-    # Now remove things from the Document.
-    remove_words(document, ["government"])
-    document.text
-    remove_numbers(document)
-    document.text
-    remove_punctuation(document)
-    document.text
-    remove_case(document)
-    document.text
+    my_tokens = ["To", "be", "or", "not", "to", "be..."]
+    td = TokenDocument(my_tokens)
 
-    # Now we'll create an NGramDocument by converting a Document.
-    document = Document("data/sotu/0001.txt")
-    n_gram_document = NGramDocument(document)
+    my_ngrams = Dict{UTF8String,Int}()
+    my_ngrams["To"] = 1
+    my_ngrams["be"] = 2
+    my_ngrams["or"] = 1
+    my_ngrams["not"] = 1
+    my_ngrams["to"] = 1
+    my_ngrams["be..."] = 1
+    ngd = NGramDocument(my_ngrams)
 
-    # Look at the NGramDocument's fields.
-    n_gram_document.n
-    n_gram_document.tokens
+For every type of document except a `FileDocument`, you can also construct a
+new document by simply passing in a string of text:
 
-    # Now remove things from the NGramDocument.
-    n_gram_document.tokens["government"]
-    remove_words(n_gram_document, ["government"])
-    n_gram_document.tokens["government"]
+    sd = StringDocument("To be or not to be...")
+    td = TokenDocument("To be or not to be...")
+    ngd = NGramDocument("To be or not to be...")
 
-    # Now we'll create a Corpus type variable.
-    document = Document("data/sotu/0001.txt")
-    corpus = Corpus([document])
+The system will automatically perform tokenization or n-gramization in order
+to produce the required data. Unfortunately, `FileDocument`'s cannot be
+constructed this way because filenames are themselves strings. It would cause
+chaos if filenames were treated as the text contents of a document.
 
-    # Look at the Corpus's fields.
-    corpus.documents
+That said, there is one way around this restriction: you can use the generic
+`Document()` constructor function, which will guess at the type of the inputs
+and construct the appropriate type of document object:
 
-    # Create an empty Corpus and then add and remove Document's one-by-one.
-    corpus = Corpus()
-    add_document(corpus, document)
-    corpus.documents
-    remove_document(corpus, document)
-    corpus.documents
+    Document("To be or not to be...")
+    Document("/usr/share/dict/words")
+    Document(["To", "be", "or", "not", "to", "be..."])
+    ng = Dict{UTF8String,Int}()
+    ng["a"] = 1
+    ng["b"] = 3
+    Document(ng)
 
-    # Create a new Corpus and remove things from all of the Document's in it.
-    corpus = Corpus(["data/sotu/0001.txt"])
-    remove_words(corpus, ["a"])
-    corpus.documents[1]
-    remove_numbers(corpus)
-    corpus.documents[1]
-    remove_punctuation(corpus)
-    corpus.documents[1]
-    remove_case(corpus)
-    corpus.documents[1]
+# Basic Functions for Working with Documents
 
-    # Create an NGramCorpus from an array of NGramDocument's.
-    document = Document("data/sotu/0001.txt")
-    n_gram_document = NGramDocument(document)
-    n_gram_corpus = NGramCorpus([n_gram_document])
-    n_gram_corpus.n_gram_documents[1]
+Once you've created a document object, you can work with it in many ways. The
+most obvious thing is to access its text using the `text()` function:
 
-    # Create an NGramCorpus from an array of Document's.
-    document = Document("data/sotu/0001.txt")
-    n_gram_corpus = NGramCorpus([document])
-    n_gram_corpus.n_gram_documents[1]
+    text(sd)
 
-    # Create an empty NGramCorpus, then add and remove Document's one-by-one.
-    n_gram_corpus = NGramCorpus()
-    document = Document("data/sotu/0001.txt")
-    n_gram_document = NGramDocument(document)
-    add_document(n_gram_corpus, n_gram_document)
-    n_gram_corpus.n_gram_documents[1]
-    remove_document(n_gram_corpus, n_gram_document)
-    n_gram_corpus.n_gram_documents
-    add_document(n_gram_corpus, n_gram_document)
+This function works without warnings on `StringDocument`'s and
+`FileDocument`'s. For `TokenDocument`'s it is not possible to know if the
+text can be reconstructed perfectly, so calling
+`text(TokenDocument("This is text"))` will produce a warning message before
+returning an approximate reconstruction of the text as it existed before
+tokenization. It is entirely impossible to reconstruct the text of an
+`NGramDocument`, so `text(NGramDocument("This is text"))` raises an error.
 
-    # Remove words from all NGramDocument's in an NGramCorpus.
-    n_gram_corpus.n_gram_documents[1]
-    n_gram_corpus.n_gram_documents[1].tokens["a"]
-    remove_words(n_gram_corpus, ["a"])
-    n_gram_corpus.n_gram_documents[1].tokens["a"]
+Instead of working with the text itself, you can work with the tokens or
+n-grams of a document using the `tokens()` and `ngrams()` functions:
 
-    # Convert a Corpus into an NGramCorpus.
-    corpus = Corpus(["data/sotu/0001.txt", "data/sotu/0002.txt"])
-    NGramCorpus(corpus)
+    tokens(sd)
+    ngrams(sd)
 
-    # Create a toy DTM and examine its contents.
-    terms = {"one", "two"}
-    counts = zeros(Int, 2, 2)
-    dtm = DocumentTermMatrix(terms, counts)
-    dtm.terms
-    dtm.counts
+By default the `ngrams()` function produces unigrams. If you would like to
+produce bigrams or trigrams, you can specify that directly using a numeric
+argument to the `ngrams()` function:
 
-    # Create a DTM from an NGramCorpus.
-    n_gram_corpus = NGramCorpus()
-    add_document(n_gram_corpus, NGramDocument(Document("data/sotu/0001.txt")))
-    add_document(n_gram_corpus, NGramDocument(Document("data/sotu/0002.txt")))
-    dtm = DocumentTermMatrix(n_gram_corpus)
+    ngrams(sd, 2)
 
-    # Create a DTM from a Corpus.
-    corpus = Corpus([Document("data/sotu/0001.txt"), Document("data/sotu/0002.txt"), Document("data/sotu/0003.txt")])
-    dtm = DocumentTermMatrix(corpus)
+If you have a `NGramDocument`, you can determine whether an `NGramDocument`
+contains unigrams, bigrams or trigrams using the `ngram_complexity()` function:
+
+    ngram_complexity(ngd)
+
+This information is not available for other types of `Document` objects
+because it is possible to produce any level of complexity when constructing
+n-grams from raw text or tokens.
+
+# Document Metadata
+
+In addition to methods for manipulating the representation of the text of a
+document, every document object also stores basic metadata about itself,
+including the following pieces of information:
+
+* `language()`: What language is the document in? Defaults to `EnglishLanguage`, a Language type defined by the Languages package.
+* `name()`: What is the name of the document? Defaults to `"Unnamed Document"`.
+* `author()`: Who wrote the document? Defaults to `"Unknown Author"`.
+* `timestamp()`: When was the document written? Defaults to `"Unknown Time"`.
+
+Try these functions out on a `StringDocument` to see how the defaults work
+in practice:
+
+    language(sd)
+    name(sd)
+    author(sd)
+    timestamp(sd)
+
+If you need reset these fields, you can use the mutating versions of the same
+functions:
+
+    language!(sd, TextAnalysis.Languages.SpanishLanguage)
+    name!(sd, "El Cid")
+    author!(sd, "Desconocido")
+    timestamp!(sd, "Desconocido")
+
+# Preprocessing Documents
+
+Having easy access to the text of a document and its metadata is very
+important, but most text analysis tasks require some amount of preprocessing.
+
+At a minimum, your text source may contain corrupt characters. You can remove
+these using the `remove_corrupt_utf8!()` function:
+
+    remove_corrupt_utf8!(sd)
+
+Alternatively, you may want to edit the text to remove items that are hard
+to process automatically. For example, our sample text sentence taken from Hamlet
+has three periods that we might like to discard. We can remove this kind of
+punctuation using the `remove_punctuation!()` function:
+
+    remove_punctuation!(sd)
+
+Like punctuation, numbers and case distinctions are often easier removed than
+dealt with. To remove numbers or case distinctions, use the
+`remove_numbers!()` and `remove_case!()` functions:
+
+    remove_numbers!(sd)
+    remove_case!(sd)
+
+At times you'll want to remove specific words from a document like a person's
+name. To do that, use the `remove_words!()` function:
+
+    sd = StringDocument("Lear is mad")
+    remove_words!(sd, ["Lear"])
+
+At other times, you'll want to remove whole classes of words. To make this
+easier, we can use several classes of basic words defined by the Languages.jl
+package:
+
+* _Articles_: "a", "an", "the"
+* _Indefinite Articles_: "a", "an"
+* _Definite Articles_: "the"
+* _Prepositions_: "across", "around", "before", ...
+* _Pronouns_: "I", "you", "he", "she", ...
+* _Stop Words_: "all", "almost", "alone", ...
+
+These special classes can all be removed using specially-named functions:
+
+* `remove_articles!()`
+* `remove_indefinite_articles!()`
+* `remove_definite_articles!()`
+* `remove_prepositions!()`
+* `remove_pronouns!()`
+* `remove_stop_words!()`
+
+In addition to removing words, it is also common to take words that are
+closely related like "dog" and "dogs" and stem them in order to produce a
+smaller set of words for analysis. We can do this using the `stem!()`
+function:
+
+    stem!(sd)
+
+# Creating a Corpus
+
+Working with isolated documents gets boring quickly. We typically want to
+work with a collection of documents. We represent collections of documents
+using the Corpus type:
+
+    crps = Corpus({StringDocument("Document 1"),
+                   StringDocument("Document 2")})
+
+# Standardizing a Corpus
+
+A `Corpus` may contain many different types of `Document` objects:
+
+    crps = Corpus({StringDocument("Document 1"),
+                   TokenDocument("Document 2"),
+                   NGramDocument("Document 3")})
+
+# Processing a Corpus
+
+We can apply the same sort of preprocessing steps that are defined for
+individual documents to an entire corpus at once:
+
+    remove_punctuation!(crps)
+
+# Corpus Statistics
+
+Often we wish to think broadly about properties of an entire corpus at once.
+In particular, we want to work with two constructs:
+
+* _Lexicon_: The lexicon of a corpus consists of all the terms that occur in any document in the corpus. The lexical frequency of a term tells us how often a term occurs across all of the documents. Often the most interesting words in a document are those words whose frequency within a document is higher than their frequency in the corpus as a whole.
+* _Inverse Index_: If we are interested in a specific term, we often want to know which documents in a corpus contain that term. The inverse index tells us this and therefore provides a simplistic sort of search algorithm.
+
+Because computations involving the lexicon can take a long time, a
+`Corpus`'s default lexicon is blank:
+
+    lexicon(crps)
+
+In order to work with the lexicon, you have to update it and then access it:
+
+    update_lexicon!(crps)
+    lexicon(crps)
+
+But once this work is done, you can easier address lots of interesting
+questions about a corpus:
+
+    lexical_frequency(crps, "Summer")
+
+Like the lexicon, the inverse index for a corpus is blank by default:
+
+    inverse_index(crps)
+
+Again, you need to update it before you can work with it:
+
+    update_inverse_index!(crps)
+    inverse_index(crps)
+
+But once you've updated the inverse index, you can easily search the entire
+corpus:
+
+    crps["B"]
+
+# Creating a DataFrame from a Corpus
+
+Sometimes we want to apply non-text specific data analysis operations to a
+corpus. The easiest way to do this is to transform a `Corpus` object into
+a `DataFrame`:
+
+    DataFrame(Corpus)
+
+# Creating a Document Term Matrix
+
+    m = DocumentTermMatrix(crps)
+    dtm(m)
+    dtm(m, :dense)
+
+# Creating Individual Rows of a Document Term Matrix
+
+    dtv(crps[1], lexicon(crps))
+
+# The Hash Trick
+
+    hash_dtm(crps)
+    hash_dtv(crps[1])
+
+# TF-IDF
+
+    m = DocumentTermMatrix(crps)
+    tf_idf!(m)
+
+# LSA: Latent Semantic Indexing
+
+    lsa(crps)
+
+# LDA: Latent Dirichlet Analysis
+
+    lda(crps)
+
+# Extended Usage Example
+
+To show you how text analysis might work in practice, we're going to work with
+a text corpus composed of political speeches from American presidents given
+as part of the State of the Union Address tradition.
+
+    TODO: FILL IN
