@@ -55,7 +55,6 @@ end
 
 documents(c::Corpus) = c.documents
 length(crps::Corpus) = length(crps.documents)
-lexicon_size(crps::Corpus) = length(keys(crps.lexicon))
 
 ##############################################################################
 #
@@ -129,7 +128,7 @@ function insert(crps::Corpus, index::Int, d::AbstractDocument)
 end
 
 function del(crps::Corpus, index::Int)
-	del(crps.documents, index
+	del(crps.documents, index)
 end
 
 ##############################################################################
@@ -194,8 +193,10 @@ function update_lexicon!(crps::Corpus)
 	end
 end
 
+lexicon_size(crps::Corpus) = length(keys(crps.lexicon))
+
 function lexical_frequency(crps::Corpus, term::String)
-	return crps.lexicon[term] / crps.total_terms
+	return get(crps.lexicon, term, 0) / crps.total_terms
 end
 
 ##############################################################################
@@ -222,6 +223,8 @@ function update_inverse_index!(crps::Corpus)
 		end
 	end
 end
+
+index_size(crps::Corpus) = length(keys(crps.inverse_index))
 
 ##############################################################################
 #

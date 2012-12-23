@@ -44,13 +44,15 @@ function summary(crps::Corpus)
 	n_f = sum(map(d -> typeof(d) == FileDocument, crps.documents))
 	n_t = sum(map(d -> typeof(d) == TokenDocument, crps.documents))
 	n_ng = sum(map(d -> typeof(d) == NGramDocument, crps.documents))
-	lexicon_size = 0
-	print("A Corpus with $n documents:\n")
-	print(" * $n_s StringDocument's\n")
-	print(" * $n_f FileDocument's\n")
-	print(" * $n_t TokenDocument's\n")
-	print(" * $n_ng NGramDocument's\n\n")
-	print("Corpus's lexicon contains $(lexicon_size) tokens\n\n")
+	o = ""
+	o *= "A Corpus with $n documents:\n"
+	o *= " * $n_s StringDocument's\n"
+	o *= " * $n_f FileDocument's\n"
+	o *= " * $n_t TokenDocument's\n"
+	o *= " * $n_ng NGramDocument's\n\n"
+	o *= "Corpus's lexicon contains $(lexicon_size(crps)) tokens\n"
+	o *= "Corpus's index contains $(index_size(crps)) tokens"
+	return o
 end
 
 ##############################################################################

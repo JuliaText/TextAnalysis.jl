@@ -237,6 +237,16 @@ These special classes can all be removed using specially-named functions:
 * `remove_pronouns!()`
 * `remove_stop_words!()`
 
+These functions use words lists, so they are capable of working for many
+different languages without change:
+
+    remove_articles!(sd)
+    remove_indefinite_articles!(sd)
+    remove_definite_articles!(sd)
+    remove_prepositions!(sd)
+    remove_pronouns!(sd)
+    remove_stop_words!(sd)
+
 In addition to removing words, it is also common to take words that are
 closely related like "dog" and "dogs" and stem them in order to produce a
 smaller set of words for analysis. We can do this using the `stem!()`
@@ -266,6 +276,8 @@ A `Corpus` may contain many different types of `Document` objects:
 We can apply the same sort of preprocessing steps that are defined for
 individual documents to an entire corpus at once:
 
+    crps = Corpus({StringDocument("Document 1"),
+                   StringDocument("Document 2")})
     remove_punctuation!(crps)
 
 # Corpus Statistics
@@ -290,6 +302,7 @@ But once this work is done, you can easier address lots of interesting
 questions about a corpus:
 
     lexical_frequency(crps, "Summer")
+    lexical_frequency(crps, "Document")
 
 Like the lexicon, the inverse index for a corpus is blank by default:
 
@@ -303,7 +316,9 @@ Again, you need to update it before you can work with it:
 But once you've updated the inverse index, you can easily search the entire
 corpus:
 
-    crps["B"]
+    crps["Document"]
+    crps["1"]
+    crps["Summer"]
 
 # Creating a DataFrame from a Corpus
 
@@ -327,6 +342,7 @@ a `DataFrame`:
 
     hash_dtm(crps)
     hash_dtv(crps[1])
+    hash_dtv(crps[1], TextHashFunction(10))
 
 # TF-IDF
 

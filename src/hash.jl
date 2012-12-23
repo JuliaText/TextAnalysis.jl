@@ -23,6 +23,8 @@ type TextHashFunction
 	cardinality::Int
 end
 
+TextHashFunction(cardinality::Int) = TextHashFunction(hash, cardinality)
+
 TextHashFunction() = TextHashFunction(hash, 100)
 
 cardinality(h::TextHashFunction) = h.cardinality

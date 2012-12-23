@@ -68,6 +68,12 @@ remove_numbers!(d::AbstractDocument) = error("Not yet implemented")
 #
 ##############################################################################
 
+function remove_words!{T <: String}(sd::StringDocument, words::Vector{T})
+	for word in words
+		text!(sd, replace(text(sd), word, " "))
+	end
+end
+
 function remove_words!{T <: String}(sd::AbstractDocument, words::Vector{T})
 	error("Not yet implemented")
 end
