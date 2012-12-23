@@ -1,4 +1,4 @@
-function pronouns(language)
+function pronouns{T <: String}(language::T)
   filename = strcat("data/pronouns/", language, ".txt")
   f = open(filename, "r")
   words = map(x -> chomp(x), readlines(f))
@@ -6,7 +6,7 @@ function pronouns(language)
   convert(Array{String,1}, words)
 end
 
-function articles(language)
+function articles{T <: String}(language::T)
   filename = strcat("data/articles/", language, ".txt")
   f = open(filename, "r")
   words = map(x -> chomp(x), readlines(f))
@@ -14,7 +14,7 @@ function articles(language)
   convert(Array{String,1}, words)
 end
 
-function prepositions(language)
+function prepositions{T <: String}(language::T)
   filename = strcat("data/prepositions/", language, ".txt")
   f = open(filename, "r")
   words = map(x -> chomp(x), readlines(f))
@@ -22,7 +22,7 @@ function prepositions(language)
   convert(Array{String,1}, words)
 end
 
-function stopwords(language)
+function stopwords{T <: String}(language::T)
   filename = strcat("data/stopwords/", language, ".txt")
   f = open(filename, "r")
   words = map(x -> chomp(x), readlines(f))

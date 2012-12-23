@@ -38,6 +38,9 @@ Here, we create a document-term matrix for all of the State of the Union (SOTU) 
     
     tf_idf_similarity_matrix = cor(tf_idf_dtm')
     csvwrite("tfidf_sim.csv", tf_idf_similarity_matrix)
+    
+    (a, b, c) = svd(convert(Array{Int,2}, dtm.counts))
+    # Reduce to 1 dimensional representation of each document.
 
 ## LDA Analysis of a Simulated Corpus
 

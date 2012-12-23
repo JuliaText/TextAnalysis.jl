@@ -1,14 +1,14 @@
 type NGramDocument
-  n::Int
+  n::Int64
   tokens::Dict
   language::String
 end
 
-function NGramDocument(n::Int, tokens::Dict)
+function NGramDocument(n::Int64, tokens::Dict)
   NGramDocument(n, tokens, "english")
 end
 
-function NGramDocument(n::Int)
+function NGramDocument(n::Int64)
   NGramDocument(n, Dict(), "english")
 end
 
@@ -16,7 +16,7 @@ function NGramDocument()
   NGramDocument(1, Dict(), "english")
 end
 
-function NGramDocument(n::Int, document::Document)
+function NGramDocument(n::Int64, document::Document)
   n_gram_document = NGramDocument(n)
   n_gram_document.tokens = tokenize(document.text, n)
   n_gram_document
@@ -90,5 +90,9 @@ function print(n_gram_document::NGramDocument)
 end
 
 function show(n_gram_document::NGramDocument)
+  print(n_gram_document)
+end
+
+function show_repl(n_gram_document::NGramDocument)
   print(n_gram_document)
 end

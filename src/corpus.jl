@@ -1,15 +1,15 @@
+GenericDocument = Union(Document,NGramDocument)
+
 type Corpus
-  documents::Array{Document,1}
+  documents::Array{GenericDocument,1}
 end
 
 function Corpus()
-  documents = Array(Document,1)
-  del(documents, 1)
-  Corpus(documents)
+  Corpus(Array(GenericDocument,0))
 end
 
 function add_document(corpus::Corpus, document::Document)
-  corpus.documents = append(corpus.documents, [document])
+  corpus.documents = push(corpus.documents, document)
   corpus
 end
 
@@ -17,7 +17,7 @@ function remove_document(corpus::Corpus, document::Document)
   del(corpus.documents, find(corpus.documents == document)[1])
 end
 
-function Corpus{S<:String}(filenames::Array{S,1})
+function Corpus{T <: String}(filenames::Array{T,1})
   corpus = Corpus()
   for filename in filenames
     add_document(corpus, Document(filename))
@@ -88,6 +88,10 @@ function print(corpus::Corpus)
 end
 
 function show(corpus::Corpus)
+  print(corpus)
+end
+
+function show_repl(corpus::Corpus)
   print(corpus)
 end
 

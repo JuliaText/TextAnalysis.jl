@@ -10,7 +10,7 @@ function Document()
   Document("", "", "", "", "english")
 end
 
-function Document(filename::String)
+function Document{T <: String}(filename::T)
   document = Document()
   document.name = filename
   f = open(filename, "r")
@@ -26,13 +26,7 @@ function remove_numbers(document::Document)
 end
 
 function remove_punctuation(document::Document)
-  document.text = replace(document.text, ",", "")
-  document.text = replace(document.text, ";", "")
-  document.text = replace(document.text, ":", "")
-  document.text = replace(document.text, ".", "")
-  document.text = replace(document.text, "!", "")
-  document.text = replace(document.text, "?", "")
-  document.text = replace(document.text, r"\s+", " ")
+  document.text = replace(document.text, r"[,;:.!?()\s]+", "")
 end
 
 function remove_case(document::Document)
@@ -76,5 +70,9 @@ function print(document::Document)
 end
 
 function show(document::Document)
+  print(document)
+end
+
+function show_repl(document::Document)
   print(document)
 end

@@ -1,4 +1,6 @@
-load("extras/Rmath.jl")
+#load("extras/Rmath.jl")
+
+#load("extras/sparse.jl")
 
 # Language-specific features
 load("src/language.jl")
@@ -8,7 +10,7 @@ load("src/tokenize.jl")
 load("src/document.jl")
 load("src/n_gram_document.jl")
 load("src/corpus.jl")
-load("src/n_gram_corpus.jl")
+#load("src/n_gram_corpus.jl")
 load("src/document_term_matrix.jl")
 
 # LDA support

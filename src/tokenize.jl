@@ -1,10 +1,10 @@
 # Split string into tokens on whitespace.
 # Construct n-grams uses single space concatenation.
-function tokenize(s::String, n::Int)
+function tokenize{T <: String}(s::T, n::Int)
   words = split(s, r"\s+")
-  
+
   tokens = Dict()
-  
+
   for m in 1:n
     for index in 1:(length(words) - m + 1)
       token = join(words[index:(index + m - 1)], " ")
@@ -15,6 +15,6 @@ function tokenize(s::String, n::Int)
       end
     end
   end
-  
+
   tokens
 end

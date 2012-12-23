@@ -20,7 +20,7 @@ function NGramCorpus(documents::Array{Document,1})
 end
 
 function add_document(n_gram_corpus::NGramCorpus, n_gram_document::NGramDocument)
-  n_gram_corpus.n_gram_documents = append(n_gram_corpus.n_gram_documents, [n_gram_document])
+  n_gram_corpus.n_gram_documents = push(n_gram_corpus.n_gram_documents, n_gram_document)
   n_gram_corpus
 end
 
