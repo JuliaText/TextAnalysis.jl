@@ -1,7 +1,7 @@
 require("TextAnalysis")
 using TextAnalysis
 
-sample_file = file_path(Pkg.package_directory("TextAnalysis"), "test", "data", "poem.txt")
+sample_file = joinpath(Pkg.package_directory("TextAnalysis"), "test", "data", "poem.txt")
 
 fd = FileDocument(sample_file)
 sd = StringDocument(text(fd))
