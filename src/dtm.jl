@@ -34,9 +34,9 @@ function DocumentTermMatrix(crps::Corpus)
 			j = get(column_indices, ngram, 0)
 			v = ngs[ngram]
 			if j != 0
-				push(rows, i)
-				push(columns, j)
-				push(values, v)
+				push!(rows, i)
+				push!(columns, j)
+				push!(values, v)
 			end
 		end
 	end
@@ -92,8 +92,8 @@ function dtm_entries(d::AbstractDocument, lex::Dict{UTF8String, Int})
 	end
 	for ngram in keys(ngs)
 		if has(column_indices, ngram)
-			push(indices, column_indices[ngram])
-			push(values, ngs[ngram])
+			push!(indices, column_indices[ngram])
+			push!(values, ngs[ngram])
 		end
 	end
 	return (indices, values)

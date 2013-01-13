@@ -226,7 +226,7 @@ end
 #
 ##############################################################################
 
-length(d::Union(StringDocument, FileDocument, TokenDocument)) = strlen(text(d))
+length(d::Union(StringDocument, FileDocument, TokenDocument)) = length(text(d))
 length(d::NGramDocument) = error("NGramDocument's do not have a well-defined length")
 
 ##############################################################################

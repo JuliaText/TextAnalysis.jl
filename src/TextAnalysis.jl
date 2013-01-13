@@ -1,21 +1,16 @@
-require("pkg")
-require("FileFind")
-require("Languages")
-require("DataFrames")
-
+using FileFind
 using DataFrames
 
 module TextAnalysis
-	using Base
 	using Languages
 	using DataFrames
 
-	import Base.print, Base.show, Base.repl_show, Base.summary
+	import Base.show, Base.repl_show, Base.summary
 	import Base.ref, Base.assign
 	import Base.start, Base.next, Base.done
 	import Base.length
 	import Base.convert
-	import Base.push, Base.pop, Base.enqueue, Base.shift, Base.insert, Base.del
+	import Base.push!, Base.pop!, Base.unshift!, Base.shift!, Base.insert!, Base.delete!
 	import DataFrames.DataFrame
 
 	export AbstractDocument, Document
@@ -47,16 +42,16 @@ module TextAnalysis
 	export standardize!
 	export tf_idf, lsa, lda
 
-	require("TextAnalysis/src/tokenizer.jl")
-	require("TextAnalysis/src/ngramizer.jl")
-	require("TextAnalysis/src/document.jl")
-	require("TextAnalysis/src/hash.jl")
-	require("TextAnalysis/src/corpus.jl")
-	require("TextAnalysis/src/metadata.jl")
-	require("TextAnalysis/src/preprocessing.jl")
-	require("TextAnalysis/src/dtm.jl")
-	require("TextAnalysis/src/tf_idf.jl")
-	require("TextAnalysis/src/lsa.jl")
-	require("TextAnalysis/src/lda.jl")
-	require("TextAnalysis/src/show.jl")
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "tokenizer.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "ngramizer.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "document.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "hash.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "corpus.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "metadata.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "preprocessing.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "dtm.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "tf_idf.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "lsa.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "lda.jl"))
+	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "show.jl"))
 end

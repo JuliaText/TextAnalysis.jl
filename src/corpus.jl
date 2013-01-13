@@ -39,10 +39,10 @@ function DirectoryCorpus(directory_name::String)
 	function include_document(filename::String)
 		global docs
 		if isfile(filename) && !ismatch(r"^\.", filename)
-			push(docs, FileDocument(filename))
+			push!(docs, FileDocument(filename))
 		end
 	end
-	load("FileFind")
+	require("FileFind")
 	FileFind.find(directory_name, include_document)
 	return Corpus(docs)
 end
@@ -107,28 +107,28 @@ end
 #
 ##############################################################################
 
-function push(crps::Corpus, d::AbstractDocument)
-	push(crps.documents, d)
+function push!(crps::Corpus, d::AbstractDocument)
+	push!(crps.documents, d)
 end
 
-function pop(crps::Corpus)
-	pop(crps.documents)
+function pop!(crps::Corpus)
+	pop!(crps.documents)
 end
 
-function enqueue(crps::Corpus, d::AbstractDocument)
-	enqueue(crps.documents, d)
+function unshift!(crps::Corpus, d::AbstractDocument)
+	unshift!(crps.documents, d)
 end
 
-function shift(crps::Corpus)
-	shift(crps.documents)
+function shift!(crps::Corpus)
+	shift!(crps.documents)
 end
 
-function insert(crps::Corpus, index::Int, d::AbstractDocument)
-	insert(crps.documents, index, d)
+function insert!(crps::Corpus, index::Int, d::AbstractDocument)
+	insert!(crps.documents, index, d)
 end
 
-function del(crps::Corpus, index::Int)
-	del(crps.documents, index)
+function delete!(crps::Corpus, index::Int)
+	delete!(crps.documents, index)
 end
 
 ##############################################################################
@@ -216,7 +216,7 @@ function update_inverse_index!(crps::Corpus)
 		ngs = ngrams(doc)
 		for ngram in keys(ngs)
 			if has(crps.inverse_index, ngram)
-				push(crps.inverse_index[ngram], i)
+				push!(crps.inverse_index[ngram], i)
 			else
 				crps.inverse_index[ngram] = [i]
 			end

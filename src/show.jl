@@ -4,17 +4,8 @@
 #
 ##############################################################################
 
-print(io::IOStream, d::AbstractDocument) = println(io, "A $(typeof(d))")
-print(io::IOStream, crps::Corpus) = println(io, "A Corpus")
-
-print(d::AbstractDocument) = print(OUTPUT_STREAM, d)
-print(crps::Corpus) = print(OUTPUT_STREAM, crps)
-
-show(io::IOStream, d::AbstractDocument) = println(io, "A $(typeof(d))")
-show(io::IOStream, crps::Corpus) = println(io, "A Corpus")
-
-show(d::AbstractDocument) = show(OUTPUT_STREAM, d)
-show(crps::Corpus) = show(OUTPUT_STREAM, crps)
+show(io::Any, d::AbstractDocument) = print(io, "A $(typeof(d))")
+show(io::Any, crps::Corpus) = print(io, "A Corpus")
 
 ##############################################################################
 #
@@ -61,6 +52,6 @@ end
 #
 ##############################################################################
 
-repl_show(io::IO, d::AbstractDocument) = print(io, summary(d))
-repl_show(io::IO, crps::Corpus) = print(io, summary(crps))
-repl_show(io::IO, dtm::DocumentTermMatrix) = print(io, "A DocumentTermMatrix")
+repl_show(io::Any, d::AbstractDocument) = show(io, summary(d))
+repl_show(io::Any, crps::Corpus) = show(io, summary(crps))
+repl_show(io::Any, dtm::DocumentTermMatrix) = show(io, "A DocumentTermMatrix")

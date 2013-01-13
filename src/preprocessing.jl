@@ -6,7 +6,7 @@
 
 function remove_corrupt_utf8!(d::Union(StringDocument, FileDocument))
 	t = text(d)
-	r = Array(Char, strlen(t))
+	r = Array(Char, length(t))
 	i = 0
 	for chr in t
 		i += 1
