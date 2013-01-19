@@ -4,8 +4,8 @@
 #
 ##############################################################################
 
-show(io::Any, d::AbstractDocument) = print(io, "A $(typeof(d))")
-show(io::Any, crps::Corpus) = print(io, "A Corpus")
+show(io::IO, d::AbstractDocument) = print(io, "A $(typeof(d))")
+show(io::IO, crps::Corpus) = print(io, "A Corpus")
 
 ##############################################################################
 #
@@ -52,6 +52,6 @@ end
 #
 ##############################################################################
 
-repl_show(io::Any, d::AbstractDocument) = show(io, summary(d))
-repl_show(io::Any, crps::Corpus) = show(io, summary(crps))
-repl_show(io::Any, dtm::DocumentTermMatrix) = show(io, "A DocumentTermMatrix")
+repl_show(io::IO, d::AbstractDocument) = print(io, summary(d))
+repl_show(io::IO, crps::Corpus) = print(io, summary(crps))
+repl_show(io::IO, dtm::DocumentTermMatrix) = print(io, "A DocumentTermMatrix")

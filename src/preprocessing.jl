@@ -139,5 +139,5 @@ function remove_pronouns!(o::Union(GenericDocument, Corpus))
 end
 
 function remove_stop_words!(o::Union(GenericDocument, Corpus))
-	remove_words!(o, stop_words(language(o)))
+	remove_words!(o, stopwords(language(o)))
 end

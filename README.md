@@ -58,7 +58,6 @@ in order to present all of the available methods more quickly.
 
 The TextAnalysis package can be installed using Julia's package manager:
 
-    require("pkg")
     Pkg.add("TextAnalysis")
 
 # Getting Started
@@ -66,7 +65,6 @@ The TextAnalysis package can be installed using Julia's package manager:
 In all of the examples that follow, we'll assume that you have the
 TextAnalysis package fully loaded:
 
-    require("TextAnalysis")
     using TextAnalysis
 
 # Creating Documents

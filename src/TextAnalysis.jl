@@ -42,16 +42,16 @@ module TextAnalysis
 	export standardize!
 	export tf_idf, lsa, lda
 
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "tokenizer.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "ngramizer.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "document.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "hash.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "corpus.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "metadata.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "preprocessing.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "dtm.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "tf_idf.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "lsa.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "lda.jl"))
-	include(joinpath(julia_pkgdir(), "TextAnalysis", "src", "show.jl"))
+	include("tokenizer.jl")
+	include("ngramizer.jl")
+	include("document.jl")
+	include("hash.jl")
+	include("corpus.jl")
+	include("metadata.jl")
+	include("preprocessing.jl")
+	include("dtm.jl")
+	include("tf_idf.jl")
+	include("lsa.jl")
+	include("lda.jl")
+	include("show.jl")
 end

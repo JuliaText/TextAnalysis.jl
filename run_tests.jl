@@ -2,12 +2,9 @@
 # Correctness Tests
 #
 
-require("pkg")
-
-require("TextAnalysis")
 using TextAnalysis
 
-require("extras/test.jl")
+require("test.jl")
 
 my_tests = ["test/document.jl",
             "test/metadata.jl",
