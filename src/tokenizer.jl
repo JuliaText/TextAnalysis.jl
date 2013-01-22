@@ -5,6 +5,5 @@
 ##############################################################################
 
 function tokenize{S <: Language}(::Type{S}, s::String)
-  words = convert(Array{UTF8String, 1}, split(s, r"\s+"))
-  return words
+    return convert(Array{UTF8String, 1}, split(s, r"\s+"))
 end

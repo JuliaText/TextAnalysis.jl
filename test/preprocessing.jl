@@ -11,13 +11,43 @@ remove_numbers!(sd)
 
 remove_case!(sd)
 
-# remove_whitespace!(sd)
-# remove_words!(sd)
-# remove_stop_words!(sd)
-# remove_articles!(sd)
-# remove_definite_articles!(sd)
-# remove_indefinite_articles!(sd)
-# remove_prepositions!(sd)
-# remove_pronouns!(sd)
+# Need to only remove words at word boundaries
+
+doc = Document("this is sample text")
+remove_words!(doc, ["sample"])
+@assert isequal(doc.text, "this is   text")
+
+doc = Document("this is sample text")
+remove_articles!(doc)
+@assert isequal(doc.text, "this is sample text")
+
+doc = Document("this is sample text")
+remove_definite_articles!(doc)
+@assert isequal(doc.text, "this is sample text")
+
+doc = Document("this is sample text")
+remove_indefinite_articles!(doc)
+@assert isequal(doc.text, "this is sample text")
+
+doc = Document("this is sample text")
+remove_prepositions!(doc)
+@assert isequal(doc.text, "this is sample text")
+
+doc = Document("this is sample text")
+remove_pronouns!(doc)
+@assert isequal(doc.text, "this is sample text")
+
+doc = Document("this is sample text")
+remove_stop_words!(doc)
+@assert isequal(doc.text, "    sample text")
+
+doc = Document("this is sample text")
+remove_whitespace!(doc)
+@assert isequal(doc.text, "this is sample text")
+
 # stem!(sd)
 # tag_pos!(sd)
+
+# Do preprocessing on TokenDocument, NGramDocument, Corpus
+d = NGramDocument("this is sample text")
+remove_words!(d, ["sample"])

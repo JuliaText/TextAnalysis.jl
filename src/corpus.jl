@@ -5,25 +5,25 @@
 ##############################################################################
 
 type Corpus
-	documents::Vector{GenericDocument}
-	total_terms::Int
-	lexicon::Dict{UTF8String, Int}
-	inverse_index::Dict{UTF8String, Vector{Int}}
-	h::TextHashFunction
+    documents::Vector{GenericDocument}
+    total_terms::Int
+    lexicon::Dict{UTF8String, Int}
+    inverse_index::Dict{UTF8String, Vector{Int}}
+    h::TextHashFunction
 end
 function Corpus(docs::Vector{GenericDocument})
-	Corpus(docs,
-		   0,
-		   Dict{UTF8String, Int}(),
-		   Dict{UTF8String, Vector{Int}}(),
-		   TextHashFunction())
+    Corpus(docs,
+           0,
+           Dict{UTF8String, Int}(),
+           Dict{UTF8String, Vector{Int}}(),
+           TextHashFunction())
 end
 function Corpus(docs::Vector{Any})
-	Corpus(convert(Array{GenericDocument,1}, docs),
-		   0,
-		   Dict{UTF8String, Int}(),
-		   Dict{UTF8String, Vector{Int}}(),
-		   TextHashFunction())
+    Corpus(convert(Array{GenericDocument,1}, docs),
+           0,
+           Dict{UTF8String, Int}(),
+           Dict{UTF8String, Vector{Int}}(),
+           TextHashFunction())
 end
 
 ##############################################################################
@@ -32,19 +32,34 @@ end
 #
 ##############################################################################
 
-function DirectoryCorpus(directory_name::String)
-	# Recursive descent of directory
-	# Add all non-hidden files to Corpus
-	docs = {}
-	function include_document(filename::String)
-		global docs
-		if isfile(filename) && !ismatch(r"^\.", filename)
-			push!(docs, FileDocument(filename))
-		end
-	end
-	require("FileFind")
-	FileFind.find(directory_name, include_document)
-	return Corpus(docs)
+function DirectoryCorpus(dirname::String)
+    # Recursive descent of directory
+    # Add all non-hidden files to Corpus
+
+    docs = {}
+
+    function add_files(dirname::String)
+        if !isdir(dirname)
+            error("DirectoryCorpus() can only be called on directories")
+        end
+
+        starting_dir = pwd()
+
+        cd(dirname)
+        for filename in readdir(".")
+            if isfile(filename) && !ismatch(r"^\.", filename)
+                push!(docs, FileDocument(abspath(filename)))
+            end
+            if isdir(filename) && !islink(filename)
+                add_files(filename, f)
+            end
+        end
+        cd(starting_dir)
+    end
+
+    add_files(dirname)
+
+    return Corpus(docs)
 end
 
 ##############################################################################
@@ -63,24 +78,24 @@ length(crps::Corpus) = length(crps.documents)
 ##############################################################################
 
 function DataFrame(crps::Corpus)
-	df = DataFrame()
-	n = length(crps)
-	df["Language"] = DataVec(UTF8String, n)
-	df["Name"] = DataVec(UTF8String, n)
-	df["Author"] = DataVec(UTF8String, n)
-	df["TimeStamp"] = DataVec(UTF8String, n)
-	df["Length"] = DataVec(Int, n)
-	df["Text"] = DataVec(UTF8String, n)
-	for i in 1:n
-		d = crps[i]
-		df[i, "Language"] = string(language(d))
-		df[i, "Name"] = name(d)
-		df[i, "Author"] = author(d)
-		df[i, "TimeStamp"] = timestamp(d)
-		df[i, "Length"] = length(d)
-		df[i, "Text"] = text(d)
-	end
-	return df
+    df = DataFrame()
+    n = length(crps)
+    df["Language"] = DataArray(UTF8String, n)
+    df["Name"] = DataArray(UTF8String, n)
+    df["Author"] = DataArray(UTF8String, n)
+    df["TimeStamp"] = DataArray(UTF8String, n)
+    df["Length"] = DataArray(Int, n)
+    df["Text"] = DataArray(UTF8String, n)
+    for i in 1:n
+        d = crps[i]
+        df[i, "Language"] = string(language(d))
+        df[i, "Name"] = name(d)
+        df[i, "Author"] = author(d)
+        df[i, "TimeStamp"] = timestamp(d)
+        df[i, "Length"] = length(d)
+        df[i, "Text"] = text(d)
+    end
+    return df
 end
 
 ##############################################################################
@@ -89,17 +104,9 @@ end
 #
 ##############################################################################
 
-function start(crps::Corpus)
-	return 1
-end
-
-function next(crps::Corpus, ind::Int)
-	(crps.documents[ind], ind + 1)
-end
-
-function done(crps::Corpus, ind::Int)
-	return ind > length(crps.documents)
-end
+start(crps::Corpus) = 1
+next(crps::Corpus, ind::Int) = (crps.documents[ind], ind + 1)
+done(crps::Corpus, ind::Int) = ind > length(crps.documents)
 
 ##############################################################################
 #
@@ -107,29 +114,16 @@ end
 #
 ##############################################################################
 
-function push!(crps::Corpus, d::AbstractDocument)
-	push!(crps.documents, d)
-end
+push!(crps::Corpus, d::AbstractDocument) = push!(crps.documents, d)
+pop!(crps::Corpus) = pop!(crps.documents)
 
-function pop!(crps::Corpus)
-	pop!(crps.documents)
-end
-
-function unshift!(crps::Corpus, d::AbstractDocument)
-	unshift!(crps.documents, d)
-end
-
-function shift!(crps::Corpus)
-	shift!(crps.documents)
-end
+unshift!(crps::Corpus, d::AbstractDocument) = unshift!(crps.documents, d)
+shift!(crps::Corpus) = shift!(crps.documents)
 
 function insert!(crps::Corpus, index::Int, d::AbstractDocument)
-	insert!(crps.documents, index, d)
+    insert!(crps.documents, index, d)
 end
-
-function delete!(crps::Corpus, index::Int)
-	delete!(crps.documents, index)
-end
+delete!(crps::Corpus, index::Integer) = delete!(crps.documents, index)
 
 ##############################################################################
 #
@@ -140,21 +134,10 @@ end
 #
 ##############################################################################
 
-function ref(crps::Corpus, ind::Int)
-	return crps.documents[ind]
-end
-
-function ref(crps::Corpus, inds::Vector{Int})
-	return crps.documents[inds]
-end
-
-function ref(crps::Corpus, r::Range1)
-	return crps.documents[r]
-end
-
-function ref(crps::Corpus, term::String)
-	return get(crps.inverse_index, term, Int[])
-end
+ref(crps::Corpus, ind::Real) = crps.documents[ind]
+ref{T <: Real}(crps::Corpus, inds::Vector{T}) = crps.documents[inds]
+ref(crps::Corpus, r::Ranges) = crps.documents[r]
+ref(crps::Corpus, term::String) = get(crps.inverse_index, term, Int[])
 
 ##############################################################################
 #
@@ -162,9 +145,9 @@ end
 #
 ##############################################################################
 
-function assign(crps::Corpus, d::AbstractDocument, ind::Int)
-	crps.documents[ind] = d
-	return d
+function assign(crps::Corpus, d::AbstractDocument, ind::Real)
+    crps.documents[ind] = d
+    return d
 end
 
 ##############################################################################
@@ -177,26 +160,26 @@ end
 
 lexicon(crps::Corpus) = crps.lexicon
 
+function update_lexicon!(crps::Corpus, doc::AbstractDocument)
+    ngs = ngrams(doc)
+    for (ngram, counts) in ngs
+        crps.total_terms += counts
+        crps.lexicon[ngram] = get(crps.lexicon, ngram, 0) + counts
+    end
+end
+
 function update_lexicon!(crps::Corpus)
-	crps.total_terms = 0
-	crps.lexicon = Dict{UTF8String,Int}()
-	for doc in crps
-		ngs = ngrams(doc)
-		for ngram in keys(ngs)
-			crps.total_terms += ngs[ngram]
-			if has(crps.lexicon, ngram)
-				crps.lexicon[ngram] += ngs[ngram]
-			else
-				crps.lexicon[ngram] = ngs[ngram]
-			end
-		end
-	end
+    crps.total_terms = 0
+    crps.lexicon = Dict{UTF8String,Int}()
+    for doc in crps
+        update_lexicon!(crps, doc)
+    end
 end
 
 lexicon_size(crps::Corpus) = length(keys(crps.lexicon))
 
 function lexical_frequency(crps::Corpus, term::String)
-	return get(crps.lexicon, term, 0) / crps.total_terms
+    return get(crps.lexicon, term, 0) / crps.total_terms
 end
 
 ##############################################################################
@@ -210,18 +193,18 @@ end
 inverse_index(crps::Corpus) = crps.inverse_index
 
 function update_inverse_index!(crps::Corpus)
-	crps.inverse_index = Dict{UTF8String, Array{Int, 1}}()
-	for i in 1:length(crps)
-		doc = crps[i]
-		ngs = ngrams(doc)
-		for ngram in keys(ngs)
-			if has(crps.inverse_index, ngram)
-				push!(crps.inverse_index[ngram], i)
-			else
-				crps.inverse_index[ngram] = [i]
-			end
-		end
-	end
+    crps.inverse_index = Dict{UTF8String, Array{Int, 1}}()
+    for i in 1:length(crps)
+        doc = crps[i]
+        ngs = ngrams(doc)
+        for ngram in keys(ngs)
+            if has(crps.inverse_index, ngram)
+                push!(crps.inverse_index[ngram], i)
+            else
+                crps.inverse_index[ngram] = [i]
+            end
+        end
+    end
 end
 
 index_size(crps::Corpus) = length(keys(crps.inverse_index))
@@ -233,11 +216,10 @@ index_size(crps::Corpus) = length(keys(crps.inverse_index))
 ##############################################################################
 
 function hash_function(crps::Corpus)
-	return crps.h
+    return crps.h
 end
 function hash_function!(crps::Corpus, f::TextHashFunction)
-	crps.h = f
-	return
+    crps.h = f
 end
 
 ##############################################################################
@@ -247,7 +229,7 @@ end
 ##############################################################################
 
 function standardize!{T <: AbstractDocument}(crps::Corpus, ::Type{T})
-	for i in 1:length(crps)
-		crps[i] = convert(T, crps[i])
-	end
+    for i in 1:length(crps)
+        crps[i] = convert(T, crps[i])
+    end
 end

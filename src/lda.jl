@@ -4,6 +4,4 @@
 #
 ##############################################################################
 
-function lda(dtm::DocumentTermMatrix)
-	error("not yet implemented")
-end
+lda(dtm::DocumentTermMatrix) = error("not yet implemented")

@@ -15,6 +15,8 @@ m = DocumentTermMatrix(crps)
 dtm(m)
 dtm(m, :dense)
 
+tf_idf(dtm(m, :dense))
+
 dtv(crps[1], lexicon(crps))
 
 hash_dtv(crps[1], TextHashFunction())

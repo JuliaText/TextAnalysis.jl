@@ -4,6 +4,4 @@
 #
 ##############################################################################
 
-function lsa(dtm::DocumentTermMatrix)
-	error("not yet implemented")
-end
+lsa(dtm::DocumentTermMatrix) = svd(tf_idf(dtm))

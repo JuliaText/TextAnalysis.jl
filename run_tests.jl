@@ -6,7 +6,9 @@ using TextAnalysis
 
 require("test.jl")
 
-my_tests = ["test/document.jl",
+my_tests = ["test/tokenizer.jl",
+            "test/ngramizer.jl",
+            "test/document.jl",
             "test/metadata.jl",
             "test/corpus.jl",
             "test/preprocessing.jl",

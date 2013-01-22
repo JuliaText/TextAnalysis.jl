@@ -4,8 +4,7 @@ TextAnalysis.jl
 # Preface
 
 This manual is designed to get you started doing text analysis in Julia.
-It assumes that you already familiar with the basic methods of text analysis
-in order to present all of the available methods more quickly.
+It assumes that you already familiar with the basic methods of text analysis.
 
 # Outline
 

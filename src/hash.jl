@@ -19,8 +19,8 @@
 ##############################################################################
 
 type TextHashFunction
-	hash_function::Function
-	cardinality::Int
+    hash_function::Function
+    cardinality::Int
 end
 
 TextHashFunction(cardinality::Int) = TextHashFunction(hash, cardinality)
@@ -30,5 +30,5 @@ TextHashFunction() = TextHashFunction(hash, 100)
 cardinality(h::TextHashFunction) = h.cardinality
 
 function index_hash(s::String, h::TextHashFunction)
-  return int(rem(h.hash_function(s), h.cardinality)) + 1
+    return int(rem(h.hash_function(s), h.cardinality)) + 1
 end
