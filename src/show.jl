@@ -6,6 +6,7 @@
 
 show(io::IO, d::AbstractDocument) = print(io, "A $(typeof(d))")
 show(io::IO, crps::Corpus) = print(io, "A Corpus")
+show(io::IO, dtm::DocumentTermMatrix) = print(io, "A DocumentTermMatrix")
 
 ##############################################################################
 #
@@ -46,6 +47,11 @@ function summary(crps::Corpus)
     return o
 end
 
+function summary(dtm::DocumentTermMatrix)
+    n, p = size(dtm.dtm)
+    @sprintf "A %dx%d DocumentTermMatrix" n p
+end
+
 ##############################################################################
 #
 # In the REPL, show the summary by default
@@ -54,4 +60,4 @@ end
 
 repl_show(io::IO, d::AbstractDocument) = print(io, summary(d))
 repl_show(io::IO, crps::Corpus) = print(io, summary(crps))
-repl_show(io::IO, dtm::DocumentTermMatrix) = print(io, "A DocumentTermMatrix")
+repl_show(io::IO, dtm::DocumentTermMatrix) = print(io, summary(dtm))

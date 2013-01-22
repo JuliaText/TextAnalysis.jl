@@ -169,3 +169,11 @@ done(edt::EachHashDTV, state::Int) = state > length(edt.crps.documents)
 
 each_dtv(crps::Corpus) = EachDTV(crps)
 each_hash_dtv(crps::Corpus) = EachHashDTV(crps)
+
+##
+## ref() methods
+##
+
+ref(dtm::DocumentTermMatrix, k::String) = dtm.dtm[:, dtm.column_indices[k]]
+ref(dtm::DocumentTermMatrix, i::Any) = dtm.dtm[i]
+ref(dtm::DocumentTermMatrix, i::Any, j::Any) = dtm.dtm[i, j]
