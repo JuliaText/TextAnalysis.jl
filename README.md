@@ -62,22 +62,26 @@ The TextAnalysis package can be installed using Julia's package manager:
 # Getting Started
 
 In all of the examples that follow, we'll assume that you have the
-TextAnalysis package fully loaded:
+TextAnalysis package fully loaded. This means that we think you've
+implicily typed
 
     using TextAnalysis
+
+before every snippet of code.
 
 # Creating Documents
 
 The basic unit of text analysis is a document. The TextAnalysis package
 allows one to work with documents stored in a variety of formats:
 
-* _StringDocument_: A document represented using a UTF8String stored in RAM
 * _FileDocument_: A document represented using a plain text file on disk
+* _StringDocument_: A document represented using a UTF8String stored in RAM
 * _TokenDocument_: A document represented as a sequence of UTF8 tokens
-* _NGramDocument_: A document represented as a bag of n-grams
+* _NGramDocument_: A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
 
-Creating these kind of documents is very easy when you already have the basic
-data available:
+These format represent a hierarchy: you can always move down the hierachy, but can generally not move up the hierachy. A `FileDocument` can easily become a `StringDocument`, but an `NGramDocument` cannot easily become a `FileDocument`.
+
+Creating any of the four basic types of documents is very easy:
 
     str = "To be or not to be..."
     sd = StringDocument(str)
@@ -85,16 +89,12 @@ data available:
     pathname = "/usr/share/dict/words"
     fd = FileDocument(pathname)
 
-    my_tokens = ["To", "be", "or", "not", "to", "be..."]
+    my_tokens = UTF8String["To", "be", "or", "not", "to", "be..."]
     td = TokenDocument(my_tokens)
 
-    my_ngrams = Dict{UTF8String,Int}()
-    my_ngrams["To"] = 1
-    my_ngrams["be"] = 2
-    my_ngrams["or"] = 1
-    my_ngrams["not"] = 1
-    my_ngrams["to"] = 1
-    my_ngrams["be..."] = 1
+    my_ngrams = (UTF8String => Int)["To" => 1, "be" => 2,
+                                    "or" => 1, "not" => 1,
+                                    "to" => 1, "be..." => 1]
     ngd = NGramDocument(my_ngrams)
 
 For every type of document except a `FileDocument`, you can also construct a
@@ -115,11 +115,10 @@ and construct the appropriate type of document object:
 
     Document("To be or not to be...")
     Document("/usr/share/dict/words")
-    Document(["To", "be", "or", "not", "to", "be..."])
-    ng = Dict{UTF8String,Int}()
-    ng["a"] = 1
-    ng["b"] = 3
-    Document(ng)
+    Document(UTF8String["To", "be", "or", "not", "to", "be..."])
+    Document((UTF8String => Int)["a" => 1, "b" => 3])
+
+This constructor is very convenient for working in the REPL, but should be avoided in permanent code because, unlike the other constructors, the return type of the `Document` function cannot be known at compile-time.
 
 # Basic Functions for Working with Documents
 
@@ -149,7 +148,7 @@ argument to the `ngrams()` function:
     ngrams(sd, 2)
 
 If you have a `NGramDocument`, you can determine whether an `NGramDocument`
-contains unigrams, bigrams or trigrams using the `ngram_complexity()` function:
+contains unigrams, bigrams or a higher-order representation using the `ngram_complexity()` function:
 
     ngram_complexity(ngd)
 
@@ -179,7 +178,7 @@ in practice:
 If you need reset these fields, you can use the mutating versions of the same
 functions:
 
-    language!(sd, TextAnalysis.Languages.SpanishLanguage)
+    language!(sd, Languages.SpanishLanguage)
     name!(sd, "El Cid")
     author!(sd, "Desconocido")
     timestamp!(sd, "Desconocido")
@@ -262,11 +261,21 @@ using the Corpus type:
 
 # Standardizing a Corpus
 
-A `Corpus` may contain many different types of `Document` objects:
+A `Corpus` may contain many different types of documents:
 
     crps = Corpus({StringDocument("Document 1"),
                    TokenDocument("Document 2"),
                    NGramDocument("Document 3")})
+
+It is generally more convenient to standardize all of the documents in a
+corpus using a single type. This can be done using the `standardize!`
+function:
+
+    standardize!(crps, NGramDocument)
+
+After this step, you can check that the corpus only contains `NGramDocument`'s:
+
+    crps
 
 # Processing a Corpus
 
@@ -276,6 +285,8 @@ individual documents to an entire corpus at once:
     crps = Corpus({StringDocument("Document 1"),
                    StringDocument("Document 2")})
     remove_punctuation!(crps)
+
+These operations are run on each document in the corpus individually.
 
 # Corpus Statistics
 
@@ -317,40 +328,105 @@ corpus:
     crps["1"]
     crps["Summer"]
 
-# Creating a DataFrame from a Corpus
+# Converting a DataFrame from a Corpus
 
 Sometimes we want to apply non-text specific data analysis operations to a
-corpus. The easiest way to do this is to transform a `Corpus` object into
+corpus. The easiest way to do this is to convert a `Corpus` object into
 a `DataFrame`:
 
-    DataFrame(Corpus)
+    convert(DataFrame, crps)
 
 # Creating a Document Term Matrix
 
+Often we want to represent documents as a matrix of word counts so that we
+can apply linear algebra operations and statistical techniques. Before
+we do this, we need to update the lexicon:
+
+    update_lexicon!(crps)
     m = DocumentTermMatrix(crps)
+
+A `DocumentTermMatrix` object is a special type. If you would like to use
+a simple sparse matrix, call `dtm()` on this object:
+
     dtm(m)
+
+If you would like to use a dense matrix instead, you can pass this as
+an argument to the `dtm` function:
+
     dtm(m, :dense)
 
 # Creating Individual Rows of a Document Term Matrix
+
+In many cases, we don't need the entire document term matrix at once: we can
+make do with just a single row. You can get this using the `dtv` function.
+Because individual's document do not have a lexicon associated with them, we
+have to pass in a lexicon as an additional argument:
 
     dtv(crps[1], lexicon(crps))
 
 # The Hash Trick
 
+The need to create a lexicon before we can construct a document term matrix is often prohibitive. We can often employ a trick that has come to be called the
+"Hash Trick" in which we replace terms with their hashed valued using a hash
+function that outputs integers from 1 to N. To construct such a hash function,
+you can use the `TextHashFunction(N)` constructor:
+
+    h = TextHashFunction(10)
+
+You can see how this function maps strings to numbers by calling the
+`index_hash` function:
+
+    index_hash("a", h)
+    index_hash("b", h)
+
+Using a text hash function, we can represent a document as a vector with N
+entries by calling the `hash_dtv` function:
+
+    hash_dtv(crps[1], h)
+
+This can be done for a corpus as a whole to construct a DTM without defining
+a lexicon in advance:
+
+    hash_dtm(crps, h)
+
+Every corpus has a hash function built-in, so this function can be called
+using just one argument:
+
     hash_dtm(crps)
+
+Moreover, if you do not specify a hash function for just one row of the hash
+DTM, a default hash function will be constructed for you:
+
     hash_dtv(crps[1])
-    hash_dtv(crps[1], TextHashFunction(10))
 
 # TF-IDF
 
-    m = DocumentTermMatrix(crps)
-    tf_idf!(m)
+In many cases, raw word counts are not appropriate for use because:
 
-# LSA: Latent Semantic Indexing
+* (A) Some documents are longer than other documents
+* (B) Some words are more frequent than other words
+
+You can work around this by performing TF-IDF on a DocumentTermMatrix:
+
+    m = DocumentTermMatrix(crps)
+    tf_idf(m)
+
+As you can see, TF-IDF has the effect of inserting 0's into the columns of
+words that occur in all documents. This is a useful way to avoid having to
+remove those words during preprocessing.
+
+# LSA: Latent Semantic Analysis
+
+Often we want to think about documents from the perspective of semantic
+content. One standard approach to doing this is to perform Latent Semantic
+Analysis or LSA on the corpus. You can do this using the `lsa` function:
 
     lsa(crps)
 
-# LDA: Latent Dirichlet Analysis
+# LDA: Latent Dirichlet Allocation
+
+Another way to get a handle on the semantic content of a corpus is to use
+Latent Dirichlet Allocation:
 
     lda(crps)
 
@@ -360,4 +436,27 @@ To show you how text analysis might work in practice, we're going to work with
 a text corpus composed of political speeches from American presidents given
 as part of the State of the Union Address tradition.
 
-    TODO: FILL IN
+    using TextAnalysis, DimensionalityReduction, Clustering
+
+    crps = DirectoryCorpus("sotu")
+
+    standardize!(crps, StringDocument)
+
+    crps = Corpus(crps[1:30])
+
+    remove_case!(crps)
+    remove_punctuation!(crps)
+
+    update_lexicon!(crps)
+    update_inverse_index!(crps)
+
+    crps["freedom"]
+
+    m = DocumentTermMatrix(crps)
+
+    D = dtm(m, :dense)
+
+    T = tf_idf(D)
+
+    cl = k_means(D, 5)
+    cl = k_means(T, 5)

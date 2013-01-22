@@ -7,7 +7,7 @@
 function remove_corrupt_utf8(s::String)
     r = Array(Char, length(s))
     i = 0
-    for chr in t
+    for chr in s
         i += 1
         if chr != 0xfffd
             r[i] = chr

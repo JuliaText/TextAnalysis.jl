@@ -130,8 +130,7 @@ function hash_dtv(d::AbstractDocument, h::TextHashFunction)
 end
 hash_dtv(d::AbstractDocument) = hash_dtv(d, TextHashFunction())
 
-function hash_dtm(crps::Corpus)
-    h = hash_function(crps)
+function hash_dtm(crps::Corpus, h::TextHashFunction)
     n, p = length(crps), cardinality(h)
     res = zeros(Int, n, p)
     for i in 1:length(crps)
@@ -140,6 +139,8 @@ function hash_dtm(crps::Corpus)
     end
     return res
 end
+
+hash_dtm(crps::Corpus) = hash_dtm(crps, hash_function(crps))
 
 hash_tdm(crps::Corpus) = hash_dtm(crps)' #'
 

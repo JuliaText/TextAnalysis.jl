@@ -258,23 +258,28 @@ end
 #
 ##############################################################################
 
-function convert(::Type{StringDocument}, d::FileDocument)
+function convert(::Type{StringDocument},
+                 d::FileDocument)
     new_d = StringDocument(text(d))
     new_d.metadata = d.metadata
     return new_d
 end
 
-function convert(::Type{TokenDocument}, d::Union(StringDocument, FileDocument))
+function convert(::Type{TokenDocument},
+                 d::Union(FileDocument, StringDocument))
     new_d = TokenDocument(tokens(d))
     new_d.metadata = d.metadata
     return new_d
 end
+convert(::Type{TokenDocument}, d::TokenDocument) = d
 
-function convert(::Type{NGramDocument}, d::Union(StringDocument, FileDocument))
+function convert(::Type{NGramDocument},
+                 d::Union(FileDocument, StringDocument, TokenDocument))
     new_d = NGramDocument(ngrams(d))
     new_d.metadata = d.metadata
     return new_d
 end
+convert(::Type{NGramDocument}, d::NGramDocument) = d
 
 ##############################################################################
 #

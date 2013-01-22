@@ -77,7 +77,7 @@ length(crps::Corpus) = length(crps.documents)
 #
 ##############################################################################
 
-function DataFrame(crps::Corpus)
+function convert(::Type{DataFrame}, crps::Corpus)
     df = DataFrame()
     n = length(crps)
     df["Language"] = DataArray(UTF8String, n)
