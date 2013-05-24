@@ -458,5 +458,4 @@ as part of the State of the Union Address tradition.
 
     T = tf_idf(D)
 
-    cl = k_means(D, 5)
-    cl = k_means(T, 5)
+    cl = kmeans(T, 5)

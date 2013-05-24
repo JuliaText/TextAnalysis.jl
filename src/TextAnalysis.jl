@@ -24,6 +24,7 @@ module TextAnalysis
     export remove_corrupt_utf8!
     export remove_punctuation, remove_numbers, remove_case, remove_whitespace
     export remove_punctuation!, remove_numbers!, remove_case!, remove_whitespace!
+    export remove_nonletters, remove_nonletters!
     export remove_words, remove_stop_words, remove_articles
     export remove_words!, remove_stop_words!, remove_articles!
     export remove_definite_articles, remove_indefinite_articles

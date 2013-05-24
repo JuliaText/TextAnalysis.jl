@@ -5,7 +5,7 @@
 ##############################################################################
 
 type DocumentMetadata
-    language::AbstractKind
+    language::DataType
     name::UTF8String
     author::UTF8String
     timestamp::UTF8String
@@ -33,7 +33,11 @@ type FileDocument <: AbstractDocument
     filename::UTF8String
     metadata::DocumentMetadata
 end
-FileDocument(f::String) = FileDocument(utf8(f), DocumentMetadata())
+function FileDocument(f::String)
+    d = FileDocument(utf8(f), DocumentMetadata())
+    d.metadata.name = f
+    return d
+end
 
 ##############################################################################
 #

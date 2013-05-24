@@ -5,7 +5,7 @@
 ##############################################################################
 
 function remove_corrupt_utf8(s::String)
-    r = Array(Char, length(s))
+    r = Array(Char, endof(s))
     i = 0
     for chr in s
         i += 1
@@ -34,7 +34,7 @@ function remove_corrupt_utf8!(d::NGramDocument)
     for token in keys(d.ngrams)
         new_token = remove_corrupt_utf8(token)
         if new_token != token
-            if has(d.ngrams, new_token)
+            if haskey(d.ngrams, new_token)
                 d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
             else
                 d.ngrams[new_token] = d.ngrams[token]
@@ -50,7 +50,9 @@ end
 #
 ##############################################################################
 
-remove_whitespace(s::String) = replace(s, r"\s+", " ")
+const WHITESPACE_REGEX = Regex("\s+", 0)
+#remove_whitespace(s::String) = replace(s, r"\s+", " ")
+remove_whitespace(s::String) = replace(s, WHITESPACE_REGEX, " ")
 
 function remove_whitespace!(d::FileDocument)
     error("FileDocument's cannot be modified")
@@ -70,7 +72,7 @@ function remove_whitespace!(d::NGramDocument)
     for token in keys(d.ngrams)
         new_token = remove_whitespace(token)
         if new_token != token
-            if has(d.ngrams, new_token)
+            if haskey(d.ngrams, new_token)
                 d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
             else
                 d.ngrams[new_token] = d.ngrams[token]
@@ -86,7 +88,9 @@ end
 #
 ##############################################################################
 
-remove_punctuation(s::String) = replace(s, r"[,;:.!?()]+", "")
+const PUNCTUATION_REGEX = Regex("[,;:.!?()]+", 0)
+#remove_punctuation(s::String) = replace(s, r"[,;:.!?()]+", "")
+remove_punctuation(s::String) = replace(s, PUNCTUATION_REGEX, "")
 
 function remove_punctuation!(d::FileDocument)
     error("FileDocument's cannot be modified")
@@ -106,7 +110,45 @@ function remove_punctuation!(d::NGramDocument)
     for token in keys(d.ngrams)
         new_token = remove_punctuation(token)
         if new_token != token
-            if has(d.ngrams, new_token)
+            if haskey(d.ngrams, new_token)
+                d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
+            else
+                d.ngrams[new_token] = d.ngrams[token]
+            end
+            delete!(d.ngrams, token)
+        end
+    end
+end
+
+##############################################################################
+#
+# Remove non-letters
+#
+##############################################################################
+
+const NONLETTER_REGEX = Regex("[^a-zA-Z\s]", 0)
+#remove_nonletters(s::String) = replace(s, r"[^a-zA-Z]", "")
+remove_nonletters(s::String) = replace(s, NONLETTER_REGEX, "")
+
+function remove_nonletters!(d::FileDocument)
+    error("FileDocument's cannot be modified")
+end
+
+function remove_nonletters!(d::StringDocument)
+    d.text = remove_nonletters(d.text)
+end
+
+function remove_nonletters!(d::TokenDocument)
+    for i in 1:length(d.tokens)
+        d.tokens[i] = remove_nonletters(d.tokens[i])
+    end
+end
+
+function remove_nonletters!(d::NGramDocument)
+    for token in keys(d.ngrams)
+        new_token = remove_nonletters(token)
+        if new_token != token
+            if haskey(d.ngrams, new_token)
                 d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
             else
                 d.ngrams[new_token] = d.ngrams[token]
@@ -142,7 +184,7 @@ function remove_case!(d::NGramDocument)
     for token in keys(d.ngrams)
         new_token = remove_case(token)
         if new_token != token
-            if has(d.ngrams, new_token)
+            if haskey(d.ngrams, new_token)
                 d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
             else
                 d.ngrams[new_token] = d.ngrams[token]
@@ -161,7 +203,9 @@ end
 #
 ##############################################################################
 
-remove_numbers(s::String) = replace(s, r"\d", "")
+const NUMBER_REGEX = Regex("\d+", 0)
+#remove_numbers(s::String) = replace(s, r"\d+", "")
+remove_numbers(s::String) = replace(s, NUMBER_REGEX, "")
 
 function remove_numbers!(d::FileDocument)
     error("FileDocument's cannot be modified")
@@ -181,7 +225,7 @@ function remove_numbers!(d::NGramDocument)
     for token in keys(d.ngrams)
         new_token = remove_numbers(token)
         if new_token != token
-            if has(d.ngrams, new_token)
+            if haskey(d.ngrams, new_token)
                 d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
             else
                 d.ngrams[new_token] = d.ngrams[token]
@@ -199,7 +243,8 @@ end
 
 function remove_words{T <: String}(s::String, words::Vector{T})
     for word in words
-        s = replace(s, Regex(strcat("\\b", word, "\\b")), " ")
+        #s = replace(s, Regex(strcat("\\b", word, "\\b")), " ")
+        s = replace(s, Regex(string("\\b", word, "\\b"), 0), " ")
     end
     return s
 end
@@ -222,7 +267,7 @@ function remove_words!{T <: String}(d::NGramDocument, words::Vector{T})
     for token in keys(d.ngrams)
         new_token = remove_words(token, words)
         if new_token != token
-            if has(d.ngrams, new_token)
+            if haskey(d.ngrams, new_token)
                 d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
             else
                 d.ngrams[new_token] = d.ngrams[token]
@@ -290,6 +335,7 @@ for f in (:remove_whitespace!,
           :remove_punctuation!,
           :remove_case!,
           :remove_numbers!,
+          :remove_nonletters!,
           :stem!,
           :tag_pos!,
           :remove_articles!,

@@ -51,7 +51,7 @@ function DirectoryCorpus(dirname::String)
                 push!(docs, FileDocument(abspath(filename)))
             end
             if isdir(filename) && !islink(filename)
-                add_files(filename, f)
+                add_files(filename)
             end
         end
         cd(starting_dir)
@@ -198,7 +198,7 @@ function update_inverse_index!(crps::Corpus)
         doc = crps[i]
         ngs = ngrams(doc)
         for ngram in keys(ngs)
-            if has(crps.inverse_index, ngram)
+            if haskey(crps.inverse_index, ngram)
                 push!(crps.inverse_index[ngram], i)
             else
                 crps.inverse_index[ngram] = [i]

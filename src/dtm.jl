@@ -18,7 +18,7 @@ end
 
 function DocumentTermMatrix(crps::Corpus)
     lex = lexicon(crps)
-    terms = sort(keys(lex))
+    terms = sort(collect(keys(lex)))
     column_indices = Dict{UTF8String, Int}()
     for i in 1:length(terms)
         term = terms[i]
@@ -84,14 +84,14 @@ function dtm_entries(d::AbstractDocument, lex::Dict{UTF8String, Int})
     ngs = ngrams(d)
     indices = Array(Int, 0)
     values = Array(Int, 0)
-    terms = sort(keys(lex))
+    terms = sort(collect(keys(lex)))
     column_indices = Dict{UTF8String, Int}()
     for i in 1:length(terms)
         term = terms[i]
         column_indices[term] = i
     end
     for ngram in keys(ngs)
-        if has(column_indices, ngram)
+        if haskey(column_indices, ngram)
             push!(indices, column_indices[ngram])
             push!(values, ngs[ngram])
         end
