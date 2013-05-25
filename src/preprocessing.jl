@@ -50,7 +50,7 @@ end
 #
 ##############################################################################
 
-const WHITESPACE_REGEX = Regex("\s+", 0)
+const WHITESPACE_REGEX = Regex("\\s+", 0)
 #remove_whitespace(s::String) = replace(s, r"\s+", " ")
 remove_whitespace(s::String) = replace(s, WHITESPACE_REGEX, " ")
 
