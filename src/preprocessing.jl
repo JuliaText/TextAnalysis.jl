@@ -126,7 +126,7 @@ end
 #
 ##############################################################################
 
-const NONLETTER_REGEX = Regex("[^a-zA-Z\s]", 0)
+const NONLETTER_REGEX = Regex("[^a-zA-Z\\s]", 0)
 #remove_nonletters(s::String) = replace(s, r"[^a-zA-Z]", "")
 remove_nonletters(s::String) = replace(s, NONLETTER_REGEX, "")
 
@@ -203,7 +203,7 @@ end
 #
 ##############################################################################
 
-const NUMBER_REGEX = Regex("\d+", 0)
+const NUMBER_REGEX = Regex("\\d+", 0)
 #remove_numbers(s::String) = replace(s, r"\d+", "")
 remove_numbers(s::String) = replace(s, NUMBER_REGEX, "")
 
