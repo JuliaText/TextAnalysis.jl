@@ -14,10 +14,10 @@ text!(sd, sample_text1)
 @assert isequal(text(sd), sample_text1)
 
 @assert all(tokens(sd) .== ["This", "is", "a", "string"])
-@assert contains(keys(ngrams(sd, 1)), "This")
-@assert contains(keys(ngrams(sd, 1)), "is")
-@assert contains(keys(ngrams(sd, 1)), "a")
-@assert contains(keys(ngrams(sd, 1)), "string")
+@assert "This" in keys(ngrams(sd, 1))
+@assert "is" in keys(ngrams(sd, 1))
+@assert "a" in keys(ngrams(sd, 1))
+@assert "string" in keys(ngrams(sd, 1))
 
 @assert length(sd) == 16
 
@@ -45,7 +45,7 @@ my_ngrams["to"] = 1
 my_ngrams["be..."] = 1
 ngd = NGramDocument(my_ngrams)
 @assert isa(ngd, NGramDocument)
-@assert contains(keys(ngrams(ngd)), "To")
+@assert "To" in keys(ngrams(ngd))
 
 sd = StringDocument(hamlet_text)
 td = TokenDocument(hamlet_text)

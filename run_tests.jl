@@ -4,7 +4,7 @@
 
 using TextAnalysis
 
-require("test.jl")
+#require("test.jl")
 
 my_tests = ["test/tokenizer.jl",
             "test/ngramizer.jl",
