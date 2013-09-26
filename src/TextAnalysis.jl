@@ -3,6 +3,7 @@ using DataFrames
 module TextAnalysis
     using Languages
     using DataFrames
+    using BinDeps
 
     importall Base
     import DataFrames.DataFrame
@@ -11,6 +12,7 @@ module TextAnalysis
     export FileDocument, StringDocument, TokenDocument, NGramDocument
     export GenericDocument
     export Corpus, DirectoryCorpus
+    export stemmer_types, Stemmer
     export DocumentTermMatrix
     export text, tokens, ngrams
     export text!, tokens!, ngrams!
@@ -52,6 +54,7 @@ module TextAnalysis
     include("corpus.jl")
     include("metadata.jl")
     include("preprocessing.jl")
+    include("stemmer.jl")
     include("dtm.jl")
     include("tf_idf.jl")
     include("lsa.jl")

@@ -1,0 +1,114 @@
+Description: Build libstemmer as a shared library.
+Last-Update: 2013-09-13
+
+--- a/GNUmakefile
++++ b/GNUmakefile
+@@ -69,15 +69,16 @@
+ JAVA_CLASSES = $(JAVA_SOURCES:.java=.class)
+ JAVA_RUNTIME_CLASSES=$(JAVARUNTIME_SOURCES:.java=.class)
+ 
+-CFLAGS=-Iinclude -O2
+-CPPFLAGS=-W -Wall -Wmissing-prototypes -Wmissing-declarations
++CFLAGS=-O2
++CPPFLAGS=-W -Wall -Wmissing-prototypes -Wmissing-declarations -Iinclude
+ 
+-all: snowball libstemmer.o stemwords $(C_OTHER_SOURCES) $(C_OTHER_HEADERS) $(C_OTHER_OBJECTS)
++all: snowball libstemmer.so stemwords $(C_OTHER_SOURCES) $(C_OTHER_HEADERS) $(C_OTHER_OBJECTS)
+ 
+ clean:
+ 	rm -f $(COMPILER_OBJECTS) $(RUNTIME_OBJECTS) \
+ 	      $(LIBSTEMMER_OBJECTS) $(LIBSTEMMER_UTF8_OBJECTS) $(STEMWORDS_OBJECTS) snowball \
+-	      libstemmer.o stemwords \
++	      $(wildcard libstemmer.so*) libstemmer.a \
++	          stemwords \
+               libstemmer/modules.h \
+               libstemmer/modules_utf8.h \
+               snowball.splint \
+@@ -86,7 +87,7 @@
+ 	      $(JAVA_SOURCES) $(JAVA_CLASSES) $(JAVA_RUNTIME_CLASSES) \
+               libstemmer/mkinc.mak libstemmer/mkinc_utf8.mak \
+               libstemmer/libstemmer.c libstemmer/libstemmer_utf8.c
+-	rm -rf dist
++	rm -rf dist .shared
+ 	rmdir $(c_src_dir) || true
+ 
+ snowball: $(COMPILER_OBJECTS)
+@@ -108,11 +109,15 @@
+ 
+ libstemmer/libstemmer.o: libstemmer/modules.h $(C_LIB_HEADERS)
+ 
+-libstemmer.o: libstemmer/libstemmer.o $(RUNTIME_OBJECTS) $(C_LIB_OBJECTS)
+-	$(AR) -cru $@ $^
++libstemmer.so: libstemmer/libstemmer.o $(RUNTIME_OBJECTS) $(C_LIB_OBJECTS)
++	$(CC) $(CFLAGS) -shared $(LDFLAGS) \
++	      -o $@.0d.0.0 ${^:%=.shared/%}
++	ln -s $@.0d.0.0 $@.0d
++	ln -s $@.0d.0.0 $@
++	$(AR) -crs ${@:.so=.a} $^
+ 
+-stemwords: $(STEMWORDS_OBJECTS) libstemmer.o
+-	$(CC) -o $@ $^
++stemwords: $(STEMWORDS_OBJECTS) libstemmer.so
++	$(CC) -g -o $@ $(STEMWORDS_OBJECTS) -L. -lstemmer
+ 
+ algorithms/%/stem_Unicode.sbl: algorithms/%/stem_ISO_8859_1.sbl
+ 	cp $^ $@
+@@ -146,7 +151,6 @@
+ 	./snowball $< -o $${o} -eprefix $${l}_ISO_8859_2_ -r ../runtime
+ 
+ $(c_src_dir)/stem_%.o: $(c_src_dir)/stem_%.c $(c_src_dir)/stem_%.h
+-	$(CC) $(CFLAGS) -O2 -c -o $@ $< -Wall
+ 
+ $(java_src_dir)/%Stemmer.java: algorithms/%/stem_Unicode.sbl snowball
+ 	@mkdir -p $(java_src_dir)
+@@ -261,13 +265,15 @@
+ 
+ check_koi8r: $(KOI8_R_algorithms:%=check_koi8r_%)
+ 
++STEMWORDS=LD_LIBRARY_PATH=.:$(LD_LIBRARY_PATH) ./stemwords
++
+ check_utf8_%: ../data/% stemwords
+ 	@echo "Checking output of `echo $<|sed 's!.*/!!'` stemmer with UTF-8"
+-	@./stemwords -c UTF_8 -l `echo $<|sed 's!.*/!!'` -i $</voc.txt -o tmp.txt
++	@$(STEMWORDS) -c UTF_8 -l `echo $<|sed 's!.*/!!'` -i $</voc.txt -o tmp.txt
+ 	@diff -u $</output.txt tmp.txt
+ 	@if [ -e $</diffs.txt ] ; \
+ 	then \
+-	  ./stemwords -c UTF_8 -l `echo $<|sed 's!.*/!!'` -i $</voc.txt -o tmp.txt -p2 && \
++	  $(STEMWORDS) -c UTF_8 -l `echo $<|sed 's!.*/!!'` -i $</voc.txt -o tmp.txt -p2 && \
+ 	  diff -u $</diffs.txt tmp.txt; \
+ 	fi
+ 	@rm tmp.txt
+@@ -275,7 +281,7 @@
+ check_iso_8859_1_%: ../data/% stemwords
+ 	@echo "Checking output of `echo $<|sed 's!.*/!!'` stemmer with ISO_8859_1"
+ 	@python -c 'print(open("$</voc.txt").read().decode("utf8").encode("iso8859-1"))' | \
+-	    ./stemwords -c ISO_8859_1 -l `echo $<|sed 's!.*/!!'` -o tmp.txt
++	    $(STEMWORDS) -c ISO_8859_1 -l `echo $<|sed 's!.*/!!'` -o tmp.txt
+ 	@python -c 'print(open("$</output.txt").read().decode("utf8").encode("iso8859-1"))' | \
+ 	    diff -u - tmp.txt
+ 	@rm tmp.txt
+@@ -283,7 +289,7 @@
+ check_iso_8859_2_%: ../data/% stemwords
+ 	@echo "Checking output of `echo $<|sed 's!.*/!!'` stemmer with ISO_8859_2"
+ 	@python -c 'print(open("$</voc.txt").read().decode("utf8").encode("iso8859-2"))' | \
+-	    ./stemwords -c ISO_8859_2 -l `echo $<|sed 's!.*/!!'` -o tmp.txt
++	    $(STEMWORDS) -c ISO_8859_2 -l `echo $<|sed 's!.*/!!'` -o tmp.txt
+ 	@python -c 'print(open("$</output.txt").read().decode("utf8").encode("iso8859-2"))' | \
+ 	    diff -u - tmp.txt
+ 	@rm tmp.txt
+@@ -291,7 +297,13 @@
+ check_koi8r_%: ../data/% stemwords
+ 	@echo "Checking output of `echo $<|sed 's!.*/!!'` stemmer with KOI8R"
+ 	@python -c 'print(open("$</voc.txt").read().decode("utf8").encode("koi8_r"))' | \
+-	    ./stemwords -c KOI8_R -l `echo $<|sed 's!.*/!!'` -o tmp.txt
++	    $(STEMWORDS) -c KOI8_R -l `echo $<|sed 's!.*/!!'` -o tmp.txt
+ 	@python -c 'print(open("$</output.txt").read().decode("utf8").encode("koi8_r"))' | \
+ 	    diff -u - tmp.txt
+ 	@rm tmp.txt
++
++%.o: %.c
++	@mkdir -p $(shell dirname ${@:%=.shared/%})
++	$(CC) $(CFLAGS) $(CPPFLAGS) -c -fPIC -o ${@:%=.shared/%} $<
++	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
++
