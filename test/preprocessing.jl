@@ -52,3 +52,8 @@ d = NGramDocument("this is sample text")
 remove_words!(d, ["sample"])
 @assert !haskey(d.ngrams, "sample")
 
+d = StringDocument("<html><head><script language=\"javascript\"> x = 20; </script></head><body><h1>Hello</h1><a href=\"world\">world</a>")
+remove_html_tags!(d)
+@assert "Hello world" == strip(d.text)
+
+
