@@ -21,6 +21,8 @@ const strip_stopwords               = uint32(0x1) << 16
 const strip_sparse_terms            = uint32(0x1) << 17
 const strip_frequent_terms          = uint32(0x1) << 18
 
+const strip_html_tags               = uint32(0x1) << 20
+
 const alpha_sparse      = 0.05
 const alpha_frequent    = 0.95
 
@@ -117,6 +119,33 @@ end
 function remove_case!(crps::Corpus)
     for doc in crps
         remove_case!(doc)
+    end
+end
+
+##############################################################################
+#
+# Stripping HTML tags
+#
+##############################################################################
+function remove_html_tags(s::String)
+    script_tags = Regex("<script\\b[^>]*>([\\s\\S]*?)</script>", 0)
+    html_tags = Regex("<[^>]*>", 0)
+    s = remove_patterns(s, script_tags)
+    remove_patterns(s, html_tags)
+end
+
+function remove_html_tags!(d::AbstractDocument)
+    error("HTML tags can be removed only from a StringDocument")
+end
+
+function remove_html_tags!(d::StringDocument)
+    d.text = remove_html_tags(d.text)
+    nothing
+end
+
+function remove_html_tags!(crps::Corpus)
+    for doc in crps
+        remove_html_tags!(doc)
     end
 end
 
@@ -237,6 +266,7 @@ function prepare!(crps::Corpus, flags::Uint32; skip_patterns = Set{String}(), sk
 
     ((flags & strip_corrupt_utf8) > 0) && remove_corrupt_utf8!(crps)
     ((flags & strip_case) > 0) && remove_case!(crps)
+    ((flags & strip_html_tags) > 0) && remove_html_tags!(crps)
 
     lang = language(crps.documents[1])   # assuming all documents are of the same language - practically true
     r = _build_regex(lang, flags, skip_patterns, skip_words)
@@ -250,6 +280,7 @@ end
 function prepare!(d::AbstractDocument, flags::Uint32; skip_patterns = Set{String}(), skip_words = Set{String}()) 
     ((flags & strip_corrupt_utf8) > 0) && remove_corrupt_utf8!(d)
     ((flags & strip_case) > 0) && remove_case!(d)
+    ((flags & strip_html_tags) > 0) && remove_html_tags!(d)
 
     r = _build_regex(language(d), flags, skip_patterns, skip_words)
     !isempty(r.pattern) && remove_patterns!(d, r)
