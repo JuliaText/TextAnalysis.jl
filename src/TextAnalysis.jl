@@ -33,6 +33,7 @@ module TextAnalysis
     export remove_definite_articles!, remove_indefinite_articles!
     export remove_prepositions, remove_pronouns, stem, tag_pos
     export remove_prepositions!, remove_pronouns!, stem!, tag_pos!
+    export remove_html_tags, remove_html_tags!
     export prepare!
     export frequent_terms, sparse_terms
     export remove_frequent_terms!, remove_sparse_terms!
@@ -45,7 +46,7 @@ module TextAnalysis
 
     export strip_patterns, strip_corrupt_utf8, strip_case, stem_words, tag_part_of_speech, strip_whitespace, strip_punctuation
     export strip_numbers, strip_non_letters, strip_indefinite_articles, strip_definite_articles, strip_articles
-    export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms
+    export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
 
     include("tokenizer.jl")
     include("ngramizer.jl")
