@@ -1,5 +1,5 @@
 
-const _libsb = joinpath(Pkg.dir(),"Stemmers","deps","usr","lib", "libstemmer."*BinDeps.shlib_ext)
+const _libsb = joinpath(Pkg.dir(),"TextAnalysis","deps","usr","lib", "libstemmer."*BinDeps.shlib_ext)
 #const _libsb = "libstemmer"
 
 ##
