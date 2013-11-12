@@ -362,7 +362,7 @@ function _build_regex_patterns{T <: String}(lang, flags::Uint32, patterns::Set{T
     if (flags & strip_non_letters) > 0 
         push!(patterns, "[^a-zA-Z\\s]")
     else
-        ((flags & strip_punctuation) > 0) && push!(patterns, "[,;:.!?()]+")
+        ((flags & strip_punctuation) > 0) && push!(patterns, "[\"',;:.!?()]+")
         ((flags & strip_numbers) > 0) && push!(patterns, "\\d+")
     end
     if (flags & strip_articles) > 0
