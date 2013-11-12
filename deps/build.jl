@@ -24,7 +24,7 @@ end
     cd(srchome)
     run(`tar xvzf $dnldfile`)
     cd(srcdir)
-    run(`cat $patchpath` | `patch`)
+    run(`cat $patchpath` |> `patch`)
     for mkcmd in (:gnumake, :gmake, :make)
         try
             if success(`$mkcmd`)
