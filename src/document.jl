@@ -58,7 +58,7 @@ StringDocument(txt::String) = StringDocument(utf8(txt), DocumentMetadata())
 ##############################################################################
 
 type TokenDocument <: AbstractDocument
-    tokens::Vector{UTF8String}
+    tokens::Vector{String}
     metadata::DocumentMetadata
 end
 function TokenDocument(txt::String, dm::DocumentMetadata)
@@ -70,7 +70,7 @@ function TokenDocument(txt::String)
 end
 function TokenDocument{T <: String}(tkns::Vector{T})
     dm = DocumentMetadata()
-    TokenDocument(convert(Vector{UTF8String}, tkns), dm)
+    TokenDocument(tkns, dm)
 end
 
 ##############################################################################
@@ -249,7 +249,7 @@ function Document(str::String)
 end
 
 function Document{T <: String}(tkns::Vector{T})
-    TokenDocument(convert(Vector{UTF8String}, tkns))
+    TokenDocument(tkns)
 end
 
 function Document(ng::Dict{UTF8String, Int})
