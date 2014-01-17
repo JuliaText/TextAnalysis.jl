@@ -60,17 +60,16 @@ function remove_corrupt_utf8!(d::TokenDocument)
 end
 
 function remove_corrupt_utf8!(d::NGramDocument)
+    new_ngrams = Dict{String, Int}()
     for token in keys(d.ngrams)
         new_token = remove_corrupt_utf8(token)
-        if new_token != token
-            if haskey(d.ngrams, new_token)
-                d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
-            else
-                d.ngrams[new_token] = d.ngrams[token]
-            end
-            delete!(d.ngrams, token)
+        if haskey(new_ngrams, new_token)
+            new_ngrams[new_token] = new_ngrams[new_token] + 1
+        else
+            new_ngrams[new_token] = 1
         end
     end
+    d.ngrams = new_ngrams
 end
 
 function remove_corrupt_utf8!(crps::Corpus)
@@ -103,17 +102,16 @@ function remove_case!(d::TokenDocument)
 end
 
 function remove_case!(d::NGramDocument)
+    new_ngrams = Dict{String, Int}()
     for token in keys(d.ngrams)
         new_token = remove_case(token)
-        if new_token != token
-            if haskey(d.ngrams, new_token)
-                d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
-            else
-                d.ngrams[new_token] = d.ngrams[token]
-            end
-            delete!(d.ngrams, token)
+        if haskey(new_ngrams, new_token)
+            new_ngrams[new_token] = new_ngrams[new_token] + 1
+        else
+            new_ngrams[new_token] = 1
         end
     end
+    d.ngrams = new_ngrams
 end
 
 function remove_case!(crps::Corpus)
@@ -308,6 +306,24 @@ function remove_patterns(s::String, rex::Regex)
     takebuf_string(iob)
 end
 
+function remove_patterns(s::SubString, rex::Regex)
+    iob = IOBuffer()
+    ioffset = s.offset
+    data = s.string.data
+    ibegin = 1
+    for m in matchall(rex, s)
+        len = m.offset-ibegin+1
+        if len > 0
+            Base.write_sub(iob, data, ibegin+ioffset, len)
+            write(iob, ' ')
+        end
+        ibegin = m.endof+m.offset+1
+    end
+    len = s.endof - ibegin + 1
+    (len > 0) && Base.write_sub(iob, data, ibegin+ioffset, len)
+    takebuf_string(iob)
+end
+
 remove_patterns!(d::FileDocument, rex::Regex) = error("FileDocument cannot be modified")
 
 function remove_patterns!(d::StringDocument, rex::Regex)
@@ -322,17 +338,16 @@ function remove_patterns!(d::TokenDocument, rex::Regex)
 end
 
 function remove_patterns!(d::NGramDocument, rex::Regex)
+    new_ngrams = Dict{String, Int}()
     for token in keys(d.ngrams)
         new_token = remove_patterns(token, rex)
-        if new_token != token
-            if haskey(d.ngrams, new_token)
-                d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
-            else
-                d.ngrams[new_token] = d.ngrams[token]
-            end
-            delete!(d.ngrams, token)
+        if haskey(new_ngrams, new_token)
+            new_ngrams[new_token] = new_ngrams[new_token] + 1
+        else
+            new_ngrams[new_token] = 1
         end
     end
+    d.ngrams = new_ngrams
 end
 
 function remove_patterns!(crps::Corpus, rex::Regex)

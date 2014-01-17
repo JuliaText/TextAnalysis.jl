@@ -80,7 +80,7 @@ end
 ##############################################################################
 
 type NGramDocument <: AbstractDocument
-    ngrams::Dict{UTF8String, Int}
+    ngrams::Dict
     n::Int
     metadata::DocumentMetadata
 end

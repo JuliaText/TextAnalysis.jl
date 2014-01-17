@@ -5,6 +5,5 @@
 ##############################################################################
 
 function tokenize{S <: Language}(::Type{S}, s::String)
-    #return convert(Array{UTF8String, 1}, matchall(r"[^\s]+", s))
     return matchall(r"[^\s]+", s)
 end
