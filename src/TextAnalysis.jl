@@ -4,6 +4,7 @@ module TextAnalysis
     using Languages
     using DataFrames
     using BinDeps
+    using MutableStrings
 
     importall Base
     import DataFrames.DataFrame

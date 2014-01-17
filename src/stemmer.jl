@@ -1,6 +1,5 @@
 
-const _libsb = joinpath(Pkg.dir(),"TextAnalysis","deps","usr","lib", "libstemmer."*BinDeps.shlib_ext)
-#const _libsb = "libstemmer"
+@BinDeps.load_dependencies [:libstemmer=>:_libsb]
 
 ##
 # character encodings supported by libstemmer
@@ -57,8 +56,8 @@ function release(stm::Stemmer)
     nothing
 end
 
-function stem(stemmer::Stemmer, word::String)
-    bstr = bytestring(word)
+stem(stemmer::Stemmer, word::String) = stem(stemmer, bytestring(word))
+function stem(stemmer::Stemmer, bstr::ByteString)
     sres = ccall((:sb_stemmer_stem, _libsb), Ptr{Uint8}, (Ptr{Uint8}, Ptr{Uint8}, Cint), stemmer.cptr, bstr, length(bstr))
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
@@ -66,7 +65,7 @@ function stem(stemmer::Stemmer, word::String)
     bytestring(bytes)
 end
 
-function stem(stemmer::Stemmer, word::SubString)
+function stem(stemmer::Stemmer, word::SubString{ByteString})
     sres = ccall((:sb_stemmer_stem, _libsb), Ptr{Uint8}, (Ptr{Uint8}, Ptr{Uint8}, Cint), stemmer.cptr, pointer(word.string.data)+word.offset, word.endof)
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
@@ -74,9 +73,44 @@ function stem(stemmer::Stemmer, word::SubString)
     bytestring(bytes)
 end
 
+function stem_all{S <: Language}(stemmer::Stemmer, lang::Type{S}, sentence::String)
+    tokens = TextAnalysis.tokenize(lang, sentence)
+    stemmed = stem(stemmer, tokens)
+    join(stemmed, ' ')
+end
+
+function stem!(stemmer::Stemmer, word::MutableString, start_pos::Int=1, end_pos::Int=0)
+    data = word.data
+    len = (end_pos == 0) ? (length(data)-start_pos+1) : (end_pos-start_pos+1)
+    sres = ccall((:sb_stemmer_stem, _libsb), Ptr{Uint8}, (Ptr{Uint8}, Ptr{Uint8}, Cint), stemmer.cptr, pointer(data)+start_pos-1, len)
+    (C_NULL == sres) && error("error in stemming")
+    const slen::Int = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
+    for idx in 0:(slen-1)
+        data[start_pos+idx] = unsafe_load(sres, idx+1)
+    end
+    if len > slen
+        for idx in (slen):(len-1)
+            data[start_pos+idx] = ' '
+        end
+    end
+    nothing
+end
+
+function stem_all!{S <: Language}(stemmer::Stemmer, lang::Type{S}, sentence::MutableString)
+    idx1 = 1
+    data = sentence.data
+    const l::Int = length(data)
+    const space::Uint8 = uint8(' ')
+    for idx2 = 1:l
+        if data[idx2] == space
+            (idx1 < (idx2-1)) && stem!(stemmer, sentence, idx1, idx2-1)
+            idx1 = idx2+1
+        end
+    end
+end
 
 function stem(stemmer::Stemmer, words::Array)
-    l = length(words)
+    const l::Int = length(words)
     ret = Array(String, l)
     for idx in 1:l
         ret[idx] = stem(stemmer, words[idx])
@@ -94,19 +128,21 @@ function stem!(d::AbstractDocument)
     release(stemmer)
 end
 
-function stem!(stemmer::Stemmer, d::FileDocument)
-    error("FileDocument cannot be modified")
-end
+stem!(stemmer::Stemmer, d::FileDocument) = error("FileDocument cannot be modified")
 
 function stem!(stemmer::Stemmer, d::StringDocument)
-    tokens = TextAnalysis.tokenize(language(d), d.text)
-    stemmed = stem(stemmer, tokens)
-    d.text = join(stemmed, ' ')
+    stemmer = stemmer_for_document(d)
+    if isa(d.text, MutableString)
+        stem_all!(stemmer, language(d), d.text)
+    else
+        d.text = stem_all(stemmer, language(d), d.text)
+    end
     nothing 
 end
 
 function stem!(stemmer::Stemmer, d::TokenDocument)
     d.tokens = stem(stemmer, d.tokens)
+    nothing
 end 
     
 function stem!(stemmer::Stemmer, d::NGramDocument)

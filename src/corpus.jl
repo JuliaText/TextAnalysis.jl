@@ -13,26 +13,8 @@ type Corpus
     inverse_index::Dict{UTF8String, Vector{Int}}
     h::TextHashFunction
 end
-
-function Corpus(docs::Vector{GenericDocument})
-    Corpus(
-        docs,
-        0,
-        Dict{UTF8String, Int}(),
-        Dict{UTF8String, Vector{Int}}(),
-        TextHashFunction()
-    )
-end
-
-function Corpus(docs::Vector{Any})
-    Corpus(
-        convert(Array{GenericDocument,1}, docs),
-        0,
-        Dict{UTF8String, Int}(),
-        Dict{UTF8String, Vector{Int}}(),
-        TextHashFunction()
-    )
-end
+Corpus(docs::Vector{GenericDocument})   = Corpus(docs, 0, Dict{UTF8String, Int}(), Dict{UTF8String, Vector{Int}}(), TextHashFunction())
+Corpus(docs::Vector{Any})               = Corpus(convert(Array{GenericDocument,1}, docs)) 
 
 ##############################################################################
 #
@@ -44,7 +26,7 @@ function DirectoryCorpus(dirname::String)
     # Recursive descent of directory
     # Add all non-hidden files to Corpus
 
-    docs = {}
+    docs = GenericDocument[]
 
     function add_files(dirname::String)
         if !isdir(dirname)
@@ -172,7 +154,7 @@ function update_lexicon!(crps::Corpus, doc::AbstractDocument)
     ngs = ngrams(doc)
     for (ngram, counts) in ngs
         crps.total_terms += counts
-        crps.lexicon[ngram] = get(crps.lexicon, ngram, 0) + counts
+        crps.lexicon[utf8(ngram)] = get(crps.lexicon, ngram, 0) + counts
     end
 end
 
@@ -185,10 +167,7 @@ function update_lexicon!(crps::Corpus)
 end
 
 lexicon_size(crps::Corpus) = length(keys(crps.lexicon))
-
-function lexical_frequency(crps::Corpus, term::String)
-    return get(crps.lexicon, term, 0) / crps.total_terms
-end
+lexical_frequency(crps::Corpus, term::String) = (get(crps.lexicon, term, 0) / crps.total_terms)
 
 ##############################################################################
 #
@@ -204,7 +183,8 @@ function update_inverse_index!(crps::Corpus)
     idx = Dict{UTF8String, Array{Int, 1}}()
     for i in 1:length(crps)
         doc = crps.documents[i]
-        for ngram in (isa(doc, NGramDocument) ? keys(ngrams(doc)) : tokens(doc))
+        ngram_arr = convert(Array{UTF8String,1}, isa(doc, NGramDocument) ? collect(keys(ngrams(doc))) : tokens(doc))
+        for ngram in ngram_arr
             if haskey(idx, ngram)
                 push!(idx[ngram], i)
             else
@@ -216,9 +196,10 @@ function update_inverse_index!(crps::Corpus)
         idx[key] = unique(idx[key])
     end
     crps.inverse_index = idx
+    nothing
 end
 
-index_size(crps::Corpus) = length(keys(crps.inverse_index))
+index_size(crps::Corpus) = length(crps.inverse_index)
 
 ##############################################################################
 #
@@ -226,13 +207,8 @@ index_size(crps::Corpus) = length(keys(crps.inverse_index))
 #
 ##############################################################################
 
-function hash_function(crps::Corpus)
-    return crps.h
-end
-
-function hash_function!(crps::Corpus, f::TextHashFunction)
-    crps.h = f
-end
+hash_function(crps::Corpus) = crps.h
+hash_function!(crps::Corpus, f::TextHashFunction) = (crps.h = f; nothing)
 
 ##############################################################################
 #
@@ -245,3 +221,4 @@ function standardize!{T <: AbstractDocument}(crps::Corpus, ::Type{T})
         crps.documents[i] = convert(T, crps.documents[i])
     end
 end
+

@@ -26,6 +26,13 @@ const strip_html_tags               = uint32(0x1) << 20
 const alpha_sparse      = 0.05
 const alpha_frequent    = 0.95
 
+const regex_cache = Dict{String, Regex}()
+function mk_regex(regex_string)
+    d = haskey(regex_cache, regex_string) ? regex_cache[regex_string] : (regex_cache[regex_string] = Regex(regex_string, 0))
+    (length(regex_cache) > 50) && empty!(regex_cache)
+    d
+end
+
 
 ##############################################################################
 #
@@ -37,16 +44,12 @@ function remove_corrupt_utf8(s::String)
     i = 0
     for chr in s
         i += 1
-        if chr != 0xfffd
-            r[i] = chr
-        end
+        r[i] = (chr != 0xfffd) ? chr : ' '
     end
     return utf8(CharString(r))
 end
 
-function remove_corrupt_utf8!(d::FileDocument)
-    error("FileDocument cannot be modified")
-end
+remove_corrupt_utf8!(d::FileDocument) = error("FileDocument cannot be modified")
 
 function remove_corrupt_utf8!(d::StringDocument)
     d.text = remove_corrupt_utf8(d.text)
@@ -84,14 +87,15 @@ end
 #
 ##############################################################################
 
-remove_case = lowercase
+#remove_case(s::MutableASCIIString) = lowercase!(s)
+#remove_case(s::MutableUTF8String) = lowercase!(s)
+remove_case(s::MutableString) = lowercase!(s)
+remove_case{T <: String}(s::T) = lowercase(s)
 
-function remove_case!(d::FileDocument)
-    error("FileDocument cannot be modified")
-end
+remove_case!(d::FileDocument) = error("FileDocument cannot be modified")
 
 function remove_case!(d::StringDocument)
-    d.text = remove_case(d.text)
+    isa(d.text, MutableString) ? remove_case(d.text) : (d.text = remove_case(d.text))
     nothing
 end
 
@@ -125,16 +129,15 @@ end
 # Stripping HTML tags
 #
 ##############################################################################
+const script_tags = Regex("<script\\b[^>]*>([\\s\\S]*?)</script>", 0)
+const html_tags = Regex("<[^>]*>", 0)
+
 function remove_html_tags(s::String)
-    script_tags = Regex("<script\\b[^>]*>([\\s\\S]*?)</script>", 0)
-    html_tags = Regex("<[^>]*>", 0)
     s = remove_patterns(s, script_tags)
     remove_patterns(s, html_tags)
 end
 
-function remove_html_tags!(d::AbstractDocument)
-    error("HTML tags can be removed only from a StringDocument")
-end
+remove_html_tags!(d::AbstractDocument) = error("HTML tags can be removed only from a StringDocument")
 
 function remove_html_tags!(d::StringDocument)
     d.text = remove_html_tags(d.text)
@@ -224,7 +227,7 @@ function sparse_terms(crps::Corpus, alpha::Real = alpha_sparse)
     for term in keys(crps.lexicon)
         f = length(crps.inverse_index[term]) / ndocs
         if f <= alpha
-            push!(res, term)
+            push!(res, utf8(term))
         end
     end
     return res
@@ -238,7 +241,7 @@ function frequent_terms(crps::Corpus, alpha::Real = alpha_frequent)
     for term in keys(crps.lexicon)
         f = length(crps.inverse_index[term]) / ndocs
         if f >= alpha
-            push!(res, term)
+            push!(res, utf8(term))
         end
     end
     return res
@@ -290,6 +293,13 @@ end
 
 ##
 # internal helper methods
+#mk_blank(x::MutableASCIIString, y::Range1) = (x.data[y] = uint8(' '); nothing)
+
+function remove_patterns(s::MutableString, rex::Regex)
+    replace!(s, rex, ' ')
+    s
+end
+
 function remove_patterns(s::String, rex::Regex)
     iob = IOBuffer()
     ibegin = 1
@@ -306,7 +316,7 @@ function remove_patterns(s::String, rex::Regex)
     takebuf_string(iob)
 end
 
-function remove_patterns(s::SubString, rex::Regex)
+function remove_patterns{T <: ByteString}(s::SubString{T}, rex::Regex)
     iob = IOBuffer()
     ioffset = s.offset
     data = s.string.data
@@ -348,6 +358,7 @@ function remove_patterns!(d::NGramDocument, rex::Regex)
         end
     end
     d.ngrams = new_ngrams
+    nothing
 end
 
 function remove_patterns!(crps::Corpus, rex::Regex)
@@ -362,14 +373,14 @@ _build_regex{T <: String}(lang, flags::Uint32, patterns::Set{T}, words::Set{T}) 
 function _combine_regex{T <: String}(regex_parts::Set{T})
     l = length(regex_parts)
     (0 == l) && return r""
-    (1 == l) && return Regex(pop!(regex_parts), 0)
+    (1 == l) && return mk_regex(pop!(regex_parts))
 
     iob = IOBuffer()
     write(iob, "($(pop!(regex_parts)))")
     for part in regex_parts
         write(iob, "|($part)")
     end
-    Regex(takebuf_string(iob), 0)
+    mk_regex(takebuf_string(iob))
 end
 
 function _build_regex_patterns{T <: String}(lang, flags::Uint32, patterns::Set{T}, words::Set{T})
