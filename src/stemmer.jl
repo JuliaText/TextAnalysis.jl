@@ -68,12 +68,7 @@ function stem(stemmer::Stemmer, words::Array)
 end
 
 function stemmer_for_document(d::AbstractDocument)
-    langtype = language(d)
-    alg = "porter"
-    if langtype == EnglishLanguage 
-        alg = "english"
-    end
-    Stemmer(alg)
+    Stemmer(name(language(d)))
 end
 
 function stem!(d::AbstractDocument)

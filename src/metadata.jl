@@ -4,6 +4,8 @@
 #
 ##############################################################################
 
+import Languages.name
+
 name(d::AbstractDocument) = d.metadata.name
 language(d::AbstractDocument) = d.metadata.language
 author(d::AbstractDocument) = d.metadata.author
