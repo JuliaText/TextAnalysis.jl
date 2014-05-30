@@ -41,7 +41,7 @@ function remove_corrupt_utf8(s::String)
             r[i] = chr
         end
     end
-    return utf8(CharString(r[1:i]))
+    return utf8(r[1:i])
 end
 
 function remove_corrupt_utf8!(d::FileDocument)
