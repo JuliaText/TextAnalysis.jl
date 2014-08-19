@@ -33,7 +33,7 @@ const alpha_frequent    = 0.95
 #
 ##############################################################################
 function remove_corrupt_utf8(s::String)
-    r = Array(Char, endof(s))
+    r = zeros(Char, endof(s)+1)
     i = 0
     for chr in s
         i += 1
@@ -41,7 +41,7 @@ function remove_corrupt_utf8(s::String)
             r[i] = chr
         end
     end
-    return utf8(r[1:i])
+    return utf8(CharString(r))
 end
 
 function remove_corrupt_utf8!(d::FileDocument)
@@ -160,43 +160,43 @@ function remove_words!{T <: String}(entity::Union(AbstractDocument,Corpus), word
     prepare!(entity, strip_patterns, skip_words = skipwords)
 end
 
-function remove_whitespace!(entity::Union(AbstractDocument,Corpus)) 
+function remove_whitespace!(entity::Union(AbstractDocument,Corpus))
     Base.warn_once("remove_whitespace! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_whitespace)
 end
-function remove_punctuation!(entity::Union(AbstractDocument,Corpus)) 
+function remove_punctuation!(entity::Union(AbstractDocument,Corpus))
     Base.warn_once("remove_punctuation! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_punctuation)
 end
-function remove_nonletters!(entity::Union(AbstractDocument,Corpus)) 
+function remove_nonletters!(entity::Union(AbstractDocument,Corpus))
     Base.warn_once("remove_nonletters! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_non_letters)
 end
-function remove_numbers!(entity::Union(AbstractDocument,Corpus)) 
+function remove_numbers!(entity::Union(AbstractDocument,Corpus))
     Base.warn_once("remove_numbers! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_numbers)
 end
-function remove_articles!(entity::Union(AbstractDocument,Corpus)) 
+function remove_articles!(entity::Union(AbstractDocument,Corpus))
     Base.warn_once("remove_articles! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_articles)
 end
-function remove_indefinite_articles!(entity::Union(AbstractDocument,Corpus)) 
+function remove_indefinite_articles!(entity::Union(AbstractDocument,Corpus))
     Base.warn_once("remove_indefinite_articles! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_indefinite_articles)
 end
-function remove_definite_articles!(entity::Union(AbstractDocument,Corpus)) 
+function remove_definite_articles!(entity::Union(AbstractDocument,Corpus))
     Base.warn_once("remove_definite_articles! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_definite_articles)
 end
-function remove_prepositions!(entity::Union(AbstractDocument,Corpus)) 
+function remove_prepositions!(entity::Union(AbstractDocument,Corpus))
     Base.warn_once("remove_prepositions! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_prepositions)
 end
-function remove_pronouns!(entity::Union(AbstractDocument,Corpus)) 
+function remove_pronouns!(entity::Union(AbstractDocument,Corpus))
     Base.warn_once("remove_pronouns! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_pronouns)
 end
-function remove_stop_words!(entity::Union(AbstractDocument,Corpus)) 
+function remove_stop_words!(entity::Union(AbstractDocument,Corpus))
     Base.warn_once("remove_stop_words! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_stopwords)
 end
@@ -277,7 +277,7 @@ function prepare!(crps::Corpus, flags::Uint32; skip_patterns = Set{String}(), sk
     nothing
 end
 
-function prepare!(d::AbstractDocument, flags::Uint32; skip_patterns = Set{String}(), skip_words = Set{String}()) 
+function prepare!(d::AbstractDocument, flags::Uint32; skip_patterns = Set{String}(), skip_words = Set{String}())
     ((flags & strip_corrupt_utf8) > 0) && remove_corrupt_utf8!(d)
     ((flags & strip_case) > 0) && remove_case!(d)
     ((flags & strip_html_tags) > 0) && remove_html_tags!(d)
@@ -359,7 +359,7 @@ end
 
 function _build_regex_patterns{T <: String}(lang, flags::Uint32, patterns::Set{T}, words::Set{T})
     ((flags & strip_whitespace) > 0) && push!(patterns, "\\s+")
-    if (flags & strip_non_letters) > 0 
+    if (flags & strip_non_letters) > 0
         push!(patterns, "[^a-zA-Z\\s]")
     else
         ((flags & strip_punctuation) > 0) && push!(patterns, "[,;:.!?()]+")
