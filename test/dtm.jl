@@ -1,30 +1,36 @@
-sample_file = Pkg.dir("TextAnalysis", "test", "data", "poem.txt")
+module TestDTM
+    using Base.Test
+    using Languages
+    using TextAnalysis
 
-fd = FileDocument(sample_file)
-sd = StringDocument(text(fd))
+    sample_file = Pkg.dir("TextAnalysis", "test", "data", "poem.txt")
 
-crps = Corpus({fd, sd})
+    fd = FileDocument(sample_file)
+    sd = StringDocument(text(fd))
 
-m = DocumentTermMatrix(crps)
-dtm(m)
-dtm(m, :dense)
+    crps = Corpus({fd, sd})
 
-update_lexicon!(crps)
+    m = DocumentTermMatrix(crps)
+    dtm(m)
+    dtm(m, :dense)
 
-m = DocumentTermMatrix(crps)
-dtm(m)
-dtm(m, :dense)
+    update_lexicon!(crps)
 
-tf_idf(dtm(m, :dense))
+    m = DocumentTermMatrix(crps)
+    dtm(m)
+    dtm(m, :dense)
 
-dtv(crps[1], lexicon(crps))
+    tf_idf(dtm(m, :dense))
 
-hash_dtv(crps[1], TextHashFunction())
-hash_dtv(crps[1])
+    dtv(crps[1], lexicon(crps))
 
-dtm(crps)
-dense(dtm(crps))
-hash_dtm(crps)
+    hash_dtv(crps[1], TextHashFunction())
+    hash_dtv(crps[1])
 
-tdm(crps)
-hash_tdm(crps)
+    dtm(crps)
+    sparse(dtm(crps))
+    hash_dtm(crps)
+
+    tdm(crps)
+    hash_tdm(crps)
+end

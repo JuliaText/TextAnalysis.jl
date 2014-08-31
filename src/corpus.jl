@@ -4,6 +4,8 @@
 #
 ##############################################################################
 
+# TODO: Make this a parametric type?
+
 type Corpus
     documents::Vector{GenericDocument}
     total_terms::Int
@@ -11,19 +13,25 @@ type Corpus
     inverse_index::Dict{UTF8String, Vector{Int}}
     h::TextHashFunction
 end
+
 function Corpus(docs::Vector{GenericDocument})
-    Corpus(docs,
-           0,
-           Dict{UTF8String, Int}(),
-           Dict{UTF8String, Vector{Int}}(),
-           TextHashFunction())
+    Corpus(
+        docs,
+        0,
+        Dict{UTF8String, Int}(),
+        Dict{UTF8String, Vector{Int}}(),
+        TextHashFunction()
+    )
 end
+
 function Corpus(docs::Vector{Any})
-    Corpus(convert(Array{GenericDocument,1}, docs),
-           0,
-           Dict{UTF8String, Int}(),
-           Dict{UTF8String, Vector{Int}}(),
-           TextHashFunction())
+    Corpus(
+        convert(Array{GenericDocument,1}, docs),
+        0,
+        Dict{UTF8String, Int}(),
+        Dict{UTF8String, Vector{Int}}(),
+        TextHashFunction()
+    )
 end
 
 ##############################################################################
@@ -69,7 +77,7 @@ end
 ##############################################################################
 
 documents(c::Corpus) = c.documents
-length(crps::Corpus) = length(crps.documents)
+Base.length(crps::Corpus) = length(crps.documents)
 
 ##############################################################################
 #
@@ -77,7 +85,7 @@ length(crps::Corpus) = length(crps.documents)
 #
 ##############################################################################
 
-function convert(::Type{DataFrame}, crps::Corpus)
+function Base.convert(::Type{DataFrame}, crps::Corpus)
     df = DataFrame()
     n = length(crps)
     df["Language"] = DataArray(UTF8String, n)
@@ -104,9 +112,9 @@ end
 #
 ##############################################################################
 
-start(crps::Corpus) = 1
-next(crps::Corpus, ind::Int) = (crps.documents[ind], ind + 1)
-done(crps::Corpus, ind::Int) = ind > length(crps.documents)
+Base.start(crps::Corpus) = 1
+Base.next(crps::Corpus, ind::Int) = (crps.documents[ind], ind + 1)
+Base.done(crps::Corpus, ind::Int) = ind > length(crps.documents)
 
 ##############################################################################
 #
@@ -114,30 +122,30 @@ done(crps::Corpus, ind::Int) = ind > length(crps.documents)
 #
 ##############################################################################
 
-push!(crps::Corpus, d::AbstractDocument) = push!(crps.documents, d)
-pop!(crps::Corpus) = pop!(crps.documents)
+Base.push!(crps::Corpus, d::AbstractDocument) = push!(crps.documents, d)
+Base.pop!(crps::Corpus) = pop!(crps.documents)
 
-unshift!(crps::Corpus, d::AbstractDocument) = unshift!(crps.documents, d)
-shift!(crps::Corpus) = shift!(crps.documents)
+Base.unshift!(crps::Corpus, d::AbstractDocument) = unshift!(crps.documents, d)
+Base.shift!(crps::Corpus) = shift!(crps.documents)
 
-function insert!(crps::Corpus, index::Int, d::AbstractDocument)
+function Base.insert!(crps::Corpus, index::Int, d::AbstractDocument)
     insert!(crps.documents, index, d)
 end
-delete!(crps::Corpus, index::Integer) = delete!(crps.documents, index)
+Base.delete!(crps::Corpus, index::Integer) = delete!(crps.documents, index)
 
 ##############################################################################
 #
 # Indexing into a Corpus
-# 
+#
 # (a) Numeric indexing just provides the n-th document
 # (b) String indexing is effectively a trivial search engine
 #
 ##############################################################################
 
-ref(crps::Corpus, ind::Real) = crps.documents[ind]
-ref{T <: Real}(crps::Corpus, inds::Vector{T}) = crps.documents[inds]
-ref(crps::Corpus, r::Ranges) = crps.documents[r]
-ref(crps::Corpus, term::String) = get(crps.inverse_index, term, Int[])
+Base.getindex(crps::Corpus, ind::Real) = crps.documents[ind]
+Base.getindex{T <: Real}(crps::Corpus, inds::Vector{T}) = crps.documents[inds]
+Base.getindex(crps::Corpus, r::Ranges) = crps.documents[r]
+Base.getindex(crps::Corpus, term::String) = get(crps.inverse_index, term, Int[])
 
 ##############################################################################
 #
@@ -145,7 +153,7 @@ ref(crps::Corpus, term::String) = get(crps.inverse_index, term, Int[])
 #
 ##############################################################################
 
-function assign(crps::Corpus, d::AbstractDocument, ind::Real)
+function Base.setindex!(crps::Corpus, d::AbstractDocument, ind::Real)
     crps.documents[ind] = d
     return d
 end
@@ -218,6 +226,7 @@ index_size(crps::Corpus) = length(keys(crps.inverse_index))
 function hash_function(crps::Corpus)
     return crps.h
 end
+
 function hash_function!(crps::Corpus, f::TextHashFunction)
     crps.h = f
 end

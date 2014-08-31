@@ -58,18 +58,22 @@ function dtm(d::DocumentTermMatrix, density::Symbol)
     if density == :sparse
         return d.dtm
     else
-        return dense(d.dtm)
+        return full(d.dtm)
     end
 end
+
 function dtm(d::DocumentTermMatrix)
     return d.dtm
 end
+
 function dtm(crps::Corpus)
     dtm(DocumentTermMatrix(crps))
 end
 
 tdm(crps::DocumentTermMatrix, density::Symbol) = dtm(crps, density)' #'
+
 tdm(crps::DocumentTermMatrix) = dtm(crps)' #'
+
 tdm(crps::Corpus) = dtm(crps)' #'
 
 ##############################################################################
@@ -108,6 +112,7 @@ function dtv(d::AbstractDocument, lex::Dict{UTF8String, Int})
     end
     return row
 end
+
 function dtv(d::AbstractDocument)
     error("Cannot construct a DTV without a pre-existing lexicon")
 end
@@ -128,6 +133,7 @@ function hash_dtv(d::AbstractDocument, h::TextHashFunction)
     end
     return res
 end
+
 hash_dtv(d::AbstractDocument) = hash_dtv(d, TextHashFunction())
 
 function hash_dtm(crps::Corpus, h::TextHashFunction)
@@ -153,28 +159,35 @@ hash_tdm(crps::Corpus) = hash_dtm(crps)' #'
 type EachDTV
     crps::Corpus
 end
+
 start(edt::EachDTV) = 1
+
 function next(edt::EachDTV, state::Int)
     return (dtv(edt.crps.documents[state], lexicon(edt.crps)), state + 1)
 end
+
 done(edt::EachDTV, state::Int) = state > length(edt.crps.documents)
 
 type EachHashDTV
     crps::Corpus
 end
+
 start(edt::EachHashDTV) = 1
+
 function next(edt::EachHashDTV, state::Int)
     (hash_dtv(edt.crps.documents[state]), state + 1)
 end
+
 done(edt::EachHashDTV, state::Int) = state > length(edt.crps.documents)
 
 each_dtv(crps::Corpus) = EachDTV(crps)
+
 each_hash_dtv(crps::Corpus) = EachHashDTV(crps)
 
 ##
-## ref() methods
+## getindex() methods
 ##
 
-ref(dtm::DocumentTermMatrix, k::String) = dtm.dtm[:, dtm.column_indices[k]]
-ref(dtm::DocumentTermMatrix, i::Any) = dtm.dtm[i]
-ref(dtm::DocumentTermMatrix, i::Any, j::Any) = dtm.dtm[i, j]
+Base.getindex(dtm::DocumentTermMatrix, k::String) = dtm.dtm[:, dtm.column_indices[k]]
+Base.getindex(dtm::DocumentTermMatrix, i::Any) = dtm.dtm[i]
+Base.getindex(dtm::DocumentTermMatrix, i::Any, j::Any) = dtm.dtm[i, j]

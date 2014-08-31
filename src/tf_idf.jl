@@ -14,12 +14,12 @@ function tf_idf{T <: Real}(dtm::Matrix{T})
         for j in 1:p
             words_in_document += dtm[i, j]
         end
-        tf[i, :] = dtm[i, :] / words_in_document
+        tf[i, :] = dtm[i, :] ./ words_in_document
     end
 
     # IDF tells us how rare a term is in the corpus
     documents_containing_term = vec(sum(dtm .> 0, 1))
-    idf = log(n / documents_containing_term)
+    idf = log(n ./ documents_containing_term)
 
     # TF-IDF is the product of TF and IDF
     # We store it in the TF matrix to save space
@@ -43,12 +43,12 @@ function tf_idf{T <: Real}(dtm::SparseMatrixCSC{T})
         for j in 1:p
             words_in_document += dtm[i, j]
         end
-        tf[i, :] = dtm[i, :] / words_in_document
+        tf[i, :] = dtm[i, :] ./ words_in_document
     end
 
     # IDF tells us how rare a term is in the corpus
     documents_containing_term = vec(sum(dtm .> 0, 1))
-    idf = log(n / documents_containing_term)
+    idf = log(n ./ documents_containing_term)
 
     # TF-IDF is the product of TF and IDF
     # We store it in the TF matrix to save space

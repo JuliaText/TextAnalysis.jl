@@ -10,10 +10,13 @@ type DocumentMetadata
     author::UTF8String
     timestamp::UTF8String
 end
-DocumentMetadata() = DocumentMetadata(EnglishLanguage,
-                                      utf8("Unnamed Document"),
-                                      utf8("Unknown Author"),
-                                      utf8("Unknown Time"))
+
+DocumentMetadata() = DocumentMetadata(
+    EnglishLanguage,
+    utf8("Unnamed Document"),
+    utf8("Unknown Author"),
+    utf8("Unknown Time")
+)
 
 ##############################################################################
 #
@@ -33,6 +36,7 @@ type FileDocument <: AbstractDocument
     filename::UTF8String
     metadata::DocumentMetadata
 end
+
 function FileDocument(f::String)
     d = FileDocument(utf8(f), DocumentMetadata())
     d.metadata.name = f
@@ -49,6 +53,7 @@ type StringDocument <: AbstractDocument
     text::UTF8String
     metadata::DocumentMetadata
 end
+
 StringDocument(txt::String) = StringDocument(utf8(txt), DocumentMetadata())
 
 ##############################################################################
@@ -61,13 +66,16 @@ type TokenDocument <: AbstractDocument
     tokens::Vector{UTF8String}
     metadata::DocumentMetadata
 end
+
 function TokenDocument(txt::String, dm::DocumentMetadata)
     TokenDocument(tokenize(dm.language, utf8(txt)), dm)
 end
+
 function TokenDocument(txt::String)
     dm = DocumentMetadata()
     TokenDocument(tokenize(EnglishLanguage, utf8(txt)), dm)
 end
+
 function TokenDocument{T <: String}(tkns::Vector{T})
     dm = DocumentMetadata()
     TokenDocument(convert(Vector{UTF8String}, tkns), dm)
@@ -84,27 +92,32 @@ type NGramDocument <: AbstractDocument
     n::Int
     metadata::DocumentMetadata
 end
+
 function NGramDocument(txt::String, dm::DocumentMetadata)
     NGramDocument(ngramize(dm.language, utf8(txt), 1),
                   1, dm)
 end
+
 function NGramDocument(txt::String, n::Integer)
     dm = DocumentMetadata()
     NGramDocument(ngramize(EnglishLanguage,
                            tokenize(dm.language, utf8(txt)), n),
                   n, dm)
 end
+
 function NGramDocument(txt::String)
     dm = DocumentMetadata()
     NGramDocument(ngramize(EnglishLanguage,
                            tokenize(dm.language, utf8(txt)), 1),
                   1, dm)
 end
+
 function NGramDocument{T <: String}(ng::Dict{T, Int}, n::Int)
     dm = DocumentMetadata()
     NGramDocument(convert(Dict{UTF8String, Int}, ng),
                   n, dm)
 end
+
 function NGramDocument{T <: String}(ng::Dict{T, Int})
     dm = DocumentMetadata()
     NGramDocument(convert(Dict{UTF8String, Int}, ng),
@@ -209,10 +222,11 @@ end
 #
 ##############################################################################
 
-function length(d::NGramDocument)
+function Base.length(d::NGramDocument)
     error("NGramDocument's do not have a well-defined length")
 end
-length(d::AbstractDocument) = length(text(d))
+
+Base.length(d::AbstractDocument) = length(text(d))
 
 ##############################################################################
 #
@@ -221,6 +235,7 @@ length(d::AbstractDocument) = length(text(d))
 ##############################################################################
 
 ngram_complexity(ngd::NGramDocument) = ngd.n
+
 function ngram_complexity(d::AbstractDocument)
     error("$(typeof(d))'s have no n-gram complexity")
 end
@@ -231,8 +246,12 @@ end
 #
 ##############################################################################
 
-typealias GenericDocument Union(FileDocument, StringDocument,
-                                TokenDocument, NGramDocument)
+typealias GenericDocument Union(
+    FileDocument,
+    StringDocument,
+    TokenDocument,
+    NGramDocument
+)
 
 ##############################################################################
 #
@@ -262,33 +281,35 @@ end
 #
 ##############################################################################
 
-function convert(::Type{StringDocument},
+function Base.convert(::Type{StringDocument},
                  d::FileDocument)
     new_d = StringDocument(text(d))
     new_d.metadata = d.metadata
     return new_d
 end
 
-function convert(::Type{TokenDocument},
+function Base.convert(::Type{TokenDocument},
                  d::Union(FileDocument, StringDocument))
     new_d = TokenDocument(tokens(d))
     new_d.metadata = d.metadata
     return new_d
 end
-convert(::Type{TokenDocument}, d::TokenDocument) = d
 
-function convert(::Type{NGramDocument},
+Base.convert(::Type{TokenDocument}, d::TokenDocument) = d
+
+function Base.convert(::Type{NGramDocument},
                  d::Union(FileDocument, StringDocument, TokenDocument))
     new_d = NGramDocument(ngrams(d))
     new_d.metadata = d.metadata
     return new_d
 end
-convert(::Type{NGramDocument}, d::NGramDocument) = d
+
+Base.convert(::Type{NGramDocument}, d::NGramDocument) = d
 
 ##############################################################################
 #
-# ref() methods: StringDocument("This is text and that is not")["is"]
+# getindex() methods: StringDocument("This is text and that is not")["is"]
 #
 ##############################################################################
 
-ref(d::AbstractDocument, term::String) = ngrams(d)[term]
+Base.getindex(d::AbstractDocument, term::String) = ngrams(d)[term]
