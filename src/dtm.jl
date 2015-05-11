@@ -16,8 +16,7 @@ end
 #
 ##############################################################################
 
-function DocumentTermMatrix(crps::Corpus)
-    lex = lexicon(crps)
+function DocumentTermMatrix(crps::Corpus, lex)
     terms = sort(collect(keys(lex)))
     column_indices = Dict{UTF8String, Int}()
     for i in 1:length(terms)
@@ -47,6 +46,7 @@ function DocumentTermMatrix(crps::Corpus)
     end
     DocumentTermMatrix(dtm, terms, column_indices)
 end
+DocumentTermMatrix(crps::Corpus) = DocumentTermMatrix(crps, lexicon(crps))
 
 ##############################################################################
 #
