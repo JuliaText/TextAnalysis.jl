@@ -95,7 +95,7 @@ function Base.convert(::Type{DataFrame}, crps::Corpus)
     df["Length"] = DataArray(Int, n)
     df["Text"] = DataArray(UTF8String, n)
     for i in 1:n
-        d = crps[i]
+        d = crps.documents[i]
         df[i, "Language"] = string(language(d))
         df[i, "Name"] = name(d)
         df[i, "Author"] = author(d)
@@ -203,7 +203,7 @@ inverse_index(crps::Corpus) = crps.inverse_index
 function update_inverse_index!(crps::Corpus)
     crps.inverse_index = Dict{UTF8String, Array{Int, 1}}()
     for i in 1:length(crps)
-        doc = crps[i]
+        doc = crps.documents[i]
         ngs = ngrams(doc)
         for ngram in keys(ngs)
             if haskey(crps.inverse_index, ngram)
@@ -239,6 +239,6 @@ end
 
 function standardize!{T <: AbstractDocument}(crps::Corpus, ::Type{T})
     for i in 1:length(crps)
-        crps[i] = convert(T, crps[i])
+        crps.documents[i] = convert(T, crps.documents[i])
     end
 end
