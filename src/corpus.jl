@@ -144,7 +144,7 @@ Base.delete!(crps::Corpus, index::Integer) = delete!(crps.documents, index)
 
 Base.getindex(crps::Corpus, ind::Real) = crps.documents[ind]
 Base.getindex{T <: Real}(crps::Corpus, inds::Vector{T}) = crps.documents[inds]
-Base.getindex(crps::Corpus, r::Ranges) = crps.documents[r]
+Base.getindex(crps::Corpus, r::Range) = crps.documents[r]
 Base.getindex(crps::Corpus, term::String) = get(crps.inverse_index, term, Int[])
 
 ##############################################################################
