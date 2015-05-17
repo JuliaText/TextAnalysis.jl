@@ -28,7 +28,7 @@ function DocumentTermMatrix(crps::Corpus)
     columns = Array(Int, 0)
     values = Array(Int, 0)
     for i in 1:length(crps)
-        doc = crps[i]
+        doc = crps.documents[i]
         ngs = ngrams(doc)
         for ngram in keys(ngs)
             j = get(column_indices, ngram, 0)
@@ -140,7 +140,7 @@ function hash_dtm(crps::Corpus, h::TextHashFunction)
     n, p = length(crps), cardinality(h)
     res = zeros(Int, n, p)
     for i in 1:length(crps)
-        doc = crps[i]
+        doc = crps.documents[i]
         res[i, :] = hash_dtv(doc, h)
     end
     return res
