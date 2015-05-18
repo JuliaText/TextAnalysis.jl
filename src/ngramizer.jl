@@ -4,9 +4,9 @@
 #
 ##############################################################################
 
-function ngramize{S <: Language, T <: String}(::Type{S},
-                                              words::Vector{T},
-                                              n::Int)
+function ngramize{S <: Language, T <: String}(::Type{S}, words::Vector{T}, n::Int)
+    (n == 1) && return onegramize(S, words)
+
     n_words = length(words)
 
     tokens = Dict{UTF8String, Int}()
@@ -20,3 +20,15 @@ function ngramize{S <: Language, T <: String}(::Type{S},
 
     return tokens
 end
+
+function onegramize{S <: Language, T <: String}(::Type{S}, words::Vector{T})
+    n_words = length(words)
+    tokens = Dict{T, Int}()
+
+    for word in words
+        tokens[word] = get(tokens, word, 0) + 1
+    end
+
+    tokens
+end
+

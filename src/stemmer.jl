@@ -58,6 +58,15 @@ function stem(stemmer::Stemmer, word::String)
     bytestring(bytes)
 end
 
+function stem(stemmer::Stemmer, word::SubString)
+    sres = ccall((:sb_stemmer_stem, _libsb), Ptr{Uint8}, (Ptr{Uint8}, Ptr{Uint8}, Cint), stemmer.cptr, pointer(word.string.data)+word.offset, word.endof)
+    (C_NULL == sres) && error("error in stemming")
+    slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
+    bytes = pointer_to_array(sres, int(slen), false)
+    bytestring(bytes)
+end
+
+
 function stem(stemmer::Stemmer, words::Array)
     l = length(words)
     ret = Array(String, l)
@@ -88,13 +97,13 @@ end
 
 function stem!(stemmer::Stemmer, d::StringDocument)
     tokens = TextAnalysis.tokenize(language(d), d.text)
-    stemmed = convert(Array{UTF8String, 1}, stem(stemmer, tokens))
+    stemmed = stem(stemmer, tokens)
     d.text = join(stemmed, ' ')
     nothing 
 end
 
 function stem!(stemmer::Stemmer, d::TokenDocument)
-    d.tokens = convert(Array{UTF8String, 1}, stem(stemmer, d.tokens))
+    d.tokens = stem(stemmer, d.tokens)
 end 
     
 function stem!(stemmer::Stemmer, d::NGramDocument)

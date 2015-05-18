@@ -201,18 +201,21 @@ end
 inverse_index(crps::Corpus) = crps.inverse_index
 
 function update_inverse_index!(crps::Corpus)
-    crps.inverse_index = Dict{UTF8String, Array{Int, 1}}()
+    idx = Dict{UTF8String, Array{Int, 1}}()
     for i in 1:length(crps)
         doc = crps.documents[i]
-        ngs = ngrams(doc)
-        for ngram in keys(ngs)
-            if haskey(crps.inverse_index, ngram)
-                push!(crps.inverse_index[ngram], i)
+        for ngram in (isa(doc, NGramDocument) ? keys(ngrams(doc)) : tokens(doc))
+            if haskey(idx, ngram)
+                push!(idx[ngram], i)
             else
-                crps.inverse_index[ngram] = [i]
+                idx[ngram] = [i]
             end
         end
     end
+    for key in keys(idx)
+        idx[key] = unique(idx[key])
+    end
+    crps.inverse_index = idx
 end
 
 index_size(crps::Corpus) = length(keys(crps.inverse_index))
