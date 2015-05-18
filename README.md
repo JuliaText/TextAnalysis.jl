@@ -1,6 +1,9 @@
 TextAnalysis.jl
 ===============
 
+[![Build Status](https://api.travis-ci.org/johnmyleswhite/TextAnalysis.jl.svg)](https://api.travis-ci.org/johnmyleswhite/TextAnalysis.jl)
+[![JSON](http://pkg.julialang.org/badges/TextAnalysis_release.svg)](http://pkg.julialang.org/?pkg=TextAnalysis&ver=release)
+
 # Preface
 
 This manual is designed to get you started doing text analysis in Julia.
