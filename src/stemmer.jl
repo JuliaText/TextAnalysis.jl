@@ -33,7 +33,15 @@ type Stemmer
 
     function Stemmer(stemmer_type::String, charenc::String=UTF_8)
         cptr = ccall((:sb_stemmer_new, _libsb), Ptr{Void}, (Ptr{Uint8}, Ptr{Uint8}), bytestring(stemmer_type), bytestring(charenc))
-        (C_NULL == cptr) && error("error creating stemmer of type $(stemmer_type) for $(charenc) encoding")
+
+        if cptr == C_NULL
+            if charenc == UTF_8
+                error("stemmer '$(stemmer_type)' is not available")
+            else
+                error("stemmer '$(stemmer_type)' is not available for encoding '$(charenc)'")
+            end
+        end
+
         stm = new(cptr, stemmer_type, charenc)
         finalizer(stm, release)
         stm
@@ -77,12 +85,7 @@ function stem(stemmer::Stemmer, words::Array)
 end
 
 function stemmer_for_document(d::AbstractDocument)
-    langtype = language(d)
-    alg = "porter"
-    if langtype == EnglishLanguage 
-        alg = "english"
-    end
-    Stemmer(alg)
+    Stemmer(name(language(d)))
 end
 
 function stem!(d::AbstractDocument)
