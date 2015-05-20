@@ -1,34 +1,37 @@
 
-const strip_patterns                = uint32(0)
-const strip_corrupt_utf8            = uint32(0x1) << 0
-const strip_case                    = uint32(0x1) << 1
-const stem_words                    = uint32(0x1) << 2
-const tag_part_of_speech            = uint32(0x1) << 3
+const strip_patterns                = @compat(UInt32(0))
+const strip_corrupt_utf8            = @compat(UInt32(0x1)) << 0
+const strip_case                    = @compat(UInt32(0x1)) << 1
+const stem_words                    = @compat(UInt32(0x1)) << 2
+const tag_part_of_speech            = @compat(UInt32(0x1)) << 3
 
-const strip_whitespace              = uint32(0x1) << 5
-const strip_punctuation             = uint32(0x1) << 6
-const strip_numbers                 = uint32(0x1) << 7
-const strip_non_letters             = uint32(0x1) << 8
+const strip_whitespace              = @compat(UInt32(0x1)) << 5
+const strip_punctuation             = @compat(UInt32(0x1)) << 6
+const strip_numbers                 = @compat(UInt32(0x1)) << 7
+const strip_non_letters             = @compat(UInt32(0x1)) << 8
 
-const strip_indefinite_articles     = uint32(0x1) << 9
-const strip_definite_articles       = uint32(0x1) << 10
-const strip_articles                = (strip_indefinite_articles | strip_definite_articles)
+const strip_indefinite_articles     = @compat(UInt32(0x1)) << 9
+const strip_definite_articles       = @compat(UInt32(0x1)) << 10
+const strip_articles                = (strip_indefinite_articles | 
+                                       strip_definite_articles)
 
-const strip_prepositions            = uint32(0x1) << 13
-const strip_pronouns                = uint32(0x1) << 14
+const strip_prepositions            = @compat(UInt32(0x1)) << 13
+const strip_pronouns                = @compat(UInt32(0x1)) << 14
 
-const strip_stopwords               = uint32(0x1) << 16
-const strip_sparse_terms            = uint32(0x1) << 17
-const strip_frequent_terms          = uint32(0x1) << 18
+const strip_stopwords               = @compat(UInt32(0x1)) << 16
+const strip_sparse_terms            = @compat(UInt32(0x1)) << 17
+const strip_frequent_terms          = @compat(UInt32(0x1)) << 18
 
-const strip_html_tags               = uint32(0x1) << 20
+const strip_html_tags               = @compat(UInt32(0x1)) << 20
 
 const alpha_sparse      = 0.05
 const alpha_frequent    = 0.95
 
 const regex_cache = Dict{String, Regex}()
 function mk_regex(regex_string)
-    d = haskey(regex_cache, regex_string) ? regex_cache[regex_string] : (regex_cache[regex_string] = Regex(regex_string, 0))
+    d = haskey(regex_cache, regex_string) ? 
+            regex_cache[regex_string] : 
+            (regex_cache[regex_string] = Regex(regex_string, 0))
     (length(regex_cache) > 50) && empty!(regex_cache)
     d
 end
@@ -87,15 +90,12 @@ end
 #
 ##############################################################################
 
-#remove_case(s::MutableASCIIString) = lowercase!(s)
-#remove_case(s::MutableUTF8String) = lowercase!(s)
-remove_case(s::MutableString) = lowercase!(s)
 remove_case{T <: String}(s::T) = lowercase(s)
 
 remove_case!(d::FileDocument) = error("FileDocument cannot be modified")
 
 function remove_case!(d::StringDocument)
-    isa(d.text, MutableString) ? remove_case(d.text) : (d.text = remove_case(d.text))
+    d.text = remove_case(d.text)
     nothing
 end
 
@@ -137,7 +137,9 @@ function remove_html_tags(s::String)
     remove_patterns(s, html_tags)
 end
 
-remove_html_tags!(d::AbstractDocument) = error("HTML tags can be removed only from a StringDocument")
+function remove_html_tags!(d::AbstractDocument)
+    error("HTML tags can be removed only from a StringDocument")
+end
 
 function remove_html_tags!(d::StringDocument)
     d.text = remove_html_tags(d.text)
@@ -155,7 +157,8 @@ end
 # Remove specified words
 #
 ##############################################################################
-function remove_words!{T <: String}(entity::Union(AbstractDocument,Corpus), words::Vector{T})
+function remove_words!{T <: String}(entity::Union(AbstractDocument,Corpus),
+                                    words::Vector{T})
     skipwords = Set{String}()
     union!(skipwords, words)
     prepare!(entity, strip_patterns, skip_words = skipwords)
@@ -293,12 +296,6 @@ end
 
 ##
 # internal helper methods
-#mk_blank(x::MutableASCIIString, y::Range1) = (x.data[y] = uint8(' '); nothing)
-
-function remove_patterns(s::MutableString, rex::Regex)
-    replace!(s, rex, ' ')
-    s
-end
 
 function remove_patterns(s::String, rex::Regex)
     iob = IOBuffer()

@@ -39,7 +39,8 @@ if !isfile(binpath)
     end
 
     @windows_only begin
-        Base.warn("No integrated stemmer available on Windows yet. Place a compiled Snowball stemmer dll at $binpath for stemming to work.")
+        Base.warn("No integrated stemmer available on Windows yet.\n" *
+                  "Place a compiled Snowball stemmer dll at $binpath for stemming to work.")
     end
 end
 

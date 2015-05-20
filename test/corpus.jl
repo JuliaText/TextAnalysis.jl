@@ -12,7 +12,7 @@ module TestCorpus
     td = TokenDocument(sample_text1)
     ngd = NGramDocument(sample_text1)
 
-    crps = Corpus({sd, fd, td, ngd})
+    crps = Corpus(Any[sd, fd, td, ngd])
 
     documents(crps)
 

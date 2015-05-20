@@ -13,8 +13,18 @@ type Corpus
     inverse_index::Dict{UTF8String, Vector{Int}}
     h::TextHashFunction
 end
-Corpus(docs::Vector{GenericDocument})   = Corpus(docs, 0, Dict{UTF8String, Int}(), Dict{UTF8String, Vector{Int}}(), TextHashFunction())
-Corpus(docs::Vector{Any})               = Corpus(convert(Array{GenericDocument,1}, docs)) 
+
+function Corpus(docs::Vector{GenericDocument})
+    Corpus(
+        docs, 
+        0,
+        Dict{UTF8String, Int}(),
+        Dict{UTF8String, Vector{Int}}(),
+        TextHashFunction()
+    )
+end
+
+Corpus(docs::Vector{Any}) = Corpus(convert(Array{GenericDocument,1}, docs))
 
 ##############################################################################
 #
@@ -167,7 +177,8 @@ function update_lexicon!(crps::Corpus)
 end
 
 lexicon_size(crps::Corpus) = length(keys(crps.lexicon))
-lexical_frequency(crps::Corpus, term::String) = (get(crps.lexicon, term, 0) / crps.total_terms)
+lexical_frequency(crps::Corpus, term::String) = 
+    (get(crps.lexicon, term, 0) / crps.total_terms)
 
 ##############################################################################
 #
@@ -183,7 +194,8 @@ function update_inverse_index!(crps::Corpus)
     idx = Dict{UTF8String, Array{Int, 1}}()
     for i in 1:length(crps)
         doc = crps.documents[i]
-        ngram_arr = convert(Array{UTF8String,1}, isa(doc, NGramDocument) ? collect(keys(ngrams(doc))) : tokens(doc))
+        ngram_arr = isa(doc, NGramDocument) ? collect(keys(ngrams(doc))) : tokens(doc)
+        ngram_arr = convert(Array{UTF8String,1}, ngram_arr)
         for ngram in ngram_arr
             if haskey(idx, ngram)
                 push!(idx[ngram], i)

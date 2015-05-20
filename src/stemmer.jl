@@ -1,5 +1,5 @@
-
-@BinDeps.load_dependencies [:libstemmer=>:_libsb]
+const _libsb = joinpath(Pkg.dir(),"TextAnalysis","deps","usr","lib", "libstemmer."*BinDeps.shlib_ext)
+#@BinDeps.load_dependencies [:libstemmer=>:_libsb]
 
 ##
 # character encodings supported by libstemmer
@@ -31,7 +31,10 @@ type Stemmer
     enc::String
 
     function Stemmer(stemmer_type::String, charenc::String=UTF_8)
-        cptr = ccall((:sb_stemmer_new, _libsb), Ptr{Void}, (Ptr{Uint8}, Ptr{Uint8}), bytestring(stemmer_type), bytestring(charenc))
+        cptr = ccall((:sb_stemmer_new, _libsb),
+                    Ptr{Void},
+                    (Ptr{Uint8}, Ptr{Uint8}),
+                    bytestring(stemmer_type), bytestring(charenc))
 
         if cptr == C_NULL
             if charenc == UTF_8
@@ -58,18 +61,24 @@ end
 
 stem(stemmer::Stemmer, word::String) = stem(stemmer, bytestring(word))
 function stem(stemmer::Stemmer, bstr::ByteString)
-    sres = ccall((:sb_stemmer_stem, _libsb), Ptr{Uint8}, (Ptr{Uint8}, Ptr{Uint8}, Cint), stemmer.cptr, bstr, length(bstr))
+    sres = ccall((:sb_stemmer_stem, _libsb),
+                Ptr{Uint8},
+                (Ptr{Uint8}, Ptr{Uint8}, Cint),
+                stemmer.cptr, bstr, length(bstr))
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
-    bytes = pointer_to_array(sres, int(slen), false)
+    bytes = pointer_to_array(sres, @compat(Int(slen)), false)
     bytestring(bytes)
 end
 
 function stem(stemmer::Stemmer, word::SubString{ByteString})
-    sres = ccall((:sb_stemmer_stem, _libsb), Ptr{Uint8}, (Ptr{Uint8}, Ptr{Uint8}, Cint), stemmer.cptr, pointer(word.string.data)+word.offset, word.endof)
+    sres = ccall((:sb_stemmer_stem, _libsb),
+                Ptr{Uint8},
+                (Ptr{Uint8}, Ptr{Uint8}, Cint),
+                stemmer.cptr, pointer(word.string.data)+word.offset, word.endof)
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
-    bytes = pointer_to_array(sres, int(slen), false)
+    bytes = pointer_to_array(sres, @compat(Int(slen)), false)
     bytestring(bytes)
 end
 
@@ -77,36 +86,6 @@ function stem_all{S <: Language}(stemmer::Stemmer, lang::Type{S}, sentence::Stri
     tokens = TextAnalysis.tokenize(lang, sentence)
     stemmed = stem(stemmer, tokens)
     join(stemmed, ' ')
-end
-
-function stem!(stemmer::Stemmer, word::MutableString, start_pos::Int=1, end_pos::Int=0)
-    data = word.data
-    len = (end_pos == 0) ? (length(data)-start_pos+1) : (end_pos-start_pos+1)
-    sres = ccall((:sb_stemmer_stem, _libsb), Ptr{Uint8}, (Ptr{Uint8}, Ptr{Uint8}, Cint), stemmer.cptr, pointer(data)+start_pos-1, len)
-    (C_NULL == sres) && error("error in stemming")
-    const slen::Int = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
-    for idx in 0:(slen-1)
-        data[start_pos+idx] = unsafe_load(sres, idx+1)
-    end
-    if len > slen
-        for idx in (slen):(len-1)
-            data[start_pos+idx] = ' '
-        end
-    end
-    nothing
-end
-
-function stem_all!{S <: Language}(stemmer::Stemmer, lang::Type{S}, sentence::MutableString)
-    idx1 = 1
-    data = sentence.data
-    const l::Int = length(data)
-    const space::Uint8 = uint8(' ')
-    for idx2 = 1:l
-        if data[idx2] == space
-            (idx1 < (idx2-1)) && stem!(stemmer, sentence, idx1, idx2-1)
-            idx1 = idx2+1
-        end
-    end
 end
 
 function stem(stemmer::Stemmer, words::Array)
@@ -132,11 +111,7 @@ stem!(stemmer::Stemmer, d::FileDocument) = error("FileDocument cannot be modifie
 
 function stem!(stemmer::Stemmer, d::StringDocument)
     stemmer = stemmer_for_document(d)
-    if isa(d.text, MutableString)
-        stem_all!(stemmer, language(d), d.text)
-    else
-        d.text = stem_all(stemmer, language(d), d.text)
-    end
+    d.text = stem_all(stemmer, language(d), d.text)
     nothing 
 end
 
@@ -166,4 +141,3 @@ function stem!(crps::Corpus)
     end
     release(stemmer)
 end
-

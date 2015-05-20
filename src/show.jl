@@ -21,7 +21,7 @@ function summary(d::AbstractDocument)
     o *= " * Name: $(name(d))\n"
     o *= " * Author: $(author(d))\n"
     o *= " * Timestamp: $(timestamp(d))\n"
-    if contains({TokenDocument, NGramDocument}, typeof(d))
+    if contains(Any[TokenDocument, NGramDocument], typeof(d))
         o *= " * Snippet: ***SAMPLE TEXT NOT AVAILABLE***"
     else
         sample_text = replace(text(d)[1:50], r"\s+", " ")
