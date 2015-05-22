@@ -31,8 +31,6 @@ module TestDocument
     @assert isa(sd, StringDocument)
     @assert isequal(text(sd), hamlet_text)
 
-    pathname = "/usr/share/dict/words"
-    fd = FileDocument(pathname)
     @assert isa(fd, FileDocument)
     @assert length(text(fd)) > 0
 
