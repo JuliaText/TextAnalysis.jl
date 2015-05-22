@@ -8,7 +8,7 @@ module TestDTM
     fd = FileDocument(sample_file)
     sd = StringDocument(text(fd))
 
-    crps = Corpus({fd, sd})
+    crps = Corpus(Any[fd, sd])
 
     m = DocumentTermMatrix(crps)
     dtm(m)

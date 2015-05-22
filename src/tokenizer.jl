@@ -4,6 +4,4 @@
 #
 ##############################################################################
 
-function tokenize{S <: Language}(::Type{S}, s::String)
-    return matchall(r"[^\s]+", s)
-end
+tokenize{S <: Language, T <: String}(::Type{S}, s::T) = matchall(r"[^\s]+", s)

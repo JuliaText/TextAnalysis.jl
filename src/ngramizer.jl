@@ -9,7 +9,7 @@ function ngramize{S <: Language, T <: String}(::Type{S}, words::Vector{T}, n::In
 
     n_words = length(words)
 
-    tokens = Dict{UTF8String, Int}()
+    tokens = Dict{String, Int}()
 
     for m in 1:n
         for index in 1:(n_words - m + 1)

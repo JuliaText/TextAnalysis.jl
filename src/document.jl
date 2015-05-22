@@ -10,7 +10,6 @@ type DocumentMetadata
     author::UTF8String
     timestamp::UTF8String
 end
-
 DocumentMetadata() = DocumentMetadata(
     EnglishLanguage,
     utf8("Unnamed Document"),
@@ -50,7 +49,7 @@ end
 ##############################################################################
 
 type StringDocument <: AbstractDocument
-    text::UTF8String
+    text::String
     metadata::DocumentMetadata
 end
 
@@ -66,20 +65,13 @@ type TokenDocument <: AbstractDocument
     tokens::Vector{String}
     metadata::DocumentMetadata
 end
-
 function TokenDocument(txt::String, dm::DocumentMetadata)
     TokenDocument(tokenize(dm.language, utf8(txt)), dm)
 end
-
-function TokenDocument(txt::String)
-    dm = DocumentMetadata()
-    TokenDocument(tokenize(EnglishLanguage, utf8(txt)), dm)
-end
-
 function TokenDocument{T <: String}(tkns::Vector{T})
-    dm = DocumentMetadata()
-    TokenDocument(tkns, dm)
+    TokenDocument(tkns, DocumentMetadata())
 end
+TokenDocument(txt::String) = TokenDocument(txt, DocumentMetadata())
 
 ##############################################################################
 #
@@ -88,40 +80,19 @@ end
 ##############################################################################
 
 type NGramDocument <: AbstractDocument
-    ngrams::Dict
+    ngrams::Dict{String,Int}
     n::Int
     metadata::DocumentMetadata
 end
-
-function NGramDocument(txt::String, dm::DocumentMetadata)
-    NGramDocument(ngramize(dm.language, utf8(txt), 1),
-                  1, dm)
+function NGramDocument(txt::String, dm::DocumentMetadata, n::Integer=1)
+    NGramDocument(ngramize(dm.language, tokenize(dm.language, utf8(txt)), n),
+        n, dm)
 end
-
-function NGramDocument(txt::String, n::Integer)
-    dm = DocumentMetadata()
-    NGramDocument(ngramize(EnglishLanguage,
-                           tokenize(dm.language, utf8(txt)), n),
-                  n, dm)
+function NGramDocument(txt::String, n::Integer=1)
+    NGramDocument(txt, DocumentMetadata(), n)
 end
-
-function NGramDocument(txt::String)
-    dm = DocumentMetadata()
-    NGramDocument(ngramize(EnglishLanguage,
-                           tokenize(dm.language, utf8(txt)), 1),
-                  1, dm)
-end
-
-function NGramDocument{T <: String}(ng::Dict{T, Int}, n::Int)
-    dm = DocumentMetadata()
-    NGramDocument(convert(Dict{UTF8String, Int}, ng),
-                  n, dm)
-end
-
-function NGramDocument{T <: String}(ng::Dict{T, Int})
-    dm = DocumentMetadata()
-    NGramDocument(convert(Dict{UTF8String, Int}, ng),
-                  1, dm)
+function NGramDocument{T <: String}(ng::Dict{T, Int}, n::Integer=1)
+    NGramDocument(merge(Dict{String,Int}(), ng), n, DocumentMetadata())
 end
 
 ##############################################################################
@@ -131,31 +102,20 @@ end
 ##############################################################################
 
 function text(fd::FileDocument)
-    if isfile(fd.filename)
-        return readall(fd.filename)
-    else
-        error("Can't find file: $(fd.filename)")
-    end
+    !isfile(fd.filename) && error("Can't find file: $(fd.filename)")
+    readall(fd.filename)
 end
 
-function text(sd::StringDocument)
-    return sd.text
-end
-
+text(sd::StringDocument) = sd.text
 function text(td::TokenDocument)
     warn("TokenDocument's can only approximate the original text")
-    return join(td.tokens, " ")
+    join(td.tokens, " ")
 end
-
 function text(ngd::NGramDocument)
     error("The text of an NGramDocument cannot be reconstructed")
 end
 
-function text!(sd::StringDocument, new_text::String)
-    sd.text = new_text
-    return sd.text
-end
-
+text!(sd::StringDocument, new_text::String) = (sd.text = new_text)
 function text!(d::AbstractDocument, new_text::String)
     error("The text of a $(typeof(d)) cannot be edited")
 end
@@ -166,22 +126,13 @@ end
 #
 ##############################################################################
 
-function tokens(d::Union(FileDocument, StringDocument))
-    tokenize(language(d), text(d))
-end
-
-function tokens(d::TokenDocument)
-    d.tokens
-end
-
+tokens(d::Union(FileDocument, StringDocument)) = tokenize(language(d), text(d))
+tokens(d::TokenDocument) = d.tokens
 function tokens(d::NGramDocument)
     error("The tokens of an NGramDocument cannot be reconstructed")
 end
 
-function tokens!{T <: String}(d::TokenDocument, new_tokens::Vector{T})
-    d.tokens = new_tokens
-end
-
+tokens!{T <: String}(d::TokenDocument, new_tokens::Vector{T}) = (d.tokens = new_tokens)
 function tokens!{T <: String}(d::AbstractDocument, new_tokens::Vector{T})
     error("The tokens of a $(typeof(d)) cannot be directly edited")
 end
@@ -195,24 +146,12 @@ end
 function ngrams(d::NGramDocument, n::Integer)
     error("The n-gram complexity of an NGramDocument cannot be increased")
 end
+ngrams(d::AbstractDocument, n::Integer) = ngramize(language(d), tokens(d), n)
+ngrams(d::NGramDocument) = d.ngrams
+ngrams(d::AbstractDocument) = ngrams(d, 1)
 
-function ngrams(d::AbstractDocument, n::Integer)
-    ngramize(language(d), tokens(d), n)
-end
-
-function ngrams(d::NGramDocument)
-    d.ngrams
-end
-
-function ngrams(d::AbstractDocument)
-    ngrams(d, 1)
-end
-
-function ngrams!(d::NGramDocument, new_ngrams::Dict{UTF8String, Int})
-    d.ngrams = new_ngrams
-end
-
-function ngrams!(d::AbstractDocument, new_ngrams::Dict{UTF8String, Int})
+ngrams!(d::NGramDocument, new_ngrams::Dict{String, Int}) = (d.ngrams = new_ngrams)
+function ngrams!(d::AbstractDocument, new_ngrams::Dict)
     error("The n-grams of $(typeof(d)) cannot be directly edited")
 end
 
@@ -259,21 +198,9 @@ typealias GenericDocument Union(
 #
 ##############################################################################
 
-function Document(str::String)
-    if isfile(str)
-        FileDocument(str)
-    else
-        StringDocument(str)
-    end
-end
-
-function Document{T <: String}(tkns::Vector{T})
-    TokenDocument(tkns)
-end
-
-function Document(ng::Dict{UTF8String, Int})
-    NGramDocument(ng)
-end
+Document(str::String) = isfile(str) ? FileDocument(str) : StringDocument(str)
+Document{T <: String}(tkns::Vector{T}) = TokenDocument(tkns)
+Document(ng::Dict{UTF8String, Int}) = NGramDocument(ng)
 
 ##############################################################################
 #
@@ -281,29 +208,17 @@ end
 #
 ##############################################################################
 
-function Base.convert(::Type{StringDocument},
-                 d::FileDocument)
-    new_d = StringDocument(text(d))
-    new_d.metadata = d.metadata
-    return new_d
+function Base.convert(::Type{StringDocument}, d::FileDocument)
+    StringDocument(text(d), d.metadata)
 end
-
-function Base.convert(::Type{TokenDocument},
-                 d::Union(FileDocument, StringDocument))
-    new_d = TokenDocument(tokens(d))
-    new_d.metadata = d.metadata
-    return new_d
+function Base.convert(::Type{TokenDocument}, d::Union(FileDocument, StringDocument))
+    TokenDocument(tokens(d), d.metadata)
 end
-
+function Base.convert(::Type{NGramDocument}, 
+            d::Union(FileDocument, StringDocument, TokenDocument))
+    NGramDocument(ngrams(d), 1, d.metadata)
+end
 Base.convert(::Type{TokenDocument}, d::TokenDocument) = d
-
-function Base.convert(::Type{NGramDocument},
-                 d::Union(FileDocument, StringDocument, TokenDocument))
-    new_d = NGramDocument(ngrams(d))
-    new_d.metadata = d.metadata
-    return new_d
-end
-
 Base.convert(::Type{NGramDocument}, d::NGramDocument) = d
 
 ##############################################################################
