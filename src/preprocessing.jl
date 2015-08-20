@@ -12,7 +12,7 @@ const strip_non_letters             = @compat(UInt32(0x1)) << 8
 
 const strip_indefinite_articles     = @compat(UInt32(0x1)) << 9
 const strip_definite_articles       = @compat(UInt32(0x1)) << 10
-const strip_articles                = (strip_indefinite_articles | 
+const strip_articles                = (strip_indefinite_articles |
                                        strip_definite_articles)
 
 const strip_prepositions            = @compat(UInt32(0x1)) << 13
@@ -29,9 +29,9 @@ const alpha_frequent    = 0.95
 
 const regex_cache = Dict{String, Regex}()
 function mk_regex(regex_string)
-    d = haskey(regex_cache, regex_string) ? 
-            regex_cache[regex_string] : 
-            (regex_cache[regex_string] = Regex(regex_string, 0))
+    d = haskey(regex_cache, regex_string) ?
+            regex_cache[regex_string] :
+            (regex_cache[regex_string] = Regex(regex_string))
     (length(regex_cache) > 50) && empty!(regex_cache)
     d
 end
@@ -129,8 +129,8 @@ end
 # Stripping HTML tags
 #
 ##############################################################################
-const script_tags = Regex("<script\\b[^>]*>([\\s\\S]*?)</script>", 0)
-const html_tags = Regex("<[^>]*>", 0)
+const script_tags = Regex("<script\\b[^>]*>([\\s\\S]*?)</script>")
+const html_tags = Regex("<[^>]*>")
 
 function remove_html_tags(s::String)
     s = remove_patterns(s, script_tags)
@@ -417,4 +417,3 @@ function _build_words_pattern{T <: String}(words::Vector{T})
     write(iob, ")\\b")
     takebuf_string(iob)
 end
-
