@@ -188,6 +188,6 @@ each_hash_dtv(crps::Corpus) = EachHashDTV(crps)
 ## getindex() methods
 ##
 
-Base.getindex(dtm::DocumentTermMatrix, k::String) = dtm.dtm[:, dtm.column_indices[k]]
+Base.getindex(dtm::DocumentTermMatrix, k::AbstractString) = dtm.dtm[:, dtm.column_indices[k]]
 Base.getindex(dtm::DocumentTermMatrix, i::Any) = dtm.dtm[i]
 Base.getindex(dtm::DocumentTermMatrix, i::Any, j::Any) = dtm.dtm[i, j]

@@ -11,7 +11,7 @@ language(d::AbstractDocument) = d.metadata.language
 author(d::AbstractDocument) = d.metadata.author
 timestamp(d::AbstractDocument) = d.metadata.timestamp
 
-function name!(d::AbstractDocument, nv::String)
+function name!(d::AbstractDocument, nv::AbstractString)
     d.metadata.name = nv
 end
 
@@ -19,11 +19,11 @@ function language!{T <: Language}(d::AbstractDocument, nv::Type{T})
     d.metadata.language = nv
 end
 
-function author!(d::AbstractDocument, nv::String)
+function author!(d::AbstractDocument, nv::AbstractString)
     d.metadata.author = nv
 end
 
-function timestamp!(d::AbstractDocument, nv::String)
+function timestamp!(d::AbstractDocument, nv::AbstractString)
     d.metadata.timestamp = nv
 end
 

@@ -11,10 +11,10 @@ const KOI8_R        = "KOI8_R"
 ##
 # lists the stemmer algorithms loaded
 function stemmer_types()
-    cptr = ccall((:sb_stemmer_list, _libsb), Ptr{Ptr{Uint8}}, ())
+    cptr = ccall((:sb_stemmer_list, _libsb), Ptr{Ptr{UInt8}}, ())
     (C_NULL == cptr) && error("error getting stemmer types")
 
-    stypes = String[]
+    stypes = AbstractString[]
     i = 1
     while true
         name_ptr = unsafe_load(cptr, i)
@@ -27,13 +27,13 @@ end
 
 type Stemmer
     cptr::Ptr{Void}
-    alg::String
-    enc::String
+    alg::AbstractString
+    enc::AbstractString
 
-    function Stemmer(stemmer_type::String, charenc::String=UTF_8)
+    function Stemmer(stemmer_type::AbstractString, charenc::AbstractString=UTF_8)
         cptr = ccall((:sb_stemmer_new, _libsb),
                     Ptr{Void},
-                    (Ptr{Uint8}, Ptr{Uint8}),
+                    (Ptr{UInt8}, Ptr{UInt8}),
                     bytestring(stemmer_type), bytestring(charenc))
 
         if cptr == C_NULL
@@ -59,11 +59,11 @@ function release(stm::Stemmer)
     nothing
 end
 
-stem(stemmer::Stemmer, word::String) = stem(stemmer, bytestring(word))
+stem(stemmer::Stemmer, word::AbstractString) = stem(stemmer, bytestring(word))
 function stem(stemmer::Stemmer, bstr::ByteString)
     sres = ccall((:sb_stemmer_stem, _libsb),
-                Ptr{Uint8},
-                (Ptr{Uint8}, Ptr{Uint8}, Cint),
+                Ptr{UInt8},
+                (Ptr{UInt8}, Ptr{UInt8}, Cint),
                 stemmer.cptr, bstr, length(bstr))
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
@@ -73,8 +73,8 @@ end
 
 function stem(stemmer::Stemmer, word::SubString{ByteString})
     sres = ccall((:sb_stemmer_stem, _libsb),
-                Ptr{Uint8},
-                (Ptr{Uint8}, Ptr{Uint8}, Cint),
+                Ptr{UInt8},
+                (Ptr{UInt8}, Ptr{UInt8}, Cint),
                 stemmer.cptr, pointer(word.string.data)+word.offset, word.endof)
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
@@ -82,7 +82,7 @@ function stem(stemmer::Stemmer, word::SubString{ByteString})
     bytestring(bytes)
 end
 
-function stem_all{S <: Language}(stemmer::Stemmer, lang::Type{S}, sentence::String)
+function stem_all{S <: Language}(stemmer::Stemmer, lang::Type{S}, sentence::AbstractString)
     tokens = TextAnalysis.tokenize(lang, sentence)
     stemmed = stem(stemmer, tokens)
     join(stemmed, ' ')
@@ -90,7 +90,7 @@ end
 
 function stem(stemmer::Stemmer, words::Array)
     const l::Int = length(words)
-    ret = Array(String, l)
+    ret = Array(AbstractString, l)
     for idx in 1:l
         ret[idx] = stem(stemmer, words[idx])
     end
@@ -112,14 +112,14 @@ stem!(stemmer::Stemmer, d::FileDocument) = error("FileDocument cannot be modifie
 function stem!(stemmer::Stemmer, d::StringDocument)
     stemmer = stemmer_for_document(d)
     d.text = stem_all(stemmer, language(d), d.text)
-    nothing 
+    nothing
 end
 
 function stem!(stemmer::Stemmer, d::TokenDocument)
     d.tokens = stem(stemmer, d.tokens)
     nothing
-end 
-    
+end
+
 function stem!(stemmer::Stemmer, d::NGramDocument)
     for token in keys(d.ngrams)
         new_token = stem(stemmer, token)
