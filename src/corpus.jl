@@ -16,7 +16,7 @@ end
 
 function Corpus(docs::Vector{GenericDocument})
     Corpus(
-        docs, 
+        docs,
         0,
         Dict{UTF8String, Int}(),
         Dict{UTF8String, Vector{Int}}(),
@@ -32,13 +32,13 @@ Corpus(docs::Vector{Any}) = Corpus(convert(Array{GenericDocument,1}, docs))
 #
 ##############################################################################
 
-function DirectoryCorpus(dirname::String)
+function DirectoryCorpus(dirname::AbstractString)
     # Recursive descent of directory
     # Add all non-hidden files to Corpus
 
     docs = GenericDocument[]
 
-    function add_files(dirname::String)
+    function add_files(dirname::AbstractString)
         if !isdir(dirname)
             error("DirectoryCorpus() can only be called on directories")
         end
@@ -137,7 +137,7 @@ Base.delete!(crps::Corpus, index::Integer) = delete!(crps.documents, index)
 Base.getindex(crps::Corpus, ind::Real) = crps.documents[ind]
 Base.getindex{T <: Real}(crps::Corpus, inds::Vector{T}) = crps.documents[inds]
 Base.getindex(crps::Corpus, r::Range) = crps.documents[r]
-Base.getindex(crps::Corpus, term::String) = get(crps.inverse_index, term, Int[])
+Base.getindex(crps::Corpus, term::AbstractString) = get(crps.inverse_index, term, Int[])
 
 ##############################################################################
 #
@@ -177,7 +177,7 @@ function update_lexicon!(crps::Corpus)
 end
 
 lexicon_size(crps::Corpus) = length(keys(crps.lexicon))
-lexical_frequency(crps::Corpus, term::String) = 
+lexical_frequency(crps::Corpus, term::AbstractString) =
     (get(crps.lexicon, term, 0) / crps.total_terms)
 
 ##############################################################################
@@ -233,4 +233,3 @@ function standardize!{T <: AbstractDocument}(crps::Corpus, ::Type{T})
         crps.documents[i] = convert(T, crps.documents[i])
     end
 end
-

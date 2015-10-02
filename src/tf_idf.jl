@@ -20,9 +20,9 @@ tf_idf(dtm::DocumentTermMatrix) = tf_idf(dtm.dtm)
 
 # The second Matrix will be overwritten with the result
 # Will work correctly if dtm and tfidf are the same matrix
-function tf_idf!{T1 <: Real, T2 <: FloatingPoint}(dtm::AbstractMatrix{T1}, tfidf::AbstractMatrix{T2})
+function tf_idf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tfidf::AbstractMatrix{T2})
     n, p = size(dtm)
-    
+
     # TF tells us what proportion of a document is defined by a term
     for i in 1:n
         words_in_document = 0

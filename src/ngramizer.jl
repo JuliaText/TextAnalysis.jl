@@ -4,12 +4,12 @@
 #
 ##############################################################################
 
-function ngramize{S <: Language, T <: String}(::Type{S}, words::Vector{T}, n::Int)
+function ngramize{S <: Language, T <: AbstractString}(::Type{S}, words::Vector{T}, n::Int)
     (n == 1) && return onegramize(S, words)
 
     n_words = length(words)
 
-    tokens = Dict{String, Int}()
+    tokens = Dict{AbstractString, Int}()
 
     for m in 1:n
         for index in 1:(n_words - m + 1)
@@ -21,7 +21,7 @@ function ngramize{S <: Language, T <: String}(::Type{S}, words::Vector{T}, n::In
     return tokens
 end
 
-function onegramize{S <: Language, T <: String}(::Type{S}, words::Vector{T})
+function onegramize{S <: Language, T <: AbstractString}(::Type{S}, words::Vector{T})
     n_words = length(words)
     tokens = Dict{T, Int}()
 
@@ -31,4 +31,3 @@ function onegramize{S <: Language, T <: String}(::Type{S}, words::Vector{T})
 
     tokens
 end
-

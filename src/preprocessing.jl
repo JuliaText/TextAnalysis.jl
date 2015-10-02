@@ -27,7 +27,7 @@ const strip_html_tags               = @compat(UInt32(0x1)) << 20
 const alpha_sparse      = 0.05
 const alpha_frequent    = 0.95
 
-const regex_cache = Dict{String, Regex}()
+const regex_cache = Dict{AbstractString, Regex}()
 function mk_regex(regex_string)
     d = haskey(regex_cache, regex_string) ?
             regex_cache[regex_string] :
@@ -42,7 +42,7 @@ end
 # Remove corrupt UTF8 characters
 #
 ##############################################################################
-function remove_corrupt_utf8(s::String)
+function remove_corrupt_utf8(s::AbstractString)
     r = zeros(Char, endof(s)+1)
     i = 0
     for chr in s
@@ -66,7 +66,7 @@ function remove_corrupt_utf8!(d::TokenDocument)
 end
 
 function remove_corrupt_utf8!(d::NGramDocument)
-    new_ngrams = Dict{String, Int}()
+    new_ngrams = Dict{AbstractString, Int}()
     for token in keys(d.ngrams)
         new_token = remove_corrupt_utf8(token)
         if haskey(new_ngrams, new_token)
@@ -90,7 +90,7 @@ end
 #
 ##############################################################################
 
-remove_case{T <: String}(s::T) = lowercase(s)
+remove_case{T <: AbstractString}(s::T) = lowercase(s)
 
 remove_case!(d::FileDocument) = error("FileDocument cannot be modified")
 
@@ -106,7 +106,7 @@ function remove_case!(d::TokenDocument)
 end
 
 function remove_case!(d::NGramDocument)
-    new_ngrams = Dict{String, Int}()
+    new_ngrams = Dict{AbstractString, Int}()
     for token in keys(d.ngrams)
         new_token = remove_case(token)
         if haskey(new_ngrams, new_token)
@@ -132,7 +132,7 @@ end
 const script_tags = Regex("<script\\b[^>]*>([\\s\\S]*?)</script>")
 const html_tags = Regex("<[^>]*>")
 
-function remove_html_tags(s::String)
+function remove_html_tags(s::AbstractString)
     s = remove_patterns(s, script_tags)
     remove_patterns(s, html_tags)
 end
@@ -157,50 +157,50 @@ end
 # Remove specified words
 #
 ##############################################################################
-function remove_words!{T <: String}(entity::Union(AbstractDocument,Corpus),
+function remove_words!{T <: AbstractString}(entity::(@compat Union{AbstractDocument,Corpus}),
                                     words::Vector{T})
-    skipwords = Set{String}()
+    skipwords = Set{AbstractString}()
     union!(skipwords, words)
     prepare!(entity, strip_patterns, skip_words = skipwords)
 end
 
-function remove_whitespace!(entity::Union(AbstractDocument,Corpus))
+function remove_whitespace!(entity::(@compat Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_whitespace! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_whitespace)
 end
-function remove_punctuation!(entity::Union(AbstractDocument,Corpus))
+function remove_punctuation!(entity::(@compat Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_punctuation! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_punctuation)
 end
-function remove_nonletters!(entity::Union(AbstractDocument,Corpus))
+function remove_nonletters!(entity::(@compat Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_nonletters! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_non_letters)
 end
-function remove_numbers!(entity::Union(AbstractDocument,Corpus))
+function remove_numbers!(entity::(@compat Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_numbers! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_numbers)
 end
-function remove_articles!(entity::Union(AbstractDocument,Corpus))
+function remove_articles!(entity::(@compat Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_articles! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_articles)
 end
-function remove_indefinite_articles!(entity::Union(AbstractDocument,Corpus))
+function remove_indefinite_articles!(entity::(@compat Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_indefinite_articles! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_indefinite_articles)
 end
-function remove_definite_articles!(entity::Union(AbstractDocument,Corpus))
+function remove_definite_articles!(entity::(@compat Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_definite_articles! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_definite_articles)
 end
-function remove_prepositions!(entity::Union(AbstractDocument,Corpus))
+function remove_prepositions!(entity::(@compat Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_prepositions! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_prepositions)
 end
-function remove_pronouns!(entity::Union(AbstractDocument,Corpus))
+function remove_pronouns!(entity::(@compat Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_pronouns! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_pronouns)
 end
-function remove_stop_words!(entity::Union(AbstractDocument,Corpus))
+function remove_stop_words!(entity::(@compat Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_stop_words! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_stopwords)
 end
@@ -264,7 +264,7 @@ remove_frequent_terms!(crps::Corpus, alpha::Real = alpha_frequent) = remove_word
 #
 ##############################################################################
 
-function prepare!(crps::Corpus, flags::Uint32; skip_patterns = Set{String}(), skip_words = Set{String}())
+function prepare!(crps::Corpus, flags::UInt32; skip_patterns = Set{AbstractString}(), skip_words = Set{AbstractString}())
     ((flags & strip_sparse_terms) > 0) && union!(skip_words, sparse_terms(crps))
     ((flags & strip_frequent_terms) > 0) && union!(skip_words, frequent_terms(crps))
 
@@ -281,7 +281,7 @@ function prepare!(crps::Corpus, flags::Uint32; skip_patterns = Set{String}(), sk
     nothing
 end
 
-function prepare!(d::AbstractDocument, flags::Uint32; skip_patterns = Set{String}(), skip_words = Set{String}())
+function prepare!(d::AbstractDocument, flags::UInt32; skip_patterns = Set{AbstractString}(), skip_words = Set{AbstractString}())
     ((flags & strip_corrupt_utf8) > 0) && remove_corrupt_utf8!(d)
     ((flags & strip_case) > 0) && remove_case!(d)
     ((flags & strip_html_tags) > 0) && remove_html_tags!(d)
@@ -297,7 +297,7 @@ end
 ##
 # internal helper methods
 
-function remove_patterns(s::String, rex::Regex)
+function remove_patterns(s::AbstractString, rex::Regex)
     iob = IOBuffer()
     ibegin = 1
     for m in matchall(rex, s)
@@ -345,7 +345,7 @@ function remove_patterns!(d::TokenDocument, rex::Regex)
 end
 
 function remove_patterns!(d::NGramDocument, rex::Regex)
-    new_ngrams = Dict{String, Int}()
+    new_ngrams = Dict{AbstractString, Int}()
     for token in keys(d.ngrams)
         new_token = remove_patterns(token, rex)
         if haskey(new_ngrams, new_token)
@@ -364,10 +364,10 @@ function remove_patterns!(crps::Corpus, rex::Regex)
     end
 end
 
-_build_regex(lang, flags::Uint32) = _build_regex(lang, flags, Set{String}(), Set{String}())
-_build_regex{T <: String}(lang, flags::Uint32, patterns::Set{T}, words::Set{T}) = _combine_regex(_build_regex_patterns(lang, flags, patterns, words))
+_build_regex(lang, flags::UInt32) = _build_regex(lang, flags, Set{AbstractString}(), Set{AbstractString}())
+_build_regex{T <: AbstractString}(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) = _combine_regex(_build_regex_patterns(lang, flags, patterns, words))
 
-function _combine_regex{T <: String}(regex_parts::Set{T})
+function _combine_regex{T <: AbstractString}(regex_parts::Set{T})
     l = length(regex_parts)
     (0 == l) && return r""
     (1 == l) && return mk_regex(pop!(regex_parts))
@@ -380,7 +380,7 @@ function _combine_regex{T <: String}(regex_parts::Set{T})
     mk_regex(takebuf_string(iob))
 end
 
-function _build_regex_patterns{T <: String}(lang, flags::Uint32, patterns::Set{T}, words::Set{T})
+function _build_regex_patterns{T <: AbstractString}(lang, flags::UInt32, patterns::Set{T}, words::Set{T})
     ((flags & strip_whitespace) > 0) && push!(patterns, "\\s+")
     if (flags & strip_non_letters) > 0
         push!(patterns, "[^a-zA-Z\\s]")
@@ -403,7 +403,7 @@ function _build_regex_patterns{T <: String}(lang, flags::Uint32, patterns::Set{T
     patterns
 end
 
-function _build_words_pattern{T <: String}(words::Vector{T})
+function _build_words_pattern{T <: AbstractString}(words::Vector{T})
     isempty(words) && return ""
 
     iob = IOBuffer()

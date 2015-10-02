@@ -29,6 +29,6 @@ TextHashFunction() = TextHashFunction(hash, 100)
 
 cardinality(h::TextHashFunction) = h.cardinality
 
-function index_hash(s::String, h::TextHashFunction)
+function index_hash(s::AbstractString, h::TextHashFunction)
     return @compat(Int(rem(h.hash_function(s), h.cardinality))) + 1
 end

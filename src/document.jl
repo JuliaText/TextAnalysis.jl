@@ -36,7 +36,7 @@ type FileDocument <: AbstractDocument
     metadata::DocumentMetadata
 end
 
-function FileDocument(f::String)
+function FileDocument(f::AbstractString)
     d = FileDocument(utf8(f), DocumentMetadata())
     d.metadata.name = f
     return d
@@ -49,11 +49,11 @@ end
 ##############################################################################
 
 type StringDocument <: AbstractDocument
-    text::String
+    text::AbstractString
     metadata::DocumentMetadata
 end
 
-StringDocument(txt::String) = StringDocument(utf8(txt), DocumentMetadata())
+StringDocument(txt::AbstractString) = StringDocument(utf8(txt), DocumentMetadata())
 
 ##############################################################################
 #
@@ -62,16 +62,16 @@ StringDocument(txt::String) = StringDocument(utf8(txt), DocumentMetadata())
 ##############################################################################
 
 type TokenDocument <: AbstractDocument
-    tokens::Vector{String}
+    tokens::Vector{AbstractString}
     metadata::DocumentMetadata
 end
-function TokenDocument(txt::String, dm::DocumentMetadata)
+function TokenDocument(txt::AbstractString, dm::DocumentMetadata)
     TokenDocument(tokenize(dm.language, utf8(txt)), dm)
 end
-function TokenDocument{T <: String}(tkns::Vector{T})
+function TokenDocument{T <: AbstractString}(tkns::Vector{T})
     TokenDocument(tkns, DocumentMetadata())
 end
-TokenDocument(txt::String) = TokenDocument(txt, DocumentMetadata())
+TokenDocument(txt::AbstractString) = TokenDocument(txt, DocumentMetadata())
 
 ##############################################################################
 #
@@ -80,19 +80,19 @@ TokenDocument(txt::String) = TokenDocument(txt, DocumentMetadata())
 ##############################################################################
 
 type NGramDocument <: AbstractDocument
-    ngrams::Dict{String,Int}
+    ngrams::Dict{AbstractString,Int}
     n::Int
     metadata::DocumentMetadata
 end
-function NGramDocument(txt::String, dm::DocumentMetadata, n::Integer=1)
+function NGramDocument(txt::AbstractString, dm::DocumentMetadata, n::Integer=1)
     NGramDocument(ngramize(dm.language, tokenize(dm.language, utf8(txt)), n),
         n, dm)
 end
-function NGramDocument(txt::String, n::Integer=1)
+function NGramDocument(txt::AbstractString, n::Integer=1)
     NGramDocument(txt, DocumentMetadata(), n)
 end
-function NGramDocument{T <: String}(ng::Dict{T, Int}, n::Integer=1)
-    NGramDocument(merge(Dict{String,Int}(), ng), n, DocumentMetadata())
+function NGramDocument{T <: AbstractString}(ng::Dict{T, Int}, n::Integer=1)
+    NGramDocument(merge(Dict{AbstractString,Int}(), ng), n, DocumentMetadata())
 end
 
 ##############################################################################
@@ -115,8 +115,8 @@ function text(ngd::NGramDocument)
     error("The text of an NGramDocument cannot be reconstructed")
 end
 
-text!(sd::StringDocument, new_text::String) = (sd.text = new_text)
-function text!(d::AbstractDocument, new_text::String)
+text!(sd::StringDocument, new_text::AbstractString) = (sd.text = new_text)
+function text!(d::AbstractDocument, new_text::AbstractString)
     error("The text of a $(typeof(d)) cannot be edited")
 end
 
@@ -126,14 +126,14 @@ end
 #
 ##############################################################################
 
-tokens(d::Union(FileDocument, StringDocument)) = tokenize(language(d), text(d))
+tokens(d::(@compat Union{FileDocument, StringDocument})) = tokenize(language(d), text(d))
 tokens(d::TokenDocument) = d.tokens
 function tokens(d::NGramDocument)
     error("The tokens of an NGramDocument cannot be reconstructed")
 end
 
-tokens!{T <: String}(d::TokenDocument, new_tokens::Vector{T}) = (d.tokens = new_tokens)
-function tokens!{T <: String}(d::AbstractDocument, new_tokens::Vector{T})
+tokens!{T <: AbstractString}(d::TokenDocument, new_tokens::Vector{T}) = (d.tokens = new_tokens)
+function tokens!{T <: AbstractString}(d::AbstractDocument, new_tokens::Vector{T})
     error("The tokens of a $(typeof(d)) cannot be directly edited")
 end
 
@@ -150,7 +150,7 @@ ngrams(d::AbstractDocument, n::Integer) = ngramize(language(d), tokens(d), n)
 ngrams(d::NGramDocument) = d.ngrams
 ngrams(d::AbstractDocument) = ngrams(d, 1)
 
-ngrams!(d::NGramDocument, new_ngrams::Dict{String, Int}) = (d.ngrams = new_ngrams)
+ngrams!(d::NGramDocument, new_ngrams::Dict{AbstractString, Int}) = (d.ngrams = new_ngrams)
 function ngrams!(d::AbstractDocument, new_ngrams::Dict)
     error("The n-grams of $(typeof(d)) cannot be directly edited")
 end
@@ -185,12 +185,12 @@ end
 #
 ##############################################################################
 
-typealias GenericDocument Union(
+typealias GenericDocument @compat Union{
     FileDocument,
     StringDocument,
     TokenDocument,
     NGramDocument
-)
+}
 
 ##############################################################################
 #
@@ -198,8 +198,8 @@ typealias GenericDocument Union(
 #
 ##############################################################################
 
-Document(str::String) = isfile(str) ? FileDocument(str) : StringDocument(str)
-Document{T <: String}(tkns::Vector{T}) = TokenDocument(tkns)
+Document(str::AbstractString) = isfile(str) ? FileDocument(str) : StringDocument(str)
+Document{T <: AbstractString}(tkns::Vector{T}) = TokenDocument(tkns)
 Document(ng::Dict{UTF8String, Int}) = NGramDocument(ng)
 
 ##############################################################################
@@ -211,11 +211,11 @@ Document(ng::Dict{UTF8String, Int}) = NGramDocument(ng)
 function Base.convert(::Type{StringDocument}, d::FileDocument)
     StringDocument(text(d), d.metadata)
 end
-function Base.convert(::Type{TokenDocument}, d::Union(FileDocument, StringDocument))
+function Base.convert(::Type{TokenDocument}, d::(@compat Union{FileDocument, StringDocument}))
     TokenDocument(tokens(d), d.metadata)
 end
-function Base.convert(::Type{NGramDocument}, 
-            d::Union(FileDocument, StringDocument, TokenDocument))
+function Base.convert(::Type{NGramDocument},
+            d::(@compat Union{FileDocument, StringDocument, TokenDocument}))
     NGramDocument(ngrams(d), 1, d.metadata)
 end
 Base.convert(::Type{TokenDocument}, d::TokenDocument) = d
@@ -227,4 +227,4 @@ Base.convert(::Type{NGramDocument}, d::NGramDocument) = d
 #
 ##############################################################################
 
-Base.getindex(d::AbstractDocument, term::String) = ngrams(d)[term]
+Base.getindex(d::AbstractDocument, term::AbstractString) = ngrams(d)[term]
