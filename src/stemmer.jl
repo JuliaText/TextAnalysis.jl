@@ -64,7 +64,7 @@ function stem(stemmer::Stemmer, bstr::ByteString)
     sres = ccall((:sb_stemmer_stem, _libsb),
                 Ptr{UInt8},
                 (Ptr{UInt8}, Ptr{UInt8}, Cint),
-                stemmer.cptr, bstr, length(bstr))
+                stemmer.cptr, bstr, sizeof(bstr))
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
     bytes = pointer_to_array(sres, @compat(Int(slen)), false)

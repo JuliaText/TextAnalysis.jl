@@ -2,26 +2,29 @@ module TestStemmer
     using Base.Test
     using Languages
     using TextAnalysis
+    using Compat
 
     algs = stemmer_types()
-    @assert !isempty(algs)
+    @test !isempty(algs)
 
     for alg in algs
         stmr = Stemmer(alg)
         TextAnalysis.release(stmr)
     end
 
-    test_cases = {
-        "english" => {
+    test_cases = @compat Dict{ASCIIString, Any}(
+        "english" => @compat Dict{AbstractString, AbstractString}(
             "working" => "work",
-            "worker" => "worker"
-        }
-    }
+            "worker" => "worker", 
+            "aβc" => "aβc",
+            "a∀c" => "a∀c"
+        )
+    )
 
     for (alg, test_words) in test_cases
         stmr = Stemmer(alg)
         for (n,v) in test_words
-            @assert v == stem(stmr, n)
+            @test v == stem(stmr, n)
         end
     end
 end
