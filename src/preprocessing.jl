@@ -158,10 +158,15 @@ end
 #
 ##############################################################################
 function remove_words!{T <: AbstractString}(entity::(@compat Union{AbstractDocument,Corpus}),
-                                    words::Vector{T})
-    skipwords = Set{AbstractString}()
-    union!(skipwords, words)
-    prepare!(entity, strip_patterns, skip_words = skipwords)
+                                    words::Vector{T}, chunksize::Int = 1000)
+    S=length(words)
+    for i=0:floor(S/chunksize)
+        ixstart=convert(Int64,i*chunksize+1)
+        ixend=min(ixstart+chunksize-1,S)
+        skipwords = Set{AbstractString}()
+        union!(skipwords, words[ixstart:ixend])
+        prepare!(entity, strip_patterns, skip_words = skipwords)
+    end
 end
 
 function remove_whitespace!(entity::(@compat Union{AbstractDocument,Corpus}))
