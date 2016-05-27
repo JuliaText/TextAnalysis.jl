@@ -43,7 +43,9 @@ end
 #
 ##############################################################################
 function remove_corrupt_utf8(s::AbstractString)
-    r = zeros(Char, endof(s)+1)
+    r=Array{Char}(endof(s)+1)
+    fill!(r,0)
+
     i = 0
     for chr in s
         i += 1
@@ -260,7 +262,6 @@ remove_sparse_terms!(crps::Corpus, alpha::Real = alpha_sparse) = remove_words!(c
 
 # Frequent terms occur in more than x percent of all documents
 remove_frequent_terms!(crps::Corpus, alpha::Real = alpha_frequent) = remove_words!(crps, frequent_terms(crps, alpha))
-
 
 
 ##############################################################################

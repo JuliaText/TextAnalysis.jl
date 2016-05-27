@@ -1,5 +1,38 @@
 ##############################################################################
 #
+# TD
+#
+##############################################################################
+
+tf{T <: Real}(dtm::Matrix{T}) = tf!(dtm, Array(Float64, size(dtm)...))
+
+tf{T <: Real}(dtm::SparseMatrixCSC{T}) =  tf!(dtm, sparse(Int[], Int[], 0.0, size(dtm)...))
+
+tf!{T <: Real}(dtm::AbstractMatrix{T}) = tf!(dtm, dtm)
+
+tf!{T <: Real}(dtm::SparseMatrixCSC{T}) = tf!(dtm, dtm)
+
+tf(dtm::DocumentTermMatrix) = tf(dtm.dtm)
+
+# The second Matrix will be overwritten with the result
+# Will work correctly if dtm and tfidf are the same matrix
+function tf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tf::AbstractMatrix{T2})
+    n, p = size(dtm)
+
+    # TF tells us what proportion of a document is defined by a term
+    for i in 1:n
+        words_in_document = 0
+        for j in 1:p
+            words_in_document += dtm[i, j]
+        end
+        tf[i, :] = dtm[i, :] ./ words_in_document
+    end
+
+    return tf
+end
+
+##############################################################################
+#
 # TD-IDF
 #
 ##############################################################################
@@ -24,13 +57,7 @@ function tf_idf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tfidf
     n, p = size(dtm)
 
     # TF tells us what proportion of a document is defined by a term
-    for i in 1:n
-        words_in_document = 0
-        for j in 1:p
-            words_in_document += dtm[i, j]
-        end
-        tfidf[i, :] = dtm[i, :] ./ words_in_document
-    end
+    tf!(dtm, tfidf)
 
     # IDF tells us how rare a term is in the corpus
     documents_containing_term = vec(sum(dtm .> 0, 1))
