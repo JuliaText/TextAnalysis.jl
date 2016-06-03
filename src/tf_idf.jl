@@ -8,7 +8,7 @@ tf{T <: Real}(dtm::Matrix{T}) = tf!(dtm, Array(Float64, size(dtm)...))
 
 function tf{T <: Real}(dtm::SparseMatrixCSC{T})
     # TF tells us what proportion of a document is defined by a term
-    m,n=size(dtm)
+    n, p = size(dtm)
     rows = rowvals(dtm)
     vals = nonzeros(dtm)
     words_in_documents = sum(dtm,2)
@@ -17,7 +17,7 @@ function tf{T <: Real}(dtm::SparseMatrixCSC{T})
     tfcols = Array(Int, 0)
     tfvals = Array(Float64, 0)
 
-    for col = 1:n
+    for col = 1:p
       for j in nzrange(dtm, col)
         row = rows[j]
         val = vals[j]
@@ -60,7 +60,33 @@ end
 
 tf_idf{T <: Real}(dtm::Matrix{T}) = tf_idf!(dtm, Array(Float64, size(dtm)...))
 
-tf_idf{T <: Real}(dtm::SparseMatrixCSC{T}) =  tf_idf!(dtm, sparse(Int[], Int[], 0.0, size(dtm)...))
+function tf_idf{T <: Real}(dtm::SparseMatrixCSC{T})
+    n, p = size(dtm)
+    rows = rowvals(dtm)
+    vals = nonzeros(dtm)
+
+    # TF tells us what proportion of a document is defined by a term
+    words_in_documents = sum(dtm,2)
+
+    # IDF tells us how rare a term is in the corpus
+    documents_containing_term = vec(sum(dtm .> 0, 1))
+    idf = log(n ./ documents_containing_term)
+
+    tfidfrows = Array(Int, 0)
+    tfidfcols = Array(Int, 0)
+    tfidfvals = Array(Float64, 0)
+
+    for col = 1:p
+      for j in nzrange(dtm, col)
+        row = rows[j]
+        val = vals[j]
+        push!(tfidfrows, row)
+        push!(tfidfcols, col)
+        push!(tfidfvals, val/words_in_documents[row] * idf[col])
+      end
+    end
+    sparse(tfidfrows, tfidfcols, tfidfvals)
+end
 
 tf_idf!{T <: Real}(dtm::AbstractMatrix{T}) = tf_idf!(dtm, dtm)
 

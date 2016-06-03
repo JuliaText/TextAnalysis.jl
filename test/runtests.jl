@@ -11,7 +11,8 @@ module TestTextAnalysis
         "corpus.jl",
         "preprocessing.jl",
         "dtm.jl",
-        "stemmer.jl"
+        "stemmer.jl",
+        "tf_idf.jl"
     ]
 
     println("Running tests:")
