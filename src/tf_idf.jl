@@ -6,7 +6,28 @@
 
 tf{T <: Real}(dtm::Matrix{T}) = tf!(dtm, Array(Float64, size(dtm)...))
 
-tf{T <: Real}(dtm::SparseMatrixCSC{T}) =  tf!(dtm, sparse(Int[], Int[], 0.0, size(dtm)...))
+function tf{T <: Real}(dtm::SparseMatrixCSC{T})
+    # TF tells us what proportion of a document is defined by a term
+    m,n=size(dtm)
+    rows = rowvals(dtm)
+    vals = nonzeros(dtm)
+    words_in_documents = sum(dtm,2)
+
+    tfrows = Array(Int, 0)
+    tfcols = Array(Int, 0)
+    tfvals = Array(Float64, 0)
+
+    for col = 1:n
+      for j in nzrange(dtm, col)
+        row = rows[j]
+        val = vals[j]
+        push!(tfrows, row)
+        push!(tfcols, col)
+        push!(tfvals, val/words_in_documents[row])
+      end
+    end
+    sparse(tfrows, tfcols, tfvals)
+end
 
 tf!{T <: Real}(dtm::AbstractMatrix{T}) = tf!(dtm, dtm)
 
