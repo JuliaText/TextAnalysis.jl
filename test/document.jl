@@ -5,7 +5,7 @@ module TestDocument
 
     sample_text1 = "This is a string"
     sample_text2 = "This is also a string"
-    sample_file = Pkg.dir("TextAnalysis", "test", "data", "poem.txt")
+    sample_file = joinpath(dirname(@__FILE__), "data", "poem.txt")
 
     sd = StringDocument(sample_text1)
     fd = FileDocument(sample_file)

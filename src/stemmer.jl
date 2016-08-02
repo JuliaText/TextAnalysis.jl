@@ -1,4 +1,4 @@
-const _libsb = joinpath(Pkg.dir(),"TextAnalysis","deps","usr","lib", "libstemmer."*BinDeps.shlib_ext)
+const _libsb = joinpath(dirname(@__FILE__),"..","deps","usr","lib", "libstemmer."*BinDeps.shlib_ext)
 #@BinDeps.load_dependencies [:libstemmer=>:_libsb]
 
 ##
