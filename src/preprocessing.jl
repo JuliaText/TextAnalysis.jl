@@ -294,9 +294,6 @@ function prepare!(d::AbstractDocument, flags::UInt32; skip_patterns = Set{Abstra
     nothing
 end
 
-##
-# internal helper methods
-
 function remove_patterns(s::AbstractString, rex::Regex)
     iob = IOBuffer()
     ibegin = 1
@@ -363,6 +360,9 @@ function remove_patterns!(crps::Corpus, rex::Regex)
         remove_patterns!(doc, rex)
     end
 end
+
+##
+# internal helper methods
 
 _build_regex(lang, flags::UInt32) = _build_regex(lang, flags, Set{AbstractString}(), Set{AbstractString}())
 _build_regex{T <: AbstractString}(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) = _combine_regex(_build_regex_patterns(lang, flags, patterns, words))
