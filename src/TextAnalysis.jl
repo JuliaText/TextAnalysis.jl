@@ -44,6 +44,7 @@ module TextAnalysis
     export standardize!
     export tf_idf, lsa, lda
     export tf_idf!, lsa!, lda!
+    export remove_patterns!, remove_patterns
 
     export strip_patterns, strip_corrupt_utf8, strip_case, stem_words, tag_part_of_speech, strip_whitespace, strip_punctuation
     export strip_numbers, strip_non_letters, strip_indefinite_articles, strip_definite_articles, strip_articles
