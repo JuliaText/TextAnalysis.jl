@@ -49,7 +49,7 @@ function remove_corrupt_utf8(s::AbstractString)
         i += 1
         r[i] = (chr != 0xfffd) ? chr : ' '
     end
-    return utf8(CharString(r))
+    return Compat.UTF8String(CharString(r))
 end
 
 remove_corrupt_utf8!(d::FileDocument) = error("FileDocument cannot be modified")
@@ -230,7 +230,7 @@ function sparse_terms(crps::Corpus, alpha::Real = alpha_sparse)
     for term in keys(crps.lexicon)
         f = length(crps.inverse_index[term]) / ndocs
         if f <= alpha
-            push!(res, utf8(term))
+            push!(res, Compat.UTF8String(term))
         end
     end
     return res
@@ -244,7 +244,7 @@ function frequent_terms(crps::Corpus, alpha::Real = alpha_frequent)
     for term in keys(crps.lexicon)
         f = length(crps.inverse_index[term]) / ndocs
         if f >= alpha
-            push!(res, utf8(term))
+            push!(res, Compat.UTF8String(term))
         end
     end
     return res
@@ -310,7 +310,7 @@ function remove_patterns(s::AbstractString, rex::Regex)
     takebuf_string(iob)
 end
 
-function remove_patterns{T <: ByteString}(s::SubString{T}, rex::Regex)
+function remove_patterns{T <: Compat.String}(s::SubString{T}, rex::Regex)
     iob = IOBuffer()
     ioffset = s.offset
     data = s.string.data

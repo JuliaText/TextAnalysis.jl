@@ -2,6 +2,7 @@ module TestDocument
     using Base.Test
     using Languages
     using TextAnalysis
+    using Compat
 
     sample_text1 = "This is a string"
     sample_text2 = "This is also a string"
@@ -39,7 +40,7 @@ module TestDocument
     @assert isa(td, TokenDocument)
     @assert all(tokens(td) .== my_tokens)
 
-    my_ngrams = Dict{UTF8String,Int}()
+    my_ngrams = Dict{Compat.UTF8String,Int}()
     my_ngrams["To"] = 1
     my_ngrams["be"] = 2
     my_ngrams["or"] = 1
@@ -60,7 +61,7 @@ module TestDocument
     @assert isa(d, FileDocument)
     d = Document(["To", "be", "or", "not", "to", "be..."])
     @assert isa(d, TokenDocument)
-    ng = Dict{UTF8String,Int}()
+    ng = Dict{Compat.UTF8String,Int}()
     ng["a"] = 1
     ng["b"] = 3
     d = Document(ng)

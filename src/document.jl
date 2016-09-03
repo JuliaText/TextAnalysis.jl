@@ -6,15 +6,15 @@
 
 type DocumentMetadata
     language::DataType
-    name::UTF8String
-    author::UTF8String
-    timestamp::UTF8String
+    name::Compat.UTF8String
+    author::Compat.UTF8String
+    timestamp::Compat.UTF8String
 end
 DocumentMetadata() = DocumentMetadata(
     EnglishLanguage,
-    utf8("Unnamed Document"),
-    utf8("Unknown Author"),
-    utf8("Unknown Time")
+    "Unnamed Document",
+    "Unknown Author",
+    "Unknown Time"
 )
 
 ##############################################################################
@@ -32,12 +32,12 @@ abstract AbstractDocument
 ##############################################################################
 
 type FileDocument <: AbstractDocument
-    filename::UTF8String
+    filename::Compat.UTF8String
     metadata::DocumentMetadata
 end
 
 function FileDocument(f::AbstractString)
-    d = FileDocument(utf8(f), DocumentMetadata())
+    d = FileDocument(Compat.UTF8String(f), DocumentMetadata())
     d.metadata.name = f
     return d
 end
@@ -49,11 +49,11 @@ end
 ##############################################################################
 
 type StringDocument <: AbstractDocument
-    text::AbstractString
+    text::Compat.UTF8String
     metadata::DocumentMetadata
 end
 
-StringDocument(txt::AbstractString) = StringDocument(utf8(txt), DocumentMetadata())
+StringDocument(txt::AbstractString) = StringDocument(Compat.UTF8String(txt), DocumentMetadata())
 
 ##############################################################################
 #
@@ -62,16 +62,16 @@ StringDocument(txt::AbstractString) = StringDocument(utf8(txt), DocumentMetadata
 ##############################################################################
 
 type TokenDocument <: AbstractDocument
-    tokens::Vector{AbstractString}
+    tokens::Vector{Compat.UTF8String}
     metadata::DocumentMetadata
 end
 function TokenDocument(txt::AbstractString, dm::DocumentMetadata)
-    TokenDocument(tokenize(dm.language, utf8(txt)), dm)
+    TokenDocument(tokenize(dm.language, Compat.String(txt)), dm)
 end
 function TokenDocument{T <: AbstractString}(tkns::Vector{T})
     TokenDocument(tkns, DocumentMetadata())
 end
-TokenDocument(txt::AbstractString) = TokenDocument(txt, DocumentMetadata())
+TokenDocument(txt::AbstractString) = TokenDocument(Compat.UTF8String(txt), DocumentMetadata())
 
 ##############################################################################
 #
@@ -80,12 +80,12 @@ TokenDocument(txt::AbstractString) = TokenDocument(txt, DocumentMetadata())
 ##############################################################################
 
 type NGramDocument <: AbstractDocument
-    ngrams::Dict{AbstractString,Int}
+    ngrams::Dict{Compat.UTF8String,Int}
     n::Int
     metadata::DocumentMetadata
 end
 function NGramDocument(txt::AbstractString, dm::DocumentMetadata, n::Integer=1)
-    NGramDocument(ngramize(dm.language, tokenize(dm.language, utf8(txt)), n),
+    NGramDocument(ngramize(dm.language, tokenize(dm.language, Compat.UTF8String(txt)), n),
         n, dm)
 end
 function NGramDocument(txt::AbstractString, n::Integer=1)
@@ -103,7 +103,7 @@ end
 
 function text(fd::FileDocument)
     !isfile(fd.filename) && error("Can't find file: $(fd.filename)")
-    readall(fd.filename)
+    readstring(fd.filename)
 end
 
 text(sd::StringDocument) = sd.text
@@ -200,7 +200,7 @@ typealias GenericDocument @compat Union{
 
 Document(str::AbstractString) = isfile(str) ? FileDocument(str) : StringDocument(str)
 Document{T <: AbstractString}(tkns::Vector{T}) = TokenDocument(tkns)
-Document(ng::Dict{UTF8String, Int}) = NGramDocument(ng)
+Document(ng::Dict{Compat.UTF8String, Int}) = NGramDocument(ng)
 
 ##############################################################################
 #
