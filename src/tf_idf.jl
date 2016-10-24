@@ -29,7 +29,7 @@ function tf_idf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tfidf
         for j in 1:p
             words_in_document += dtm[i, j]
         end
-        tfidf[i, :] = dtm[i, :] ./ words_in_document
+        tfidf[i, :] = dtm[i, :] ./ maximum([words_in_document, 1])
     end
 
     # IDF tells us how rare a term is in the corpus
