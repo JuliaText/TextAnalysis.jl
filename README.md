@@ -261,16 +261,16 @@ Working with isolated documents gets boring quickly. We typically want to
 work with a collection of documents. We represent collections of documents
 using the Corpus type:
 
-    crps = Corpus({StringDocument("Document 1"),
-                   StringDocument("Document 2")})
+    crps = Corpus(Any[StringDocument("Document 1"),
+                      StringDocument("Document 2")])
 
 # Standardizing a Corpus
 
 A `Corpus` may contain many different types of documents:
 
-    crps = Corpus({StringDocument("Document 1"),
-                   TokenDocument("Document 2"),
-                   NGramDocument("Document 3")})
+    crps = Corpus(Any[StringDocument("Document 1"),
+                      TokenDocument("Document 2"),
+                      NGramDocument("Document 3")])
 
 It is generally more convenient to standardize all of the documents in a
 corpus using a single type. This can be done using the `standardize!`
@@ -287,8 +287,8 @@ After this step, you can check that the corpus only contains `NGramDocument`'s:
 We can apply the same sort of preprocessing steps that are defined for
 individual documents to an entire corpus at once:
 
-    crps = Corpus({StringDocument("Document 1"),
-                   StringDocument("Document 2")})
+    crps = Corpus(Any[StringDocument("Document 1"),
+                      StringDocument("Document 2")])
     remove_punctuation!(crps)
 
 These operations are run on each document in the corpus individually.
