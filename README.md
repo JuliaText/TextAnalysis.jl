@@ -1,10 +1,10 @@
 TextAnalysis.jl
 ===============
 
-[![Build Status](#https://api.travis-ci.org/johnmyleswhite/TextAnalysis.jl.svg)](https://travis-ci.org/johnmyleswhite/TextAnalysis.jl)
-[![TextAnalysis](#http://pkg.julialang.org/badges/TextAnalysis_0.3.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
-[![TextAnalysis](#http://pkg.julialang.org/badges/TextAnalysis_0.4.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
-[![TextAnalysis](#http://pkg.julialang.org/badges/TextAnalysis_0.5.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
+[![Build Status](#https://api.travis-ci.org/johnmyleswhite/textanalysis.jl.svg)](https://travis-ci.org/johnmyleswhite/textanalysis.jl)
+[![TextAnalysis](#http://pkg.julialang.org/badges/textanalysis_0.3.svg)](http://pkg.julialang.org/?pkg=textanalysis)
+[![TextAnalysis](#http://pkg.julialang.org/badges/textanalysis_0.4.svg)](http://pkg.julialang.org/?pkg=textanalysis)
+[![TextAnalysis](#http://pkg.julialang.org/badges/textanalysis_0.5.svg)](http://pkg.julialang.org/?pkg=textanalysis)
 
 # Preface
 
@@ -13,23 +13,23 @@ It assumes that you already familiar with the basic methods of text analysis.
 
 # Outline
 
-* [Installation](#Installation)
-* [Getting Started](#Getting-Started)
-* [Creating Documents](#Creating-Documents)
+* [Installation](#installation)
+* [Getting Started](#getting-started)
+* [Creating Documents](#creating-documents)
     * StringDocument
     * FileDocument
     * TokenDocument
     * NGramDocument
-* [Basic Functions for Working with Documents](#Basic-Functions-for-Working-with-Documents)
+* [Basic Functions for Working with Documents](#basic-functions-for-working-with-documents)
     * text
     * tokens
     * ngrams
-* [Document Metadata](#Document-Metadata)
+* [Document Metadata](#document-metadata)
     * language
     * name
     * author
     * timestamp
-* [Preprocessing Documents](#Preprocessing-Documents)
+* [Preprocessing Documents](#preprocessing-documents)
     * Removing Corrupt UTF8
     * Removing Punctuation
     * Removing Case Distinctions
@@ -43,20 +43,20 @@ It assumes that you already familiar with the basic methods of text analysis.
     * Stemming
     * Removing Rare Words
     * Removing Sparse Words
-* [Creating a Corpus](#Creating-a-Corpus)
-* [Processing a Corpus](#Processing-a-Corpus)
-* [Corpus Statistics](#Corpus-Statistics)
+* [Creating a Corpus](#creating-a-corpus)
+* [Processing a Corpus](#processing-a-corpus)
+* [Corpus Statistics](#corpus-statistics)
     * Lexicon
     * Inverse Index
-* [Creating a Document Term Matrix](#Creating-a-Document-Term-Matrix)
-* [Creating Individual Rows of a Document Term Matrix](#Creating-Individual-Rows-of-a-Document-Term-Matrix)
-* [The Hash Trick](#The-Hash-Trick)
+* [Creating a Document Term Matrix](#creating-a-document-term-matrix)
+* [Creating Individual Rows of a Document Term Matrix](#creating-individual-rows-of-a-document-term-matrix)
+* [The Hash Trick](#the-hash-trick)
     * Hashed DTV's
     * Hashed DTM's
-* [TF-IDF](#TF-IDF)
-* [LSA: Latent Semantic Analysis](#LSA:-Latent-Semantic-Analysis)
-* [LDA: Latent Dirichlet Allocation](#LDA:-Latent-Dirichlet-Allocation)
-* [Extended Usage Example: Analyzing the State of the Union Addresses](#Extended-Usage-Example:-Analyzing-the-State-of-the-Union-Addresses)
+* [TF-IDF](#tf-idf)
+* [LSA: Latent Semantic Analysis](#lsa:-latent-semantic-analysis)
+* [LDA: Latent Dirichlet Allocation](#lda:-latent-dirichlet-allocation)
+* [Extended Usage Example: Analyzing the State of the Union Addresses](#extended-usage-example:-analyzing-the-state-of-the-union-addresses)
 
 # Installation
 
