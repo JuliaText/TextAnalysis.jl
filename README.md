@@ -54,9 +54,9 @@ It assumes that you already familiar with the basic methods of text analysis.
     * Hashed DTV's
     * Hashed DTM's
 * [TF-IDF](#tf-idf)
-* LSA: [Latent Semantic Analysis](#lsa:-latent-semantic-analysis)
-* LDA: [Latent Dirichlet Allocation](#lda:-latent-dirichlet-allocation)
-* [Extended Usage Example]: Analyzing the State of the Union Addresses(#extended-usage-example:-analyzing-the-state-of-the-union-addresses)
+* LSA: [Latent Semantic Analysis](#lsa-latent-semantic-analysis)
+* LDA: [Latent Dirichlet Allocation](#lda-latent-dirichlet-allocation)
+* [Extended Usage Example]: Analyzing the State of the Union Addresses(#extended-usage-example)
 
 # Installation
 
