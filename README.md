@@ -56,7 +56,7 @@ It assumes that you already familiar with the basic methods of text analysis.
 * [TF-IDF](#tf-idf)
 * LSA: [Latent Semantic Analysis](#lsa-latent-semantic-analysis)
 * LDA: [Latent Dirichlet Allocation](#lda-latent-dirichlet-allocation)
-* [Extended Usage Example]: Analyzing the State of the Union Addresses(#extended-usage-example)
+* [Extended Usage Example](#extended-usage-example): Analyzing the State of the Union Addresses
 
 # Installation
 
