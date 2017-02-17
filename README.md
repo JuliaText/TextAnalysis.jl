@@ -13,23 +13,23 @@ It assumes that you already familiar with the basic methods of text analysis.
 
 # Outline
 
-* Installation
-* Getting Started
-* Creating Documents
+* [Installation](Installation)
+* [Getting Started](Getting-Started)
+* [Creating Documents](Creating-Documents)
     * StringDocument
     * FileDocument
     * TokenDocument
     * NGramDocument
-* Basic Functions for Working with Documents
+* [Basic Functions for Working with Documents](Basic-Functions-for-Working-with-Documents)
     * text
     * tokens
     * ngrams
-* Document Metadata
+* [Document Metadata](Document-Metadata)
     * language
     * name
     * author
     * timestamp
-* Preprocessing Documents
+* [Preprocessing Documents](Preprocessing-Documents)
     * Removing Corrupt UTF8
     * Removing Punctuation
     * Removing Case Distinctions
@@ -43,20 +43,20 @@ It assumes that you already familiar with the basic methods of text analysis.
     * Stemming
     * Removing Rare Words
     * Removing Sparse Words
-* Creating a Corpus
-* Processing a Corpus
-* Corpus Statistics
+* [Creating a Corpus]()
+* [Processing a Corpus]()
+* [Corpus Statistics]()
     * Lexicon
     * Inverse Index
-* Creating a Document Term Matrix
-* Creating Individual Rows of a Document Term Matrix
-* The Hash Trick
+* [Creating a Document Term Matrix]()
+* [Creating Individual Rows of a Document Term Matrix]()
+* [The Hash Trick]()
     * Hashed DTV's
     * Hashed DTM's
-* TF-IDF
-* LSA: Latent Semantic Analysis
-* LDA: Latent Dirichlet Allocation
-* Extended Usage Example: Analyzing the State of the Union Addresses
+* [TF-IDF]()
+* [LSA: Latent Semantic Analysis]()
+* [LDA: Latent Dirichlet Allocation]()
+* [Extended Usage Example: Analyzing the State of the Union Addresses]()
 
 # Installation
 
