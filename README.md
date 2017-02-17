@@ -43,20 +43,20 @@ It assumes that you already familiar with the basic methods of text analysis.
     * Stemming
     * Removing Rare Words
     * Removing Sparse Words
-* [Creating a Corpus]()
-* [Processing a Corpus]()
-* [Corpus Statistics]()
+* [Creating a Corpus](Creating-a-Corpus)
+* [Processing a Corpus](Processing-a-Corpus)
+* [Corpus Statistics](Corpus-Statistics)
     * Lexicon
     * Inverse Index
-* [Creating a Document Term Matrix]()
-* [Creating Individual Rows of a Document Term Matrix]()
-* [The Hash Trick]()
+* [Creating a Document Term Matrix](Creating-a-Document-Term-Matrix)
+* [Creating Individual Rows of a Document Term Matrix](Creating-Individual-Rows-of-a-Document-Term-Matrix)
+* [The Hash Trick](The-Hash-Trick)
     * Hashed DTV's
     * Hashed DTM's
-* [TF-IDF]()
-* [LSA: Latent Semantic Analysis]()
-* [LDA: Latent Dirichlet Allocation]()
-* [Extended Usage Example: Analyzing the State of the Union Addresses]()
+* [TF-IDF](TF-IDF)
+* [LSA: Latent Semantic Analysis](LSA:-Latent-Semantic-Analysis)
+* [LDA: Latent Dirichlet Allocation](LDA:-Latent-Dirichlet-Allocation)
+* [Extended Usage Example: Analyzing the State of the Union Addresses](Extended-Usage-Example:-Analyzing-the-State-of-the-Union-Addresses)
 
 # Installation
 
