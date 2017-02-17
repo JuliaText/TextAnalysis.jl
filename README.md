@@ -1,10 +1,10 @@
 TextAnalysis.jl
 ===============
 
-[![Build Status](#https://api.travis-ci.org/johnmyleswhite/textanalysis.jl.svg)](https://travis-ci.org/johnmyleswhite/textanalysis.jl)
-[![TextAnalysis](#http://pkg.julialang.org/badges/textanalysis_0.3.svg)](http://pkg.julialang.org/?pkg=textanalysis)
-[![TextAnalysis](#http://pkg.julialang.org/badges/textanalysis_0.4.svg)](http://pkg.julialang.org/?pkg=textanalysis)
-[![TextAnalysis](#http://pkg.julialang.org/badges/textanalysis_0.5.svg)](http://pkg.julialang.org/?pkg=textanalysis)
+[![Build Status](#https://api.travis-ci.org/johnmyleswhite/TextAnalysis.jl.svg)](https://travis-ci.org/johnmyleswhite/textanalysis.jl)
+[![TextAnalysis](#http://pkg.julialang.org/badges/TextAnalysis_0.3.svg)](http://pkg.julialang.org/?pkg=textanalysis)
+[![TextAnalysis](#http://pkg.julialang.org/badges/TextAnalysis_0.4.svg)](http://pkg.julialang.org/?pkg=textanalysis)
+[![TextAnalysis](#http://pkg.julialang.org/badges/TextAnalysis_0.5.svg)](http://pkg.julialang.org/?pkg=textanalysis)
 
 # Preface
 
