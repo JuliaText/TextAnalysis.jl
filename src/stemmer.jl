@@ -1,4 +1,4 @@
-const _libsb = joinpath(dirname(@__FILE__),"..","deps","usr","lib", "libstemmer."*BinDeps.shlib_ext)
+const _libsb = joinpath(dirname(@__FILE__),"..","deps","usr","lib", "libstemmer."*Libdl.dlext)
 #@BinDeps.load_dependencies [:libstemmer=>:_libsb]
 
 ##

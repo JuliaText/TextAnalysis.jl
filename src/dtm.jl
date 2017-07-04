@@ -23,9 +23,9 @@ function DocumentTermMatrix(crps::Corpus, lex)
         term = terms[i]
         column_indices[term] = i
     end
-    rows = Array(Int, 0)
-    columns = Array(Int, 0)
-    values = Array(Int, 0)
+    rows = Array{Int}(0)
+    columns = Array{Int}(0)
+    values = Array{Int}(0)
     for i in 1:length(crps)
         doc = crps.documents[i]
         ngs = ngrams(doc)
@@ -86,8 +86,8 @@ tdm(crps::Corpus) = dtm(crps)' #'
 
 function dtm_entries(d::AbstractDocument, lex::Dict{Compat.UTF8String, Int})
     ngs = ngrams(d)
-    indices = Array(Int, 0)
-    values = Array(Int, 0)
+    indices = Array{Int}(0)
+    values = Array{Int}(0)
     terms = sort(collect(keys(lex)))
     column_indices = Dict{Compat.UTF8String, Int}()
     for i in 1:length(terms)

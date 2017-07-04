@@ -4,7 +4,7 @@
 #
 ##############################################################################
 
-tf_idf{T <: Real}(dtm::Matrix{T}) = tf_idf!(dtm, Array(Float64, size(dtm)...))
+tf_idf{T <: Real}(dtm::Matrix{T}) = tf_idf!(dtm, Array{Float64}(size(dtm)...))
 
 tf_idf{T <: Real}(dtm::SparseMatrixCSC{T}) =  tf_idf!(dtm, sparse(Int[], Int[], 0.0, size(dtm)...))
 
@@ -34,7 +34,7 @@ function tf_idf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tfidf
 
     # IDF tells us how rare a term is in the corpus
     documents_containing_term = vec(sum(dtm .> 0, 1))
-    idf = log(n ./ documents_containing_term)
+    idf = log.(n ./ documents_containing_term)
 
     # TF-IDF is the product of TF and IDF
     for i in 1:n

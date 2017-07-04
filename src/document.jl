@@ -23,7 +23,7 @@ DocumentMetadata() = DocumentMetadata(
 #
 ##############################################################################
 
-abstract AbstractDocument
+@compat abstract type AbstractDocument; end
 
 ##############################################################################
 #
@@ -185,7 +185,7 @@ end
 #
 ##############################################################################
 
-typealias GenericDocument @compat Union{
+const GenericDocument = @compat Union{
     FileDocument,
     StringDocument,
     TokenDocument,

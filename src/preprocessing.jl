@@ -297,17 +297,18 @@ end
 function remove_patterns(s::AbstractString, rex::Regex)
     iob = IOBuffer()
     ibegin = 1
+    v=Vector{UInt8}(s)
     for m in matchall(rex, s)
         len = m.offset-ibegin+1
         if len > 0
-            Base.write_sub(iob, s.data, ibegin, len)
+            Base.write_sub(iob, v, ibegin, len)
             write(iob, ' ')
         end
         ibegin = m.endof+m.offset+1
     end
-    len = length(s.data) - ibegin + 1
-    (len > 0) && Base.write_sub(iob, s.data, ibegin, len)
-    takebuf_string(iob)
+    len = length(v) - ibegin + 1
+    (len > 0) && Base.write_sub(iob, v, ibegin, len)
+    String(take!(iob))
 end
 
 function remove_patterns{T <: Compat.String}(s::SubString{T}, rex::Regex)
@@ -325,7 +326,7 @@ function remove_patterns{T <: Compat.String}(s::SubString{T}, rex::Regex)
     end
     len = s.endof - ibegin + 1
     (len > 0) && Base.write_sub(iob, data, ibegin+ioffset, len)
-    takebuf_string(iob)
+    String(take!(iob))
 end
 
 remove_patterns!(d::FileDocument, rex::Regex) = error("FileDocument cannot be modified")
@@ -377,7 +378,7 @@ function _combine_regex{T <: AbstractString}(regex_parts::Set{T})
     for part in regex_parts
         write(iob, "|($part)")
     end
-    mk_regex(takebuf_string(iob))
+    mk_regex(String(take!(iob)))
 end
 
 function _build_regex_patterns{T <: AbstractString}(lang, flags::UInt32, patterns::Set{T}, words::Set{T})
@@ -415,5 +416,5 @@ function _build_words_pattern{T <: AbstractString}(words::Vector{T})
         write(iob, words[idx])
     end
     write(iob, ")\\b")
-    takebuf_string(iob)
+    String(take!(iob))
 end

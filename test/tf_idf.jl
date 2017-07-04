@@ -11,7 +11,7 @@ module TestTFIDF
     # TODO: this should work!
     # crps = Corpus(map(StringDocument, [doc1 doc2 doc3 doc4]))
 
-    crps = Corpus(Any[StringDocument(doc1), StringDocument(doc2), StringDocument(doc3), StringDocument(doc4)])    
+    crps = Corpus(Any[StringDocument(doc1), StringDocument(doc2), StringDocument(doc3), StringDocument(doc4)])
 
     update_lexicon!(crps)
     m = DocumentTermMatrix(crps)
@@ -23,24 +23,24 @@ module TestTFIDF
 	              0.0 0.23104906018664842  0.0 0.0 0.19178804830118723]
 
     myweights = tf_idf(m)
-    @test_approx_eq myweights correctweights
-                       
+    @test myweights ≈ correctweights
+
     myweights = tf_idf(dtm(m))
-    @test_approx_eq myweights correctweights
+    @test myweights ≈ correctweights
     @test typeof(myweights) <: SparseMatrixCSC
 
     myweights = tf_idf(dtm(m, :dense))
     @test isnan(sum(myweights)) == 0
-    @test_approx_eq myweights correctweights
+    @test myweights ≈ correctweights
     @test typeof(myweights) <: Matrix
 
     myweights = float(dtm(m));
     tf_idf!(myweights)
-    @test_approx_eq myweights correctweights
+    @test myweights ≈ correctweights
     @test typeof(myweights) <: SparseMatrixCSC
 
     myweights = float(dtm(m, :dense));
     tf_idf!(myweights)
-    @test_approx_eq myweights correctweights
+    @test myweights ≈ correctweights
     @test typeof(myweights) <: Matrix
 end
