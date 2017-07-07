@@ -57,7 +57,7 @@ module TestDocument
 
     d = Document("To be or not to be...")
     @assert isa(d, StringDocument)
-    d = Document("/usr/share/dict/words")
+    d = Document(joinpath(dirname(@__FILE__), "data", "poem.txt"))
     @assert isa(d, FileDocument)
     d = Document(["To", "be", "or", "not", "to", "be..."])
     @assert isa(d, TokenDocument)
