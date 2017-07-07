@@ -2,9 +2,8 @@ TextAnalysis.jl
 ===============
 
 [![Build Status](https://api.travis-ci.org/johnmyleswhite/TextAnalysis.jl.svg)](https://travis-ci.org/johnmyleswhite/TextAnalysis.jl)
-[![TextAnalysis](http://pkg.julialang.org/badges/TextAnalysis_0.3.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
-[![TextAnalysis](http://pkg.julialang.org/badges/TextAnalysis_0.4.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
 [![TextAnalysis](http://pkg.julialang.org/badges/TextAnalysis_0.5.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
+[![TextAnalysis](http://pkg.julialang.org/badges/TextAnalysis_0.6.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
 
 # Preface
 
