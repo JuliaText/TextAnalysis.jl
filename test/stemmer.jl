@@ -12,8 +12,8 @@ module TestStemmer
         TextAnalysis.release(stmr)
     end
 
-    test_cases = @compat Dict{Compat.ASCIIString, Any}(
-        "english" => @compat Dict{AbstractString, AbstractString}(
+    test_cases = Dict{String, Any}(
+        "english" => Dict{AbstractString, AbstractString}(
             "working" => "work",
             "worker" => "worker",
             "aβc" => "aβc",

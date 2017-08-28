@@ -34,7 +34,7 @@ type Stemmer
         cptr = ccall((:sb_stemmer_new, _libsb),
                     Ptr{Void},
                     (Ptr{UInt8}, Ptr{UInt8}),
-                    Compat.UTF8String(stemmer_type), Compat.UTF8String(charenc))
+                    String(stemmer_type), String(charenc))
 
         if cptr == C_NULL
             if charenc == UTF_8
@@ -59,7 +59,7 @@ function release(stm::Stemmer)
     nothing
 end
 
-stem(stemmer::Stemmer, word::AbstractString) = stem(stemmer, Compat.UTF8String(word))
+stem(stemmer::Stemmer, word::AbstractString) = stem(stemmer, String(word))
 function stem(stemmer::Stemmer, bstr::Compat.String)
     sres = ccall((:sb_stemmer_stem, _libsb),
                 Ptr{UInt8},
@@ -67,7 +67,7 @@ function stem(stemmer::Stemmer, bstr::Compat.String)
                 stemmer.cptr, bstr, sizeof(bstr))
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
-    bytes = unsafe_wrap(Array, sres, @compat(Int(slen)), false)
+    bytes = unsafe_wrap(Array, sres, Int(slen), false)
     Compat.String(copy(bytes))
 end
 
@@ -78,7 +78,7 @@ function stem(stemmer::Stemmer, word::SubString{Compat.String})
                 stemmer.cptr, pointer(word.string.data)+word.offset, word.endof)
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
-    bytes = pointer_to_array(sres, @compat(Int(slen)), false)
+    bytes = pointer_to_array(sres, Int(slen), false)
     bytestring(bytes)
 end
 

@@ -6,9 +6,9 @@
 
 type DocumentMetadata
     language::DataType
-    name::Compat.UTF8String
-    author::Compat.UTF8String
-    timestamp::Compat.UTF8String
+    name::String
+    author::String
+    timestamp::String
 end
 DocumentMetadata() = DocumentMetadata(
     EnglishLanguage,
@@ -32,12 +32,12 @@ DocumentMetadata() = DocumentMetadata(
 ##############################################################################
 
 type FileDocument <: AbstractDocument
-    filename::Compat.UTF8String
+    filename::String
     metadata::DocumentMetadata
 end
 
 function FileDocument(f::AbstractString)
-    d = FileDocument(Compat.UTF8String(f), DocumentMetadata())
+    d = FileDocument(String(f), DocumentMetadata())
     d.metadata.name = f
     return d
 end
@@ -49,11 +49,11 @@ end
 ##############################################################################
 
 type StringDocument <: AbstractDocument
-    text::Compat.UTF8String
+    text::String
     metadata::DocumentMetadata
 end
 
-StringDocument(txt::AbstractString) = StringDocument(Compat.UTF8String(txt), DocumentMetadata())
+StringDocument(txt::AbstractString) = StringDocument(String(txt), DocumentMetadata())
 
 ##############################################################################
 #
@@ -62,7 +62,7 @@ StringDocument(txt::AbstractString) = StringDocument(Compat.UTF8String(txt), Doc
 ##############################################################################
 
 type TokenDocument <: AbstractDocument
-    tokens::Vector{Compat.UTF8String}
+    tokens::Vector{String}
     metadata::DocumentMetadata
 end
 function TokenDocument(txt::AbstractString, dm::DocumentMetadata)
@@ -71,7 +71,7 @@ end
 function TokenDocument{T <: AbstractString}(tkns::Vector{T})
     TokenDocument(tkns, DocumentMetadata())
 end
-TokenDocument(txt::AbstractString) = TokenDocument(Compat.UTF8String(txt), DocumentMetadata())
+TokenDocument(txt::AbstractString) = TokenDocument(String(txt), DocumentMetadata())
 
 ##############################################################################
 #
@@ -80,12 +80,12 @@ TokenDocument(txt::AbstractString) = TokenDocument(Compat.UTF8String(txt), Docum
 ##############################################################################
 
 type NGramDocument <: AbstractDocument
-    ngrams::Dict{Compat.UTF8String,Int}
+    ngrams::Dict{String,Int}
     n::Int
     metadata::DocumentMetadata
 end
 function NGramDocument(txt::AbstractString, dm::DocumentMetadata, n::Integer=1)
-    NGramDocument(ngramize(dm.language, tokenize(dm.language, Compat.UTF8String(txt)), n),
+    NGramDocument(ngramize(dm.language, tokenize(dm.language, String(txt)), n),
         n, dm)
 end
 function NGramDocument(txt::AbstractString, n::Integer=1)
@@ -126,7 +126,7 @@ end
 #
 ##############################################################################
 
-tokens(d::(@compat Union{FileDocument, StringDocument})) = tokenize(language(d), text(d))
+tokens(d::(Union{FileDocument, StringDocument})) = tokenize(language(d), text(d))
 tokens(d::TokenDocument) = d.tokens
 function tokens(d::NGramDocument)
     error("The tokens of an NGramDocument cannot be reconstructed")
@@ -185,7 +185,7 @@ end
 #
 ##############################################################################
 
-const GenericDocument = @compat Union{
+const GenericDocument = Union{
     FileDocument,
     StringDocument,
     TokenDocument,
@@ -200,7 +200,7 @@ const GenericDocument = @compat Union{
 
 Document(str::AbstractString) = isfile(str) ? FileDocument(str) : StringDocument(str)
 Document{T <: AbstractString}(tkns::Vector{T}) = TokenDocument(tkns)
-Document(ng::Dict{Compat.UTF8String, Int}) = NGramDocument(ng)
+Document(ng::Dict{String, Int}) = NGramDocument(ng)
 
 ##############################################################################
 #
@@ -211,11 +211,11 @@ Document(ng::Dict{Compat.UTF8String, Int}) = NGramDocument(ng)
 function Base.convert(::Type{StringDocument}, d::FileDocument)
     StringDocument(text(d), d.metadata)
 end
-function Base.convert(::Type{TokenDocument}, d::(@compat Union{FileDocument, StringDocument}))
+function Base.convert(::Type{TokenDocument}, d::(Union{FileDocument, StringDocument}))
     TokenDocument(tokens(d), d.metadata)
 end
 function Base.convert(::Type{NGramDocument},
-            d::(@compat Union{FileDocument, StringDocument, TokenDocument}))
+            d::(Union{FileDocument, StringDocument, TokenDocument}))
     NGramDocument(ngrams(d), 1, d.metadata)
 end
 Base.convert(::Type{TokenDocument}, d::TokenDocument) = d
