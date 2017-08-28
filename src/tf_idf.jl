@@ -6,7 +6,7 @@
 
 tf_idf{T <: Real}(dtm::Matrix{T}) = tf_idf!(dtm, Array{Float64}(size(dtm)...))
 
-tf_idf{T <: Real}(dtm::SparseMatrixCSC{T}) =  tf_idf!(dtm, sparse(Int[], Int[], 0.0, size(dtm)...))
+tf_idf{T <: Real}(dtm::SparseMatrixCSC{T}) =  tf_idf!(dtm, similar(dtm, Float64))
 
 tf_idf!{T <: Real}(dtm::AbstractMatrix{T}) = tf_idf!(dtm, dtm)
 
@@ -29,7 +29,7 @@ function tf_idf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tfidf
         for j in 1:p
             words_in_document += dtm[i, j]
         end
-        tfidf[i, :] = dtm[i, :] ./ maximum([words_in_document, 1])
+        tfidf[i, :] = dtm[i, :] ./ max(words_in_document, 1)
     end
 
     # IDF tells us how rare a term is in the corpus
