@@ -9,9 +9,9 @@ module Lda
 type TopicBasedDocument
     topic::Vector{Int}
     text::Vector{Int}
-    topicidcount::Dict{Int, Int}
+    topicidcount::Vector{Int}
 end
-TopicBasedDocument() = TopicBasedDocument(Vector{Int}(), Vector{Int}(), Dict{Int, Int}())
+TopicBasedDocument(ntopics) = TopicBasedDocument(Vector{Int}(), Vector{Int}(), zeros(Int, ntopics))
 
 type Topic
     count::Int
@@ -24,14 +24,14 @@ end
 function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float64, beta::Float64)
 
     number_of_documents, number_of_words = size(dtm.dtm)
-    docs = Vector{Lda.TopicBasedDocument}()
-    topics = Dict{Int, Lda.Topic}()
+    docs = Vector{Lda.TopicBasedDocument}(number_of_documents)
+    topics = Vector{Lda.Topic}(ntopics)
     for i in 1:ntopics
         topics[i] = Lda.Topic()
     end
 
     for i in 1:number_of_documents
-        topic_base_document = Lda.TopicBasedDocument()
+        topic_base_document = Lda.TopicBasedDocument(ntopics)
         for wordid in 1:number_of_words
             for _ in 1:dtm.dtm[i,wordid]
                 topicid = rand(1:ntopics)
@@ -44,29 +44,29 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float
                 topic_base_document.topicidcount[topicid] =  get(topic_base_document.topicidcount, topicid, 0) + 1
             end
         end
-        push!(docs, topic_base_document)
+        docs[i] = topic_base_document
     end
-
+    probs = Vector{Float64}(ntopics)
     # Gibbs sampling
     for _ in 1:iteration
         for doc in docs
             for (i, word) in enumerate(doc.text)
                 topicid_current = doc.topic[i]
-                doc.topicidcount[topicid_current] -= 1 
+                doc.topicidcount[topicid_current] -= 1
                 topics[topicid_current].count -= 1
                 topics[topicid_current].wordcount[word] -= 1
                 document_lenth = length(doc.text) - 1
-                probs = Vector{Float64}()
+
                 for target_topicid in 1:ntopics
-                    topicprob = (get(doc.topicidcount, target_topicid, 0) + beta) / (document_lenth + beta * ntopics)
+                    topicprob = (doc.topicidcount[target_topicid] + beta) / (document_lenth + beta * ntopics)
                     wordprob = (get(topics[target_topicid].wordcount, word, 0)+ alpha) / (topics[target_topicid].count + alpha * number_of_words)
-                    push!(probs, topicprob * wordprob)
+                    probs[target_topicid] = topicprob * wordprob
                 end
                 normalize_probs = sum(probs)
-                
+
                 # select new topic
                 select = rand()
-                sum_of_prob = 0
+                sum_of_prob = 0.0
                 new_topicid = 0
                 for (selected_topicid, prob) in enumerate(probs)
                     sum_of_prob += prob / normalize_probs
@@ -96,4 +96,3 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float
     end
     return result
 end
-
