@@ -225,7 +225,7 @@ tag_pos!(entity) = error("Not yet implemented")
 function sparse_terms(crps::Corpus, alpha::Real = alpha_sparse)
     update_lexicon!(crps)
     update_inverse_index!(crps)
-    res = Array(UTF8String, 0)
+    res = Array(String, 0)
     ndocs = length(crps.documents)
     for term in keys(crps.lexicon)
         f = length(crps.inverse_index[term]) / ndocs
@@ -239,7 +239,7 @@ end
 function frequent_terms(crps::Corpus, alpha::Real = alpha_frequent)
     update_lexicon!(crps)
     update_inverse_index!(crps)
-    res = Array(UTF8String, 0)
+    res = Array(String, 0)
     ndocs = length(crps.documents)
     for term in keys(crps.lexicon)
         f = length(crps.inverse_index[term]) / ndocs
