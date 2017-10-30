@@ -43,13 +43,7 @@ end
 #
 ##############################################################################
 function remove_corrupt_utf8(s::AbstractString)
-    r = zeros(Char, endof(s)+1)
-    i = 0
-    for chr in s
-        i += 1
-        r[i] = (chr != 0xfffd) ? chr : ' '
-    end
-    return String(CharString(r))
+    return map(x->UInt(x)!=0xfffd?x:' ' , s)
 end
 
 remove_corrupt_utf8!(d::FileDocument) = error("FileDocument cannot be modified")
