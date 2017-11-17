@@ -79,7 +79,7 @@ The basic unit of text analysis is a document. The TextAnalysis package
 allows one to work with documents stored in a variety of formats:
 
 * _FileDocument_: A document represented using a plain text file on disk
-* _StringDocument_: A document represented using a UTF8String stored in RAM
+* _StringDocument_: A document represented using a UTF8 String stored in RAM
 * _TokenDocument_: A document represented as a sequence of UTF8 tokens
 * _NGramDocument_: A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
 
@@ -93,12 +93,12 @@ Creating any of the four basic types of documents is very easy:
     pathname = "/usr/share/dict/words"
     fd = FileDocument(pathname)
 
-    my_tokens = UTF8String["To", "be", "or", "not", "to", "be..."]
+    my_tokens = String["To", "be", "or", "not", "to", "be..."]
     td = TokenDocument(my_tokens)
 
-    my_ngrams = (UTF8String => Int)["To" => 1, "be" => 2,
+    my_ngrams = Dict{String, Int}("To" => 1, "be" => 2,
                                     "or" => 1, "not" => 1,
-                                    "to" => 1, "be..." => 1]
+                                    "to" => 1, "be..." => 1)
     ngd = NGramDocument(my_ngrams)
 
 For every type of document except a `FileDocument`, you can also construct a
@@ -119,8 +119,8 @@ and construct the appropriate type of document object:
 
     Document("To be or not to be...")
     Document("/usr/share/dict/words")
-    Document(UTF8String["To", "be", "or", "not", "to", "be..."])
-    Document((UTF8String => Int)["a" => 1, "b" => 3])
+    Document(String["To", "be", "or", "not", "to", "be..."])
+    Document(Dict{String, Int}("a" => 1, "b" => 3))
 
 This constructor is very convenient for working in the REPL, but should be avoided in permanent code because, unlike the other constructors, the return type of the `Document` function cannot be known at compile-time.
 
