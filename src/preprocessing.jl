@@ -1,28 +1,28 @@
 
-const strip_patterns                = @compat(UInt32(0))
-const strip_corrupt_utf8            = @compat(UInt32(0x1)) << 0
-const strip_case                    = @compat(UInt32(0x1)) << 1
-const stem_words                    = @compat(UInt32(0x1)) << 2
-const tag_part_of_speech            = @compat(UInt32(0x1)) << 3
+const strip_patterns                = UInt32(0)
+const strip_corrupt_utf8            = UInt32(0x1) << 0
+const strip_case                    = UInt32(0x1) << 1
+const stem_words                    = UInt32(0x1) << 2
+const tag_part_of_speech            = UInt32(0x1) << 3
 
-const strip_whitespace              = @compat(UInt32(0x1)) << 5
-const strip_punctuation             = @compat(UInt32(0x1)) << 6
-const strip_numbers                 = @compat(UInt32(0x1)) << 7
-const strip_non_letters             = @compat(UInt32(0x1)) << 8
+const strip_whitespace              = UInt32(0x1) << 5
+const strip_punctuation             = UInt32(0x1) << 6
+const strip_numbers                 = UInt32(0x1) << 7
+const strip_non_letters             = UInt32(0x1) << 8
 
-const strip_indefinite_articles     = @compat(UInt32(0x1)) << 9
-const strip_definite_articles       = @compat(UInt32(0x1)) << 10
+const strip_indefinite_articles     = UInt32(0x1) << 9
+const strip_definite_articles       = UInt32(0x1) << 10
 const strip_articles                = (strip_indefinite_articles |
                                        strip_definite_articles)
 
-const strip_prepositions            = @compat(UInt32(0x1)) << 13
-const strip_pronouns                = @compat(UInt32(0x1)) << 14
+const strip_prepositions            = UInt32(0x1) << 13
+const strip_pronouns                = UInt32(0x1) << 14
 
-const strip_stopwords               = @compat(UInt32(0x1)) << 16
-const strip_sparse_terms            = @compat(UInt32(0x1)) << 17
-const strip_frequent_terms          = @compat(UInt32(0x1)) << 18
+const strip_stopwords               = UInt32(0x1) << 16
+const strip_sparse_terms            = UInt32(0x1) << 17
+const strip_frequent_terms          = UInt32(0x1) << 18
 
-const strip_html_tags               = @compat(UInt32(0x1)) << 20
+const strip_html_tags               = UInt32(0x1) << 20
 
 const alpha_sparse      = 0.05
 const alpha_frequent    = 0.95
@@ -43,15 +43,7 @@ end
 #
 ##############################################################################
 function remove_corrupt_utf8(s::AbstractString)
-    r=Array{Char}(endof(s)+1)
-    fill!(r,0)
-
-    i = 0
-    for chr in s
-        i += 1
-        r[i] = (chr != 0xfffd) ? chr : ' '
-    end
-    return utf8(CharString(r))
+    return map(x->UInt(x)!=0xfffd?x:' ' , s)
 end
 
 remove_corrupt_utf8!(d::FileDocument) = error("FileDocument cannot be modified")
@@ -159,55 +151,50 @@ end
 # Remove specified words
 #
 ##############################################################################
-function remove_words!{T <: AbstractString}(entity::(@compat Union{AbstractDocument,Corpus}),
-                                    words::Vector{T}, chunksize::Int = 1000)
-    S=length(words)
-    for i=0:floor(S/chunksize)
-        ixstart=convert(Int64,i*chunksize+1)
-        ixend=min(ixstart+chunksize-1,S)
-        skipwords = Set{AbstractString}()
-        union!(skipwords, words[ixstart:ixend])
-        prepare!(entity, strip_patterns, skip_words = skipwords)
-    end
+function remove_words!{T <: AbstractString}(entity::(Union{AbstractDocument,Corpus}),
+                                    words::Vector{T})
+    skipwords = Set{AbstractString}()
+    union!(skipwords, words)
+    prepare!(entity, strip_patterns, skip_words = skipwords)
 end
 
-function remove_whitespace!(entity::(@compat Union{AbstractDocument,Corpus}))
+function remove_whitespace!(entity::(Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_whitespace! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_whitespace)
 end
-function remove_punctuation!(entity::(@compat Union{AbstractDocument,Corpus}))
+function remove_punctuation!(entity::(Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_punctuation! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_punctuation)
 end
-function remove_nonletters!(entity::(@compat Union{AbstractDocument,Corpus}))
+function remove_nonletters!(entity::(Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_nonletters! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_non_letters)
 end
-function remove_numbers!(entity::(@compat Union{AbstractDocument,Corpus}))
+function remove_numbers!(entity::(Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_numbers! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_numbers)
 end
-function remove_articles!(entity::(@compat Union{AbstractDocument,Corpus}))
+function remove_articles!(entity::(Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_articles! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_articles)
 end
-function remove_indefinite_articles!(entity::(@compat Union{AbstractDocument,Corpus}))
+function remove_indefinite_articles!(entity::(Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_indefinite_articles! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_indefinite_articles)
 end
-function remove_definite_articles!(entity::(@compat Union{AbstractDocument,Corpus}))
+function remove_definite_articles!(entity::(Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_definite_articles! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_definite_articles)
 end
-function remove_prepositions!(entity::(@compat Union{AbstractDocument,Corpus}))
+function remove_prepositions!(entity::(Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_prepositions! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_prepositions)
 end
-function remove_pronouns!(entity::(@compat Union{AbstractDocument,Corpus}))
+function remove_pronouns!(entity::(Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_pronouns! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_pronouns)
 end
-function remove_stop_words!(entity::(@compat Union{AbstractDocument,Corpus}))
+function remove_stop_words!(entity::(Union{AbstractDocument,Corpus}))
     Base.warn_once("remove_stop_words! is deprecated, Use prepare! instead.")
     prepare!(entity, strip_stopwords)
 end
@@ -232,12 +219,12 @@ tag_pos!(entity) = error("Not yet implemented")
 function sparse_terms(crps::Corpus, alpha::Real = alpha_sparse)
     update_lexicon!(crps)
     update_inverse_index!(crps)
-    res = Array(UTF8String, 0)
+    res = Array(String, 0)
     ndocs = length(crps.documents)
     for term in keys(crps.lexicon)
         f = length(crps.inverse_index[term]) / ndocs
         if f <= alpha
-            push!(res, utf8(term))
+            push!(res, String(term))
         end
     end
     return res
@@ -246,12 +233,12 @@ end
 function frequent_terms(crps::Corpus, alpha::Real = alpha_frequent)
     update_lexicon!(crps)
     update_inverse_index!(crps)
-    res = Array(UTF8String, 0)
+    res = Array(String, 0)
     ndocs = length(crps.documents)
     for term in keys(crps.lexicon)
         f = length(crps.inverse_index[term]) / ndocs
         if f >= alpha
-            push!(res, utf8(term))
+            push!(res, String(term))
         end
     end
     return res
@@ -262,6 +249,7 @@ remove_sparse_terms!(crps::Corpus, alpha::Real = alpha_sparse) = remove_words!(c
 
 # Frequent terms occur in more than x percent of all documents
 remove_frequent_terms!(crps::Corpus, alpha::Real = alpha_frequent) = remove_words!(crps, frequent_terms(crps, alpha))
+
 
 
 ##############################################################################
@@ -300,26 +288,24 @@ function prepare!(d::AbstractDocument, flags::UInt32; skip_patterns = Set{Abstra
     nothing
 end
 
-##
-# internal helper methods
-
 function remove_patterns(s::AbstractString, rex::Regex)
     iob = IOBuffer()
     ibegin = 1
+    v=Vector{UInt8}(s)
     for m in matchall(rex, s)
         len = m.offset-ibegin+1
         if len > 0
-            Base.write_sub(iob, s.data, ibegin, len)
+            Base.write_sub(iob, v, ibegin, len)
             write(iob, ' ')
         end
         ibegin = m.endof+m.offset+1
     end
-    len = length(s.data) - ibegin + 1
-    (len > 0) && Base.write_sub(iob, s.data, ibegin, len)
-    takebuf_string(iob)
+    len = length(v) - ibegin + 1
+    (len > 0) && Base.write_sub(iob, v, ibegin, len)
+    String(take!(iob))
 end
 
-function remove_patterns{T <: ByteString}(s::SubString{T}, rex::Regex)
+function remove_patterns{T <: Compat.String}(s::SubString{T}, rex::Regex)
     iob = IOBuffer()
     ioffset = s.offset
     data = s.string.data
@@ -334,7 +320,7 @@ function remove_patterns{T <: ByteString}(s::SubString{T}, rex::Regex)
     end
     len = s.endof - ibegin + 1
     (len > 0) && Base.write_sub(iob, data, ibegin+ioffset, len)
-    takebuf_string(iob)
+    String(take!(iob))
 end
 
 remove_patterns!(d::FileDocument, rex::Regex) = error("FileDocument cannot be modified")
@@ -370,6 +356,9 @@ function remove_patterns!(crps::Corpus, rex::Regex)
     end
 end
 
+##
+# internal helper methods
+
 _build_regex(lang, flags::UInt32) = _build_regex(lang, flags, Set{AbstractString}(), Set{AbstractString}())
 _build_regex{T <: AbstractString}(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) = _combine_regex(_build_regex_patterns(lang, flags, patterns, words))
 
@@ -383,7 +372,7 @@ function _combine_regex{T <: AbstractString}(regex_parts::Set{T})
     for part in regex_parts
         write(iob, "|($part)")
     end
-    mk_regex(takebuf_string(iob))
+    mk_regex(String(take!(iob)))
 end
 
 function _build_regex_patterns{T <: AbstractString}(lang, flags::UInt32, patterns::Set{T}, words::Set{T})
@@ -421,5 +410,5 @@ function _build_words_pattern{T <: AbstractString}(words::Vector{T})
         write(iob, words[idx])
     end
     write(iob, ")\\b")
-    takebuf_string(iob)
+    String(take!(iob))
 end

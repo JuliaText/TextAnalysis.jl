@@ -1,33 +1,12 @@
 ##############################################################################
 #
-# TD
+# TF
 #
 ##############################################################################
 
-tf{T <: Real}(dtm::Matrix{T}) = tf!(dtm, Array(Float64, size(dtm)...))
+tf{T <: Real}(dtm::Matrix{T}) = tf!(dtm, Array{Float64}(size(dtm)...))
 
-function tf{T <: Real}(dtm::SparseMatrixCSC{T})
-    # TF tells us what proportion of a document is defined by a term
-    n, p = size(dtm)
-    rows = rowvals(dtm)
-    vals = nonzeros(dtm)
-    words_in_documents = sum(dtm,2)
-
-    tfrows = Array(Int, 0)
-    tfcols = Array(Int, 0)
-    tfvals = Array(Float64, 0)
-
-    for col = 1:p
-      for j in nzrange(dtm, col)
-        row = rows[j]
-        val = vals[j]
-        push!(tfrows, row)
-        push!(tfcols, col)
-        push!(tfvals, val/words_in_documents[row])
-      end
-    end
-    sparse(tfrows, tfcols, tfvals)
-end
+tf{T <: Real}(dtm::SparseMatrixCSC{T}) =  tf!(dtm, similar(dtm, Float64))
 
 tf!{T <: Real}(dtm::AbstractMatrix{T}) = tf!(dtm, dtm)
 
@@ -46,47 +25,41 @@ function tf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tf::Abstr
         for j in 1:p
             words_in_document += dtm[i, j]
         end
-        tf[i, :] = dtm[i, :] ./ words_in_document
+        tf[i, :] = dtm[i, :] ./ max(words_in_document, one(T1))
     end
 
     return tf
 end
 
-##############################################################################
-#
-# TD-IDF
-#
-##############################################################################
-
-tf_idf{T <: Real}(dtm::Matrix{T}) = tf_idf!(dtm, Array(Float64, size(dtm)...))
-
-function tf_idf{T <: Real}(dtm::SparseMatrixCSC{T})
-    n, p = size(dtm)
+# assumes second matrix has same nonzeros as first one
+function tf!{T <: Real, F <: AbstractFloat}(dtm::SparseMatrixCSC{T}, tf::SparseMatrixCSC{F})
     rows = rowvals(dtm)
-    vals = nonzeros(dtm)
+    dtmvals = nonzeros(dtm)
+    tfvals = nonzeros(tf)
+    @assert size(dtmvals) == size(tfvals)
 
     # TF tells us what proportion of a document is defined by a term
     words_in_documents = sum(dtm,2)
 
-    # IDF tells us how rare a term is in the corpus
-    documents_containing_term = vec(sum(dtm .> 0, 1))
-    idf = log(n ./ documents_containing_term)
-
-    tfidfrows = Array(Int, 0)
-    tfidfcols = Array(Int, 0)
-    tfidfvals = Array(Float64, 0)
-
-    for col = 1:p
-      for j in nzrange(dtm, col)
-        row = rows[j]
-        val = vals[j]
-        push!(tfidfrows, row)
-        push!(tfidfcols, col)
-        push!(tfidfvals, val/words_in_documents[row] * idf[col])
-      end
+    n, p = size(dtm)
+    for i = 1:p
+       for j in nzrange(dtm, i)
+          row = rows[j]
+          tfvals[j] = dtmvals[j] / max(words_in_documents[row], one(T))
+       end
     end
-    sparse(tfidfrows, tfidfcols, tfidfvals)
+    tf
 end
+
+##############################################################################
+#
+# TF-IDF
+#
+##############################################################################
+
+tf_idf{T <: Real}(dtm::Matrix{T}) = tf_idf!(dtm, Array{Float64}(size(dtm)...))
+
+tf_idf{T <: Real}(dtm::SparseMatrixCSC{T}) =  tf_idf!(dtm, similar(dtm, Float64))
 
 tf_idf!{T <: Real}(dtm::AbstractMatrix{T}) = tf_idf!(dtm, dtm)
 
@@ -108,7 +81,7 @@ function tf_idf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tfidf
 
     # IDF tells us how rare a term is in the corpus
     documents_containing_term = vec(sum(dtm .> 0, 1))
-    idf = log(n ./ documents_containing_term)
+    idf = log.(n ./ documents_containing_term)
 
     # TF-IDF is the product of TF and IDF
     for i in 1:n
@@ -118,4 +91,31 @@ function tf_idf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tfidf
     end
 
     return tfidf
+end
+
+# sparse version
+function tf_idf!{T <: Real, F <: AbstractFloat}(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F})
+    rows = rowvals(dtm)
+    dtmvals = nonzeros(dtm)
+    tfidfvals = nonzeros(tfidf)
+    @assert size(dtmvals) == size(tfidfvals)
+
+    n, p = size(dtm)
+
+    # TF tells us what proportion of a document is defined by a term
+    words_in_documents = F.(sum(dtm,2))
+    const oneval = one(F)
+
+    # IDF tells us how rare a term is in the corpus
+    documents_containing_term = vec(sum(dtm .> 0, 1))
+    idf = log.(n ./ documents_containing_term)
+
+    for i = 1:p
+       for j in nzrange(dtm, i)
+          row = rows[j]
+          tfidfvals[j] = dtmvals[j] / max(words_in_documents[row], oneval) * idf[i]
+       end
+    end
+
+    tfidf
 end

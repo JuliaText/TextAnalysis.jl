@@ -1,9 +1,9 @@
 TextAnalysis.jl
 ===============
 
-[![Build Status](https://api.travis-ci.org/johnmyleswhite/TextAnalysis.jl.svg)](https://api.travis-ci.org/johnmyleswhite/TextAnalysis.jl)
-[![TextAnalysis](http://pkg.julialang.org/badges/TextAnalysis_0.3.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
-[![TextAnalysis](http://pkg.julialang.org/badges/TextAnalysis_0.4.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
+[![Build Status](https://api.travis-ci.org/JuliaText/TextAnalysis.jl.svg)](https://travis-ci.org/JuliaText/TextAnalysis.jl)
+[![TextAnalysis](http://pkg.julialang.org/badges/TextAnalysis_0.5.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
+[![TextAnalysis](http://pkg.julialang.org/badges/TextAnalysis_0.6.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
 
 # Preface
 
@@ -12,23 +12,23 @@ It assumes that you already familiar with the basic methods of text analysis.
 
 # Outline
 
-* Installation
-* Getting Started
-* Creating Documents
+* [Installation](#installation)
+* [Getting Started](#getting-started)
+* [Creating Documents](#creating-documents)
     * StringDocument
     * FileDocument
     * TokenDocument
     * NGramDocument
-* Basic Functions for Working with Documents
+* [Basic Functions for Working with Documents](#basic-functions-for-working-with-documents)
     * text
     * tokens
     * ngrams
-* Document Metadata
+* [Document Metadata](#document-metadata)
     * language
     * name
     * author
     * timestamp
-* Preprocessing Documents
+* [Preprocessing Documents](#preprocessing-documents)
     * Removing Corrupt UTF8
     * Removing Punctuation
     * Removing Case Distinctions
@@ -42,20 +42,20 @@ It assumes that you already familiar with the basic methods of text analysis.
     * Stemming
     * Removing Rare Words
     * Removing Sparse Words
-* Creating a Corpus
-* Processing a Corpus
-* Corpus Statistics
+* [Creating a Corpus](#creating-a-corpus)
+* [Processing a Corpus](#processing-a-corpus)
+* [Corpus Statistics](#corpus-statistics)
     * Lexicon
     * Inverse Index
-* Creating a Document Term Matrix
-* Creating Individual Rows of a Document Term Matrix
-* The Hash Trick
+* [Creating a Document Term Matrix](#creating-a-document-term-matrix)
+* [Creating Individual Rows of a Document Term Matrix](#creating-individual-rows-of-a-document-term-matrix)
+* [The Hash Trick](#the-hash-trick)
     * Hashed DTV's
     * Hashed DTM's
-* TF-IDF
-* LSA: Latent Semantic Analysis
-* LDA: Latent Dirichlet Allocation
-* Extended Usage Example: Analyzing the State of the Union Addresses
+* [TF-IDF](#tf-idf)
+* LSA: [Latent Semantic Analysis](#lsa-latent-semantic-analysis)
+* LDA: [Latent Dirichlet Allocation](#lda-latent-dirichlet-allocation)
+* [Extended Usage Example](#extended-usage-example): Analyzing the State of the Union Addresses
 
 # Installation
 
@@ -79,7 +79,7 @@ The basic unit of text analysis is a document. The TextAnalysis package
 allows one to work with documents stored in a variety of formats:
 
 * _FileDocument_: A document represented using a plain text file on disk
-* _StringDocument_: A document represented using a UTF8String stored in RAM
+* _StringDocument_: A document represented using a UTF8 String stored in RAM
 * _TokenDocument_: A document represented as a sequence of UTF8 tokens
 * _NGramDocument_: A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
 
@@ -93,12 +93,12 @@ Creating any of the four basic types of documents is very easy:
     pathname = "/usr/share/dict/words"
     fd = FileDocument(pathname)
 
-    my_tokens = UTF8String["To", "be", "or", "not", "to", "be..."]
+    my_tokens = String["To", "be", "or", "not", "to", "be..."]
     td = TokenDocument(my_tokens)
 
-    my_ngrams = (UTF8String => Int)["To" => 1, "be" => 2,
+    my_ngrams = Dict{String, Int}("To" => 1, "be" => 2,
                                     "or" => 1, "not" => 1,
-                                    "to" => 1, "be..." => 1]
+                                    "to" => 1, "be..." => 1)
     ngd = NGramDocument(my_ngrams)
 
 For every type of document except a `FileDocument`, you can also construct a
@@ -119,8 +119,8 @@ and construct the appropriate type of document object:
 
     Document("To be or not to be...")
     Document("/usr/share/dict/words")
-    Document(UTF8String["To", "be", "or", "not", "to", "be..."])
-    Document((UTF8String => Int)["a" => 1, "b" => 3])
+    Document(String["To", "be", "or", "not", "to", "be..."])
+    Document(Dict{String, Int}("a" => 1, "b" => 3))
 
 This constructor is very convenient for working in the REPL, but should be avoided in permanent code because, unlike the other constructors, the return type of the `Document` function cannot be known at compile-time.
 
@@ -260,16 +260,16 @@ Working with isolated documents gets boring quickly. We typically want to
 work with a collection of documents. We represent collections of documents
 using the Corpus type:
 
-    crps = Corpus({StringDocument("Document 1"),
-                   StringDocument("Document 2")})
+    crps = Corpus(Any[StringDocument("Document 1"),
+                      StringDocument("Document 2")])
 
 # Standardizing a Corpus
 
 A `Corpus` may contain many different types of documents:
 
-    crps = Corpus({StringDocument("Document 1"),
-                   TokenDocument("Document 2"),
-                   NGramDocument("Document 3")})
+    crps = Corpus(Any[StringDocument("Document 1"),
+                      TokenDocument("Document 2"),
+                      NGramDocument("Document 3")])
 
 It is generally more convenient to standardize all of the documents in a
 corpus using a single type. This can be done using the `standardize!`
@@ -286,8 +286,8 @@ After this step, you can check that the corpus only contains `NGramDocument`'s:
 We can apply the same sort of preprocessing steps that are defined for
 individual documents to an entire corpus at once:
 
-    crps = Corpus({StringDocument("Document 1"),
-                   StringDocument("Document 2")})
+    crps = Corpus(Any[StringDocument("Document 1"),
+                      StringDocument("Document 2")])
     remove_punctuation!(crps)
 
 These operations are run on each document in the corpus individually.
@@ -432,7 +432,14 @@ Analysis or LSA on the corpus. You can do this using the `lsa` function:
 Another way to get a handle on the semantic content of a corpus is to use
 Latent Dirichlet Allocation:
 
-    lda(crps)
+    m = DocumentTermMatrix(crps)
+    k = 2            # number of topics
+    iteration = 1000 # number of gibbs sampling iterations
+    alpha = 0.1      # hyper parameter
+    beta = 0.1       # hyber parameter
+    l = lda(m, k, iteration, alpha, beta) # l is k x word matrix.
+                                          # value is probablity of occurrence of a word in a topic.
+
 
 # Extended Usage Example
 
