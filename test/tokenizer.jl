@@ -2,6 +2,7 @@ module TestTokenizer
     using Base.Test
     using Languages
     using TextAnalysis
+    using Compat
 
     sample_text = "this is some sample text"
 
@@ -12,6 +13,6 @@ module TestTokenizer
 
     @assert isequal(
         tkns,
-        UTF8String["this", "is", "some", "sample", "text"]
+        Compat.UTF8String["this", "is", "some", "sample", "text"]
     )
 end

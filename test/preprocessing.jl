@@ -81,4 +81,8 @@ module TestPreprocessing
     )
     remove_html_tags!(d)
     @assert "Hello world" == strip(d.text)
+
+    #Test #62
+    remove_corrupt_utf8("abc") == "abc"
+    remove_corrupt_utf8(String([0x43, 0xf0])) == "C "
 end

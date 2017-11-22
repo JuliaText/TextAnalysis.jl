@@ -6,8 +6,8 @@
 
 type DocumentTermMatrix
     dtm::SparseMatrixCSC{Int, Int}
-    terms::Vector{UTF8String}
-    column_indices::Dict{UTF8String, Int}
+    terms::Vector{String}
+    column_indices::Dict{String, Int}
 end
 
 ##############################################################################
@@ -18,14 +18,14 @@ end
 
 function DocumentTermMatrix(crps::Corpus, lex)
     terms = sort(collect(keys(lex)))
-    column_indices = Dict{UTF8String, Int}()
+    column_indices = Dict{String, Int}()
     for i in 1:length(terms)
         term = terms[i]
         column_indices[term] = i
     end
-    rows = Array(Int, 0)
-    columns = Array(Int, 0)
-    values = Array(Int, 0)
+    rows = Array{Int}(0)
+    columns = Array{Int}(0)
+    values = Array{Int}(0)
     for i in 1:length(crps)
         doc = crps.documents[i]
         ngs = ngrams(doc)
@@ -84,12 +84,12 @@ tdm(crps::Corpus) = dtm(crps)' #'
 #
 ##############################################################################
 
-function dtm_entries(d::AbstractDocument, lex::Dict{UTF8String, Int})
+function dtm_entries(d::AbstractDocument, lex::Dict{String, Int})
     ngs = ngrams(d)
-    indices = Array(Int, 0)
-    values = Array(Int, 0)
+    indices = Array{Int}(0)
+    values = Array{Int}(0)
     terms = sort(collect(keys(lex)))
-    column_indices = Dict{UTF8String, Int}()
+    column_indices = Dict{String, Int}()
     for i in 1:length(terms)
         term = terms[i]
         column_indices[term] = i
@@ -103,7 +103,7 @@ function dtm_entries(d::AbstractDocument, lex::Dict{UTF8String, Int})
     return (indices, values)
 end
 
-function dtv(d::AbstractDocument, lex::Dict{UTF8String, Int})
+function dtv(d::AbstractDocument, lex::Dict{String, Int})
     p = length(keys(lex))
     row = zeros(Int, 1, p)
     indices, values = dtm_entries(d, lex)

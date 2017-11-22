@@ -3,7 +3,7 @@ module TestDTM
     using Languages
     using TextAnalysis
 
-    sample_file = Pkg.dir("TextAnalysis", "test", "data", "poem.txt")
+    sample_file = joinpath(dirname(@__FILE__), "data", "poem.txt")
 
     fd = FileDocument(sample_file)
     sd = StringDocument(text(fd))

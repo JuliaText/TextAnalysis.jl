@@ -1,5 +1,5 @@
-julia 0.3
-Languages
+julia 0.5
+Languages 0.1.0+
 DataFrames
 BinDeps
-Compat
+Compat 0.17

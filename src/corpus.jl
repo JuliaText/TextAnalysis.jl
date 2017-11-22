@@ -9,8 +9,8 @@
 type Corpus
     documents::Vector{GenericDocument}
     total_terms::Int
-    lexicon::Dict{UTF8String, Int}
-    inverse_index::Dict{UTF8String, Vector{Int}}
+    lexicon::Dict{String, Int}
+    inverse_index::Dict{String, Vector{Int}}
     h::TextHashFunction
 end
 
@@ -18,8 +18,8 @@ function Corpus(docs::Vector{GenericDocument})
     Corpus(
         docs,
         0,
-        Dict{UTF8String, Int}(),
-        Dict{UTF8String, Vector{Int}}(),
+        Dict{String, Int}(),
+        Dict{String, Vector{Int}}(),
         TextHashFunction()
     )
 end
@@ -80,20 +80,20 @@ Base.length(crps::Corpus) = length(crps.documents)
 function Base.convert(::Type{DataFrame}, crps::Corpus)
     df = DataFrame()
     n = length(crps)
-    df["Language"] = DataArray(UTF8String, n)
-    df["Name"] = DataArray(UTF8String, n)
-    df["Author"] = DataArray(UTF8String, n)
-    df["TimeStamp"] = DataArray(UTF8String, n)
-    df["Length"] = DataArray(Int, n)
-    df["Text"] = DataArray(UTF8String, n)
+    df[:Language] = DataArray(String, n)
+    df[:Name] = DataArray(String, n)
+    df[:Author] = DataArray(String, n)
+    df[:TimeStamp] = DataArray(String, n)
+    df[:Length] = DataArray(Int, n)
+    df[:Text] = DataArray(String, n)
     for i in 1:n
         d = crps.documents[i]
-        df[i, "Language"] = string(language(d))
-        df[i, "Name"] = name(d)
-        df[i, "Author"] = author(d)
-        df[i, "TimeStamp"] = timestamp(d)
-        df[i, "Length"] = length(d)
-        df[i, "Text"] = text(d)
+        df[i, :Language] = string(language(d))
+        df[i, :Name] = name(d)
+        df[i, :Author] = author(d)
+        df[i, :TimeStamp] = timestamp(d)
+        df[i, :Length] = length(d)
+        df[i, :Text] = text(d)
     end
     return df
 end
@@ -164,13 +164,13 @@ function update_lexicon!(crps::Corpus, doc::AbstractDocument)
     ngs = ngrams(doc)
     for (ngram, counts) in ngs
         crps.total_terms += counts
-        crps.lexicon[utf8(ngram)] = get(crps.lexicon, ngram, 0) + counts
+        crps.lexicon[ngram] = get(crps.lexicon, ngram, 0) + counts
     end
 end
 
 function update_lexicon!(crps::Corpus)
     crps.total_terms = 0
-    crps.lexicon = Dict{UTF8String,Int}()
+    crps.lexicon = Dict{String,Int}()
     for doc in crps
         update_lexicon!(crps, doc)
     end
@@ -191,11 +191,11 @@ lexical_frequency(crps::Corpus, term::AbstractString) =
 inverse_index(crps::Corpus) = crps.inverse_index
 
 function update_inverse_index!(crps::Corpus)
-    idx = Dict{UTF8String, Array{Int, 1}}()
+    idx = Dict{String, Array{Int, 1}}()
     for i in 1:length(crps)
         doc = crps.documents[i]
         ngram_arr = isa(doc, NGramDocument) ? collect(keys(ngrams(doc))) : tokens(doc)
-        ngram_arr = convert(Array{UTF8String,1}, ngram_arr)
+        ngram_arr = convert(Array{String,1}, ngram_arr)
         for ngram in ngram_arr
             if haskey(idx, ngram)
                 push!(idx[ngram], i)

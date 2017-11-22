@@ -2,10 +2,11 @@ module TestDocument
     using Base.Test
     using Languages
     using TextAnalysis
+    using Compat
 
     sample_text1 = "This is a string"
     sample_text2 = "This is also a string"
-    sample_file = Pkg.dir("TextAnalysis", "test", "data", "poem.txt")
+    sample_file = joinpath(dirname(@__FILE__), "data", "poem.txt")
 
     sd = StringDocument(sample_text1)
     fd = FileDocument(sample_file)
@@ -39,7 +40,7 @@ module TestDocument
     @assert isa(td, TokenDocument)
     @assert all(tokens(td) .== my_tokens)
 
-    my_ngrams = Dict{UTF8String,Int}()
+    my_ngrams = Dict{String,Int}()
     my_ngrams["To"] = 1
     my_ngrams["be"] = 2
     my_ngrams["or"] = 1
@@ -56,11 +57,11 @@ module TestDocument
 
     d = Document("To be or not to be...")
     @assert isa(d, StringDocument)
-    d = Document("/usr/share/dict/words")
+    d = Document(joinpath(dirname(@__FILE__), "data", "poem.txt"))
     @assert isa(d, FileDocument)
     d = Document(["To", "be", "or", "not", "to", "be..."])
     @assert isa(d, TokenDocument)
-    ng = Dict{UTF8String,Int}()
+    ng = Dict{String,Int}()
     ng["a"] = 1
     ng["b"] = 3
     d = Document(ng)

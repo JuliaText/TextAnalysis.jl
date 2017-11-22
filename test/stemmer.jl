@@ -12,10 +12,10 @@ module TestStemmer
         TextAnalysis.release(stmr)
     end
 
-    test_cases = @compat Dict{ASCIIString, Any}(
-        "english" => @compat Dict{AbstractString, AbstractString}(
+    test_cases = Dict{String, Any}(
+        "english" => Dict{AbstractString, AbstractString}(
             "working" => "work",
-            "worker" => "worker", 
+            "worker" => "worker",
             "aβc" => "aβc",
             "a∀c" => "a∀c"
         )

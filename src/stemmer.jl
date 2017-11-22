@@ -1,4 +1,4 @@
-const _libsb = joinpath(Pkg.dir(),"TextAnalysis","deps","usr","lib", "libstemmer."*BinDeps.shlib_ext)
+const _libsb = joinpath(dirname(@__FILE__),"..","deps","usr","lib", "libstemmer."*Libdl.dlext)
 #@BinDeps.load_dependencies [:libstemmer=>:_libsb]
 
 ##
@@ -19,7 +19,7 @@ function stemmer_types()
     while true
         name_ptr = unsafe_load(cptr, i)
         (C_NULL == name_ptr) && break
-        push!(stypes, bytestring(name_ptr))
+        push!(stypes, unsafe_string(name_ptr))
         i += 1
     end
     stypes
@@ -34,7 +34,7 @@ type Stemmer
         cptr = ccall((:sb_stemmer_new, _libsb),
                     Ptr{Void},
                     (Ptr{UInt8}, Ptr{UInt8}),
-                    bytestring(stemmer_type), bytestring(charenc))
+                    String(stemmer_type), String(charenc))
 
         if cptr == C_NULL
             if charenc == UTF_8
@@ -59,28 +59,17 @@ function release(stm::Stemmer)
     nothing
 end
 
-stem(stemmer::Stemmer, word::AbstractString) = stem(stemmer, bytestring(word))
-function stem(stemmer::Stemmer, bstr::ByteString)
+function stem(stemmer::Stemmer, bstr::AbstractString)
     sres = ccall((:sb_stemmer_stem, _libsb),
                 Ptr{UInt8},
                 (Ptr{UInt8}, Ptr{UInt8}, Cint),
                 stemmer.cptr, bstr, sizeof(bstr))
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
-    bytes = pointer_to_array(sres, @compat(Int(slen)), false)
-    bytestring(bytes)
+    bytes = unsafe_wrap(Array, sres, @compat(Int(slen)), false)
+    String(copy(bytes))
 end
 
-function stem(stemmer::Stemmer, word::SubString{ByteString})
-    sres = ccall((:sb_stemmer_stem, _libsb),
-                Ptr{UInt8},
-                (Ptr{UInt8}, Ptr{UInt8}, Cint),
-                stemmer.cptr, pointer(word.string.data)+word.offset, word.endof)
-    (C_NULL == sres) && error("error in stemming")
-    slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
-    bytes = pointer_to_array(sres, @compat(Int(slen)), false)
-    bytestring(bytes)
-end
 
 function stem_all{S <: Language}(stemmer::Stemmer, lang::Type{S}, sentence::AbstractString)
     tokens = TextAnalysis.tokenize(lang, sentence)
@@ -90,7 +79,7 @@ end
 
 function stem(stemmer::Stemmer, words::Array)
     const l::Int = length(words)
-    ret = Array(AbstractString, l)
+    ret = Array{String}(l)
     for idx in 1:l
         ret[idx] = stem(stemmer, words[idx])
     end
