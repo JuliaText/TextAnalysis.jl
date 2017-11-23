@@ -1,4 +1,5 @@
 module TestTFIDF
+
     using Base.Test
     using Languages
     using TextAnalysis
@@ -15,6 +16,34 @@ module TestTFIDF
 
     update_lexicon!(crps)
     m = DocumentTermMatrix(crps)
+
+    # Terms are in alphabetical ordering
+    correctweights =[0.5  0.0  0.0  1/6  1/3
+                     0.0  0.2  0.4  0.0  0.4
+                     0.0  0.0  0.0  0.0  0.0
+                     0.0  1/3  0.0  0.0  2/3]
+
+    myweights = tf(m)
+    @test myweights == correctweights
+
+    myweights = tf(dtm(m))
+    @test myweights ≈ sparse(correctweights)
+    @test typeof(myweights) <: SparseMatrixCSC
+
+    myweights = tf(dtm(m, :dense))
+    @test isnan(sum(myweights)) == 0
+    @test myweights ≈ correctweights
+    @test typeof(myweights) <: Matrix
+
+    myweights = float(dtm(m));
+    tf!(myweights)
+    @test myweights ≈ correctweights
+    @test typeof(myweights) <: SparseMatrixCSC
+
+    myweights = float(dtm(m, :dense));
+    tf!(myweights)
+    @test myweights ≈ correctweights
+    @test typeof(myweights) <: Matrix
 
     # Terms are in alphabetical ordering
     correctweights = [0.6931471805599453 0.0 0.0 0.23104906018664842 0.09589402415059362
