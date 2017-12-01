@@ -13,6 +13,7 @@ module TestCorpus
     ngd = NGramDocument(sample_text1)
 
     crps = Corpus(Any[sd, fd, td, ngd])
+    crps2 = Corpus([ngd, ngd])
 
     documents(crps)
 

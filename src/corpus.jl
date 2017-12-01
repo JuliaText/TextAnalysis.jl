@@ -4,17 +4,15 @@
 #
 ##############################################################################
 
-# TODO: Make this a parametric type?
-
-type Corpus
-    documents::Vector{GenericDocument}
+mutable struct Corpus{T <: AbstractDocument}
+    documents::Vector{T}
     total_terms::Int
     lexicon::Dict{String, Int}
     inverse_index::Dict{String, Vector{Int}}
     h::TextHashFunction
 end
 
-function Corpus(docs::Vector{GenericDocument})
+function Corpus(docs::Vector{T}) where {T <: AbstractDocument}
     Corpus(
         docs,
         0,
