@@ -27,10 +27,17 @@ module TestDTM
     hash_dtv(crps[1], TextHashFunction())
     hash_dtv(crps[1])
 
-    dtm(crps)
-    sparse(dtm(crps))
+    dtm1 = dtm(crps)
+    dtm1sp = sparse(dtm(crps))
     hash_dtm(crps)
 
     tdm(crps)
     hash_tdm(crps)
+
+    # construct a DocumentTermMatrix from a dtm and terms vector
+    terms = m.terms
+    m2 = DocumentTermMatrix(dtm1,terms)
+    @test m.column_indices == m2.column_indices
+    m2 = DocumentTermMatrix(dtm1sp,terms)
+    @test m.column_indices == m2.column_indices
 end

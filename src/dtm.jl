@@ -16,13 +16,20 @@ end
 #
 ##############################################################################
 
-function DocumentTermMatrix(crps::Corpus, lex)
-    terms = sort(collect(keys(lex)))
+# create col index lookup dictionary from a (sorted?) vector of terms
+function columnindices(terms::Vector{String})
     column_indices = Dict{String, Int}()
     for i in 1:length(terms)
         term = terms[i]
         column_indices[term] = i
     end
+    column_indices
+end
+
+function DocumentTermMatrix(crps::Corpus, lex)
+    terms = sort(collect(keys(lex)))
+    column_indices = columnindices(terms)
+
     rows = Array{Int}(0)
     columns = Array{Int}(0)
     values = Array{Int}(0)
@@ -47,6 +54,8 @@ function DocumentTermMatrix(crps::Corpus, lex)
     DocumentTermMatrix(dtm, terms, column_indices)
 end
 DocumentTermMatrix(crps::Corpus) = DocumentTermMatrix(crps, lexicon(crps))
+
+DocumentTermMatrix(dtm::SparseMatrixCSC{Int, Int},terms::Vector{String}) = DocumentTermMatrix(dtm, terms, columnindices(terms))
 
 ##############################################################################
 #
@@ -89,11 +98,8 @@ function dtm_entries(d::AbstractDocument, lex::Dict{String, Int})
     indices = Array{Int}(0)
     values = Array{Int}(0)
     terms = sort(collect(keys(lex)))
-    column_indices = Dict{String, Int}()
-    for i in 1:length(terms)
-        term = terms[i]
-        column_indices[term] = i
-    end
+    column_indices = columnindices(terms)
+    
     for ngram in keys(ngs)
         if haskey(column_indices, ngram)
             push!(indices, column_indices[ngram])
