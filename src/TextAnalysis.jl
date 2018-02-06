@@ -57,6 +57,7 @@ module TextAnalysis
     include("corpus.jl")
     include("metadata.jl")
     include("preprocessing.jl")
+    include("../deps/deps.jl"); check_deps();
     include("stemmer.jl")
     include("dtm.jl")
     include("tf_idf.jl")
