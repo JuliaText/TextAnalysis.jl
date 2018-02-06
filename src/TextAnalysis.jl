@@ -57,6 +57,13 @@ module TextAnalysis
     include("corpus.jl")
     include("metadata.jl")
     include("preprocessing.jl")
+    # Load libstemmer from our deps.jl
+    const depsjl_path = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
+    if !isfile(depsjl_path)
+        error("Snowball Stemmer not installed properly, run Pkg.build(\"TextAnalysis\"), restart Julia and try again")
+    end
+    include(depsjl_path)
+
     include("stemmer.jl")
     include("dtm.jl")
     include("tf_idf.jl")

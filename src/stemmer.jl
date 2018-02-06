@@ -1,5 +1,5 @@
-const _libsb = joinpath(dirname(@__FILE__),"..","deps","usr","lib", "libstemmer."*Libdl.dlext)
-#@BinDeps.load_dependencies [:libstemmer=>:_libsb]
+#const libstemmer = joinpath(dirname(@__FILE__),"..","deps","usr","lib", "libstemmer."*Libdl.dlext)
+#@BinDeps.load_dependencies [:libstemmer=>:libstemmer]
 
 ##
 # character encodings supported by libstemmer
@@ -11,7 +11,7 @@ const KOI8_R        = "KOI8_R"
 ##
 # lists the stemmer algorithms loaded
 function stemmer_types()
-    cptr = ccall((:sb_stemmer_list, _libsb), Ptr{Ptr{UInt8}}, ())
+    cptr = ccall((:sb_stemmer_list, libstemmer), Ptr{Ptr{UInt8}}, ())
     (C_NULL == cptr) && error("error getting stemmer types")
 
     stypes = AbstractString[]
@@ -31,7 +31,7 @@ type Stemmer
     enc::AbstractString
 
     function Stemmer(stemmer_type::AbstractString, charenc::AbstractString=UTF_8)
-        cptr = ccall((:sb_stemmer_new, _libsb),
+        cptr = ccall((:sb_stemmer_new, libstemmer),
                     Ptr{Void},
                     (Ptr{UInt8}, Ptr{UInt8}),
                     String(stemmer_type), String(charenc))
@@ -54,18 +54,18 @@ show(io::IO, stm::Stemmer) = println(io, "Stemmer algorithm:$(stm.alg) encoding:
 
 function release(stm::Stemmer)
     (C_NULL == stm.cptr) && return
-    ccall((:sb_stemmer_delete, _libsb), Void, (Ptr{Void},), stm.cptr)
+    ccall((:sb_stemmer_delete, libstemmer), Void, (Ptr{Void},), stm.cptr)
     stm.cptr = C_NULL
     nothing
 end
 
 function stem(stemmer::Stemmer, bstr::AbstractString)
-    sres = ccall((:sb_stemmer_stem, _libsb),
+    sres = ccall((:sb_stemmer_stem, libstemmer),
                 Ptr{UInt8},
                 (Ptr{UInt8}, Ptr{UInt8}, Cint),
                 stemmer.cptr, bstr, sizeof(bstr))
     (C_NULL == sres) && error("error in stemming")
-    slen = ccall((:sb_stemmer_length, _libsb), Cint, (Ptr{Void},), stemmer.cptr)
+    slen = ccall((:sb_stemmer_length, libstemmer), Cint, (Ptr{Void},), stemmer.cptr)
     bytes = unsafe_wrap(Array, sres, @compat(Int(slen)), false)
     String(copy(bytes))
 end
