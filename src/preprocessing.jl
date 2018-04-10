@@ -288,6 +288,13 @@ function prepare!(d::AbstractDocument, flags::UInt32; skip_patterns = Set{Abstra
     nothing
 end
 
+function remove_strings(s::AbstractString, p::Array{String})
+    for item in p
+        s=replace(s, String(item), "")
+    end
+    return s
+end
+
 function remove_patterns(s::AbstractString, rex::Regex)
     iob = IOBuffer()
     ibegin = 1
@@ -330,9 +337,20 @@ function remove_patterns!(d::StringDocument, rex::Regex)
     nothing
 end
 
+function remove_patterns!(d::StringDocument, rex::Array{String})
+    d.text = remove_strings(d.text, rex)
+    nothing
+end
+
 function remove_patterns!(d::TokenDocument, rex::Regex)
     for i in 1:length(d.tokens)
         d.tokens[i] = remove_patterns(d.tokens[i], rex)
+    end
+end
+
+function remove_patterns!(d::TokenDocument, rex::Array{String})
+    for i in 1:length(d.tokens)
+        d.tokens[i] = remove_strings(d.tokens[i], rex)
     end
 end
 
@@ -351,6 +369,12 @@ function remove_patterns!(d::NGramDocument, rex::Regex)
 end
 
 function remove_patterns!(crps::Corpus, rex::Regex)
+    for doc in crps
+        remove_patterns!(doc, rex)
+    end
+end
+
+function remove_patterns!(crps::Corpus, rex::Array{String})
     for doc in crps
         remove_patterns!(doc, rex)
     end
