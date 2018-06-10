@@ -4,10 +4,10 @@ module TextAnalysis
     using Languages
     using DataFrames
     using BinDeps
-    using Compat
+    using WordTokenizers
 
-    importall Base
     import DataFrames.DataFrame
+    import Base.depwarn
 
     export AbstractDocument, Document
     export FileDocument, StringDocument, TokenDocument, NGramDocument
@@ -70,4 +70,6 @@ module TextAnalysis
     include("lsa.jl")
     include("lda.jl")
     include("show.jl")
+
+    include("deprecations.jl")
 end

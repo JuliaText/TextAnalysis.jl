@@ -2,7 +2,6 @@ module TestTextAnalysis
     using Base.Test
     using Languages
     using TextAnalysis
-    using Compat
 
     my_tests = [
         "tokenizer.jl",
@@ -18,7 +17,6 @@ module TestTextAnalysis
     ]
 
     println("Running tests:")
-    println(typeof(Compat.String))
 
     for my_test in my_tests
         println(" * $(my_test)")

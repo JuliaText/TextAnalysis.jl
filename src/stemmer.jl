@@ -66,12 +66,12 @@ function stem(stemmer::Stemmer, bstr::AbstractString)
                 stemmer.cptr, bstr, sizeof(bstr))
     (C_NULL == sres) && error("error in stemming")
     slen = ccall((:sb_stemmer_length, libstemmer), Cint, (Ptr{Void},), stemmer.cptr)
-    bytes = unsafe_wrap(Array, sres, @compat(Int(slen)), false)
+    bytes = unsafe_wrap(Array, sres, Int(slen), false)
     String(copy(bytes))
 end
 
 
-function stem_all{S <: Language}(stemmer::Stemmer, lang::Type{S}, sentence::AbstractString)
+function stem_all{S <: Language}(stemmer::Stemmer, lang::S, sentence::AbstractString)
     tokens = TextAnalysis.tokenize(lang, sentence)
     stemmed = stem(stemmer, tokens)
     join(stemmed, ' ')

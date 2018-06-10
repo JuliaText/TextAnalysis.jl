@@ -5,13 +5,13 @@
 ##############################################################################
 
 type DocumentMetadata
-    language::DataType
+    language
     name::String
     author::String
     timestamp::String
 end
 DocumentMetadata() = DocumentMetadata(
-    EnglishLanguage,
+    Languages.English(),
     "Unnamed Document",
     "Unknown Author",
     "Unknown Time"
@@ -23,7 +23,7 @@ DocumentMetadata() = DocumentMetadata(
 #
 ##############################################################################
 
-@compat abstract type AbstractDocument; end
+abstract type AbstractDocument; end
 
 ##############################################################################
 #
@@ -66,7 +66,7 @@ type TokenDocument <: AbstractDocument
     metadata::DocumentMetadata
 end
 function TokenDocument(txt::AbstractString, dm::DocumentMetadata)
-    TokenDocument(tokenize(dm.language, Compat.String(txt)), dm)
+    TokenDocument(tokenize(dm.language, String(txt)), dm)
 end
 function TokenDocument{T <: AbstractString}(tkns::Vector{T})
     TokenDocument(tkns, DocumentMetadata())
