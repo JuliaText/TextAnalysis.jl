@@ -2,7 +2,7 @@ using BinaryProvider
 # This is where all binaries will get installed
 const prefix = Prefix(!isempty(ARGS) ? ARGS[1] : joinpath(@__DIR__,"usr"))
 # Instantiate products here.  Examples:
-libstemmer = LibraryProduct(prefix, "libstemmer")
+libstemmer = LibraryProduct(prefix, "libstemmer", :libstemmer)
 # foo_executable = ExecutableProduct(prefix, "fooifier")
 # libfoo_pc = FileProduct(joinpath(libdir(prefix), "pkgconfig", "libfoo.pc"))
 # Assign products to `products`:
@@ -30,7 +30,7 @@ if platform_key() in keys(download_info)
     # Finally, write out a deps.jl file that will contain mappings for each
     # named product here: (there will be a "libfoo" variable and a "fooifier"
     # variable, etc...)
-    @write_deps_file libstemmer
+    write_deps_file(joinpath(@__DIR__, "deps.jl"), products)
 else
     error("Your platform $(Sys.MACHINE) is not supported by this package!")
 end
