@@ -268,7 +268,7 @@ end
 function remove_patterns{T <: String}(s::SubString{T}, rex::Regex)
     iob = IOBuffer()
     ioffset = s.offset
-    data = s.string.data
+    data = Vector{UInt8}(s.string)
     ibegin = 1
     for m in matchall(rex, s)
         len = m.offset-ibegin+1

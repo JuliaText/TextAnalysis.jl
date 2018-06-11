@@ -27,10 +27,10 @@ end
 
 type Stemmer
     cptr::Ptr{Void}
-    alg::AbstractString
-    enc::AbstractString
+    alg::String
+    enc::String
 
-    function Stemmer(stemmer_type::AbstractString, charenc::AbstractString=UTF_8)
+    function Stemmer(stemmer_type, charenc=UTF_8)
         cptr = ccall((:sb_stemmer_new, libstemmer),
                     Ptr{Void},
                     (Ptr{UInt8}, Ptr{UInt8}),
@@ -87,7 +87,7 @@ function stem(stemmer::Stemmer, words::Array)
 end
 
 function stemmer_for_document(d::AbstractDocument)
-    Stemmer(name(language(d)))
+    Stemmer(lowercase(name(language(d))))
 end
 
 function stem!(d::AbstractDocument)

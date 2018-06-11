@@ -48,12 +48,12 @@ end
 #
 ##############################################################################
 
-type StringDocument <: AbstractDocument
-    text::String
+type StringDocument{T<:AbstractString} <: AbstractDocument
+    text::T
     metadata::DocumentMetadata
 end
 
-StringDocument(txt::AbstractString) = StringDocument(String(txt), DocumentMetadata())
+StringDocument(txt::AbstractString) = StringDocument(txt, DocumentMetadata())
 
 ##############################################################################
 #
@@ -61,8 +61,8 @@ StringDocument(txt::AbstractString) = StringDocument(String(txt), DocumentMetada
 #
 ##############################################################################
 
-type TokenDocument <: AbstractDocument
-    tokens::Vector{String}
+type TokenDocument{T<:AbstractString} <: AbstractDocument
+    tokens::Vector{T}
     metadata::DocumentMetadata
 end
 function TokenDocument(txt::AbstractString, dm::DocumentMetadata)
@@ -79,8 +79,8 @@ TokenDocument(txt::AbstractString) = TokenDocument(String(txt), DocumentMetadata
 #
 ##############################################################################
 
-type NGramDocument <: AbstractDocument
-    ngrams::Dict{String,Int}
+type NGramDocument{T<:AbstractString} <: AbstractDocument
+    ngrams::Dict{T,Int}
     n::Int
     metadata::DocumentMetadata
 end

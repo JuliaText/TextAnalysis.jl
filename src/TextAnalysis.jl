@@ -42,7 +42,7 @@ module TextAnalysis
     export TextHashFunction, index_hash, cardinality, hash_function, hash_function!
     export hash_dtv, each_hash_dtv, hash_dtm, hash_tdm
     export standardize!
-    export tf, tf_idf, lsa, lda
+    export tf, tf_idf, lsa, lda, summarize
     export tf!, tf_idf!, lsa!, lda!
     export remove_patterns!, remove_patterns
 
@@ -69,6 +69,7 @@ module TextAnalysis
     include("tf_idf.jl")
     include("lsa.jl")
     include("lda.jl")
+    include("summarizer.jl")
     include("show.jl")
 
     include("deprecations.jl")
