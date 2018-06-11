@@ -4,4 +4,6 @@
 #
 ##############################################################################
 
-tokenize{S <: Language, T <: AbstractString}(::Type{S}, s::T) = matchall(r"[^\s]+", s)
+tokenize{S <: Language, T <: AbstractString}(lang::S, s::T) = WordTokenizers.tokenize(s)
+
+sentence_tokenize{S <: Language, T<:AbstractString}(lang::S, s::T) = WordTokenizers.split_sentences(s)

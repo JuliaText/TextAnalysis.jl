@@ -10,7 +10,7 @@ module TestMetadata
     sd = StringDocument(sample_text1)
 
     @assert isequal(name(sd), "Unnamed Document")
-    @assert isequal(language(sd), TextAnalysis.Languages.EnglishLanguage)
+    @assert isequal(language(sd), Languages.English())
     @assert isequal(author(sd), "Unknown Author")
     @assert isequal(timestamp(sd), "Unknown Time")
 end
