@@ -43,6 +43,8 @@ function(m::SentimentAnalyser)(text)
     if "Sentiment Analysis" in readdir()
         return get_sentiment(text)
     else
+        mkdir("Sentiment Analysis")
+        cd("Sentiment Analysis")
         download("https://github.com/ayush1999/TextAnalysis.jl/releases/download/v0.3.0/sentiment-analysis-structure.json",
         "sentiment-analysis-structure.json")
         download("https://github.com/ayush1999/TextAnalysis.jl/releases/download/v0.3.0/sentiment-analysis-weights.h5",

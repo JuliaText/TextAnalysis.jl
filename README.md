@@ -470,3 +470,18 @@ as part of the State of the Union Address tradition.
     T = tf_idf(D)
 
     cl = kmeans(T, 5)
+
+
+# Sentiment Analysis
+
+This package also provides sentiment analysis functionality. It uses a pretrained model, 
+which was trained using Keras on the Keras IMDb sentiment analysis dataset. This model was then
+imported into Flux using [Keras.jl](https://github.com/ayush1999/Keras.jl).
+
+    model = TextAnalysis.SentimentAnalyser()
+
+    model("I had a great time")
+    1
+
+    model("It was a pretty boring movie")
+    0
