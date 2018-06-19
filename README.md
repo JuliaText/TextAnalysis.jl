@@ -480,8 +480,8 @@ imported into Flux using [Keras.jl](https://github.com/ayush1999/Keras.jl).
 
     model = TextAnalysis.SentimentAnalyser()
 
-    model("I had a great time")
+    model("i had a great time")
     1
 
-    model("It was a pretty boring movie")
+    model("it was a pretty boring movie")
     0
