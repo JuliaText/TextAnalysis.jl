@@ -13,7 +13,12 @@ function pad_sequences(l, maxlen=500)
 end
 
 function read_weights(filename=sentiment_weights)
-    return BSON.load(filename)
+    w =  BSON.load(filename)
+    #work around BSON bugs
+    Base.rehash!(w[:embedding_1]["embedding_1"])
+    Base.rehash!(w[:dense_1]["dense_1"])
+    Base.rehash!(w[:dense_2]["dense_2"])
+    return w
 end
 
 function read_word_ids(filename=sentiment_words)
