@@ -1,5 +1,5 @@
-julia 0.5
-Languages 0.1.0+
+julia 0.6
+BinaryProvider
+Languages 0.2.0
 DataFrames
-BinDeps
-Compat 0.17
+WordTokenizers
