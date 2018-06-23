@@ -13,19 +13,12 @@ function pad_sequences(l, maxlen=500)
 end
 
 function read_weights(filename=sentiment_weights)
-    w =  BSON.load(filename)
-    #work around BSON bugs
-    Base.rehash!(w[:embedding_1]["embedding_1"])
-    Base.rehash!(w[:dense_1]["dense_1"])
-    Base.rehash!(w[:dense_2]["dense_2"])
-    return w
+    return BSON.load(filename)
 end
 
 function read_word_ids(filename=sentiment_words)
     return JSON.parse(String(read(open(filename, "r"))))
 end
-
-get_op(x) = x>=0.5?1:0
 
 function embedding(embedding_matrix, x)
     temp = embedding_matrix[:, Int64(x[1])+1]
@@ -39,8 +32,7 @@ function flatten(x)
     return vec(x)
 end
 
-function get_sentiment(text)
-    weight = read_weights(sentiment_weights)
+function get_sentiment(ip::Array{T, 1}, weight, rwi) where T <: AbstractString
     model = (x,) -> begin
     a_1 = embedding(weight[:embedding_1]["embedding_1"]["embeddings:0"], x)
     a_2 = flatten(a_1)
@@ -48,18 +40,23 @@ function get_sentiment(text)
     a_4 = Dense(weight[:dense_2]["dense_2"]["kernel:0"], weight[:dense_2]["dense_2"]["bias:0"], sigmoid)(a_3)
     return a_4
     end
-    rwi = read_word_ids(sentiment_words)
-    ip = split(text, " ")
-    res = Array{Any, 1}()
+    res = Array{Int, 1}()
     for ele in ip
         push!(res, rwi[ele])
     end
-    return model(pad_sequences(res))[1] |> get_op
+    return model(pad_sequences(res))[1]
 end
 
 struct SentimentAnalyser
+    weight
+    words
 end
 
-function(m::SentimentAnalyser)(text)
-    return get_sentiment(text)
+function SentimentAnalyser()
+    return SentimentAnalyser(read_weights(), read_word_ids())
+end
+
+function(m::SentimentAnalyser)(text::AbstractString)
+    ip = split(text, " ")
+    return get_sentiment(ip, m.weight, m.words)
 end
