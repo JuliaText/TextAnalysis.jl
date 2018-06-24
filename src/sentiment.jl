@@ -37,7 +37,9 @@ function embedding(embedding_matrix, x)
 end
 
 function flatten(x)
-    return vec(x)
+    l = prod(size(x))
+    x = permutedims(x, reverse(range(1, ndims(x))))
+    return reshape(x, (l, 1))
 end
 
 function get_sentiment(text)
