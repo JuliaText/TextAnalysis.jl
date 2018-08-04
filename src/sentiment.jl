@@ -49,16 +49,28 @@ function get_sentiment(ip::Array{T, 1}, weight, rwi) where T <: AbstractString
     return model(pad_sequences(res))[1]
 end
 
-struct SentimentAnalyser
+struct SentimentModel
     weight
     words
+
+    SentimentAnalyzer() = new(read_weights(), read_word_ids())
 end
 
-function SentimentAnalyser()
-    return SentimentAnalyser(read_weights(), read_word_ids())
+struct SentimentAnalyzer
+    model::SentimentModel
+
+    SentimentAnalyzer() = new(SentimentModel())
 end
 
-function(m::SentimentAnalyser)(text::AbstractString)
-    ip = split(text, " ")
+function Base.show(io::IO, s::SentimentAnalyzer)
+    print(io, "Sentiment Analysis Model Trained in IMDB with a $size(s.words) word corpus")
+end
+
+
+function(m::SentimentModel)(text::Array{String, 1})
     return get_sentiment(ip, m.weight, m.words)
+end
+
+function(m::SentimentAnalyzer)(d::AbstractDocument)
+    m.model(tokens(d))
 end
