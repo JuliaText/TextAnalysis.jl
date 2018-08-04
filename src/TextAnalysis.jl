@@ -48,7 +48,8 @@ module TextAnalysis
     export strip_patterns, strip_corrupt_utf8, strip_case, stem_words, tag_part_of_speech, strip_whitespace, strip_punctuation
     export strip_numbers, strip_non_letters, strip_indefinite_articles, strip_definite_articles, strip_articles
     export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
-
+    export SentimentAnalyzer
+    
     include("tokenizer.jl")
     include("ngramizer.jl")
     include("document.jl")

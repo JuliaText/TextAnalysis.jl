@@ -14,7 +14,8 @@ module TestTextAnalysis
         "stemmer.jl",
         "tf_idf.jl",
         "lda.jl",
-        "summarizer.jl"
+        "summarizer.jl",
+        "sentiment.jl"
     ]
 
     println("Running tests:")

@@ -53,7 +53,7 @@ struct SentimentModel
     weight
     words
 
-    SentimentAnalyzer() = new(read_weights(), read_word_ids())
+    SentimentModel() = new(read_weights(), read_word_ids())
 end
 
 struct SentimentAnalyzer
@@ -63,12 +63,12 @@ struct SentimentAnalyzer
 end
 
 function Base.show(io::IO, s::SentimentAnalyzer)
-    print(io, "Sentiment Analysis Model Trained in IMDB with a $size(s.words) word corpus")
+    print(io, "Sentiment Analysis Model Trained on IMDB with a $(length(s.model.words)) word corpus")
 end
 
 
-function(m::SentimentModel)(text::Array{String, 1})
-    return get_sentiment(ip, m.weight, m.words)
+function(m::SentimentModel)(text::Array{T, 1}) where T <: AbstractString
+    return get_sentiment(text, m.weight, m.words)
 end
 
 function(m::SentimentAnalyzer)(d::AbstractDocument)
