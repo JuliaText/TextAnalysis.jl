@@ -70,6 +70,6 @@ module TextAnalysis
     include("lda.jl")
     include("summarizer.jl")
     include("show.jl")
-
+    include("sentiment.jl")
     include("deprecations.jl")
 end
