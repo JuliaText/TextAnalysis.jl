@@ -1,5 +1,3 @@
-#Features
-
 ## Creating a Document Term Matrix
 
 Often we want to represent documents as a matrix of word counts so that we
