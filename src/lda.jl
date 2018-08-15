@@ -82,17 +82,19 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float
             end
         end
     end
-
-    # result
+    # ϕ
     # topic x word sparse matrix.
-    result = spzeros(ntopics, number_of_words)
+    ϕ = spzeros(ntopics, number_of_words)
+    θ = getfield.(docs, :topicidcount)
+    θ = Float64.(hcat(θ...))
+    θ ./= sum(θ, 1)
     for topic in 1:ntopics
         t = topics[topic]
         for (word, count) in t.wordcount
             if 0 < t.count
-                result[topic, word] = count / t.count
+                ϕ[topic, word] = count / t.count
             end
         end
     end
-    return result
+    return ϕ, θ
 end
