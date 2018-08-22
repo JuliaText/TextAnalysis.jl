@@ -30,10 +30,13 @@ function DocumentTermMatrix(crps::Corpus, lex)
     terms = sort(collect(keys(lex)))
     column_indices = columnindices(terms)
 
+    m = length(crps)
+    n = length(terms)
+
     rows = Array{Int}(0)
     columns = Array{Int}(0)
     values = Array{Int}(0)
-    for i in 1:length(crps)
+    for i in 1:m
         doc = crps.documents[i]
         ngs = ngrams(doc)
         for ngram in keys(ngs)
@@ -47,9 +50,9 @@ function DocumentTermMatrix(crps::Corpus, lex)
         end
     end
     if length(rows) > 0
-        dtm = sparse(rows, columns, values)
+        dtm = sparse(rows, columns, values, m, n)
     else
-        dtm = spzeros(Int, length(crps), 0)
+        dtm = spzeros(Int, m, n)
     end
     DocumentTermMatrix(dtm, terms, column_indices)
 end
@@ -99,7 +102,7 @@ function dtm_entries(d::AbstractDocument, lex::Dict{String, Int})
     values = Array{Int}(0)
     terms = sort(collect(keys(lex)))
     column_indices = columnindices(terms)
-    
+
     for ngram in keys(ngs)
         if haskey(column_indices, ngram)
             push!(indices, column_indices[ngram])
