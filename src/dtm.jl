@@ -26,8 +26,7 @@ function columnindices(terms::Vector{String})
     column_indices
 end
 
-function DocumentTermMatrix(crps::Corpus, lex)
-    terms = sort(collect(keys(lex)))
+function DocumentTermMatrix(crps::Corpus, terms::Vector{String})
     column_indices = columnindices(terms)
 
     m = length(crps)
@@ -57,6 +56,8 @@ function DocumentTermMatrix(crps::Corpus, lex)
     DocumentTermMatrix(dtm, terms, column_indices)
 end
 DocumentTermMatrix(crps::Corpus) = DocumentTermMatrix(crps, lexicon(crps))
+
+DocumentTermMatrix(crps::Corpus, lex::Associative) = DocumentTermMatrix(crps, sort(collect(keys(lex))))
 
 DocumentTermMatrix(dtm::SparseMatrixCSC{Int, Int},terms::Vector{String}) = DocumentTermMatrix(dtm, terms, columnindices(terms))
 
