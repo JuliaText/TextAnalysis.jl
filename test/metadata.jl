@@ -13,4 +13,7 @@ module TestMetadata
     @assert isequal(language(sd), Languages.English())
     @assert isequal(author(sd), "Unknown Author")
     @assert isequal(timestamp(sd), "Unknown Time")
+
+    language!(sd, Languages.German())
+    @assert isequal(language(sd), Languages.German())
 end

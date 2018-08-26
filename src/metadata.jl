@@ -15,7 +15,7 @@ function name!(d::AbstractDocument, nv::AbstractString)
     d.metadata.name = nv
 end
 
-function language!{T <: Language}(d::AbstractDocument, nv::Type{T})
+function language!{T <: Language}(d::AbstractDocument, nv::T)
     d.metadata.language = nv
 end
 
