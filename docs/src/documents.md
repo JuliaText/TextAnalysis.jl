@@ -91,7 +91,7 @@ In addition to methods for manipulating the representation of the text of a
 document, every document object also stores basic metadata about itself,
 including the following pieces of information:
 
-* `language()`: What language is the document in? Defaults to `EnglishLanguage`, a Language type defined by the Languages package.
+* `language()`: What language is the document in? Defaults to `Languages.English()`, a Language instance defined by the Languages package.
 * `name()`: What is the name of the document? Defaults to `"Unnamed Document"`.
 * `author()`: Who wrote the document? Defaults to `"Unknown Author"`.
 * `timestamp()`: When was the document written? Defaults to `"Unknown Time"`.
@@ -107,7 +107,7 @@ in practice:
 If you need reset these fields, you can use the mutating versions of the same
 functions:
 
-    language!(sd, Languages.SpanishLanguage)
+    language!(sd, Languages.SpanishLanguage())
     name!(sd, "El Cid")
     author!(sd, "Desconocido")
     timestamp!(sd, "Desconocido")
