@@ -16,5 +16,5 @@
     @test isequal(timestamp(sd), "Unknown Time")
 
     language!(sd, Languages.German())
-    @assert isequal(language(sd), Languages.German())
+    @test isequal(language(sd), Languages.German())
 end
