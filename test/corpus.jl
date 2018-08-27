@@ -1,7 +1,8 @@
-module TestCorpus
-    using Base.Test
-    using Languages
-    using TextAnalysis
+
+@testset "Corpus" begin
+    
+    
+    
 
     sample_text1 = "This is a string"
     sample_text2 = "This is also a string"
@@ -18,7 +19,7 @@ module TestCorpus
     documents(crps)
 
     for doc in crps
-    	@assert isa(doc, AbstractDocument)
+    	@test isa(doc, AbstractDocument)
     end
 
     lexicon(crps)

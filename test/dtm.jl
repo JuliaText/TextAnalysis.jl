@@ -1,7 +1,8 @@
-module TestDTM
-    using Base.Test
-    using Languages
-    using TextAnalysis
+
+@testset "DTM" begin
+    
+    
+    
 
     sample_file = joinpath(dirname(@__FILE__), "data", "poem.txt")
 
