@@ -21,6 +21,19 @@ Topic() = Topic(0, Dict{Int, Int}())
 
 end
 
+"""
+    ϕ, θ = lda(dtm::DocumentTermMatrix, ntopics::Int, iterations::Int, α::Float64, β::Float64)
+
+Perform [Latent Dirichlet allocation](https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation).
+
+# Arguments
+- `α` Dirichlet dist. hyperparameter for topic distribution per document. `α<1` yields a sparse topic mixture for each document. `α>1` yields a more uniform topic mixture for each document.
+- `β` Dirichlet dist. hyperparameter for word distribution per topic. `β<1` yields a sparse word mixture for each topic. `β>1` yields a more uniform word mixture for each topic.
+
+# Return values
+- `ϕ`: `ntopics × nwords` Sparse matrix of probabilities s.t. `sum(ϕ, 1) == 1`
+- `θ`: `ntopics × ndocs` Dense matrix of probabilities s.t. `sum(θ, 1) == 1`
+"""
 function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float64, beta::Float64)
 
     number_of_documents, number_of_words = size(dtm.dtm)
@@ -82,17 +95,19 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float
             end
         end
     end
-
-    # result
+    # ϕ
     # topic x word sparse matrix.
-    result = spzeros(ntopics, number_of_words)
+    ϕ = spzeros(ntopics, number_of_words)
+    θ = getfield.(docs, :topicidcount)
+    θ = Float64.(hcat(θ...))
+    θ ./= sum(θ, 1)
     for topic in 1:ntopics
         t = topics[topic]
         for (word, count) in t.wordcount
             if 0 < t.count
-                result[topic, word] = count / t.count
+                ϕ[topic, word] = count / t.count
             end
         end
     end
-    return result
+    return ϕ, θ
 end
