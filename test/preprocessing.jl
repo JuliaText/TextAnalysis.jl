@@ -24,7 +24,6 @@ module TestPreprocessing
             sd,
             strip_punctuation | strip_numbers | strip_case | strip_whitespace | strip_non_letters
         )
-        info("sd=$sd")
         @assert isequal(strip(sd.text), "this is messed string")
     end
 
