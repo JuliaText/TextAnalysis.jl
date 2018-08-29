@@ -1,9 +1,5 @@
 
 @testset "Stemmer" begin
-    
-    
-    
-    
 
     algs = stemmer_types()
     @test !isempty(algs)

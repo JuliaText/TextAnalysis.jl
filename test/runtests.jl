@@ -20,6 +20,8 @@ include("dtm.jl")
 include("stemmer.jl")
 include("tf_idf.jl")
 include("lda.jl")
+include("summarizer.jl")
+include("sentiment.jl")
 
 
 

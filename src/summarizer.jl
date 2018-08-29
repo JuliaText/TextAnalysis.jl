@@ -7,7 +7,7 @@ function summarize(d::AbstractDocument; ns=5)
     update_lexicon!(c)
     t = tf_idf(dtm(c))
     T = t * t'
-    p=pagerank(t*t')
+    p=pagerank(T)
     return sentences[sort(sortperm(vec(p), rev=true)[1:ns])]
 end
 

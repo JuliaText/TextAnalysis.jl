@@ -1,3 +1,4 @@
+@testset "Summarizer" begin
 d = StringDocument("""
     Discount retailer Poundworld has appointed administrators, putting 5,100 jobs at risk.
     The move came after talks with a potential buyer, R Capital, collapsed leaving Poundworld with no option other than administration.
@@ -16,5 +17,6 @@ s = summarize(d)
 @test length(s) == 5
 @test s[1] == "Discount retailer Poundworld has appointed administrators, putting 5,100 jobs at risk."
 
-s=summarize(d; ns=2)
+s = summarize(d; ns=2)
 @test length(s) == 2
+end

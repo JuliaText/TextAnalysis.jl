@@ -1,8 +1,5 @@
 
 @testset "Corpus" begin
-    
-    
-    
 
     sample_text1 = "This is a string"
     sample_text2 = "This is also a string"
