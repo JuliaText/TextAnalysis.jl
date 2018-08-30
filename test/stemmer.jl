@@ -1,8 +1,5 @@
-module TestStemmer
-    using Base.Test
-    using Languages
-    using TextAnalysis
-    using Compat
+
+@testset "Stemmer" begin
 
     algs = stemmer_types()
     @test !isempty(algs)
