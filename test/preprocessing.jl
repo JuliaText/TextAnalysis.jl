@@ -1,16 +1,18 @@
 
 @testset "Preprocessing" begin
 
-    sample_text1 = "This is 1 MESSED UP string!"
-    sample_text1_wo_punctuation = "This is 1 MESSED UP string"
-    sample_text1_wo_punctuation_numbers = "This is  MESSED UP string"
-    sample_text1_wo_punctuation_numbers_case = "this is  messed up string"
+    sample_text1 = "This is 1 MESSED υπ string!"
+    sample_text1_wo_punctuation = "This is 1 MESSED υπ string"
+    sample_text1_wo_punctuation_numbers = "This is  MESSED υπ string"
+    sample_text1_wo_punctuation_numbers_case = "this is  messed υπ string"
+    sample_text1_wo_punctuation_numbers_case_az = "this is  messed  string"
 
     sample_texts = [
         sample_text1,
         sample_text1_wo_punctuation,
         sample_text1_wo_punctuation_numbers,
         sample_text1_wo_punctuation_numbers_case,
+        sample_text1_wo_punctuation_numbers_case_az
     ]
 
     # This idiom is _really_ ugly since "OR" means "AND" here.
@@ -18,9 +20,9 @@
         sd = StringDocument(str)
         prepare!(
             sd,
-            strip_punctuation | strip_numbers | strip_case | strip_whitespace
+            strip_punctuation | strip_numbers | strip_case | strip_whitespace | strip_non_letters
         )
-        @test isequal(strip(sd.text), "this is messed up string")
+        @test isequal(strip(sd.text), "this is messed string")
     end
 
     # Need to only remove words at word boundaries
