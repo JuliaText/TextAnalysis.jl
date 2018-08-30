@@ -18,6 +18,7 @@ module TextAnalysis
     export text!, tokens!, ngrams!
     export documents
     export language, name, author, timestamp
+    export languages, names, authors, timestamps
     export language!, name!, author!, timestamp!
     export ngram_complexity
     export lexicon, update_lexicon!, lexical_frequency, lexicon_size
