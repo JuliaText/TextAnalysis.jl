@@ -1,9 +1,6 @@
-
 @testset "Metadata" begin
-
     sample_text1 = "This is a string"
     sample_text2 = "This is also a string"
-    sample_file = joinpath(dirname(@__FILE__), "data", "poem.txt")
 
     sd1 = StringDocument(sample_text1)
     sd2 = StringDocument(sample_text2)
