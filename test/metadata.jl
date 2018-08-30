@@ -30,4 +30,22 @@
     @test isequal(languages(crps), [Languages.German(), Languages.English()])
     @test isequal(authors(crps), ["Author", "Unknown Author"])
     @test isequal(timestamps(crps), ["Time", "Unknown Time"])
+
+    # Metadata setters for an entire corpus
+    names!(crps, "Document")
+    languages!(crps, Languages.Spanish())
+    authors!(crps, "Author")
+    timestamps!(crps, "Time")
+    @test isequal(TextAnalysis.names(crps), ["Document", "Document"])
+    @test isequal(languages(crps), [Languages.Spanish(), Languages.Spanish()])
+    @test isequal(authors(crps), ["Author", "Author"])
+    @test isequal(timestamps(crps), ["Time", "Time"])
+    names!(crps, ["Unnamed Document", "Unnamed Document"])
+    languages!(crps, [Languages.English(), Languages.English()])
+    authors!(crps, ["Unknown Author", "Unknown Author"])
+    timestamps!(crps, ["Unknown Time", "Unknown Time"])
+    @test isequal(TextAnalysis.names(crps), ["Unnamed Document", "Unnamed Document"])
+    @test isequal(languages(crps), [Languages.English(), Languages.English()])
+    @test isequal(authors(crps), ["Unknown Author", "Unknown Author"])
+    @test isequal(timestamps(crps), ["Unknown Time", "Unknown Time"])
 end
