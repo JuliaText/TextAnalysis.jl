@@ -1,7 +1,5 @@
-module TestPreprocessing
-    using Base.Test
-    using Languages
-    using TextAnalysis
+
+@testset "Preprocessing" begin
 
     sample_text1 = "This is 1 MESSED υπ string!"
     sample_text1_wo_punctuation = "This is 1 MESSED υπ string"
@@ -24,50 +22,50 @@ module TestPreprocessing
             sd,
             strip_punctuation | strip_numbers | strip_case | strip_whitespace | strip_non_letters
         )
-        @assert isequal(strip(sd.text), "this is messed string")
+        @test isequal(strip(sd.text), "this is messed string")
     end
 
     # Need to only remove words at word boundaries
     doc = Document("this is sample text")
     remove_words!(doc, ["sample"])
-    @assert isequal(doc.text, "this is   text")
+    @test isequal(doc.text, "this is   text")
 
     doc = Document("this is sample text")
     prepare!(doc, strip_articles)
-    @assert isequal(doc.text, "this is sample text")
+    @test isequal(doc.text, "this is sample text")
 
     doc = Document("this is sample text")
     prepare!(doc, strip_definite_articles)
-    @assert isequal(doc.text, "this is sample text")
+    @test isequal(doc.text, "this is sample text")
 
     doc = Document("this is sample text")
     prepare!(doc, strip_indefinite_articles)
-    @assert isequal(doc.text, "this is sample text")
+    @test isequal(doc.text, "this is sample text")
 
     doc = Document("this is sample text")
     prepare!(doc, strip_prepositions)
-    @assert isequal(doc.text, "this is sample text")
+    @test isequal(doc.text, "this is sample text")
 
     doc = Document("this is sample text")
     prepare!(doc, strip_pronouns)
-    @assert isequal(doc.text, "this is sample text")
+    @test isequal(doc.text, "this is sample text")
 
     doc = Document("this is sample text")
     prepare!(doc, strip_stopwords)
-    @assert isequal(strip(doc.text), "sample text")
+    @test isequal(strip(doc.text), "sample text")
 
     doc = Document("this is sample text")
     prepare!(doc, strip_whitespace)
-    @assert isequal(doc.text, "this is sample text")
+    @test isequal(doc.text, "this is sample text")
 
     # stem!(sd)
     # tag_pos!(sd)
 
     # Do preprocessing on TokenDocument, NGramDocument, Corpus
     d = NGramDocument("this is sample text")
-    @assert haskey(d.ngrams, "sample")
+    @test haskey(d.ngrams, "sample")
     remove_words!(d, ["sample"])
-    @assert !haskey(d.ngrams, "sample")
+    @test !haskey(d.ngrams, "sample")
 
     d = StringDocument(
         """
@@ -82,7 +80,7 @@ module TestPreprocessing
         """
     )
     remove_html_tags!(d)
-    @assert "Hello world" == strip(d.text)
+    @test "Hello world" == strip(d.text)
 
     #Test #62
     remove_corrupt_utf8("abc") == "abc"

@@ -1,8 +1,5 @@
-module TestTokenizer
-    using Base.Test
-    using Languages
-    using TextAnalysis
 
+@testset "Tokenizer" begin
 
     sample_text = "this is some sample text"
 
@@ -11,7 +8,7 @@ module TestTokenizer
         sample_text
     )
 
-    @assert isequal(
+    @test isequal(
         tkns,
         String["this", "is", "some", "sample", "text"]
     )

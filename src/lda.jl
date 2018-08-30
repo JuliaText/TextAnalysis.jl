@@ -6,14 +6,14 @@
 
 module Lda
 
-type TopicBasedDocument
+mutable struct TopicBasedDocument
     topic::Vector{Int}
     text::Vector{Int}
     topicidcount::Vector{Int}
 end
 TopicBasedDocument(ntopics) = TopicBasedDocument(Vector{Int}(), Vector{Int}(), zeros(Int, ntopics))
 
-type Topic
+mutable struct Topic
     count::Int
     wordcount::Dict{Int, Int}
 end
@@ -95,6 +95,7 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float
             end
         end
     end
+
     # ϕ
     # topic x word sparse matrix.
     ϕ = spzeros(ntopics, number_of_words)

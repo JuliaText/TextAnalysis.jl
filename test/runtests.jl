@@ -1,27 +1,29 @@
 module TestTextAnalysis
-    using Base.Test
-    using Languages
-    using TextAnalysis
+using Base.Test
+using Languages
+using TextAnalysis
+using Compat
 
-    my_tests = [
-        "tokenizer.jl",
-        "ngramizer.jl",
-        "document.jl",
-        "metadata.jl",
-        "corpus.jl",
-        "preprocessing.jl",
-        "dtm.jl",
-        "stemmer.jl",
-        "tf_idf.jl",
-        "lda.jl",
-        "summarizer.jl",
-        "sentiment.jl"
-    ]
 
-    println("Running tests:")
+# @testset "TextAnalysis" begin
 
-    for my_test in my_tests
-        println(" * $(my_test)")
-        include(my_test)
-    end
+println("Running tests:")
+println(typeof(Compat.String))
+
+include("tokenizer.jl")
+include("ngramizer.jl")
+include("document.jl")
+include("metadata.jl")
+include("corpus.jl")
+include("preprocessing.jl")
+include("dtm.jl")
+include("stemmer.jl")
+include("tf_idf.jl")
+include("lda.jl")
+include("summarizer.jl")
+include("sentiment.jl")
+
+
+
+# end
 end
