@@ -5,21 +5,29 @@
     sample_text2 = "This is also a string"
     sample_file = joinpath(dirname(@__FILE__), "data", "poem.txt")
 
-    sd = StringDocument(sample_text1)
+    sd1 = StringDocument(sample_text1)
+    sd2 = StringDocument(sample_text2)
+    crps = Corpus([sd1, sd2])
 
     # Single document metadata getters
-    @test isequal(name(sd), "Unnamed Document")
-    @test isequal(language(sd), Languages.English())
-    @test isequal(author(sd), "Unknown Author")
-    @test isequal(timestamp(sd), "Unknown Time")
+    @test isequal(name(sd1), "Unnamed Document")
+    @test isequal(language(sd1), Languages.English())
+    @test isequal(author(sd1), "Unknown Author")
+    @test isequal(timestamp(sd1), "Unknown Time")
 
     # Single document metadata setters
-    name!(sd, "Document")
-    language!(sd, Languages.German())
-    author!(sd, "Author")
-    timestamp!(sd, "Time")
-    @test isequal(name(sd), "Document")
-    @test isequal(language(sd), Languages.German())
-    @test isequal(author(sd), "Author")
-    @test isequal(timestamp(sd), "Time")
+    name!(sd1, "Document")
+    language!(sd1, Languages.German())
+    author!(sd1, "Author")
+    timestamp!(sd1, "Time")
+    @test isequal(name(sd1), "Document")
+    @test isequal(language(sd1), Languages.German())
+    @test isequal(author(sd1), "Author")
+    @test isequal(timestamp(sd1), "Time")
+
+    # Metadata getters for an entire corpus
+    @test isequal(TextAnalysis.names(crps), ["Document", "Unnamed Document"])
+    @test isequal(languages(crps), [Languages.German(), Languages.English()])
+    @test isequal(authors(crps), ["Author", "Unknown Author"])
+    @test isequal(timestamps(crps), ["Time", "Unknown Time"])
 end
