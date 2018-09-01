@@ -1,22 +1,22 @@
 
 ## Deprecations for Languages
 
-function tokenize{S <: Language, T <: AbstractString}(::Type{S}, s::T)
+function tokenize(::Type{S}, s::T) where {S <: Language, T <: AbstractString}
     depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
     tokenize(S(), s)
 end
 
-function ngramize{S <: Language, T <: AbstractString}(::Type{S}, words::Vector{T}, n::Int)
+function ngramize(::Type{S}, words::Vector{T}, n::Int) where {S <: Language, T <: AbstractString}
     depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
     ngramize(S(), words, n)
 end
 
-function onegramize{S <: Language, T <: AbstractString}(::Type{S}, words::Vector{T})
+function onegramize(::Type{S}, words::Vector{T}) where {S <: Language, T <: AbstractString}
     depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
     onegramize(S(), words)
 end
 
-function stem_all{S <: Language}(stemmer::Stemmer, lang::Type{S}, sentence::AbstractString)
+function stem_all(stemmer::Stemmer, lang::Type{S}, sentence::AbstractString) where S <: Language
     depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
     stem_all(stemmer, S(), sentence)
 end

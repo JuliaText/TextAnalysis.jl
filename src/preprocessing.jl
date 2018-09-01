@@ -43,7 +43,7 @@ end
 #
 ##############################################################################
 function remove_corrupt_utf8(s::AbstractString)
-    return map(x->UInt(x)!=0xfffd?x:' ' , s)
+    return map(x->UInt(x)!=0xfffd ? x : ' ' , s)
 end
 
 remove_corrupt_utf8!(d::FileDocument) = error("FileDocument cannot be modified")
@@ -84,7 +84,7 @@ end
 #
 ##############################################################################
 
-remove_case{T <: AbstractString}(s::T) = lowercase(s)
+remove_case(s::T) where {T <: AbstractString} = lowercase(s)
 
 remove_case!(d::FileDocument) = error("FileDocument cannot be modified")
 
@@ -151,8 +151,8 @@ end
 # Remove specified words
 #
 ##############################################################################
-function remove_words!{T <: AbstractString}(entity::(Union{AbstractDocument,Corpus}),
-                                    words::Vector{T})
+function remove_words!(entity::(Union{AbstractDocument,Corpus}),
+               words::Vector{T}) where T <: AbstractString
     skipwords = Set{AbstractString}()
     union!(skipwords, words)
     prepare!(entity, strip_patterns, skip_words = skipwords)
@@ -265,7 +265,7 @@ function remove_patterns(s::AbstractString, rex::Regex)
     String(take!(iob))
 end
 
-function remove_patterns{T <: String}(s::SubString{T}, rex::Regex)
+function remove_patterns(s::SubString{T}, rex::Regex) where T <: String
     iob = IOBuffer()
     ioffset = s.offset
     data = Vector{UInt8}(s.string)
@@ -320,9 +320,9 @@ end
 # internal helper methods
 
 _build_regex(lang, flags::UInt32) = _build_regex(lang, flags, Set{AbstractString}(), Set{AbstractString}())
-_build_regex{T <: AbstractString}(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) = _combine_regex(_build_regex_patterns(lang, flags, patterns, words))
+_build_regex(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) where {T <: AbstractString} = _combine_regex(_build_regex_patterns(lang, flags, patterns, words))
 
-function _combine_regex{T <: AbstractString}(regex_parts::Set{T})
+function _combine_regex(regex_parts::Set{T}) where T <: AbstractString
     l = length(regex_parts)
     (0 == l) && return r""
     (1 == l) && return mk_regex(pop!(regex_parts))
@@ -335,7 +335,7 @@ function _combine_regex{T <: AbstractString}(regex_parts::Set{T})
     mk_regex(String(take!(iob)))
 end
 
-function _build_regex_patterns{T <: AbstractString}(lang, flags::UInt32, patterns::Set{T}, words::Set{T})
+function _build_regex_patterns(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) where T <: AbstractString
     ((flags & strip_whitespace) > 0) && push!(patterns, "\\s+")
     if (flags & strip_non_letters) > 0
         push!(patterns, "[^a-zA-Z\\s]")
@@ -358,7 +358,7 @@ function _build_regex_patterns{T <: AbstractString}(lang, flags::UInt32, pattern
     patterns
 end
 
-function _build_words_pattern{T <: AbstractString}(words::Vector{T})
+function _build_words_pattern(words::Vector{T}) where T <: AbstractString
     isempty(words) && return ""
 
     iob = IOBuffer()

@@ -4,7 +4,7 @@
 #
 ##############################################################################
 
-type DocumentTermMatrix
+mutable struct DocumentTermMatrix
     dtm::SparseMatrixCSC{Int, Int}
     terms::Vector{String}
     column_indices::Dict{String, Int}
@@ -166,7 +166,7 @@ hash_tdm(crps::Corpus) = hash_dtm(crps)' #'
 #
 ##############################################################################
 
-type EachDTV
+mutable struct EachDTV
     crps::Corpus
 end
 
@@ -178,7 +178,7 @@ end
 
 done(edt::EachDTV, state::Int) = state > length(edt.crps.documents)
 
-type EachHashDTV
+mutable struct EachHashDTV
     crps::Corpus
 end
 

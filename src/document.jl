@@ -4,7 +4,7 @@
 #
 ##############################################################################
 
-type DocumentMetadata
+mutable struct DocumentMetadata
     language
     name::String
     author::String
@@ -31,7 +31,7 @@ abstract type AbstractDocument; end
 #
 ##############################################################################
 
-type FileDocument <: AbstractDocument
+mutable struct FileDocument <: AbstractDocument
     filename::String
     metadata::DocumentMetadata
 end
@@ -48,7 +48,7 @@ end
 #
 ##############################################################################
 
-type StringDocument{T<:AbstractString} <: AbstractDocument
+mutable struct StringDocument{T<:AbstractString} <: AbstractDocument
     text::T
     metadata::DocumentMetadata
 end
@@ -61,14 +61,14 @@ StringDocument(txt::AbstractString) = StringDocument(txt, DocumentMetadata())
 #
 ##############################################################################
 
-type TokenDocument{T<:AbstractString} <: AbstractDocument
+mutable struct TokenDocument{T<:AbstractString} <: AbstractDocument
     tokens::Vector{T}
     metadata::DocumentMetadata
 end
 function TokenDocument(txt::AbstractString, dm::DocumentMetadata)
     TokenDocument(tokenize(dm.language, String(txt)), dm)
 end
-function TokenDocument{T <: AbstractString}(tkns::Vector{T})
+function TokenDocument(tkns::Vector{T}) where T <: AbstractString
     TokenDocument(tkns, DocumentMetadata())
 end
 TokenDocument(txt::AbstractString) = TokenDocument(String(txt), DocumentMetadata())
@@ -79,7 +79,7 @@ TokenDocument(txt::AbstractString) = TokenDocument(String(txt), DocumentMetadata
 #
 ##############################################################################
 
-type NGramDocument{T<:AbstractString} <: AbstractDocument
+mutable struct NGramDocument{T<:AbstractString} <: AbstractDocument
     ngrams::Dict{T,Int}
     n::Int
     metadata::DocumentMetadata
@@ -91,7 +91,7 @@ end
 function NGramDocument(txt::AbstractString, n::Integer=1)
     NGramDocument(txt, DocumentMetadata(), n)
 end
-function NGramDocument{T <: AbstractString}(ng::Dict{T, Int}, n::Integer=1)
+function NGramDocument(ng::Dict{T, Int}, n::Integer=1) where T <: AbstractString
     NGramDocument(merge(Dict{AbstractString,Int}(), ng), n, DocumentMetadata())
 end
 
@@ -132,8 +132,8 @@ function tokens(d::NGramDocument)
     error("The tokens of an NGramDocument cannot be reconstructed")
 end
 
-tokens!{T <: AbstractString}(d::TokenDocument, new_tokens::Vector{T}) = (d.tokens = new_tokens)
-function tokens!{T <: AbstractString}(d::AbstractDocument, new_tokens::Vector{T})
+tokens!(d::TokenDocument, new_tokens::Vector{T}) where {T <: AbstractString} = (d.tokens = new_tokens)
+function tokens!(d::AbstractDocument, new_tokens::Vector{T}) where T <: AbstractString
     error("The tokens of a $(typeof(d)) cannot be directly edited")
 end
 
@@ -199,7 +199,7 @@ const GenericDocument = Union{
 ##############################################################################
 
 Document(str::AbstractString) = isfile(str) ? FileDocument(str) : StringDocument(str)
-Document{T <: AbstractString}(tkns::Vector{T}) = TokenDocument(tkns)
+Document(tkns::Vector{T}) where {T <: AbstractString} = TokenDocument(tkns)
 Document(ng::Dict{String, Int}) = NGramDocument(ng)
 
 ##############################################################################

@@ -4,19 +4,19 @@
 #
 ##############################################################################
 
-tf{T <: Real}(dtm::Matrix{T}) = tf!(dtm, Array{Float64}(size(dtm)...))
+tf(dtm::Matrix{T}) where {T <: Real} = tf!(dtm, Array{Float64}(size(dtm)...))
 
-tf{T <: Real}(dtm::SparseMatrixCSC{T}) =  tf!(dtm, similar(dtm, Float64))
+tf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf!(dtm, similar(dtm, Float64))
 
-tf!{T <: Real}(dtm::AbstractMatrix{T}) = tf!(dtm, dtm)
+tf!(dtm::AbstractMatrix{T}) where {T <: Real} = tf!(dtm, dtm)
 
-tf!{T <: Real}(dtm::SparseMatrixCSC{T}) = tf!(dtm, dtm)
+tf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf!(dtm, dtm)
 
 tf(dtm::DocumentTermMatrix) = tf(dtm.dtm)
 
 # The second Matrix will be overwritten with the result
 # Will work correctly if dtm and tfidf are the same matrix
-function tf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tf::AbstractMatrix{T2})
+function tf!(dtm::AbstractMatrix{T1}, tf::AbstractMatrix{T2}) where {T1 <: Real, T2 <: AbstractFloat}
     n, p = size(dtm)
 
     # TF tells us what proportion of a document is defined by a term
@@ -32,7 +32,7 @@ function tf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tf::Abstr
 end
 
 # assumes second matrix has same nonzeros as first one
-function tf!{T <: Real, F <: AbstractFloat}(dtm::SparseMatrixCSC{T}, tf::SparseMatrixCSC{F})
+function tf!(dtm::SparseMatrixCSC{T}, tf::SparseMatrixCSC{F}) where {T <: Real, F <: AbstractFloat}
     rows = rowvals(dtm)
     dtmvals = nonzeros(dtm)
     tfvals = nonzeros(tf)
@@ -57,13 +57,13 @@ end
 #
 ##############################################################################
 
-tf_idf{T <: Real}(dtm::Matrix{T}) = tf_idf!(dtm, Array{Float64}(size(dtm)...))
+tf_idf(dtm::Matrix{T}) where {T <: Real} = tf_idf!(dtm, Array{Float64}(size(dtm)...))
 
-tf_idf{T <: Real}(dtm::SparseMatrixCSC{T}) =  tf_idf!(dtm, similar(dtm, Float64))
+tf_idf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf_idf!(dtm, similar(dtm, Float64))
 
-tf_idf!{T <: Real}(dtm::AbstractMatrix{T}) = tf_idf!(dtm, dtm)
+tf_idf!(dtm::AbstractMatrix{T}) where {T <: Real} = tf_idf!(dtm, dtm)
 
-tf_idf!{T <: Real}(dtm::SparseMatrixCSC{T}) = tf_idf!(dtm, dtm)
+tf_idf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf_idf!(dtm, dtm)
 
 tf_idf(dtm::DocumentTermMatrix) = tf_idf(dtm.dtm)
 
@@ -73,7 +73,7 @@ tf_idf(dtm::DocumentTermMatrix) = tf_idf(dtm.dtm)
 
 # The second Matrix will be overwritten with the result
 # Will work correctly if dtm and tfidf are the same matrix
-function tf_idf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tfidf::AbstractMatrix{T2})
+function tf_idf!(dtm::AbstractMatrix{T1}, tfidf::AbstractMatrix{T2}) where {T1 <: Real, T2 <: AbstractFloat}
     n, p = size(dtm)
 
     # TF tells us what proportion of a document is defined by a term
@@ -94,7 +94,7 @@ function tf_idf!{T1 <: Real, T2 <: AbstractFloat}(dtm::AbstractMatrix{T1}, tfidf
 end
 
 # sparse version
-function tf_idf!{T <: Real, F <: AbstractFloat}(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F})
+function tf_idf!(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F}) where {T <: Real, F <: AbstractFloat}
     rows = rowvals(dtm)
     dtmvals = nonzeros(dtm)
     tfidfvals = nonzeros(tfidf)
@@ -104,7 +104,7 @@ function tf_idf!{T <: Real, F <: AbstractFloat}(dtm::SparseMatrixCSC{T}, tfidf::
 
     # TF tells us what proportion of a document is defined by a term
     words_in_documents = F.(sum(dtm,2))
-    const oneval = one(F)
+    oneval = one(F)
 
     # IDF tells us how rare a term is in the corpus
     documents_containing_term = vec(sum(dtm .> 0, 1))
