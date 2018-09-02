@@ -1,8 +1,5 @@
-module TestTFIDF
 
-    using Base.Test
-    using Languages
-    using TextAnalysis
+@testset "TFIDF" begin
 
     doc1 = "a a a sample text text"
     doc2 = "another example example text text"

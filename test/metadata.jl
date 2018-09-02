@@ -1,7 +1,5 @@
-module TestMetadata
-    using Base.Test
-    using Languages
-    using TextAnalysis
+
+@testset "Metadata" begin
 
     sample_text1 = "This is a string"
     sample_text2 = "This is also a string"
@@ -9,8 +7,11 @@ module TestMetadata
 
     sd = StringDocument(sample_text1)
 
-    @assert isequal(name(sd), "Unnamed Document")
-    @assert isequal(language(sd), Languages.English())
-    @assert isequal(author(sd), "Unknown Author")
-    @assert isequal(timestamp(sd), "Unknown Time")
+    @test isequal(name(sd), "Unnamed Document")
+    @test isequal(language(sd), Languages.English())
+    @test isequal(author(sd), "Unknown Author")
+    @test isequal(timestamp(sd), "Unknown Time")
+
+    language!(sd, Languages.German())
+    @test isequal(language(sd), Languages.German())
 end

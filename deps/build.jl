@@ -41,5 +41,5 @@ sentiment_structure = FileProduct(prefix, "model/sentiment-analysis-structure.js
 sentiment_weights = FileProduct(prefix, "model/sentiment-analysis-weights.bson", :sentiment_weights)
 sentiment_words = FileProduct(prefix, "model/sentiment-analysis-word-to-id.json", :sentiment_words)
 model_products = [sentiment_structure, sentiment_weights, sentiment_words]
-install("$model_bin_prefix/sentiment.tar.gz", "f237378f3f866c7e697ed893b4208878a6c5dd111eddcebc84ac55dab3885004"; prefix=prefix, force=true, verbose=true, ignore_platform=true)
+install("$model_bin_prefix/sentiment.tar.gz", "5dcb031eccf01bb0b2d074281140679683f73603a54caa79941a1df1c8a6d70d"; prefix=prefix, force=true, verbose=true, ignore_platform=true)
 write_deps_file(joinpath(@__DIR__, "deps.jl"), vcat(products, model_products))

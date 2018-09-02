@@ -1,8 +1,5 @@
-module TestDocument
-    using Base.Test
-    using Languages
-    using TextAnalysis
-    using Compat
+
+@testset "Document" begin
 
     sample_text1 = "This is a string"
     sample_text2 = "This is also a string"
@@ -13,32 +10,32 @@ module TestDocument
     td = TokenDocument(sample_text1)
     ngd = NGramDocument(sample_text1)
 
-    @assert isequal(text(sd), sample_text1)
+    @test isequal(text(sd), sample_text1)
     text!(sd, sample_text2)
-    @assert isequal(text(sd), sample_text2)
+    @test isequal(text(sd), sample_text2)
     text!(sd, sample_text1)
-    @assert isequal(text(sd), sample_text1)
+    @test isequal(text(sd), sample_text1)
 
-    @assert all(tokens(sd) .== ["This", "is", "a", "string"])
-    @assert "This" in keys(ngrams(sd, 1))
-    @assert "is" in keys(ngrams(sd, 1))
-    @assert "a" in keys(ngrams(sd, 1))
-    @assert "string" in keys(ngrams(sd, 1))
+    @test all(tokens(sd) .== ["This", "is", "a", "string"])
+    @test "This" in keys(ngrams(sd, 1))
+    @test "is" in keys(ngrams(sd, 1))
+    @test "a" in keys(ngrams(sd, 1))
+    @test "string" in keys(ngrams(sd, 1))
 
-    @assert length(sd) == 16
+    @test length(sd) == 16
 
     hamlet_text = "To be or not to be..."
     sd = StringDocument(hamlet_text)
-    @assert isa(sd, StringDocument)
-    @assert isequal(text(sd), hamlet_text)
+    @test isa(sd, StringDocument)
+    @test isequal(text(sd), hamlet_text)
 
-    @assert isa(fd, FileDocument)
-    @assert length(text(fd)) > 0
+    @test isa(fd, FileDocument)
+    @test length(text(fd)) > 0
 
     my_tokens = ["To", "be", "or", "not", "to", "be..."]
     td = TokenDocument(my_tokens)
-    @assert isa(td, TokenDocument)
-    @assert all(tokens(td) .== my_tokens)
+    @test isa(td, TokenDocument)
+    @test all(tokens(td) .== my_tokens)
 
     my_ngrams = Dict{String,Int}()
     my_ngrams["To"] = 1
@@ -48,24 +45,24 @@ module TestDocument
     my_ngrams["to"] = 1
     my_ngrams["be..."] = 1
     ngd = NGramDocument(my_ngrams)
-    @assert isa(ngd, NGramDocument)
-    @assert "To" in keys(ngrams(ngd))
+    @test isa(ngd, NGramDocument)
+    @test "To" in keys(ngrams(ngd))
 
     sd = StringDocument(hamlet_text)
     td = TokenDocument(hamlet_text)
     ngd = NGramDocument(hamlet_text)
 
     d = Document("To be or not to be...")
-    @assert isa(d, StringDocument)
+    @test isa(d, StringDocument)
     d = Document(joinpath(dirname(@__FILE__), "data", "poem.txt"))
-    @assert isa(d, FileDocument)
+    @test isa(d, FileDocument)
     d = Document(["To", "be", "or", "not", "to", "be..."])
-    @assert isa(d, TokenDocument)
+    @test isa(d, TokenDocument)
     ng = Dict{String,Int}()
     ng["a"] = 1
     ng["b"] = 3
     d = Document(ng)
-    @assert isa(d, NGramDocument)
+    @test isa(d, NGramDocument)
 
-    @assert isequal(length(Document("this is text")), 12)
+    @test isequal(length(Document("this is text")), 12)
 end
