@@ -133,7 +133,7 @@ Base.delete!(crps::Corpus, index::Integer) = delete!(crps.documents, index)
 ##############################################################################
 
 Base.getindex(crps::Corpus, ind::Real) = crps.documents[ind]
-Base.getindex{T <: Real}(crps::Corpus, inds::Vector{T}) = crps.documents[inds]
+Base.getindex(crps::Corpus, inds::Vector{T}) where {T <: Real} = crps.documents[inds]
 Base.getindex(crps::Corpus, r::Range) = crps.documents[r]
 Base.getindex(crps::Corpus, term::AbstractString) = get(crps.inverse_index, term, Int[])
 
@@ -226,7 +226,7 @@ hash_function!(crps::Corpus, f::TextHashFunction) = (crps.h = f; nothing)
 #
 ##############################################################################
 
-function standardize!{T <: AbstractDocument}(crps::Corpus, ::Type{T})
+function standardize!(crps::Corpus, ::Type{T}) where T <: AbstractDocument
     for i in 1:length(crps)
         crps.documents[i] = convert(T, crps.documents[i])
     end

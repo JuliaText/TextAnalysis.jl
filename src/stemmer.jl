@@ -25,7 +25,7 @@ function stemmer_types()
     stypes
 end
 
-type Stemmer
+mutable struct Stemmer
     cptr::Ptr{Void}
     alg::String
     enc::String
@@ -71,14 +71,14 @@ function stem(stemmer::Stemmer, bstr::AbstractString)
 end
 
 
-function stem_all{S <: Language}(stemmer::Stemmer, lang::S, sentence::AbstractString)
+function stem_all(stemmer::Stemmer, lang::S, sentence::AbstractString) where S <: Language
     tokens = TextAnalysis.tokenize(lang, sentence)
     stemmed = stem(stemmer, tokens)
     join(stemmed, ' ')
 end
 
 function stem(stemmer::Stemmer, words::Array)
-    const l::Int = length(words)
+    l::Int = length(words)
     ret = Array{String}(l)
     for idx in 1:l
         ret[idx] = stem(stemmer, words[idx])
