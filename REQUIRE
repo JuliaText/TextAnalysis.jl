@@ -1,6 +1,6 @@
-julia 0.6
+julia 0.7
 BinaryProvider
-Languages 0.2.0
+Languages 0.4.0
 DataFrames
 WordTokenizers
 Flux
