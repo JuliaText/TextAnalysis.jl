@@ -18,7 +18,9 @@ module TextAnalysis
     export text!, tokens!, ngrams!
     export documents
     export language, name, author, timestamp
+    export languages, names, authors, timestamps
     export language!, name!, author!, timestamp!
+    export languages!, names!, authors!, timestamps!
     export ngram_complexity
     export lexicon, update_lexicon!, lexical_frequency, lexicon_size
     export inverse_index, update_inverse_index!, index_size
@@ -49,7 +51,7 @@ module TextAnalysis
     export strip_numbers, strip_non_letters, strip_indefinite_articles, strip_definite_articles, strip_articles
     export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
     export SentimentAnalyzer
-    
+
     include("tokenizer.jl")
     include("ngramizer.jl")
     include("document.jl")
