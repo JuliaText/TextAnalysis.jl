@@ -18,7 +18,7 @@
 #
 ##############################################################################
 
-type TextHashFunction
+mutable struct TextHashFunction
     hash_function::Function
     cardinality::Int
 end

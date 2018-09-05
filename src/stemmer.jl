@@ -25,14 +25,14 @@ function stemmer_types()
     stypes
 end
 
-type Stemmer
-    cptr::Ptr{Void}
+mutable struct Stemmer
+    cptr::Ptr{Cvoid}
     alg::String
     enc::String
 
     function Stemmer(stemmer_type, charenc=UTF_8)
         cptr = ccall((:sb_stemmer_new, libstemmer),
-                    Ptr{Void},
+                    Ptr{Cvoid},
                     (Ptr{UInt8}, Ptr{UInt8}),
                     String(stemmer_type), String(charenc))
 
@@ -54,7 +54,7 @@ show(io::IO, stm::Stemmer) = println(io, "Stemmer algorithm:$(stm.alg) encoding:
 
 function release(stm::Stemmer)
     (C_NULL == stm.cptr) && return
-    ccall((:sb_stemmer_delete, libstemmer), Void, (Ptr{Void},), stm.cptr)
+    ccall((:sb_stemmer_delete, libstemmer), Cvoid, (Ptr{Cvoid},), stm.cptr)
     stm.cptr = C_NULL
     nothing
 end
@@ -65,20 +65,20 @@ function stem(stemmer::Stemmer, bstr::AbstractString)
                 (Ptr{UInt8}, Ptr{UInt8}, Cint),
                 stemmer.cptr, bstr, sizeof(bstr))
     (C_NULL == sres) && error("error in stemming")
-    slen = ccall((:sb_stemmer_length, libstemmer), Cint, (Ptr{Void},), stemmer.cptr)
-    bytes = unsafe_wrap(Array, sres, Int(slen), false)
+    slen = ccall((:sb_stemmer_length, libstemmer), Cint, (Ptr{Cvoid},), stemmer.cptr)
+    bytes = unsafe_wrap(Array, sres, Int(slen), own=false)
     String(copy(bytes))
 end
 
 
-function stem_all{S <: Language}(stemmer::Stemmer, lang::S, sentence::AbstractString)
+function stem_all(stemmer::Stemmer, lang::S, sentence::AbstractString) where S <: Language
     tokens = TextAnalysis.tokenize(lang, sentence)
     stemmed = stem(stemmer, tokens)
     join(stemmed, ' ')
 end
 
 function stem(stemmer::Stemmer, words::Array)
-    const l::Int = length(words)
+    l::Int = length(words)
     ret = Array{String}(l)
     for idx in 1:l
         ret[idx] = stem(stemmer, words[idx])

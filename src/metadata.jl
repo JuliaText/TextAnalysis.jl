@@ -15,7 +15,7 @@ function name!(d::AbstractDocument, nv::AbstractString)
     d.metadata.name = nv
 end
 
-function language!{T <: Language}(d::AbstractDocument, nv::T)
+function language!(d::AbstractDocument, nv::T) where T <: Language
     d.metadata.language = nv
 end
 
@@ -39,7 +39,7 @@ authors(c::Corpus) = map(d -> author(d), documents(c))
 timestamps(c::Corpus) = map(d -> timestamp(d), documents(c))
 
 names!(c::Corpus, nv::AbstractString) = name!.(documents(c), nv)
-languages!{T <: Language}(c::Corpus, nv::T) = language!.(documents(c), nv)
+languages!(c::Corpus, nv::T) where {T <: Language} = language!.(documents(c), nv)
 authors!(c::Corpus, nv::AbstractString) = author!.(documents(c), nv)
 timestamps!(c::Corpus, nv::AbstractString) = timestamp!.(documents(c), nv)
 
@@ -50,7 +50,7 @@ function names!(c::Corpus, nvs::Vector{String})
     end
 end
 
-function languages!{T <: Language}(c::Corpus, nvs::Vector{T})
+function languages!(c::Corpus, nvs::Vector{T}) where T <: Language
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
     for (i, d) in enumerate(IndexLinear(), documents(c))
         language!(d, nvs[i])

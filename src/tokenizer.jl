@@ -4,6 +4,6 @@
 #
 ##############################################################################
 
-tokenize{S <: Language, T <: AbstractString}(lang::S, s::T) = WordTokenizers.tokenize(s)
+tokenize(lang::S, s::T) where {S <: Language, T <: AbstractString} = WordTokenizers.tokenize(s)
 
-sentence_tokenize{S <: Language, T<:AbstractString}(lang::S, s::T) = WordTokenizers.split_sentences(s)
+sentence_tokenize(lang::S, s::T) where {S <: Language, T<:AbstractString} = WordTokenizers.split_sentences(s)
