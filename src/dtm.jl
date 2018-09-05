@@ -71,7 +71,7 @@ function dtm(d::DocumentTermMatrix, density::Symbol)
     if density == :sparse
         return d.dtm
     else
-        return full(d.dtm)
+        return Matrix(d.dtm)
     end
 end
 

@@ -1,4 +1,5 @@
 module TestTextAnalysis
+using SparseArrays
 using Test
 using Languages
 using TextAnalysis

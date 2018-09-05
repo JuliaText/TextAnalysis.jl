@@ -1,6 +1,10 @@
 using DataFrames
 
 module TextAnalysis
+    using SparseArrays
+    using Printf
+    using LinearAlgebra
+    
     using Languages
     using DataFrames
     using WordTokenizers

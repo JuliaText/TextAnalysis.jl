@@ -45,7 +45,7 @@ mutable struct Stemmer
         end
 
         stm = new(cptr, stemmer_type, charenc)
-        finalizer(stm, release)
+        finalizer(release, stm)
         stm
     end
 end
@@ -79,7 +79,7 @@ end
 
 function stem(stemmer::Stemmer, words::Array)
     l::Int = length(words)
-    ret = Array{String}(l)
+    ret = Array{String}(undef, l)
     for idx in 1:l
         ret[idx] = stem(stemmer, words[idx])
     end

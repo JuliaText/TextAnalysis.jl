@@ -20,8 +20,8 @@ function pagerank( A; Niter=20, damping=.15)
 
          for i=1:Niter
              s = r * A
-             scale!(s, damping)
-             r = s .+ (a * sum(r,2));   # Compute PageRank.
+             rmul!(s, damping)
+             r = s .+ (a * sum(r, dims=2));   # Compute PageRank.
          end
 
          r = r./norm(r,1);

@@ -1,6 +1,6 @@
 
 @testset "LDA" begin
-    
+
     doc1 = "a a a sample text text"
     doc2 = "another example example text text"
 
@@ -12,5 +12,5 @@
     ϕ, θ = lda(dtm, 2, 25, 0.1, 0.1)
     @test ϕ isa SparseMatrixCSC
     @test θ isa Matrix{Float64}
-    @test all(sum(θ,1) .≈ 1)
+    @test all(sum(θ, dims=1) .≈ 1)
 end

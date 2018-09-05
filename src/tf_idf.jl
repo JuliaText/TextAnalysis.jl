@@ -4,7 +4,7 @@
 #
 ##############################################################################
 
-tf(dtm::Matrix{T}) where {T <: Real} = tf!(dtm, Array{Float64}(size(dtm)...))
+tf(dtm::Matrix{T}) where {T <: Real} = tf!(dtm, Array{Float64}(undef, size(dtm)...))
 
 tf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf!(dtm, similar(dtm, Float64))
 
@@ -39,7 +39,7 @@ function tf!(dtm::SparseMatrixCSC{T}, tf::SparseMatrixCSC{F}) where {T <: Real, 
     @assert size(dtmvals) == size(tfvals)
 
     # TF tells us what proportion of a document is defined by a term
-    words_in_documents = sum(dtm,2)
+    words_in_documents = sum(dtm,dims=2)
 
     n, p = size(dtm)
     for i = 1:p
@@ -57,7 +57,7 @@ end
 #
 ##############################################################################
 
-tf_idf(dtm::Matrix{T}) where {T <: Real} = tf_idf!(dtm, Array{Float64}(size(dtm)...))
+tf_idf(dtm::Matrix{T}) where {T <: Real} = tf_idf!(dtm, Array{Float64}(undef, size(dtm)...))
 
 tf_idf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf_idf!(dtm, similar(dtm, Float64))
 
@@ -80,7 +80,7 @@ function tf_idf!(dtm::AbstractMatrix{T1}, tfidf::AbstractMatrix{T2}) where {T1 <
     tf!(dtm, tfidf)
 
     # IDF tells us how rare a term is in the corpus
-    documents_containing_term = vec(sum(dtm .> 0, 1))
+    documents_containing_term = vec(sum(dtm .> 0, dims=1))
     idf = log.(n ./ documents_containing_term)
 
     # TF-IDF is the product of TF and IDF
@@ -103,11 +103,11 @@ function tf_idf!(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F}) where {T <:
     n, p = size(dtm)
 
     # TF tells us what proportion of a document is defined by a term
-    words_in_documents = F.(sum(dtm,2))
+    words_in_documents = F.(sum(dtm, dims=2))
     oneval = one(F)
 
     # IDF tells us how rare a term is in the corpus
-    documents_containing_term = vec(sum(dtm .> 0, 1))
+    documents_containing_term = vec(sum(dtm .> 0, dims=1))
     idf = log.(n ./ documents_containing_term)
 
     for i = 1:p
