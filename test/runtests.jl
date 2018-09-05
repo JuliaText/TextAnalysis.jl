@@ -1,5 +1,5 @@
 module TestTextAnalysis
-using Base.Test
+using Test
 using Languages
 using TextAnalysis
 using Compat

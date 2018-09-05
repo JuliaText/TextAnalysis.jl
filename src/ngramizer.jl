@@ -4,7 +4,7 @@
 #
 ##############################################################################
 
-function ngramize{S <: Language, T <: AbstractString}(lang::S, words::Vector{T}, n::Int)
+function ngramize(lang::S, words::Vector{T}, n::Int) where {S <: Language, T <: AbstractString}
     (n == 1) && return onegramize(lang, words)
 
     n_words = length(words)
@@ -21,7 +21,7 @@ function ngramize{S <: Language, T <: AbstractString}(lang::S, words::Vector{T},
     return tokens
 end
 
-function onegramize{S <: Language, T <: AbstractString}(lang::S, words::Vector{T})
+function onegramize(lang::S, words::Vector{T}) where {S <: Language, T <: AbstractString}
     n_words = length(words)
     tokens = Dict{T, Int}()
 
