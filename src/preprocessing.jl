@@ -258,7 +258,7 @@ function remove_patterns(s::AbstractString, rex::Regex)
             Base.write_sub(iob, v, ibegin, len)
             write(iob, ' ')
         end
-        ibegin = nextind(s, m.endof+m.offset)
+        ibegin = nextind(s, endof(m)+m.offset)
     end
     len = length(v) - ibegin + 1
     (len > 0) && Base.write_sub(iob, v, ibegin, len)
@@ -276,9 +276,9 @@ function remove_patterns{T <: String}(s::SubString{T}, rex::Regex)
             Base.write_sub(iob, data, ibegin+ioffset, len)
             write(iob, ' ')
         end
-        ibegin = nextind(s, m.endof+m.offset)
+        ibegin = nextind(s, endof(m)+m.offset)
     end
-    len = s.endof - ibegin + 1
+    len = endof(s) - ibegin + 1
     (len > 0) && Base.write_sub(iob, data, ibegin+ioffset, len)
     String(take!(iob))
 end
