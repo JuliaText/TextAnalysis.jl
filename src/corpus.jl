@@ -102,9 +102,10 @@ end
 #
 ##############################################################################
 
-Base.start(crps::Corpus) = 1
-Base.next(crps::Corpus, ind::Int) = (crps.documents[ind], ind + 1)
-Base.done(crps::Corpus, ind::Int) = ind > length(crps.documents)
+function Base.iterate(crps::Corpus, ind=1)
+    ind > length(crps.documents) && return nothing
+    crps.documents[ind], ind+1
+end
 
 ##############################################################################
 #
