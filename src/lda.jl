@@ -37,8 +37,8 @@ Perform [Latent Dirichlet allocation](https://en.wikipedia.org/wiki/Latent_Diric
 function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float64, beta::Float64)
 
     number_of_documents, number_of_words = size(dtm.dtm)
-    docs = Vector{Lda.TopicBasedDocument}(number_of_documents)
-    topics = Vector{Lda.Topic}(ntopics)
+    docs = Vector{Lda.TopicBasedDocument}(undef, number_of_documents)
+    topics = Vector{Lda.Topic}(undef, ntopics)
     for i in 1:ntopics
         topics[i] = Lda.Topic()
     end
@@ -59,7 +59,7 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float
         end
         docs[i] = topic_base_document
     end
-    probs = Vector{Float64}(ntopics)
+    probs = Vector{Float64}(undef, ntopics)
     # Gibbs sampling
     for _ in 1:iteration
         for doc in docs
@@ -101,7 +101,7 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float
     ϕ = spzeros(ntopics, number_of_words)
     θ = getfield.(docs, :topicidcount)
     θ = Float64.(hcat(θ...))
-    θ ./= sum(θ, 1)
+    θ ./= sum(θ, dims=1)
     for topic in 1:ntopics
         t = topics[topic]
         for (word, count) in t.wordcount

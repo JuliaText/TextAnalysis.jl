@@ -4,7 +4,7 @@
 #
 ##############################################################################
 
-type DocumentTermMatrix
+mutable struct DocumentTermMatrix
     dtm::SparseMatrixCSC{Int, Int}
     terms::Vector{String}
     column_indices::Dict{String, Int}
@@ -32,9 +32,9 @@ function DocumentTermMatrix(crps::Corpus, terms::Vector{String})
     m = length(crps)
     n = length(terms)
 
-    rows = Array{Int}(0)
-    columns = Array{Int}(0)
-    values = Array{Int}(0)
+    rows = Array{Int}(undef, 0)
+    columns = Array{Int}(undef, 0)
+    values = Array{Int}(undef, 0)
     for i in 1:m
         doc = crps.documents[i]
         ngs = ngrams(doc)
@@ -57,7 +57,7 @@ function DocumentTermMatrix(crps::Corpus, terms::Vector{String})
 end
 DocumentTermMatrix(crps::Corpus) = DocumentTermMatrix(crps, lexicon(crps))
 
-DocumentTermMatrix(crps::Corpus, lex::Associative) = DocumentTermMatrix(crps, sort(collect(keys(lex))))
+DocumentTermMatrix(crps::Corpus, lex::AbstractDict) = DocumentTermMatrix(crps, sort(collect(keys(lex))))
 
 DocumentTermMatrix(dtm::SparseMatrixCSC{Int, Int},terms::Vector{String}) = DocumentTermMatrix(dtm, terms, columnindices(terms))
 
@@ -71,7 +71,7 @@ function dtm(d::DocumentTermMatrix, density::Symbol)
     if density == :sparse
         return d.dtm
     else
-        return full(d.dtm)
+        return Matrix(d.dtm)
     end
 end
 
@@ -99,8 +99,8 @@ tdm(crps::Corpus) = dtm(crps)' #'
 
 function dtm_entries(d::AbstractDocument, lex::Dict{String, Int})
     ngs = ngrams(d)
-    indices = Array{Int}(0)
-    values = Array{Int}(0)
+    indices = Array{Int}(undef, 0)
+    values = Array{Int}(undef, 0)
     terms = sort(collect(keys(lex)))
     column_indices = columnindices(terms)
 
@@ -166,7 +166,7 @@ hash_tdm(crps::Corpus) = hash_dtm(crps)' #'
 #
 ##############################################################################
 
-type EachDTV
+mutable struct EachDTV
     crps::Corpus
 end
 
@@ -178,7 +178,7 @@ end
 
 done(edt::EachDTV, state::Int) = state > length(edt.crps.documents)
 
-type EachHashDTV
+mutable struct EachHashDTV
     crps::Corpus
 end
 

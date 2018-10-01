@@ -30,7 +30,7 @@ end
 
 function flatten(x)
     l = prod(size(x))
-    x = permutedims(x, reverse(range(1, ndims(x))))
+    x = permutedims(x, reverse(range(1, length=ndims(x))))
     return reshape(x, (l, 1))
 end
 

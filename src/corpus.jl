@@ -45,7 +45,7 @@ function DirectoryCorpus(dirname::AbstractString)
 
         cd(dirname)
         for filename in readdir(".")
-            if isfile(filename) && !ismatch(r"^\.", filename)
+            if isfile(filename) && !occursin(r"^\.", filename)
                 push!(docs, FileDocument(abspath(filename)))
             end
             if isdir(filename) && !islink(filename)
@@ -102,9 +102,10 @@ end
 #
 ##############################################################################
 
-Base.start(crps::Corpus) = 1
-Base.next(crps::Corpus, ind::Int) = (crps.documents[ind], ind + 1)
-Base.done(crps::Corpus, ind::Int) = ind > length(crps.documents)
+function Base.iterate(crps::Corpus, ind=1)
+    ind > length(crps.documents) && return nothing
+    crps.documents[ind], ind+1
+end
 
 ##############################################################################
 #
@@ -115,8 +116,8 @@ Base.done(crps::Corpus, ind::Int) = ind > length(crps.documents)
 Base.push!(crps::Corpus, d::AbstractDocument) = push!(crps.documents, d)
 Base.pop!(crps::Corpus) = pop!(crps.documents)
 
-Base.unshift!(crps::Corpus, d::AbstractDocument) = unshift!(crps.documents, d)
-Base.shift!(crps::Corpus) = shift!(crps.documents)
+Base.pushfirst!(crps::Corpus, d::AbstractDocument) = pushfirst!(crps.documents, d)
+Base.popfirst!(crps::Corpus) = popfirst!(crps.documents)
 
 function Base.insert!(crps::Corpus, index::Int, d::AbstractDocument)
     insert!(crps.documents, index, d)
@@ -133,8 +134,8 @@ Base.delete!(crps::Corpus, index::Integer) = delete!(crps.documents, index)
 ##############################################################################
 
 Base.getindex(crps::Corpus, ind::Real) = crps.documents[ind]
-Base.getindex{T <: Real}(crps::Corpus, inds::Vector{T}) = crps.documents[inds]
-Base.getindex(crps::Corpus, r::Range) = crps.documents[r]
+Base.getindex(crps::Corpus, inds::Vector{T}) where {T <: Real} = crps.documents[inds]
+Base.getindex(crps::Corpus, r::AbstractRange) = crps.documents[r]
 Base.getindex(crps::Corpus, term::AbstractString) = get(crps.inverse_index, term, Int[])
 
 ##############################################################################
@@ -226,7 +227,7 @@ hash_function!(crps::Corpus, f::TextHashFunction) = (crps.h = f; nothing)
 #
 ##############################################################################
 
-function standardize!{T <: AbstractDocument}(crps::Corpus, ::Type{T})
+function standardize!(crps::Corpus, ::Type{T}) where T <: AbstractDocument
     for i in 1:length(crps)
         crps.documents[i] = convert(T, crps.documents[i])
     end

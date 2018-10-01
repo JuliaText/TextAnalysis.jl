@@ -1,5 +1,6 @@
 module TestTextAnalysis
-using Base.Test
+using SparseArrays
+using Test
 using Languages
 using TextAnalysis
 using Compat
