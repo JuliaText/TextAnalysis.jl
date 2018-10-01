@@ -116,8 +116,8 @@ end
 Base.push!(crps::Corpus, d::AbstractDocument) = push!(crps.documents, d)
 Base.pop!(crps::Corpus) = pop!(crps.documents)
 
-Base.unshift!(crps::Corpus, d::AbstractDocument) = pushfirst!(crps.documents, d)
-Base.shift!(crps::Corpus) = popfirst!(crps.documents)
+Base.pushfirst!(crps::Corpus, d::AbstractDocument) = pushfirst!(crps.documents, d)
+Base.popfirst!(crps::Corpus) = popfirst!(crps.documents)
 
 function Base.insert!(crps::Corpus, index::Int, d::AbstractDocument)
     insert!(crps.documents, index, d)

@@ -251,14 +251,14 @@ end
 function remove_patterns(s::AbstractString, rex::Regex)
     iob = IOBuffer()
     ibegin = 1
-    v=Vector{UInt8}(s)
-    for m in matchall(rex, s)
-        len = m.offset-ibegin+1
+    v=codeunits(s)
+    for m in eachmatch(rex, s)
+        len = m.match.offset-ibegin+1
         if len > 0
             Base.write_sub(iob, v, ibegin, len)
             write(iob, ' ')
         end
-        ibegin = nextind(s, endof(m)+m.offset)
+        ibegin = nextind(s, lastindex(m.match)+m.match.offset)
     end
     len = length(v) - ibegin + 1
     (len > 0) && Base.write_sub(iob, v, ibegin, len)
@@ -268,17 +268,17 @@ end
 function remove_patterns(s::SubString{T}, rex::Regex) where T <: String
     iob = IOBuffer()
     ioffset = s.offset
-    data = Vector{UInt8}(s.string)
+    data = codeunits(s.string)
     ibegin = 1
-    for m in matchall(rex, s)
-        len = m.offset-ibegin+1
+    for m in eachmatch(rex, s)
+        len = m.match.offset-ibegin+1
         if len > 0
             Base.write_sub(iob, data, ibegin+ioffset, len)
             write(iob, ' ')
         end
-        ibegin = nextind(s, endof(m)+m.offset)
+        ibegin = nextind(s, lastindex(m.match)+m.match.offset)
     end
-    len = endof(s) - ibegin + 1
+    len = lastindex(s) - ibegin + 1
     (len > 0) && Base.write_sub(iob, data, ibegin+ioffset, len)
     String(take!(iob))
 end
