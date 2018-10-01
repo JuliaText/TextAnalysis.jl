@@ -9,12 +9,22 @@ mutable struct DocumentMetadata
     name::String
     author::String
     timestamp::String
+    id::String
+    publisher::String
+    edition_year::String
+    published_year::String
+    documenttype::String
 end
 DocumentMetadata() = DocumentMetadata(
     Languages.English(),
     "Unnamed Document",
     "Unknown Author",
-    "Unknown Time"
+    "Unknown Time",
+    "Unknown ID",
+    "Unknown Publisher",
+    "Unknown Edition Year",
+    "Unknown Publishing Year",
+    "Unknown Type"
 )
 
 ##############################################################################

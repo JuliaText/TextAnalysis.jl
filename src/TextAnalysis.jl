@@ -25,6 +25,10 @@ module TextAnalysis
     export languages, names, authors, timestamps
     export language!, name!, author!, timestamp!
     export languages!, names!, authors!, timestamps!
+    export id, publisher, published_year, edition_year, documenttype
+    export id!, publisher!, published_year!, edition_year!, documenttype!
+    export ids, publishers, published_years, edition_years, documenttypes
+    export ids!, publishers!, published_years!, edition_years!, documenttypes!
     export ngram_complexity
     export lexicon, update_lexicon!, lexical_frequency, lexicon_size
     export inverse_index, update_inverse_index!, index_size
