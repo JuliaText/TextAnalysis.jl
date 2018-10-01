@@ -108,35 +108,35 @@ end
 
 function ids!(c::Corpus, nvs::Vector{String})
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
-    for (i, d) in enumerate(IndexLinear(), documents(c))
+    for (i, d) in pairs(IndexLinear(), documents(c))
         id!(d, nvs[i])
     end
 end
 
 function publishers!(c::Corpus, nvs::Vector{String})
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
-    for (i, d) in enumerate(IndexLinear(), documents(c))
+    for (i, d) in pairs(IndexLinear(), documents(c))
         publisher!(d, nvs[i])
     end
 end
 
 function published_years!(c::Corpus, nvs::Vector{String})
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
-    for (i, d) in enumerate(IndexLinear(), documents(c))
+    for (i, d) in pairs(IndexLinear(), documents(c))
         published_year!(d, nvs[i])
     end
 end
 
 function edition_years!(c::Corpus, nvs::Vector{String})
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
-    for (i, d) in enumerate(IndexLinear(), documents(c))
+    for (i, d) in pairs(IndexLinear(), documents(c))
         edition_year!(d, nvs[i])
     end
 end
 
 function documenttypes!(c::Corpus, nvs::Vector{String})
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
-    for (i, d) in enumerate(IndexLinear(), documents(c))
+    for (i, d) in pairs(IndexLinear(), documents(c))
         documenttype!(d, nvs[i])
     end
 end
