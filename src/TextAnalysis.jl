@@ -1,5 +1,3 @@
-using DataFrames
-
 module TextAnalysis
     using SparseArrays
     using Printf
@@ -10,7 +8,7 @@ module TextAnalysis
     using WordTokenizers
 
     import DataFrames.DataFrame
-    import Base.depwarn
+    import Base: depwarn, show, names
 
     export AbstractDocument, Document
     export FileDocument, StringDocument, TokenDocument, NGramDocument
