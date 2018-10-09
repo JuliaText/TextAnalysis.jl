@@ -1,6 +1,7 @@
 using JSON
-using Flux
 using BSON
+
+Flux = nothing # Will be filled once we actually use sentiment analysis
 
 function pad_sequences(l, maxlen=500)
     if length(l) <= maxlen
@@ -38,8 +39,8 @@ function get_sentiment(ip::Array{T, 1}, weight, rwi) where T <: AbstractString
     model = (x,) -> begin
     a_1 = embedding(weight[:embedding_1]["embedding_1"]["embeddings:0"], x)
     a_2 = flatten(a_1)
-    a_3 = Dense(weight[:dense_1]["dense_1"]["kernel:0"], weight[:dense_1]["dense_1"]["bias:0"], relu)(a_2)
-    a_4 = Dense(weight[:dense_2]["dense_2"]["kernel:0"], weight[:dense_2]["dense_2"]["bias:0"], sigmoid)(a_3)
+    a_3 = Flux.Dense(weight[:dense_1]["dense_1"]["kernel:0"], weight[:dense_1]["dense_1"]["bias:0"], Flux.relu)(a_2)
+    a_4 = Flux.Dense(weight[:dense_2]["dense_2"]["kernel:0"], weight[:dense_2]["dense_2"]["bias:0"], Flux.sigmoid)(a_3)
     return a_4
     end
     res = Array{Int, 1}()
@@ -53,7 +54,13 @@ struct SentimentModel
     weight
     words
 
-    SentimentModel() = new(read_weights(), read_word_ids())
+    function SentimentModel()
+        # Only load Flux once it is actually needed
+        global Flux
+        Flux = Base.require(TextAnalysis, :Flux)
+        
+        new(read_weights(), read_word_ids())
+    end
 end
 
 struct SentimentAnalyzer
