@@ -15,6 +15,7 @@ publisher(d::AbstractDocument) = d.metadata.publisher
 published_year(d::AbstractDocument) = d.metadata.published_year
 edition_year(d::AbstractDocument) = d.metadata.edition_year
 documenttype(d::AbstractDocument) = d.metadata.documenttype
+note(d::AbstractDocument) = d.metadata.note
 
 function name!(d::AbstractDocument, nv::AbstractString)
     d.metadata.name = nv
@@ -52,6 +53,10 @@ function documenttype!(d::AbstractDocument, nv::AbstractString)
     d.metadata.documenttype = nv
 end
 
+function note!(d::AbstractDocument, nv::AbstractString)
+    d.metadata.note = nv
+end
+
 ##############################################################################
 #
 # Vectorized getters for an entire Corpus
@@ -67,6 +72,7 @@ publishers(c::Corpus) = map(d -> publisher(d), documents(c))
 published_years(c::Corpus) = map(d -> published_year(d), documents(c))
 edition_years(c::Corpus) = map(d -> edition_year(d), documents(c))
 documenttypes(c::Corpus) = map(d -> documenttype(d), documents(c))
+notes(c::Corpus) = map(d -> note(d), documents(c))
 
 names!(c::Corpus, nv::AbstractString) = name!.(documents(c), nv)
 languages!(c::Corpus, nv::T) where {T <: Language} = language!.(documents(c), Ref(nv)) #Ref to force scalar broadcast
@@ -77,6 +83,7 @@ publishers!(c::Corpus, nv::AbstractString) = publisher!.(documents(c), nv)
 published_years!(c::Corpus, nv::AbstractString) = published_year!.(documents(c), nv)
 edition_years!(c::Corpus, nv::AbstractString) = edition_year!.(documents(c), nv)
 documenttypes!(c::Corpus, nv::AbstractString) = documenttype!.(documents(c), nv)
+notes!(c::Corpus, nv::AbstractString) = note!.(documents(c), nv)
 
 function names!(c::Corpus, nvs::Vector{String})
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
@@ -138,5 +145,12 @@ function documenttypes!(c::Corpus, nvs::Vector{String})
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
     for (i, d) in pairs(IndexLinear(), documents(c))
         documenttype!(d, nvs[i])
+    end
+end
+
+function notes!(c::Corpus, nvs::Vector{String})
+    length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
+    for (i, d) in pairs(IndexLinear(), documents(c))
+        note!(d, nvs[i])
     end
 end

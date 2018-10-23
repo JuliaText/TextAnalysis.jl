@@ -14,6 +14,7 @@ mutable struct DocumentMetadata
     edition_year::String
     published_year::String
     documenttype::String
+    note::String
 end
 DocumentMetadata() = DocumentMetadata(
     Languages.English(),
@@ -24,7 +25,8 @@ DocumentMetadata() = DocumentMetadata(
     "Unknown Publisher",
     "Unknown Edition Year",
     "Unknown Publishing Year",
-    "Unknown Type"
+    "Unknown Type",
+    ""
 )
 
 ##############################################################################

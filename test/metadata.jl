@@ -16,6 +16,7 @@
     @test isequal(published_year(sd1), "Unknown Publishing Year")
     @test isequal(edition_year(sd1), "Unknown Edition Year")
     @test isequal(documenttype(sd1), "Unknown Type")
+    @test isequal(note(sd1), "")
 
     # Single document metadata setters
     name!(sd1, "Document")
@@ -27,6 +28,7 @@
     published_year!(sd1, "Publishing Year")
     edition_year!(sd1, "Edition Year")
     documenttype!(sd1, "Type")
+    note!(sd1, "A Note")
 
     @test isequal(name(sd1), "Document")
     @test isequal(language(sd1), Languages.German())
@@ -37,6 +39,7 @@
     @test isequal(published_year(sd1), "Publishing Year")
     @test isequal(edition_year(sd1), "Edition Year")
     @test isequal(documenttype(sd1), "Type")
+    @test isequal(note(sd1), "A Note")
 
     # Metadata getters for an entire corpus
     @test isequal(TextAnalysis.names(crps), ["Document", "Unnamed Document"])
@@ -48,6 +51,7 @@
     @test isequal(published_years(crps), ["Publishing Year", "Unknown Publishing Year"])
     @test isequal(edition_years(crps), ["Edition Year", "Unknown Edition Year"])
     @test isequal(documenttypes(crps), ["Type", "Unknown Type"])
+    @test isequal(notes(crps), ["A Note", ""])
 
     # Metadata setters for an entire corpus
     names!(crps, "Document")
@@ -59,6 +63,7 @@
     published_years!(crps, "Publishing Year")
     edition_years!(crps, "Edition Year")
     documenttypes!(crps, "Type")
+    notes!(crps, "A Note")
     @test isequal(TextAnalysis.names(crps), ["Document", "Document"])
     @test isequal(languages(crps), [Languages.Spanish(), Languages.Spanish()])
     @test isequal(authors(crps), ["Author", "Author"])
@@ -68,6 +73,7 @@
     @test isequal(published_years(crps), ["Publishing Year", "Publishing Year"])
     @test isequal(edition_years(crps), ["Edition Year", "Edition Year"])
     @test isequal(documenttypes(crps), ["Type", "Type"])
+    @test isequal(notes(crps), ["A Note", "A Note"])
 
     names!(crps, ["Unnamed Document", "Unnamed Document"])
     languages!(crps, [Languages.English(), Languages.English()])
@@ -78,6 +84,7 @@
     published_years!(crps, ["Unknown Publishing Year", "Unknown Publishing Year"])
     edition_years!(crps, ["Unknown Edition Year", "Unknown Edition Year"])
     documenttypes!(crps, ["Unknown Type", "Unknown Type"])
+    notes!(crps, ["A Note", "Another Note"])
     @test isequal(TextAnalysis.names(crps), ["Unnamed Document", "Unnamed Document"])
     @test isequal(languages(crps), [Languages.English(), Languages.English()])
     @test isequal(authors(crps), ["Unknown Author", "Unknown Author"])
@@ -87,4 +94,5 @@
     @test isequal(published_years(crps), ["Unknown Publishing Year", "Unknown Publishing Year"])
     @test isequal(edition_years(crps), ["Unknown Edition Year", "Unknown Edition Year"])
     @test isequal(documenttypes(crps), ["Unknown Type", "Unknown Type"])
+    @test isequal(notes(crps), ["A Note", "Another Note"])
 end
