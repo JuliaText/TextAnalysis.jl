@@ -4,7 +4,7 @@ module TextAnalysis
     using SparseArrays
     using Printf
     using LinearAlgebra
-    
+
     using Languages
     using DataFrames
     using WordTokenizers
@@ -78,5 +78,6 @@ module TextAnalysis
     include("summarizer.jl")
     include("show.jl")
     include("sentiment.jl")
+    include("bayes.jl")
     include("deprecations.jl")
 end
