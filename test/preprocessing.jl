@@ -85,4 +85,9 @@
     #Test #62
     remove_corrupt_utf8("abc") == "abc"
     remove_corrupt_utf8(String([0x43, 0xf0])) == "C "
+
+    #Test frequent_terms sparse_terms
+    crps = Corpus(StringDocument.(sample_texts))
+    @test isempty(setdiff(frequent_terms(crps),["string","is"]))
+    @test isempty(setdiff(sparse_terms(crps,0.3),["!"]))
 end
