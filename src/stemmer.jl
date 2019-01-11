@@ -87,7 +87,7 @@ function stem(stemmer::Stemmer, words::Array)
 end
 
 function stemmer_for_document(d::AbstractDocument)
-    Stemmer(lowercase(name(language(d))))
+    Stemmer(lowercase(Languages.english_name(language(d))))
 end
 
 function stem!(d::AbstractDocument)
