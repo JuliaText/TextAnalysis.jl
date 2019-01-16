@@ -32,4 +32,12 @@
 
     crps[1]
     crps["string"]
+
+    crps = Corpus([StringDocument("1 2 1 4")])
+    standardize!(crps, StringDocument)
+    remove_words!(crps, [""])
+    update_lexicon!(crps)
+    answer = Dict("1"=> 2, "2"=> 1, "4"=> 1)
+
+     @test answer == lexicon(crps)
 end
