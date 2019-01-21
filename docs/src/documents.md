@@ -191,7 +191,10 @@ These special classes can all be removed using specially-named parameters:
 * `prepare!(sd, strip_html_tags)`
 
 These functions use words lists, so they are capable of working for many
-different languages without change.
+different languages without change, also these operations can be combined 
+together for improved performance:
+* `prepare!(sd, strip_articles| strip_numbers| strip_html_tags)`
+
 In addition to removing words, it is also common to take words that are
 closely related like "dog" and "dogs" and stem them in order to produce a
 smaller set of words for analysis. We can do this using the `stem!()`
