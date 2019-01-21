@@ -93,7 +93,7 @@
 
     #Tests strip_punctuation regex conditions
     str = Document("These punctuations should be removed [-.,:;,!?'\"[](){}|\`#\$%@^&*_+<>")
-    answer = Document("These punctuations should be removed  ")
+    answer = Document("These punctuations should be removed ")
     prepare!(str, strip_punctuation)
     @test isequal(str.text, answer.text)
 
@@ -101,4 +101,9 @@
     answer = Document("Intel tm  Core i5 3300k  is a geat CPU  ")   #tests old implementation   
     prepare!(str, strip_punctuation)
     @test isequal(str.text, answer.text)
+
+    #Tests no whitespace at end or begining
+    doc = Document("   this is sample text   ")
+    prepare!(doc, strip_whitespace)
+    @test isequal(doc.text, "this is sample text")
 end
