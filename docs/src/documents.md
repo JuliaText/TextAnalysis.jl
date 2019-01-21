@@ -148,9 +148,9 @@ these using the `remove_corrupt_utf8!()` function:
 Alternatively, you may want to edit the text to remove items that are hard
 to process automatically. For example, our sample text sentence taken from Hamlet
 has three periods that we might like to discard. We can remove this kind of
-punctuation using the `remove_punctuation!()` function:
+punctuation using the `prepare!()` function:
 
-    remove_punctuation!(sd)
+    prepare!(sd, strip_punctuation)
 
 Like punctuation, numbers and case distinctions are often easier removed than
 dealt with. To remove numbers or case distinctions, use the
@@ -176,24 +176,24 @@ package:
 * _Pronouns_ : "I", "you", "he", "she", ...
 * _Stop Words_ : "all", "almost", "alone", ...
 
-These special classes can all be removed using specially-named functions:
+These special classes can all be removed using specially-named parameters:
 
-* `remove_articles!()`
-* `remove_indefinite_articles!()`
-* `remove_definite_articles!()`
-* `remove_prepositions!()`
-* `remove_pronouns!()`
-* `remove_stop_words!()`
+* `prepare!(sd, strip_articles)`
+* `prepare!(sd, strip_indefinite_articles)`
+* `prepare!(sd, strip_definite_articles)`
+* `prepare!(sd, strip_preposition)`
+* `prepare!(sd, strip_pronouns)`
+* `prepare!(sd, strip_stopwords)`
+* `prepare!(sd, strip_numbers)`
+* `prepare!(sd, strip_non_letters)`
+* `prepare!(sd, strip_spares_terms)`
+* `prepare!(sd, strip_frequent_terms)`
+* `prepare!(sd, strip_html_tags)`
 
 These functions use words lists, so they are capable of working for many
-different languages without change:
-
-    remove_articles!(sd)
-    remove_indefinite_articles!(sd)
-    remove_definite_articles!(sd)
-    remove_prepositions!(sd)
-    remove_pronouns!(sd)
-    remove_stop_words!(sd)
+different languages without change, also these operations can be combined 
+together for improved performance:
+* `prepare!(sd, strip_articles| strip_numbers| strip_html_tags)`
 
 In addition to removing words, it is also common to take words that are
 closely related like "dog" and "dogs" and stem them in order to produce a
