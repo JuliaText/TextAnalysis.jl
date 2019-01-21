@@ -90,4 +90,15 @@
     crps = Corpus(StringDocument.(sample_texts))
     @test isempty(setdiff(frequent_terms(crps),["string","is"]))
     @test isempty(setdiff(sparse_terms(crps,0.3),["!"]))
+
+    #Tests strip_punctuation regex conditions
+    str = Document("These punctuations should be removed [-.,:;,!?'\"[](){}|\`#\$%@^&*_+<>")
+    answer = Document("These punctuations should be removed  ")
+    prepare!(str, strip_punctuation)
+    @test isequal(str.text, answer.text)
+
+    str = Document("Intel(tm) Core i5-3300k, is a geat CPU! ")
+    answer = Document("Intel tm  Core i5 3300k  is a geat CPU  ")   #tests old implementation   
+    prepare!(str, strip_punctuation)
+    @test isequal(str.text, answer.text)
 end
