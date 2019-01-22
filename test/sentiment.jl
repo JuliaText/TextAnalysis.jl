@@ -8,4 +8,8 @@
     d = StringDocument("a horrible thing that everyone hates")
 
     @test m(d) < 0.5
+
+   d = StringDocument("some sense and some nonSense")
+
+   @test m(d) < 0.5
 end
