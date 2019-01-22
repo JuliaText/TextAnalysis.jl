@@ -35,7 +35,7 @@ function flatten(x)
     return reshape(x, (l, 1))
 end
 
-function get_sentiment(ip::Array{T, 1}, weight, rwi) where T <: AbstractString
+function get_sentiment(ip::Array{T, 1}, weight, rwi, handle_unk) where T <: AbstractString
     model = (x,) -> begin
     a_1 = embedding(weight[:embedding_1]["embedding_1"]["embeddings:0"], x)
     a_2 = flatten(a_1)
@@ -45,7 +45,11 @@ function get_sentiment(ip::Array{T, 1}, weight, rwi) where T <: AbstractString
     end
     res = Array{Int, 1}()
     for ele in ip
-        push!(res, rwi[ele])
+	if ele in keys(rwi)
+            push!(res, rwi[ele])
+	else
+	    vcat(res, handle_unk(ele))
+	end
     end
     return model(pad_sequences(res))[1]
 end
@@ -74,10 +78,10 @@ function Base.show(io::IO, s::SentimentAnalyzer)
 end
 
 
-function(m::SentimentModel)(text::Array{T, 1}) where T <: AbstractString
-    return get_sentiment(text, m.weight, m.words)
+function(m::SentimentModel)(text::Array{T, 1}, handle_unk) where T <: AbstractString
+    return get_sentiment(text, m.weight, m.words, handle_unk)
 end
 
-function(m::SentimentAnalyzer)(d::AbstractDocument)
-    m.model(tokens(d))
+function(m::SentimentAnalyzer)(d::AbstractDocument, handle_unk::Function= (x)->[])
+    m.model(tokens(d), handle_unk)
 end
