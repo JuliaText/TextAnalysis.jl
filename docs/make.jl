@@ -12,7 +12,8 @@ makedocs(
        "Documents" => "documents.md",
        "Corpus" => "corpus.md",
        "Features" => "features.md",
-       "Semantic Analysis" => "semantic.md"
+       "Semantic Analysis" => "semantic.md",
+       "Extended Example" => "example.md"
    ],
    assets = ["assets/custom.css", "assets/custom.js"]
 )
