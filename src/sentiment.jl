@@ -35,7 +35,7 @@ function flatten(x)
     return reshape(x, (l, 1))
 end
 
-function get_sentiment(ip::Array{T, 1}, weight, rwi, handle_unk) where T <: AbstractString
+function get_sentiment(ip::Array{T, 1}, weight, rwi, handle_unknown) where T <: AbstractString
     model = (x,) -> begin
     a_1 = embedding(weight[:embedding_1]["embedding_1"]["embeddings:0"], x)
     a_2 = flatten(a_1)
@@ -48,7 +48,7 @@ function get_sentiment(ip::Array{T, 1}, weight, rwi, handle_unk) where T <: Abst
 	if ele in keys(rwi)
             push!(res, rwi[ele])
 	else
-	    vcat(res, handle_unk(ele))
+	    vcat(res, handle_unknown(ele))
 	end
     end
     return model(pad_sequences(res))[1]
@@ -78,10 +78,22 @@ function Base.show(io::IO, s::SentimentAnalyzer)
 end
 
 
-function(m::SentimentModel)(text::Array{T, 1}, handle_unk) where T <: AbstractString
-    return get_sentiment(text, m.weight, m.words, handle_unk)
+function(m::SentimentModel)(text::Array{T, 1}, handle_unknown) where T <: AbstractString
+    return get_sentiment(text, m.weight, m.words, handle_unknown)
 end
 
-function(m::SentimentAnalyzer)(d::AbstractDocument, handle_unk::Function= (x)->[])
-    m.model(tokens(d), handle_unk)
+
+"""
+ ```
+ model = SentimentAnalyzer(doc)
+ model = SentimentAnalyzer(doc, handle_unknown)
+ ```
+ Return sentiment of the input doc in range 0 to 1, 0 being least sentiment score and 1 being
+ the highest:
+  -  doc              = Input Document for calculating document (AbstractDocument type)
+  -  handle_unknown   = A function for handling unknown words. Should return an array (default (x)->[])
+ """
+
+function(m::SentimentAnalyzer)(d::AbstractDocument, handle_unknown::Function = (x)->[])
+    m.model(tokens(d), handle_unknown)
 end
