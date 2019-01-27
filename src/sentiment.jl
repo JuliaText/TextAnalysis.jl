@@ -45,7 +45,7 @@ function get_sentiment(ip::Array{T, 1}, weight, rwi, handle_unknown) where T <: 
     end
     res = Array{Int, 1}()
     for ele in ip
-	if ele in keys(rwi)
+	if ele in keys(rwi) && rwi[ele] <= 5000    # there are only 5000 unique embeddings
             push!(res, rwi[ele])
 	else
 	    vcat(res, handle_unknown(ele))
