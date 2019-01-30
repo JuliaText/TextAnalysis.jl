@@ -1,22 +1,22 @@
 language: julia
 os:
-    - linux
+  - linux
 julia:
-    - 0.7
-    - 1.0
+  - 0.7
+  - 1.0
 notifications:
-    email: false
+  email: false
 jobs:
-    include:
-        - stage: "Documentation"
-          julia: 1.0
-          os: linux
-          script:
-              - julia --project=docs/ -e 'using Pkg;
-                                          Pkg.develop(PackageSpec(path=pwd()));
-                                          Pkg.instantiate();
-                                          Pkg.build();'
-              - julia --project=docs/ docs/make.jl
-        after_success: skip
+  include:
+    - stage: "Documentation"
+      julia: 1.0
+      os: linux
+      script:
+        - julia --project=docs/ -e 'using Pkg;
+                                    Pkg.develop(PackageSpec(path=pwd()));
+                                    Pkg.instantiate();
+                                    Pkg.build();'
+        - julia --project=docs/ docs/make.jl
+      after_success: skip
 after_success:
-    - julia -e 'cd(Pkg.dir("TextAnalysis")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';
+  - julia -e 'cd(Pkg.dir("TextAnalysis")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';
