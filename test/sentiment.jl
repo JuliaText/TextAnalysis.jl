@@ -9,7 +9,15 @@
 
     @test m(d) < 0.5
 
-   d = StringDocument("some sense and some nonSense")
+    # testing default behaviour of handle_unknown
+    d = StringDocument("some sense and some nonSense")
 
-   @test m(d) < 0.5
+    @test m(d) < 0.5
+
+    # testing behaviour of words which are present in dictionary but do not have embedding assigned
+    d = StringDocument("some sense and some duh")
+
+    @test m(d) < 0.5
+
+
 end
