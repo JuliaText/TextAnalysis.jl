@@ -48,7 +48,12 @@ function get_sentiment(handle_unknown, ip::Array{T, 1}, weight, rwi) where T <: 
 	if ele in keys(rwi) && rwi[ele] <= size(weight[:embedding_1]["embedding_1"]["embeddings:0"])[2]   # there are only 5000 unique embeddings
             push!(res, rwi[ele])
 	else
-	    vcat(res, handle_unknown(ele))
+	    for words in handle_unknown(ele) 
+		if words in keys(rwi) && rwi[words] <= size(weight[:embedding_1]["embedding_1"]["embeddings:0"])[2]
+		    push!(res, rwi[words])
+		end
+	    end	
+		
 	end
     end
     return model(pad_sequences(res))[1]

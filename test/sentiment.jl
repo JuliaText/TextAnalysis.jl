@@ -19,5 +19,8 @@
 
     @test m(d) < 0.5
 
-
+    # testing user given handle_unknown function
+    d = Document("a Horrible thing that Everyone Hates")
+   
+    @test m(d, (x) -> [lowercase(x)]) < 0.5
 end
