@@ -23,4 +23,10 @@
     d = Document("a Horrible thing that Everyone Hates")
    
     @test m(d, (x) -> [lowercase(x)]) < 0.5
+
+    # Make it throw an error when unknown word encountered
+    d = Document("some sense and some Hectic")
+   
+    @test_throws ErrorException m(d, (x) -> error("OOV word $x encountered"))
+
 end
