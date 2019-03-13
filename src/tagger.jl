@@ -5,7 +5,7 @@ Or a pretrain weights can be used (which are trained on same features)
 and train more or can be used to predict
 
 DataStructures and Random are essential dependencies
-JLD is needed when weights are to be saved
+BSON is needed when weights are to be saved
 
 To train:
 PerceptronTagger.train([[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
@@ -16,7 +16,7 @@ PerceptronTagger.test(["today", "is"])
 
 module PerceptronTagger()
     using DataStructures
-    using JLD
+    using BSON
     using Random
 
     include("averagePerceptron.jl")
@@ -36,9 +36,9 @@ module PerceptronTagger()
     # function loadModel(location)
     #     global self
     #     print(load)
-    #     AveragePerceptron.self.weights = load(location)["weights"]
-    #     self.tagdict = load(location)["tagdict"]
-    #     self.classes = AveragePerceptron.self.classes = load(location)["classes"]
+    #     AveragePerceptron.self.weights = BSON.load(location)[:weights]
+    #     self.tagdict = load(location)[:tagdict]
+    #     self.classes = AveragePerceptron.self.classes = load(location)[:classes]
     # end
     #
     # if (loadm == "true" ? true : false)
@@ -200,7 +200,7 @@ module PerceptronTagger()
         AveragePerceptron.average_weights()
 
         if save_loc != nothing
-            save(save_loc, "weights", AveragePerceptron.self.weights, "tagdict", self.tagdict, "classes", self.classes)
+            save(save_loc, weights = AveragePerceptron.self.weights, tagdict = self.tagdict, classes = self.classes)
         end
     end
 end
