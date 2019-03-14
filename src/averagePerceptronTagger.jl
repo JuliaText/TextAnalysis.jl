@@ -1,4 +1,3 @@
-using DelimitedFiles
 using DataStructures
 using Random
 using BSON
@@ -13,7 +12,7 @@ The model learns by basic perceptron algorithm
 but after all iterations weights are being averaged
 """
 mutable struct AveragePerceptron
-    classes :: OrderedSet
+    classes :: Set
     weights :: Dict
     _totals :: DefaultDict
     _tstamps :: DefaultDict
@@ -27,7 +26,7 @@ mutable struct AveragePerceptron
     function AveragePerceptron()
         self = new()
 
-        self.classes = OrderedSet()
+        self.classes = Set()
         self.weights = Dict()
         self._totals = DefaultDict(0)
         self._tstamps = DefaultDict(0)
@@ -73,7 +72,7 @@ mutable struct AveragePerceptron
             end
 
             self.i += 1
-            if truth == guess
+            if truth === guess
                 return nothing
             end
             for (f, value) in features
@@ -123,16 +122,19 @@ Or a pretrain weights can be used (which are trained on same features)
 and train more or can be used to predict
 
 To train:
-tagger = PerceptronTagger(load=false)
+tagger = PerceptronTagger()
 tagger.train([[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
 
 To predict tag:
 tagger.tag(["today", "is"])
+
+To load pretrained model:
+tagger = PerceptronTagger(true)
 """
 mutable struct PerceptronTagger
     model :: AveragePerceptron
     tagdict :: Dict
-    classes :: OrderedSet
+    classes :: Set
     START :: Array
     END :: Array
     _sentences
@@ -144,12 +146,11 @@ mutable struct PerceptronTagger
     getFeatures :: Function
 
     function PerceptronTagger(load = false)
-        print("yash")
         self = new()
 
         self.model = AveragePerceptron()
         self.tagdict = Dict()
-        self.classes = OrderedSet()
+        self.classes = Set()
         self.START = ["-START-", "-START2-"]
         self.END = ["-END-", "-END2-"]
         self._sentences = []
@@ -262,7 +263,6 @@ mutable struct PerceptronTagger
                 prev2 = prev
                 prev = tag
             end
-            println(output)
             return output
         end
 
