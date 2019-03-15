@@ -12,19 +12,45 @@ These format represent a hierarchy: you can always move down the hierachy, but c
 
 Creating any of the four basic types of documents is very easy:
 
-    str = "To be or not to be..."
-    sd = StringDocument(str)
+```julia
+julia> str = "To be or not to be..."
+"To be or not to be..."
 
-    pathname = "/usr/share/dict/words"
-    fd = FileDocument(pathname)
+julia> sd = StringDocument(str)
+StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
 
-    my_tokens = String["To", "be", "or", "not", "to", "be..."]
-    td = TokenDocument(my_tokens)
+julia> pathname = "/usr/share/dict/words"
+"/usr/share/dict/words"
 
-    my_ngrams = Dict{String, Int}("To" => 1, "be" => 2,
+julia> fd = FileDocument(pathname)
+FileDocument("/usr/share/dict/words", TextAnalysis.DocumentMetadata(Languages.English(), "/usr/share/dict/words", "Unknown Author", "Unknown Time"))
+
+julia> my_tokens = String["To", "be", "or", "not", "to", "be..."]
+6-element Array{String,1}:
+ "To"   
+ "be"   
+ "or"   
+ "not"  
+ "to"   
+ "be..."
+
+julia> td = TokenDocument(my_tokens)
+TokenDocument{String}(["To", "be", "or", "not", "to", "be..."], TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+
+julia> my_ngrams = Dict{String, Int}("To" => 1, "be" => 2,
                                     "or" => 1, "not" => 1,
                                     "to" => 1, "be..." => 1)
-    ngd = NGramDocument(my_ngrams)
+Dict{String,Int64} with 6 entries:
+  "or"    => 1
+  "be..." => 1
+  "not"   => 1
+  "to"    => 1
+  "To"    => 1
+  "be"    => 2
+
+julia> ngd = NGramDocument(my_ngrams)
+NGramDocument{AbstractString}(Dict{AbstractString,Int64}("or"=>1,"be..."=>1,"not"=>1,"to"=>1,"To"=>1,"be"=>2), 1, TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+```
 
 For every type of document except a `FileDocument`, you can also construct a
 new document by simply passing in a string of text:
