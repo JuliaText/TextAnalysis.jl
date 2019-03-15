@@ -8,7 +8,8 @@ allows one to work with documents stored in a variety of formats:
 * _TokenDocument_ : A document represented as a sequence of UTF8 tokens
 * _NGramDocument_ : A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
 
-These format represent a hierarchy: you can always move down the hierachy, but can generally not move up the hierachy. A `FileDocument` can easily become a `StringDocument`, but an `NGramDocument` cannot easily become a `FileDocument`.
+!!! note
+    These formats represent a hierarchy: you can always move down the hierachy, but can generally not move up the hierachy. A `FileDocument` can easily become a `StringDocument`, but an `NGramDocument` cannot easily become a `FileDocument`.
 
 Creating any of the four basic types of documents is very easy:
 
@@ -55,9 +56,16 @@ NGramDocument{AbstractString}(Dict{AbstractString,Int64}("or"=>1,"be..."=>1,"not
 For every type of document except a `FileDocument`, you can also construct a
 new document by simply passing in a string of text:
 
-    sd = StringDocument("To be or not to be...")
-    td = TokenDocument("To be or not to be...")
-    ngd = NGramDocument("To be or not to be...")
+```julia
+julia> sd = StringDocument("To be or not to be...")
+StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+
+julia> td = TokenDocument("To be or not to be...")
+TokenDocument{String}(["To", "be", "or", "not", "to", "be..", "."], TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+
+julia> ngd = NGramDocument("To be or not to be...")
+NGramDocument{String}(Dict("or"=>1,"not"=>1,"to"=>1,"To"=>1,"be"=>1,"be.."=>1,"."=>1), 1, TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+```
 
 The system will automatically perform tokenization or n-gramization in order
 to produce the required data. Unfortunately, `FileDocument`'s cannot be
@@ -68,10 +76,19 @@ That said, there is one way around this restriction: you can use the generic
 `Document()` constructor function, which will guess at the type of the inputs
 and construct the appropriate type of document object:
 
-    Document("To be or not to be...")
-    Document("/usr/share/dict/words")
-    Document(String["To", "be", "or", "not", "to", "be..."])
-    Document(Dict{String, Int}("a" => 1, "b" => 3))
+```julia
+julia> Document("To be or not to be...")
+StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+
+julia> Document("/usr/share/dict/words")
+FileDocument("/usr/share/dict/words", TextAnalysis.DocumentMetadata(Languages.English(), "/usr/share/dict/words", "Unknown Author", "Unknown Time"))
+
+julia> Document(String["To", "be", "or", "not", "to", "be..."])
+TokenDocument{String}(["To", "be", "or", "not", "to", "be..."], TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+
+julia> Document(Dict{String, Int}("a" => 1, "b" => 3))
+NGramDocument{AbstractString}(Dict{AbstractString,Int64}("b"=>3,"a"=>1), 1, TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+```
 
 This constructor is very convenient for working in the REPL, but should be avoided in permanent code because, unlike the other constructors, the return type of the `Document` function cannot be known at compile-time.
 
