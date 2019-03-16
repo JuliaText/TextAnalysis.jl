@@ -255,7 +255,7 @@ julia> str
 StringDocument{String}("here are some punctuations  ", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
 ```
 
-* To case distinctions, use `remove_case!()` function:
+* To remove case distinctions, use `remove_case!()` function:
 * At times you'll want to remove specific words from a document like a person's
 name. To do that, use the `remove_words!()` function:
 

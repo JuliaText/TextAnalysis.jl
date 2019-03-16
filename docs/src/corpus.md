@@ -4,35 +4,54 @@ Working with isolated documents gets boring quickly. We typically want to
 work with a collection of documents. We represent collections of documents
 using the Corpus type:
 
-    crps = Corpus([StringDocument("Document 1"),
-                   StringDocument("Document 2")])
+```julia
+julia> crps = Corpus([StringDocument("Document 1"),
+                      StringDocument("Document 2")])
+Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document 1", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document 2", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+```
 
 ## Standardizing a Corpus
 
+!!! note
+    It is recommended to read about `Documents` types and their heirarchy in the package.
+
 A `Corpus` may contain many different types of documents:
 
-    crps = Corpus([StringDocument("Document 1"),
-                   TokenDocument("Document 2"),
-                   NGramDocument("Document 3")])
-
+```julia
+julia> crps = Corpus([StringDocument("Document 1"),
+                          TokenDocument("Document 2"),
+                          NGramDocument("Document 3")])
+Corpus{AbstractDocument}(AbstractDocument[StringDocument{String}("Document 1", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), TokenDocument{String}(["Document", "2"], DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+```
 It is generally more convenient to standardize all of the documents in a
 corpus using a single type. This can be done using the `standardize!`
 function:
 
-    standardize!(crps, NGramDocument)
+```julia
+julia> standardize!(crps, NGramDocument)
+```
 
 After this step, you can check that the corpus only contains `NGramDocument`'s:
 
-    crps
+```julia
+julia> crps
+Corpus{AbstractDocument}(AbstractDocument[NGramDocument{String}(Dict("1"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("2"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+```
 
 ## Processing a Corpus
 
 We can apply the same sort of preprocessing steps that are defined for
 individual documents to an entire corpus at once:
 
-    crps = Corpus([StringDocument("Document 1"),
-                   StringDocument("Document 2")])
-    remove_punctuation!(crps)
+```julia
+julia> crps = Corpus([StringDocument("Document !!1"),
+                          StringDocument("Document 2!!")])
+
+julia> prepare!(crps, strip_punctuation)
+
+julia> crps
+Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document  ", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document  ", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+```
 
 These operations are run on each document in the corpus individually.
 
@@ -47,34 +66,71 @@ In particular, we want to work with two constructs:
 Because computations involving the lexicon can take a long time, a
 `Corpus`'s default lexicon is blank:
 
-    lexicon(crps)
+```julia
+julia> julia> crps = Corpus([StringDocument("Name Foo"),
+                          StringDocument("Name Bar")])
+julia> lexicon(crps)
+Dict{String,Int64} with 0 entries
+```
 
 In order to work with the lexicon, you have to update it and then access it:
 
-    update_lexicon!(crps)
-    lexicon(crps)
+```julia
+julia> update_lexicon!(crps)
+
+julia> lexicon(crps)
+Dict{String,Int64} with 3 entries:
+  "Bar"    => 1
+  "Foo"    => 1
+  "Name" => 2
+```
 
 But once this work is done, you can easier address lots of interesting
 questions about a corpus:
+```
+julia> lexical_frequency(crps, "Name")
+0.5
 
-    lexical_frequency(crps, "Summer")
-    lexical_frequency(crps, "Document")
+julia> lexical_frequency(crps, "Foo")
+0.25
+```
 
 Like the lexicon, the inverse index for a corpus is blank by default:
 
-    inverse_index(crps)
+```julia
+julia> inverse_index(crps)
+Dict{String,Array{Int64,1}} with 0 entries
+```
 
 Again, you need to update it before you can work with it:
 
-    update_inverse_index!(crps)
-    inverse_index(crps)
+```julia
+julia> update_inverse_index!(crps)
+
+julia> inverse_index(crps)
+Dict{String,Array{Int64,1}} with 3 entries:
+  "Bar"    => [2]
+  "Foo"    => [1]
+  "Name" => [1, 2]
+```
 
 But once you've updated the inverse index, you can easily search the entire
 corpus:
 
-    crps["Document"]
-    crps["1"]
-    crps["Summer"]
+```julia
+julia> crps["Name"]
+
+2-element Array{Int64,1}:
+ 1
+ 2
+
+julia> crps["Foo"]
+1-element Array{Int64,1}:
+ 1
+
+julia> crps["Summer"]
+0-element Array{Int64,1}
+```
 
 ## Converting a DataFrame from a Corpus
 
