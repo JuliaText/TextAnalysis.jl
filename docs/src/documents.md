@@ -197,41 +197,39 @@ including the following pieces of information:
 Try these functions out on a `StringDocument` to see how the defaults work
 in practice:
 
-    language(sd)
-    name(sd)
-    author(sd)
-    timestamp(sd)
+```julia
+julia> sd = StringDocument("This document has too foo words")
+StringDocument{String}("This document has too foo words", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+
+julia> language(sd)
+Languages.English()
+
+julia> name(sd)
+"Unnamed Document"
+
+julia> author(sd)
+"Unknown Author"
+
+julia> timestamp(sd)
+"Unknown Time"
+```
 
 If you need reset these fields, you can use the mutating versions of the same
 functions:
 
-    language!(sd, Languages.Spanish())
-    name!(sd, "El Cid")
-    author!(sd, "Desconocido")
-    timestamp!(sd, "Desconocido")
+```julia
+julia> language!(sd, Languages.Spanish())
+Languages.Spanish()
 
-You can also retrieve the metadata for every document in a `Corpus` at once:
+julia> name!(sd, "El Cid")
+"El Cid"
 
-    languages(crps)
-    names(crps)
-    authors(crps)
-    timestamps(crps)
+julia> author!(sd, "Desconocido")
+"Desconocido"
 
-It is possible to change the metadata fields for each document in a `Corpus`.
-These functions use the same metadata value for every document:
-
-    languages!(crps, Languages.German())
-    names!(crps, "")
-    authors!(crps, "Me")
-    timestamps!(crps, "Now")
-
-Additionally, you can specify the metadata fields for each document in
-a `Corpus` individually:
-
-    languages!(crps, [Languages.German(), Languages.English()])
-    names!(crps, ["", "Untitled"])
-    authors!(crps, ["Ich", "You"])
-    timestamps!(crps, ["Unbekannt", "2018"])
+julia> timestamp!(sd, "Desconocido")
+"Desconocido"
+```
 
 ## Preprocessing Documents
 
@@ -248,21 +246,33 @@ to process automatically. For example, our sample text sentence taken from Hamle
 has three periods that we might like to discard. We can remove this kind of
 punctuation using the `prepare!()` function:
 
-    prepare!(sd, strip_punctuation)
+```julia
+julia> str = StringDocument("here are some punctuations !!!...")
 
-Like punctuation, numbers and case distinctions are often easier removed than
-dealt with. To remove numbers or case distinctions, use the
-`remove_numbers!()` and `remove_case!()` functions:
+julia> prepare!(str, strip_punctuation)
 
-    remove_numbers!(sd)
-    remove_case!(sd)
+julia> str
+StringDocument{String}("here are some punctuations  ", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+```
 
-At times you'll want to remove specific words from a document like a person's
+* To case distinctions, use `remove_case!()` function:
+* At times you'll want to remove specific words from a document like a person's
 name. To do that, use the `remove_words!()` function:
 
-    sd = StringDocument("Lear is mad")
-    remove_words!(sd, ["Lear"])
+```julia
+julia> sd = StringDocument("Lear is mad")
+StringDocument{String}("Lear is mad", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
 
+julia> remove_case!(sd)
+
+julia> sd
+StringDocument{String}("lear is mad", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+
+julia> remove_words!(sd, ["lear"])
+
+julia> sd
+StringDocument{String}(" is mad", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+```
 At other times, you'll want to remove whole classes of words. To make this
 easier, we can use several classes of basic words defined by the Languages.jl
 package:
@@ -298,4 +308,11 @@ closely related like "dog" and "dogs" and stem them in order to produce a
 smaller set of words for analysis. We can do this using the `stem!()`
 function:
 
-    stem!(sd)
+```julia
+julia> sd = StringDocument("Foo writes and foo bar write")
+
+julia> stem!(sd)
+
+julia> sd
+StringDocument{String}("Foo write and foo bar write", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+```

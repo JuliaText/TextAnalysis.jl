@@ -83,3 +83,28 @@ corpus. The easiest way to do this is to convert a `Corpus` object into
 a `DataFrame`:
 
     convert(DataFrame, crps)
+
+## Corpus Metadata
+
+You can also retrieve the metadata for every document in a `Corpus` at once:
+
+    languages(crps)
+    names(crps)
+    authors(crps)
+    timestamps(crps)
+
+It is possible to change the metadata fields for each document in a `Corpus`.
+These functions use the same metadata value for every document:
+
+    languages!(crps, Languages.German())
+    names!(crps, "")
+    authors!(crps, "Me")
+    timestamps!(crps, "Now")
+
+Additionally, you can specify the metadata fields for each document in
+a `Corpus` individually:
+
+    languages!(crps, [Languages.German(), Languages.English()])
+    names!(crps, ["", "Untitled"])
+    authors!(crps, ["Ich", "You"])
+    timestamps!(crps, ["Unbekannt", "2018"])
