@@ -53,6 +53,14 @@ julia> ngd = NGramDocument(my_ngrams)
 NGramDocument{AbstractString}(Dict{AbstractString,Int64}("or"=>1,"be..."=>1,"not"=>1,"to"=>1,"To"=>1,"be"=>2), 1, TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
 ```
 
+An NGramDocument consisting of bigrams or any higher order representation `N`
+can be easily created by passing the parameter `N` to `NGramDocument`
+
+```julia
+julia> ngd = NGramDocument("To be or not to be ...", 2)
+NGramDocument{AbstractString}(Dict{AbstractString,Int64}("to be"=>1,"not"=>1,"be or"=>1,"or"=>1,"not to"=>1,"To"=>1,".."=>1,"."=>1,"be .."=>1,"be"=>2…), 2, TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+```
+
 For every type of document except a `FileDocument`, you can also construct a
 new document by simply passing in a string of text:
 
@@ -97,32 +105,79 @@ This constructor is very convenient for working in the REPL, but should be avoid
 Once you've created a document object, you can work with it in many ways. The
 most obvious thing is to access its text using the `text()` function:
 
-    text(sd)
+```julia
+julia> sd = StringDocument("To be or not to be...")
+StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
 
-This function works without warnings on `StringDocument`'s and
-`FileDocument`'s. For `TokenDocument`'s it is not possible to know if the
-text can be reconstructed perfectly, so calling
-`text(TokenDocument("This is text"))` will produce a warning message before
-returning an approximate reconstruction of the text as it existed before
-tokenization. It is entirely impossible to reconstruct the text of an
-`NGramDocument`, so `text(NGramDocument("This is text"))` raises an error.
+julia> text(sd)
+"To be or not to be..."
+```
+!!! note
+    This function works without warnings on `StringDocument`'s and
+    `FileDocument`'s. For `TokenDocument`'s it is not possible to know if the
+    text can be reconstructed perfectly, so calling
+    `text(TokenDocument("This is text"))` will produce a warning message before
+    returning an approximate reconstruction of the text as it existed before
+    tokenization. It is entirely impossible to reconstruct the text of an
+    `NGramDocument`, so `text(NGramDocument("This is text"))` raises an error.
 
 Instead of working with the text itself, you can work with the tokens or
 n-grams of a document using the `tokens()` and `ngrams()` functions:
 
-    tokens(sd)
-    ngrams(sd)
+```julia
+julia> tokens(sd)
+7-element Array{String,1}:
+ "To"  
+ "be"  
+ "or"  
+ "not"
+ "to"  
+ "be.."
+ "."   
+
+ julia> ngrams(sd)
+ Dict{String,Int64} with 7 entries:
+  "or"   => 1
+  "not"  => 1
+  "to"   => 1
+  "To"   => 1
+  "be"   => 1
+  "be.." => 1
+  "."    => 1
+```
 
 By default the `ngrams()` function produces unigrams. If you would like to
 produce bigrams or trigrams, you can specify that directly using a numeric
 argument to the `ngrams()` function:
 
-    ngrams(sd, 2)
+```julia
+julia> ngrams(sd, 2)
+Dict{AbstractString,Int64} with 13 entries:
+  "not"     => 1
+  "be.."    => 1
+  "be or"   => 1
+  "or"      => 1
+  "not to"  => 1
+  "To"      => 1
+  "."       => 1
+  "be"      => 1
+  "To be"   => 1
+  "or not"  => 1
+  "to be.." => 1
+  "be.. ."  => 1
+  "to"      => 1
+```
 
 If you have a `NGramDocument`, you can determine whether an `NGramDocument`
 contains unigrams, bigrams or a higher-order representation using the `ngram_complexity()` function:
 
-    ngram_complexity(ngd)
+```julia
+julia> ngd = NGramDocument("To be or not to be ...", 2)
+NGramDocument{AbstractString}(Dict{AbstractString,Int64}("to be"=>1,"not"=>1,"be or"=>1,"or"=>1,"not to"=>1,"To"=>1,".."=>1,"."=>1,"be .."=>1,"be"=>2…), 2, TextAnalysis.DocumentMetadata(Languages.English(), "Unnamed Document", "Unknown Author", "Unknown Time"))
+
+julia> ngram_complexity(ngd)
+2
+```
 
 This information is not available for other types of `Document` objects
 because it is possible to produce any level of complexity when constructing
@@ -234,7 +289,7 @@ These special classes can all be removed using specially-named parameters:
 * `prepare!(sd, strip_html_tags)`
 
 These functions use words lists, so they are capable of working for many
-different languages without change, also these operations can be combined 
+different languages without change, also these operations can be combined
 together for improved performance:
 * `prepare!(sd, strip_articles| strip_numbers| strip_html_tags)`
 
