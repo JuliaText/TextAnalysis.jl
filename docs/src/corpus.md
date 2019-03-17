@@ -44,13 +44,13 @@ We can apply the same sort of preprocessing steps that are defined for
 individual documents to an entire corpus at once:
 
 ```julia
-julia> crps = Corpus([StringDocument("Document !!1"),
-                          StringDocument("Document 2!!")])
+julia> crps = Corpus([StringDocument("Document ..!!"),
+                          StringDocument("Document ..!!")])
 
 julia> prepare!(crps, strip_punctuation)
 
 julia> crps
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document  ", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document  ", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document   ", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document   ", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
 ```
 
 These operations are run on each document in the corpus individually.
@@ -67,7 +67,7 @@ Because computations involving the lexicon can take a long time, a
 `Corpus`'s default lexicon is blank:
 
 ```julia
-julia> julia> crps = Corpus([StringDocument("Name Foo"),
+julia> crps = Corpus([StringDocument("Name Foo"),
                           StringDocument("Name Bar")])
 julia> lexicon(crps)
 Dict{String,Int64} with 0 entries
@@ -144,23 +144,46 @@ a `DataFrame`:
 
 You can also retrieve the metadata for every document in a `Corpus` at once:
 
-    languages(crps)
-    names(crps)
-    authors(crps)
-    timestamps(crps)
+```julia
+julia> crps = Corpus([StringDocument("Name Foo"),
+                                 StringDocument("Name Bar")])
+
+julia> languages(crps)
+2-element Array{Languages.English,1}:
+ Languages.English()
+ Languages.English()
+
+julia> names(crps)
+2-element Array{String,1}:
+ "Unnamed Document"
+ "Unnamed Document"
+
+julia> authors(crps)
+2-element Array{String,1}:
+ "Unknown Author"
+ "Unknown Author"
+
+julia> timestamps(crps)
+2-element Array{String,1}:
+ "Unknown Time"
+ "Unknown Time"
+```
 
 It is possible to change the metadata fields for each document in a `Corpus`.
 These functions use the same metadata value for every document:
 
-    languages!(crps, Languages.German())
-    names!(crps, "")
-    authors!(crps, "Me")
-    timestamps!(crps, "Now")
-
+```julia
+julia> languages!(crps, Languages.German())
+julia> names!(crps, "")
+julia> authors!(crps, "Me")
+julia> timestamps!(crps, "Now")
+```
 Additionally, you can specify the metadata fields for each document in
 a `Corpus` individually:
 
-    languages!(crps, [Languages.German(), Languages.English()])
-    names!(crps, ["", "Untitled"])
-    authors!(crps, ["Ich", "You"])
-    timestamps!(crps, ["Unbekannt", "2018"])
+```julia
+julia> languages!(crps, [Languages.German(), Languages.English
+julia> names!(crps, ["", "Untitled"])
+julia> authors!(crps, ["Ich", "You"])
+julia> timestamps!(crps, ["Unbekannt", "2018"])
+```
