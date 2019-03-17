@@ -308,7 +308,7 @@ mutable struct PerceptronTagger
 
 
             if save_loc != nothing
-                bson(save_loc, weights = self.model.weigths, tagdict = self.tagdict, classes = self.classes)
+                bson(save_loc, weights = self.model.weigths, tagdict = self.tagdict, classes = collect(self.classes))
             end
         end
 
@@ -317,8 +317,8 @@ mutable struct PerceptronTagger
             println("Enter file location to load pretrain values:")
             location = readline()
             self.model.weights = BSON.load(location)[:weights]
-            self.tagdict = load(location)[:tagdict]
-            self.classes = self.model.classes = load(location)[:classes]
+            self.tagdict = BSON.load(location)[:tagdict]
+            self.classes = self.model.classes = Set(BSON.load(location)[:classes])
         end
 
         return self
