@@ -161,6 +161,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "features/#Sentiment-Analyzer-1",
+    "page": "Features",
+    "title": "Sentiment Analyzer",
+    "category": "section",
+    "text": "It can be used to find the sentiment score (between 0 and 1) of a word, sentence or a Document. A trained model (using Flux) on IMDB word corpus with weights saved are used to calculate the sentiments.model = SentimentAnalyzer(doc)\nmodel = SentimentAnalyzer(doc, handle_unknown)doc              = Input Document for calculating document (AbstractDocument type)\nhandle_unknown   = A function for handling unknown words. Should return an array (default (x)->[])"
+},
+
+{
     "location": "semantic/#",
     "page": "Semantic Analysis",
     "title": "Semantic Analysis",
