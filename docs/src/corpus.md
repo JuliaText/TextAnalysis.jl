@@ -144,6 +144,11 @@ a `DataFrame`:
 
 You can also retrieve the metadata for every document in a `Corpus` at once:
 
+* `languages()`: What language is the document in? Defaults to `Languages.English()`, a Language instance defined by the Languages package.
+* `names()`: What is the name of the document? Defaults to `"Unnamed Document"`.
+* `authors()`: Who wrote the document? Defaults to `"Unknown Author"`.
+* `timestamps()`: When was the document written? Defaults to `"Unknown Time"`.
+
 ```julia
 julia> crps = Corpus([StringDocument("Name Foo"),
                                  StringDocument("Name Bar")])
