@@ -4,7 +4,7 @@ module TextAnalysis
     using SparseArrays
     using Printf
     using LinearAlgebra
-    
+
     using Languages
     using DataFrames
     using WordTokenizers
@@ -21,10 +21,10 @@ module TextAnalysis
     export text, tokens, ngrams
     export text!, tokens!, ngrams!
     export documents
-    export language, name, author, timestamp
-    export languages, names, authors, timestamps
-    export language!, name!, author!, timestamp!
-    export languages!, names!, authors!, timestamps!
+    export language, title, author, timestamp
+    export languages, titles, authors, timestamps
+    export language!, title!, author!, timestamp!
+    export languages!, titles!, authors!, timestamps!
     export ngram_complexity
     export lexicon, update_lexicon!, lexical_frequency, lexicon_size
     export inverse_index, update_inverse_index!, index_size
