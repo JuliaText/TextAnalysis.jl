@@ -118,7 +118,7 @@ document, every document object also stores basic metadata about itself,
 including the following pieces of information:
 
 * `language()`: What language is the document in? Defaults to `Languages.English()`, a Language instance defined by the Languages package.
-* `name()`: What is the name of the document? Defaults to `"Unnamed Document"`.
+* `title()`: What is the name of the document? Defaults to `"Untitled Document"`.
 * `author()`: Who wrote the document? Defaults to `"Unknown Author"`.
 * `timestamp()`: When was the document written? Defaults to `"Unknown Time"`.
 
@@ -126,7 +126,7 @@ Try these functions out on a `StringDocument` to see how the defaults work
 in practice:
 
     language(sd)
-    name(sd)
+    title(sd)
     author(sd)
     timestamp(sd)
 
@@ -134,14 +134,14 @@ If you need reset these fields, you can use the mutating versions of the same
 functions:
 
     language!(sd, Languages.Spanish())
-    name!(sd, "El Cid")
+    title!(sd, "El Cid")
     author!(sd, "Desconocido")
     timestamp!(sd, "Desconocido")
 
 You can also retrieve the metadata for every document in a `Corpus` at once:
 
     languages(crps)
-    names(crps)
+    titles(crps)
     authors(crps)
     timestamps(crps)
 
@@ -149,7 +149,7 @@ It is possible to change the metadata fields for each document in a `Corpus`.
 These functions use the same metadata value for every document:
 
     languages!(crps, Languages.German())
-    names!(crps, "")
+    titles!(crps, "")
     authors!(crps, "Me")
     timestamps!(crps, "Now")
 
@@ -157,7 +157,7 @@ Additionally, you can specify the metadata fields for each document in
 a `Corpus` individually:
 
     languages!(crps, [Languages.German(), Languages.English()])
-    names!(crps, ["", "Untitled"])
+    titles!(crps, ["", "Untitled"])
     authors!(crps, ["Ich", "You"])
     timestamps!(crps, ["Unbekannt", "2018"])
 
@@ -217,7 +217,7 @@ These special classes can all be removed using specially-named parameters:
 * `prepare!(sd, strip_html_tags)`
 
 These functions use words lists, so they are capable of working for many
-different languages without change, also these operations can be combined 
+different languages without change, also these operations can be combined
 together for improved performance:
 * `prepare!(sd, strip_articles| strip_numbers| strip_html_tags)`
 

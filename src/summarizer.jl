@@ -1,4 +1,3 @@
-
 function summarize(d::AbstractDocument; ns=5)
     sentences = sentence_tokenize(language(d), text(d))
     s = StringDocument.(sentences)
