@@ -12,7 +12,7 @@ mutable struct DocumentMetadata
 end
 DocumentMetadata() = DocumentMetadata(
     Languages.English(),
-    "Unnamed Document",
+    "Untitled Document",
     "Unknown Author",
     "Unknown Time"
 )

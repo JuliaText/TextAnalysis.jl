@@ -92,7 +92,7 @@ document, every document object also stores basic metadata about itself,
 including the following pieces of information:
 
 * `language()`: What language is the document in? Defaults to `Languages.English()`, a Language instance defined by the Languages package.
-* `title()`: What is the name of the document? Defaults to `"Unnamed Document"`.
+* `title()`: What is the name of the document? Defaults to `"Untitled Document"`.
 * `author()`: Who wrote the document? Defaults to `"Unknown Author"`.
 * `timestamp()`: When was the document written? Defaults to `"Unknown Time"`.
 

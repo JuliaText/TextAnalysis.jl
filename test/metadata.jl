@@ -7,7 +7,7 @@
     crps = Corpus([sd1, sd2])
 
     # Single document metadata getters
-    @test isequal(title(sd1), "Unnamed Document")
+    @test isequal(title(sd1), "Untitled Document")
     @test isequal(language(sd1), Languages.English())
     @test isequal(author(sd1), "Unknown Author")
     @test isequal(timestamp(sd1), "Unknown Time")
@@ -23,7 +23,7 @@
     @test isequal(timestamp(sd1), "Time")
 
     # Metadata getters for an entire corpus
-    @test isequal(TextAnalysis.titles(crps), ["Document", "Unnamed Document"])
+    @test isequal(TextAnalysis.titles(crps), ["Document", "Untitled Document"])
     @test isequal(languages(crps), [Languages.German(), Languages.English()])
     @test isequal(authors(crps), ["Author", "Unknown Author"])
     @test isequal(timestamps(crps), ["Time", "Unknown Time"])
@@ -37,11 +37,11 @@
     @test isequal(languages(crps), [Languages.Spanish(), Languages.Spanish()])
     @test isequal(authors(crps), ["Author", "Author"])
     @test isequal(timestamps(crps), ["Time", "Time"])
-    titles!(crps, ["Unnamed Document", "Unnamed Document"])
+    titles!(crps, ["Untitled Document", "Untitled Document"])
     languages!(crps, [Languages.English(), Languages.English()])
     authors!(crps, ["Unknown Author", "Unknown Author"])
     timestamps!(crps, ["Unknown Time", "Unknown Time"])
-    @test isequal(TextAnalysis.titles(crps), ["Unnamed Document", "Unnamed Document"])
+    @test isequal(TextAnalysis.titles(crps), ["Untitled Document", "Untitled Document"])
     @test isequal(languages(crps), [Languages.English(), Languages.English()])
     @test isequal(authors(crps), ["Unknown Author", "Unknown Author"])
     @test isequal(timestamps(crps), ["Unknown Time", "Unknown Time"])
