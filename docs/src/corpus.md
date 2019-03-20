@@ -12,9 +12,6 @@ Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Do
 
 ## Standardizing a Corpus
 
-!!! note
-    It is recommended to read about `Documents` types and their heirarchy in the package.
-
 A `Corpus` may contain many different types of documents:
 
 ```julia
