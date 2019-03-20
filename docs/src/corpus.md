@@ -7,7 +7,7 @@ using the Corpus type:
 ```julia
 julia> crps = Corpus([StringDocument("Document 1"),
                       StringDocument("Document 2")])
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document 1", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document 2", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document 2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
 ```
 
 ## Standardizing a Corpus
@@ -18,7 +18,7 @@ A `Corpus` may contain many different types of documents:
 julia> crps = Corpus([StringDocument("Document 1"),
                           TokenDocument("Document 2"),
                           NGramDocument("Document 3")])
-Corpus{AbstractDocument}(AbstractDocument[StringDocument{String}("Document 1", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), TokenDocument{String}(["Document", "2"], DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+Corpus{AbstractDocument}(AbstractDocument[StringDocument{String}("Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), TokenDocument{String}(["Document", "2"], DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
 ```
 It is generally more convenient to standardize all of the documents in a
 corpus using a single type. This can be done using the `standardize!`
@@ -32,7 +32,7 @@ After this step, you can check that the corpus only contains `NGramDocument`'s:
 
 ```julia
 julia> crps
-Corpus{AbstractDocument}(AbstractDocument[NGramDocument{String}(Dict("1"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("2"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+Corpus{AbstractDocument}(AbstractDocument[NGramDocument{String}(Dict("1"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("2"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
 ```
 
 ## Processing a Corpus
@@ -47,7 +47,7 @@ julia> crps = Corpus([StringDocument("Document ..!!"),
 julia> prepare!(crps, strip_punctuation)
 
 julia> crps
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document   ", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document   ", DocumentMetadata(English(), "Unnamed Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document   ", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document   ", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
 ```
 
 These operations are run on each document in the corpus individually.
@@ -142,7 +142,7 @@ a `DataFrame`:
 You can also retrieve the metadata for every document in a `Corpus` at once:
 
 * `languages()`: What language is the document in? Defaults to `Languages.English()`, a Language instance defined by the Languages package.
-* `names()`: What is the name of the document? Defaults to `"Unnamed Document"`.
+* `titles()`: What is the title of the document? Defaults to `"Untitled Document"`.
 * `authors()`: Who wrote the document? Defaults to `"Unknown Author"`.
 * `timestamps()`: When was the document written? Defaults to `"Unknown Time"`.
 
@@ -155,10 +155,10 @@ julia> languages(crps)
  Languages.English()
  Languages.English()
 
-julia> names(crps)
+julia> titles(crps)
 2-element Array{String,1}:
- "Unnamed Document"
- "Unnamed Document"
+ "Untitled Document"
+ "Untitled Document"
 
 julia> authors(crps)
 2-element Array{String,1}:
@@ -176,7 +176,7 @@ These functions use the same metadata value for every document:
 
 ```julia
 julia> languages!(crps, Languages.German())
-julia> names!(crps, "")
+julia> titles!(crps, "")
 julia> authors!(crps, "Me")
 julia> timestamps!(crps, "Now")
 ```
@@ -185,7 +185,7 @@ a `Corpus` individually:
 
 ```julia
 julia> languages!(crps, [Languages.German(), Languages.English
-julia> names!(crps, ["", "Untitled"])
+julia> titles!(crps, ["", "Untitled"])
 julia> authors!(crps, ["Ich", "You"])
 julia> timestamps!(crps, ["Unbekannt", "2018"])
 ```

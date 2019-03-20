@@ -141,3 +141,15 @@ You can work around this by performing TF-IDF on a DocumentTermMatrix:
 As you can see, TF-IDF has the effect of inserting 0's into the columns of
 words that occur in all documents. This is a useful way to avoid having to
 remove those words during preprocessing.
+
+## Sentiment Analyzer
+
+It can be used to find the sentiment score (between 0 and 1) of a word, sentence or a Document.
+A trained model (using Flux) on IMDB word corpus with weights saved are used to calculate the sentiments.
+
+    model = SentimentAnalyzer(doc)
+    model = SentimentAnalyzer(doc, handle_unknown)
+
+*  doc              = Input Document for calculating document (AbstractDocument type)
+*  handle_unknown   = A function for handling unknown words. Should return an array (default (x)->[])
+ 
