@@ -4,18 +4,53 @@ Often we want to represent documents as a matrix of word counts so that we
 can apply linear algebra operations and statistical techniques. Before
 we do this, we need to update the lexicon:
 
-    update_lexicon!(crps)
-    m = DocumentTermMatrix(crps)
+```julia
+julia> crps = Corpus([StringDocument("To be or not to be"),
+                             StringDocument("To become or not to become")])
+
+julia> update_lexicon!(crps)
+
+julia> m = DocumentTermMatrix(crps)
+DocumentTermMatrix(
+  [1, 1]  =  1
+  [2, 1]  =  1
+  [1, 2]  =  2
+  [2, 3]  =  2
+  [1, 4]  =  1
+  [2, 4]  =  1
+  [1, 5]  =  1
+  [2, 5]  =  1
+  [1, 6]  =  1
+  [2, 6]  =  1, ["To", "be", "become", "not", "or", "to"], Dict("or"=>5,"not"=>4,"to"=>6,"To"=>1,"be"=>2,"become"=>3))
+```
 
 A `DocumentTermMatrix` object is a special type. If you would like to use
 a simple sparse matrix, call `dtm()` on this object:
 
-    dtm(m)
+```julia
+julia> dtm(m)
+2×6 SparseArrays.SparseMatrixCSC{Int64,Int64} with 10 stored entries:
+  [1, 1]  =  1
+  [2, 1]  =  1
+  [1, 2]  =  2
+  [2, 3]  =  2
+  [1, 4]  =  1
+  [2, 4]  =  1
+  [1, 5]  =  1
+  [2, 5]  =  1
+  [1, 6]  =  1
+  [2, 6]  =  1
+```
 
 If you would like to use a dense matrix instead, you can pass this as
 an argument to the `dtm` function:
 
-    dtm(m, :dense)
+```julia
+julia> dtm(m, :dense)
+2×6 Array{Int64,2}:
+ 1  2  0  1  1  1
+ 1  0  2  1  1  1
+```
 
 ## Creating Individual Rows of a Document Term Matrix
 
@@ -24,7 +59,11 @@ make do with just a single row. You can get this using the `dtv` function.
 Because individual's document do not have a lexicon associated with them, we
 have to pass in a lexicon as an additional argument:
 
-    dtv(crps[1], lexicon(crps))
+```julia
+julia> dtv(crps[1], lexicon(crps))
+1×6 Array{Int64,2}:
+ 1  2  0  1  1  1
+```
 
 ## The Hash Trick
 
@@ -33,35 +72,61 @@ The need to create a lexicon before we can construct a document term matrix is o
 function that outputs integers from 1 to N. To construct such a hash function,
 you can use the `TextHashFunction(N)` constructor:
 
-    h = TextHashFunction(10)
+```julia
+julia> h = TextHashFunction(10)
+TextHashFunction(hash, 10)
+```
 
 You can see how this function maps strings to numbers by calling the
 `index_hash` function:
 
-    index_hash("a", h)
-    index_hash("b", h)
+```julia
+julia> index_hash("a", h)
+8
+
+julia> index_hash("b", h)
+7
+```
 
 Using a text hash function, we can represent a document as a vector with N
 entries by calling the `hash_dtv` function:
 
-    hash_dtv(crps[1], h)
+```julia
+julia> hash_dtv(crps[1], h)
+1×10 Array{Int64,2}:
+ 0  2  0  0  1  3  0  0  0  0
+```
 
 This can be done for a corpus as a whole to construct a DTM without defining
 a lexicon in advance:
 
-    hash_dtm(crps, h)
+```julia
+julia> hash_dtm(crps, h)
+2×10 Array{Int64,2}:
+ 0  2  0  0  1  3  0  0  0  0
+ 0  2  0  0  1  1  0  0  2  0
+```
 
 Every corpus has a hash function built-in, so this function can be called
 using just one argument:
 
-    hash_dtm(crps)
+```julia
+julia> hash_dtm(crps)
+2×100 Array{Int64,2}:
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
+ 0  0  0  0  0  0  0  0  2  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0
+```
 
 Moreover, if you do not specify a hash function for just one row of the hash
 DTM, a default hash function will be constructed for you:
 
-    hash_dtv(crps[1])
+```julia
+julia> hash_dtv(crps[1])
+1×100 Array{Int64,2}:
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
+```
 
-## TF-IDF
+## TF-IDF (Term Frequency - Inverse Document Frequency)
 
 In many cases, raw word counts are not appropriate for use because:
 
