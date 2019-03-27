@@ -82,6 +82,26 @@
     remove_html_tags!(d)
     @test "Hello world" == strip(d.text)
 
+    style_html_doc = StringDocument(
+      """
+        <html>
+            <head>
+                <script language=\"javascript\"> x = 20; </script>
+            </head>
+            <body>
+                <style>
+                  .fake-style {
+                    color: #00ff00;
+                  }
+                </style>
+                <h1>Hello</h1><a href=\"world\">world</a>
+            </body>
+        </html>
+      """
+     )
+    remove_html_tags!(style_html_doc)
+    @test "Hello world" == strip(style_html_doc.text)
+
     #Test #62
     remove_corrupt_utf8("abc") == "abc"
     remove_corrupt_utf8(String([0x43, 0xf0])) == "C "
