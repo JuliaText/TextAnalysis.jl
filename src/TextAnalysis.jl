@@ -1,5 +1,3 @@
-using DataFrames
-
 module TextAnalysis
     using Languages
     using DataFrames

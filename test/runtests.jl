@@ -24,3 +24,4 @@ module TestTextAnalysis
         include(my_test)
     end
 end
+
