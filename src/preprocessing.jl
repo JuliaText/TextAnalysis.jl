@@ -254,11 +254,14 @@ function remove_patterns(s::AbstractString, rex::Regex)
     v=codeunits(s)
     for m in eachmatch(rex, s)
         len = m.match.offset-ibegin+1
+	next = nextind(s, lastindex(m.match)+m.match.offset)
         if len > 0
             Base.write_sub(iob, v, ibegin, len)
-            write(iob, ' ')
+	    if  next != length(s)+1
+            	write(iob, ' ')
+	    end
         end
-        ibegin = nextind(s, lastindex(m.match)+m.match.offset)
+        ibegin = next
     end
     len = length(v) - ibegin + 1
     (len > 0) && Base.write_sub(iob, v, ibegin, len)
@@ -272,16 +275,20 @@ function remove_patterns(s::SubString{T}, rex::Regex) where T <: String
     ibegin = 1
     for m in eachmatch(rex, s)
         len = m.match.offset-ibegin+1
+	next = nextind(s, lastindex(m.match)+m.match.offset)
         if len > 0
             Base.write_sub(iob, data, ibegin+ioffset, len)
-            write(iob, ' ')
+            if  next != length(s)+1
+            	write(iob, ' ')
+	    end
         end
-        ibegin = nextind(s, lastindex(m.match)+m.match.offset)
+        ibegin = next
     end
     len = lastindex(s) - ibegin + 1
     (len > 0) && Base.write_sub(iob, data, ibegin+ioffset, len)
     String(take!(iob))
 end
+
 
 remove_patterns!(d::FileDocument, rex::Regex) = error("FileDocument cannot be modified")
 
