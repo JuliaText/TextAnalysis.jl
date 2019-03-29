@@ -28,15 +28,12 @@ module TextAnalysis
     export inverse_index, update_inverse_index!, index_size
     export remove_corrupt_utf8
     export remove_corrupt_utf8!
-    export remove_punctuation, remove_numbers, remove_case, remove_whitespace
-    export remove_punctuation!, remove_numbers!, remove_case!, remove_whitespace!
-    export remove_nonletters, remove_nonletters!
-    export remove_words, remove_stop_words, remove_articles
-    export remove_words!, remove_stop_words!, remove_articles!
-    export remove_definite_articles, remove_indefinite_articles
-    export remove_definite_articles!, remove_indefinite_articles!
-    export remove_prepositions, remove_pronouns, stem, tag_pos
-    export remove_prepositions!, remove_pronouns!, stem!, tag_pos!
+    export remove_case
+    export remove_case!
+    export remove_words, remove_stop_words
+    export remove_words!, remove_stop_words!
+    export stem, tag_pos
+    export stem!, tag_pos!
     export remove_html_tags, remove_html_tags!
     export prepare!
     export frequent_terms, sparse_terms
