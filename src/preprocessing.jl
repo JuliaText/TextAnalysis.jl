@@ -124,10 +124,12 @@ end
 #
 ##############################################################################
 const script_tags = Regex("<script\\b[^>]*>([\\s\\S]*?)</script>")
+const style_tags = Regex("<style\\b[^>]*>([\\s\\S]*?)</style>")
 const html_tags = Regex("<[^>]*>")
 
 function remove_html_tags(s::AbstractString)
     s = remove_patterns(s, script_tags)
+    s = remove_patterns(s, style_tags)
     remove_patterns(s, html_tags)
 end
 
