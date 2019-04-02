@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Corpus · TextAnalysis</title><link rel="canonical" href="https://juliatext.github.io/TextAnalysis.jl/stable/corpus/index.html"/><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/><script src="../assets/custom.js"></script></head><body><nav class="toc"><h1>TextAnalysis</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../documents/">Documents</a></li><li class="current"><a class="toctext" href>Corpus</a><ul class="internal"><li><a class="toctext" href="#Creating-a-Corpus-1">Creating a Corpus</a></li><li><a class="toctext" href="#Standardizing-a-Corpus-1">Standardizing a Corpus</a></li><li><a class="toctext" href="#Processing-a-Corpus-1">Processing a Corpus</a></li><li><a class="toctext" href="#Corpus-Statistics-1">Corpus Statistics</a></li><li><a class="toctext" href="#Converting-a-DataFrame-from-a-Corpus-1">Converting a DataFrame from a Corpus</a></li><li><a class="toctext" href="#Corpus-Metadata-1">Corpus Metadata</a></li></ul></li><li><a class="toctext" href="../features/">Features</a></li><li><a class="toctext" href="../semantic/">Semantic Analysis</a></li><li><a class="toctext" href="../example/">Extended Example</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Corpus</a></li></ul><a class="edit-page" href="https://github.com/JuliaText/TextAnalysis.jl/blob/master/docs/src/corpus.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Corpus</span><a class="fa fa-bars" href="#"></a></div></header><h2><a class="nav-anchor" id="Creating-a-Corpus-1" href="#Creating-a-Corpus-1">Creating a Corpus</a></h2><p>Working with isolated documents gets boring quickly. We typically want to work with a collection of documents. We represent collections of documents using the Corpus type:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;Document 1&quot;),
+                      StringDocument(&quot;Document 2&quot;)])
+Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}(&quot;Document 1&quot;, DocumentMetadata(English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;)), StringDocument{String}(&quot;Document 2&quot;, DocumentMetadata(English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))</code></pre><h2><a class="nav-anchor" id="Standardizing-a-Corpus-1" href="#Standardizing-a-Corpus-1">Standardizing a Corpus</a></h2><p>A <code>Corpus</code> may contain many different types of documents:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;Document 1&quot;),
+                          TokenDocument(&quot;Document 2&quot;),
+                          NGramDocument(&quot;Document 3&quot;)])
+Corpus{AbstractDocument}(AbstractDocument[StringDocument{String}(&quot;Document 1&quot;, DocumentMetadata(English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;)), TokenDocument{String}([&quot;Document&quot;, &quot;2&quot;], DocumentMetadata(English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;)), NGramDocument{String}(Dict(&quot;Document&quot;=&gt;1,&quot;3&quot;=&gt;1), 1, DocumentMetadata(English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))</code></pre><p>It is generally more convenient to standardize all of the documents in a corpus using a single type. This can be done using the <code>standardize!</code> function:</p><pre><code class="language-julia">julia&gt; standardize!(crps, NGramDocument)</code></pre><p>After this step, you can check that the corpus only contains <code>NGramDocument</code>&#39;s:</p><pre><code class="language-julia">julia&gt; crps
+Corpus{AbstractDocument}(AbstractDocument[NGramDocument{String}(Dict(&quot;1&quot;=&gt;1,&quot;Document&quot;=&gt;1), 1, DocumentMetadata(English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;)), NGramDocument{String}(Dict(&quot;2&quot;=&gt;1,&quot;Document&quot;=&gt;1), 1, DocumentMetadata(English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;)), NGramDocument{String}(Dict(&quot;Document&quot;=&gt;1,&quot;3&quot;=&gt;1), 1, DocumentMetadata(English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))</code></pre><h2><a class="nav-anchor" id="Processing-a-Corpus-1" href="#Processing-a-Corpus-1">Processing a Corpus</a></h2><p>We can apply the same sort of preprocessing steps that are defined for individual documents to an entire corpus at once:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;Document ..!!&quot;),
+                          StringDocument(&quot;Document ..!!&quot;)])
+
+julia&gt; prepare!(crps, strip_punctuation)
+
+julia&gt; crps
+Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}(&quot;Document   &quot;, DocumentMetadata(English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;)), StringDocument{String}(&quot;Document   &quot;, DocumentMetadata(English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))</code></pre><p>These operations are run on each document in the corpus individually.</p><h2><a class="nav-anchor" id="Corpus-Statistics-1" href="#Corpus-Statistics-1">Corpus Statistics</a></h2><p>Often we wish to think broadly about properties of an entire corpus at once. In particular, we want to work with two constructs:</p><ul><li><em>Lexicon</em>: The lexicon of a corpus consists of all the terms that occur in any document in the corpus. The lexical frequency of a term tells us how often a term occurs across all of the documents. Often the most interesting words in a document are those words whose frequency within a document is higher than their frequency in the corpus as a whole.</li><li><em>Inverse Index</em>: If we are interested in a specific term, we often want to know which documents in a corpus contain that term. The inverse index tells us this and therefore provides a simplistic sort of search algorithm.</li></ul><p>Because computations involving the lexicon can take a long time, a <code>Corpus</code>&#39;s default lexicon is blank:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;Name Foo&quot;),
+                          StringDocument(&quot;Name Bar&quot;)])
+julia&gt; lexicon(crps)
+Dict{String,Int64} with 0 entries</code></pre><p>In order to work with the lexicon, you have to update it and then access it:</p><pre><code class="language-julia">julia&gt; update_lexicon!(crps)
+
+julia&gt; lexicon(crps)
+Dict{String,Int64} with 3 entries:
+  &quot;Bar&quot;    =&gt; 1
+  &quot;Foo&quot;    =&gt; 1
+  &quot;Name&quot; =&gt; 2</code></pre><p>But once this work is done, you can easier address lots of interesting questions about a corpus:</p><pre><code class="language-none">julia&gt; lexical_frequency(crps, &quot;Name&quot;)
+0.5
+
+julia&gt; lexical_frequency(crps, &quot;Foo&quot;)
+0.25</code></pre><p>Like the lexicon, the inverse index for a corpus is blank by default:</p><pre><code class="language-julia">julia&gt; inverse_index(crps)
+Dict{String,Array{Int64,1}} with 0 entries</code></pre><p>Again, you need to update it before you can work with it:</p><pre><code class="language-julia">julia&gt; update_inverse_index!(crps)
+
+julia&gt; inverse_index(crps)
+Dict{String,Array{Int64,1}} with 3 entries:
+  &quot;Bar&quot;    =&gt; [2]
+  &quot;Foo&quot;    =&gt; [1]
+  &quot;Name&quot; =&gt; [1, 2]</code></pre><p>But once you&#39;ve updated the inverse index, you can easily search the entire corpus:</p><pre><code class="language-julia">julia&gt; crps[&quot;Name&quot;]
+
+2-element Array{Int64,1}:
+ 1
+ 2
+
+julia&gt; crps[&quot;Foo&quot;]
+1-element Array{Int64,1}:
+ 1
+
+julia&gt; crps[&quot;Summer&quot;]
+0-element Array{Int64,1}</code></pre><h2><a class="nav-anchor" id="Converting-a-DataFrame-from-a-Corpus-1" href="#Converting-a-DataFrame-from-a-Corpus-1">Converting a DataFrame from a Corpus</a></h2><p>Sometimes we want to apply non-text specific data analysis operations to a corpus. The easiest way to do this is to convert a <code>Corpus</code> object into a <code>DataFrame</code>:</p><pre><code class="language-none">convert(DataFrame, crps)</code></pre><h2><a class="nav-anchor" id="Corpus-Metadata-1" href="#Corpus-Metadata-1">Corpus Metadata</a></h2><p>You can also retrieve the metadata for every document in a <code>Corpus</code> at once:</p><ul><li><code>languages()</code>: What language is the document in? Defaults to <code>Languages.English()</code>, a Language instance defined by the Languages package.</li><li><code>titles()</code>: What is the title of the document? Defaults to <code>&quot;Untitled Document&quot;</code>.</li><li><code>authors()</code>: Who wrote the document? Defaults to <code>&quot;Unknown Author&quot;</code>.</li><li><code>timestamps()</code>: When was the document written? Defaults to <code>&quot;Unknown Time&quot;</code>.</li></ul><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;Name Foo&quot;),
+                                 StringDocument(&quot;Name Bar&quot;)])
+
+julia&gt; languages(crps)
+2-element Array{Languages.English,1}:
+ Languages.English()
+ Languages.English()
+
+julia&gt; titles(crps)
+2-element Array{String,1}:
+ &quot;Untitled Document&quot;
+ &quot;Untitled Document&quot;
+
+julia&gt; authors(crps)
+2-element Array{String,1}:
+ &quot;Unknown Author&quot;
+ &quot;Unknown Author&quot;
+
+julia&gt; timestamps(crps)
+2-element Array{String,1}:
+ &quot;Unknown Time&quot;
+ &quot;Unknown Time&quot;</code></pre><p>It is possible to change the metadata fields for each document in a <code>Corpus</code>. These functions use the same metadata value for every document:</p><pre><code class="language-julia">julia&gt; languages!(crps, Languages.German())
+julia&gt; titles!(crps, &quot;&quot;)
+julia&gt; authors!(crps, &quot;Me&quot;)
+julia&gt; timestamps!(crps, &quot;Now&quot;)</code></pre><p>Additionally, you can specify the metadata fields for each document in a <code>Corpus</code> individually:</p><pre><code class="language-julia">julia&gt; languages!(crps, [Languages.German(), Languages.English
+julia&gt; titles!(crps, [&quot;&quot;, &quot;Untitled&quot;])
+julia&gt; authors!(crps, [&quot;Ich&quot;, &quot;You&quot;])
+julia&gt; timestamps!(crps, [&quot;Unbekannt&quot;, &quot;2018&quot;])</code></pre><footer><hr/><a class="previous" href="../documents/"><span class="direction">Previous</span><span class="title">Documents</span></a><a class="next" href="../features/"><span class="direction">Next</span><span class="title">Features</span></a></footer></article></body></html>
