@@ -28,7 +28,7 @@
     # Need to only remove words at word boundaries
     doc = Document("this is sample text")
     remove_words!(doc, ["sample"])
-    @test isequal(doc.text, "this is   text")
+    @test isequal(doc.text, "this is  text")
 
     doc = Document("this is sample text")
     prepare!(doc, strip_articles)
@@ -74,7 +74,7 @@
                 <script language=\"javascript\"> x = 20; </script>
             </head>
             <body>
-                <h1>Hello</h1><a href=\"world\">world</a>
+                <h1>Hello</h1><a href=\"world\"> world</a>
             </body>
         </html>
         """
@@ -94,7 +94,7 @@
                     color: #00ff00;
                   }
                 </style>
-                <h1>Hello</h1><a href=\"world\">world</a>
+                <h1>Hello</h1><a href=\"world\"> world</a>
             </body>
         </html>
       """
@@ -118,7 +118,7 @@
     @test isequal(str.text, answer.text)
 
     str = Document("Intel(tm) Core i5-3300k, is a geat CPU! ")
-    answer = Document("Intel tm  Core i5 3300k  is a geat CPU  ")   #tests old implementation   
+    answer = Document("Inteltm Core i53300k is a geat CPU ")   #tests old implementation   
     prepare!(str, strip_punctuation)
     @test isequal(str.text, answer.text)
 

@@ -84,8 +84,38 @@ end
 #
 ##############################################################################
 
+"""
+    remove_case(s::AbstractString)
+
+Converts the string to lowercase. 
+
+See also: [`remove_case!`](@ref)
+"""
 remove_case(s::T) where {T <: AbstractString} = lowercase(s)
 
+
+"""
+    remove_case!(d::TokenDocument)
+    remove_case!(d::StringDocument)
+    remove_case!(d::NGramDocument)
+
+    remove_case!(c::Corpus)
+
+Converts the text of the document or corpus to lowercase. This method does not
+works with FileDocument
+
+# Example
+
+```julia-repl
+julia> str="The quick brown fox jumps over the lazy dog"
+julia> sd=StringDocument(str)
+StringDocument{String}("The quick brown fox jumps over the lazy dog", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+
+julia> remove_case!(sd)
+julia> sd.text
+"the quick brown fox jumps over the lazy dog"
+```
+"""
 remove_case!(d::FileDocument) = error("FileDocument cannot be modified")
 
 function remove_case!(d::StringDocument)
@@ -153,6 +183,23 @@ end
 # Remove specified words
 #
 ##############################################################################
+"""
+    remove_words!(d::AbstractDocument, words::Vector)
+    remove_words!(c::Corpus, words::Vector)
+
+Removes the tokens defined in the list `words` from the source Document or Corpus
+
+# Example
+
+```julia-repl
+julia> str="The quick brown fox jumps over the lazy dog"
+julia> sd=StringDocument(str);
+julia> remove_words = ["fox", "over"]
+julia> remove_words!(sd, remove_words)
+julia> sd.text
+"the quick brown   jumps   the lazy dog"
+```
+"""
 function remove_words!(entity::(Union{AbstractDocument,Corpus}),
                words::Vector{T}) where T <: AbstractString
     skipwords = Set{AbstractString}()
@@ -232,6 +279,8 @@ function prepare!(crps::Corpus, flags::UInt32; skip_patterns = Set{AbstractStrin
     r = _build_regex(lang, flags, skip_patterns, skip_words)
     !isempty(r.pattern) && remove_patterns!(crps, r)
 
+    ((flags & strip_whitespace) > 0) && remove_whitespace!(d)
+
     ((flags & stem_words) > 0) && stem!(crps)
     ((flags & tag_part_of_speech) > 0) && tag_pos!(crps)
     nothing
@@ -244,30 +293,69 @@ function prepare!(d::AbstractDocument, flags::UInt32; skip_patterns = Set{Abstra
 
     r = _build_regex(language(d), flags, skip_patterns, skip_words)
     !isempty(r.pattern) && remove_patterns!(d, r)
+    ((flags & strip_whitespace) > 0) && remove_whitespace!(d)
 
     ((flags & stem_words) > 0) && stem!(d)
     ((flags & tag_part_of_speech) > 0) && tag_pos!(d)
     nothing
 end
 
-function remove_patterns(s::AbstractString, rex::Regex)
-    iob = IOBuffer()
-    ibegin = 1
-    v=codeunits(s)
-    for m in eachmatch(rex, s)
-        len = m.match.offset-ibegin+1
-	next = nextind(s, lastindex(m.match)+m.match.offset)
-        if len > 0
-            Base.write_sub(iob, v, ibegin, len)
-	    if  next != length(s)+1
-            	write(iob, ' ')
-	    end
-        end
-        ibegin = next
-    end
-    len = length(v) - ibegin + 1
-    (len > 0) && Base.write_sub(iob, v, ibegin, len)
-    String(take!(iob))
+#function remove_patterns(s::AbstractString, rex::Regex)
+#    iob = IOBuffer()
+#    ibegin = 1
+#    v=codeunits(s)
+#    for m in eachmatch(rex, s)
+#        len = m.match.offset-ibegin+1
+#       next = nextind(s, lastindex(m.match)+m.match.offset)
+#        if len > 0
+#            Base.write_sub(iob, v, ibegin, len)
+#           if  next != length(s)+1
+#               write(iob, ' ')
+#           end
+#        end
+#        ibegin = next
+#    end
+#    len = length(v) - ibegin + 1
+#    (len > 0) && Base.write_sub(iob, v, ibegin, len)
+#    String(take!(iob))
+#end
+
+"""
+    remove_whitespace(s::AbstractString)
+
+Squashes multiple whitespaces to a single one. And removes all leading and
+trailing whitespaces in a string. 
+
+"""
+remove_whitespace(s::AbstractString) = replace(strip(s), r"\s+"=>" ")
+
+
+"""
+    remove_whitespace!(s::AbstractDocument)
+
+Squashes multiple whitespaces to a single space. And removes all leading and
+trailing whitespaces in a StringDocument and Corpus. 
+
+Does no-op for NGramDocument and TokenDocument. 
+
+"""
+function remove_whitespace!(d::StringDocument)
+  d.text = remove_whitespace(d.text)
+end
+
+function remove_whitespace!(crps::Corpus)
+  for doc in crps
+    remove_whitespace!(doc)
+  end
+end
+
+function remove_whitespace!(d::AbstractDocument)
+  nothing
+end
+
+
+function remove_patterns(s::AbstractString, rex::Regex) 
+  return replace(s, rex => "")
 end
 
 function remove_patterns(s::SubString{T}, rex::Regex) where T <: String
@@ -345,7 +433,7 @@ function _combine_regex(regex_parts::Set{T}) where T <: AbstractString
 end
 
 function _build_regex_patterns(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) where T <: AbstractString
-    ((flags & strip_whitespace) > 0) && push!(patterns, "\\s+")
+    #((flags & strip_whitespace) > 0) && push!(patterns, "\\s+")
     if (flags & strip_non_letters) > 0
         push!(patterns, "[^a-zA-Z\\s]")
     else
