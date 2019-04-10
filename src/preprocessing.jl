@@ -300,25 +300,6 @@ function prepare!(d::AbstractDocument, flags::UInt32; skip_patterns = Set{Abstra
     nothing
 end
 
-#function remove_patterns(s::AbstractString, rex::Regex)
-#    iob = IOBuffer()
-#    ibegin = 1
-#    v=codeunits(s)
-#    for m in eachmatch(rex, s)
-#        len = m.match.offset-ibegin+1
-#       next = nextind(s, lastindex(m.match)+m.match.offset)
-#        if len > 0
-#            Base.write_sub(iob, v, ibegin, len)
-#           if  next != length(s)+1
-#               write(iob, ' ')
-#           end
-#        end
-#        ibegin = next
-#    end
-#    len = length(v) - ibegin + 1
-#    (len > 0) && Base.write_sub(iob, v, ibegin, len)
-#    String(take!(iob))
-#end
 
 """
     remove_whitespace(s::AbstractString)
