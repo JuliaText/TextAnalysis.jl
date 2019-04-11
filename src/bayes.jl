@@ -1,6 +1,6 @@
 using WordTokenizers
 
-export SpamFilter
+export NaiveBayesClassifier
 
 spam_tokenise(s) = WordTokenizers.tokenize(lowercase(replace(s, "."=>"")))
 
@@ -24,33 +24,33 @@ features(s::AbstractString, dict) = features(frequencies(spam_tokenise(s)), dict
 
 Features{T<:Integer} = AbstractVector{T}
 
-mutable struct SpamFilter{T}
+mutable struct NaiveBayesClassifier{T}
   dict::Vector{String}
   classes::Vector{T}
   weights::Matrix{Int}
 end
 
-SpamFilter(dict, classes) =
-  SpamFilter(dict, classes,
+NaiveBayesClassifier(dict, classes) =
+  NaiveBayesClassifier(dict, classes,
              ones(Int, length(dict), length(classes)))
 
-SpamFilter(classes) = SpamFilter(String[], classes)
+NaiveBayesClassifier(classes) = NaiveBayesClassifier(String[], classes)
 
-probabilities(c::SpamFilter) = c.weights ./ sum(c.weights, dims = 1)
+probabilities(c::NaiveBayesClassifier) = c.weights ./ sum(c.weights, dims = 1)
 
-function extend!(c::SpamFilter, class)
+function extend!(c::NaiveBayesClassifier, class)
   push!(c.dict, class)
   c.weights = vcat(c.weights, ones(Int, length(c.classes))')
   return c
 end
 
-function fit!(c::SpamFilter, x::Features, class)
+function fit!(c::NaiveBayesClassifier, x::Features, class)
   n = findfirst(==(class), c.classes)
   c.weights[:, n] .+= x
   return c
 end
 
-function fit!(c::SpamFilter, s::String, class)
+function fit!(c::NaiveBayesClassifier, s::String, class)
   fs = frequencies(spam_tokenise(s))
   for k in keys(fs)
     k in c.dict || extend!(c, k)
@@ -58,11 +58,11 @@ function fit!(c::SpamFilter, s::String, class)
   fit!(c, features(s, c.dict), class)
 end
 
-function predict(c::SpamFilter, x::Features)
+function predict(c::NaiveBayesClassifier, x::Features)
   ps = prod(probabilities(c) .^ x, dims = 1)
   ps ./= sum(ps)
   Dict(c.classes[i] => ps[i] for i = 1:length(c.classes))
 end
 
-predict(c::SpamFilter, s::String) =
+predict(c::NaiveBayesClassifier, s::String) =
   predict(c, features(s, c.dict))
