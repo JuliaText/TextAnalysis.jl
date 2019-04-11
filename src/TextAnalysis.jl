@@ -73,5 +73,6 @@ module TextAnalysis
     include("summarizer.jl")
     include("show.jl")
     include("sentiment.jl")
+    include("bayes.jl")
     include("deprecations.jl")
 end
