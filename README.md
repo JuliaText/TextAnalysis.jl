@@ -4,10 +4,7 @@ TextAnalysis
 
 A Julia package for working with text.
 
-[![Build Status](https://api.travis-ci.org/JuliaText/TextAnalysis.jl.svg)](https://travis-ci.org/JuliaText/TextAnalysis.jl)
-[![TextAnalysis](http://pkg.julialang.org/badges/TextAnalysis_0.5.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
-[![TextAnalysis](http://pkg.julialang.org/badges/TextAnalysis_0.6.svg)](http://pkg.julialang.org/?pkg=TextAnalysis)
-
-----
-
-Documentation is available at http://juliatext.github.io/TextAnalysis.jl/
+[![Travis](https://travis-ci.org/JuliaText/TextAnalysis.jl.svg?branch=master)](https://travis-ci.org/JuliaText/TextAnalysis.jl)
+[![Appveyor](https://ci.appveyor.com/api/projects/status/aviks/textanalysis-jl?svg=true)](https://ci.appveyor.com/project/aviks/textanalysis-jl)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliatext.github.io/TextAnalysis.jl/stable)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliatext.github.io/TextAnalysis.jl/dev)

@@ -179,7 +179,7 @@ tag_pos!(entity) = error("Not yet implemented")
 function sparse_terms(crps::Corpus, alpha::Real = alpha_sparse)
     update_lexicon!(crps)
     update_inverse_index!(crps)
-    res = Array(String, 0)
+    res = Array{String}(undef, 0)
     ndocs = length(crps.documents)
     for term in keys(crps.lexicon)
         f = length(crps.inverse_index[term]) / ndocs
@@ -193,7 +193,7 @@ end
 function frequent_terms(crps::Corpus, alpha::Real = alpha_frequent)
     update_lexicon!(crps)
     update_inverse_index!(crps)
-    res = Array(String, 0)
+    res = Array{String}(undef, 0)
     ndocs = length(crps.documents)
     for term in keys(crps.lexicon)
         f = length(crps.inverse_index[term]) / ndocs
@@ -340,7 +340,7 @@ function _build_regex_patterns(lang, flags::UInt32, patterns::Set{T}, words::Set
     if (flags & strip_non_letters) > 0
         push!(patterns, "[^a-zA-Z\\s]")
     else
-        ((flags & strip_punctuation) > 0) && push!(patterns, "[,;:.!?()-\\\\]+")
+        ((flags & strip_punctuation) > 0) && push!(patterns, "[-.,:;,!?'\"\\[\\]\\(\\)\\{\\}|\\`#\$%@^&*_+<>]+")
         ((flags & strip_numbers) > 0) && push!(patterns, "\\d+")
     end
     if (flags & strip_articles) > 0
