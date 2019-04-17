@@ -4,7 +4,7 @@ module TextAnalysis
     using SparseArrays
     using Printf
     using LinearAlgebra
-    
+
     using Languages
     using DataFrames
     using WordTokenizers
@@ -55,6 +55,7 @@ module TextAnalysis
     export strip_numbers, strip_non_letters, strip_indefinite_articles, strip_definite_articles, strip_articles
     export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
     export SentimentAnalyzer
+    export PerceptronTagger
 
     include("tokenizer.jl")
     include("ngramizer.jl")
@@ -79,4 +80,5 @@ module TextAnalysis
     include("show.jl")
     include("sentiment.jl")
     include("deprecations.jl")
+    include("averagePerceptronTagger.jl")
 end
