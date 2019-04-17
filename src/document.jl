@@ -6,13 +6,13 @@
 
 mutable struct DocumentMetadata
     language
-    name::String
+    title::String
     author::String
     timestamp::String
 end
 DocumentMetadata() = DocumentMetadata(
     Languages.English(),
-    "Unnamed Document",
+    "Untitled Document",
     "Unknown Author",
     "Unknown Time"
 )
@@ -38,7 +38,7 @@ end
 
 function FileDocument(f::AbstractString)
     d = FileDocument(String(f), DocumentMetadata())
-    d.metadata.name = f
+    d.metadata.title = f
     return d
 end
 

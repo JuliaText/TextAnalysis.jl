@@ -82,6 +82,26 @@
     remove_html_tags!(d)
     @test "Hello world" == strip(d.text)
 
+    style_html_doc = StringDocument(
+      """
+        <html>
+            <head>
+                <script language=\"javascript\"> x = 20; </script>
+            </head>
+            <body>
+                <style>
+                  .fake-style {
+                    color: #00ff00;
+                  }
+                </style>
+                <h1>Hello</h1><a href=\"world\">world</a>
+            </body>
+        </html>
+      """
+     )
+    remove_html_tags!(style_html_doc)
+    @test "Hello world" == strip(style_html_doc.text)
+
     #Test #62
     remove_corrupt_utf8("abc") == "abc"
     remove_corrupt_utf8(String([0x43, 0xf0])) == "C "
@@ -93,7 +113,7 @@
 
     #Tests strip_punctuation regex conditions
     str = Document("These punctuations should be removed [-.,:;,!?'\"[](){}|\`#\$%@^&*_+<>")
-    answer = Document("These punctuations should be removed  ")
+    answer = Document("These punctuations should be removed ")
     prepare!(str, strip_punctuation)
     @test isequal(str.text, answer.text)
 
@@ -101,4 +121,9 @@
     answer = Document("Intel tm  Core i5 3300k  is a geat CPU  ")   #tests old implementation   
     prepare!(str, strip_punctuation)
     @test isequal(str.text, answer.text)
+
+    #Tests no whitespace at end or begining
+    doc = Document("   this is sample text   ")
+    prepare!(doc, strip_whitespace)
+    @test isequal(doc.text, "this is sample text")
 end

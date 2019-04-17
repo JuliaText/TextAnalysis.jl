@@ -1,5 +1,3 @@
-using DataFrames
-
 module TextAnalysis
     using SparseArrays
     using Printf
@@ -21,24 +19,21 @@ module TextAnalysis
     export text, tokens, ngrams
     export text!, tokens!, ngrams!
     export documents
-    export language, name, author, timestamp
-    export languages, names, authors, timestamps
-    export language!, name!, author!, timestamp!
-    export languages!, names!, authors!, timestamps!
+    export language, title, author, timestamp
+    export languages, titles, authors, timestamps
+    export language!, title!, author!, timestamp!
+    export languages!, titles!, authors!, timestamps!
     export ngram_complexity
     export lexicon, update_lexicon!, lexical_frequency, lexicon_size
     export inverse_index, update_inverse_index!, index_size
     export remove_corrupt_utf8
     export remove_corrupt_utf8!
-    export remove_punctuation, remove_numbers, remove_case, remove_whitespace
-    export remove_punctuation!, remove_numbers!, remove_case!, remove_whitespace!
-    export remove_nonletters, remove_nonletters!
-    export remove_words, remove_stop_words, remove_articles
-    export remove_words!, remove_stop_words!, remove_articles!
-    export remove_definite_articles, remove_indefinite_articles
-    export remove_definite_articles!, remove_indefinite_articles!
-    export remove_prepositions, remove_pronouns, stem, tag_pos
-    export remove_prepositions!, remove_pronouns!, stem!, tag_pos!
+    export remove_case
+    export remove_case!
+    export remove_words, remove_stop_words
+    export remove_words!, remove_stop_words!
+    export stem, tag_pos
+    export stem!, tag_pos!
     export remove_html_tags, remove_html_tags!
     export prepare!
     export frequent_terms, sparse_terms
@@ -79,6 +74,7 @@ module TextAnalysis
     include("summarizer.jl")
     include("show.jl")
     include("sentiment.jl")
+    include("bayes.jl")
     include("deprecations.jl")
     include("averagePerceptronTagger.jl")
 end
