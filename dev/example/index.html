@@ -8,7 +8,7 @@ standardize!(crps, StringDocument)
 crps = Corpus(crps[1:30])
 
 remove_case!(crps)
-remove_punctuation!(crps)
+prepare!(crps, strip_punctuation)
 
 update_lexicon!(crps)
 update_inverse_index!(crps)
