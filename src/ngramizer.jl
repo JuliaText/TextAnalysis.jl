@@ -14,7 +14,7 @@ function ngramize(lang::S, words::Vector{T}, n::Int) where {S <: Language, T <: 
     for index in 1:(n_words - n + 1)
         token = join(words[index:(index + n - 1)], " ")
         tokens[token] = get(tokens, token, 0) + 1
-        end
+       
     end
 
     return tokens
