@@ -13,7 +13,7 @@ as part of the State of the Union Address tradition.
     crps = Corpus(crps[1:30])
 
     remove_case!(crps)
-    remove_punctuation!(crps)
+    prepare!(crps, strip_punctuation)
 
     update_lexicon!(crps)
     update_inverse_index!(crps)
