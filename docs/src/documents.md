@@ -153,19 +153,12 @@ argument to the `ngrams()` function:
 ```julia
 julia> ngrams(sd, 2)
 Dict{AbstractString,Int64} with 13 entries:
-  "not"     => 1
-  "be.."    => 1
-  "be or"   => 1
-  "or"      => 1
-  "not to"  => 1
-  "To"      => 1
-  "."       => 1
-  "be"      => 1
   "To be"   => 1
   "or not"  => 1
+  "be or"   => 1
+  "not to"  => 1
   "to be.." => 1
   "be.. ."  => 1
-  "to"      => 1
 ```
 
 If you have a `NGramDocument`, you can determine whether an `NGramDocument`
