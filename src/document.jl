@@ -47,12 +47,13 @@ end
 
 """
 A document represented using a plain text file on disk
-
+```julia-repl
 	julia> pathname = "/usr/share/dict/words"
 	"/usr/share/dict/words"
 
 	julia> fd = FileDocument(pathname)
 	FileDocument("/usr/share/dict/words", TextAnalysis.DocumentMetadata(Languages.English(), "/usr/share/dict/words", "Unknown Author", "Unknown Time"))
+```
 """
 function FileDocument(f::AbstractString)
     d = FileDocument(String(f), DocumentMetadata())
@@ -73,9 +74,10 @@ end
 
 """
 A document represented using a UTF8 String stored in RAM
-
+```julia-repl
     julia> sd = StringDocument(str)
     StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+```
 """
 StringDocument(txt::AbstractString) = StringDocument(txt, DocumentMetadata())
 
@@ -92,7 +94,7 @@ end
 
 """
 A document represented as a sequence of UTF8 tokens
-
+```julia-repl
 	julia> my_tokens = String["To", "be", "or", "not", "to", "be..."]
 	6-element Array{String,1}:
  	"To"   
@@ -104,6 +106,7 @@ A document represented as a sequence of UTF8 tokens
 
 	julia> td = TokenDocument(my_tokens)
 	TokenDocument{String}(["To", "be", "or", "not", "to", "be..."], TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+```
 """
 function TokenDocument(txt::AbstractString, dm::DocumentMetadata)
     TokenDocument(tokenize(dm.language, String(txt)), dm)
@@ -127,7 +130,7 @@ end
 
 """
 A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
-
+```julia-repl
 	julia> my_ngrams = Dict{String, Int}("To" => 1, "be" => 2,
 		                                "or" => 1, "not" => 1,
 		                                "to" => 1, "be..." => 1)
@@ -141,6 +144,7 @@ A document represented as a bag of n-grams, which are UTF8 n-grams that map to c
 
 	julia> ngd = NGramDocument(my_ngrams)
 	NGramDocument{AbstractString}(Dict{AbstractString,Int64}("or"=>1,"be..."=>1,"not"=>1,"to"=>1,"To"=>1,"be"=>2), 1, TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+```
 """
 function NGramDocument(txt::AbstractString, dm::DocumentMetadata, n::Integer=1)
     NGramDocument(ngramize(dm.language, tokenize(dm.language, String(txt)), n),
@@ -160,11 +164,13 @@ end
 ##############################################################################
 """
 Access the text of Document as a string.
+```julia-repl
 	julia> sd = StringDocument("To be or not to be...")
 	StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
 
 	julia> text(sd)
 	"To be or not to be..."
+```
 """
 function text(fd::FileDocument)
     !isfile(fd.filename) && error("Can't find file: $(fd.filename)")
@@ -192,6 +198,7 @@ end
 ##############################################################################
 """
 Access the document text as a token array.
+```julia-repl
 	julia> sd = StringDocument("To be or not to be...")
 	StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
 	
@@ -204,6 +211,7 @@ Access the document text as a token array.
  	"to"  
  	"be.."
  	"." 
+```
 """
 tokens(d::(Union{FileDocument, StringDocument})) = tokenize(language(d), text(d))
 tokens(d::TokenDocument) = d.tokens
@@ -223,6 +231,7 @@ end
 ##############################################################################
 """
 Access the document text as n-gram counts.
+```julia-repl
 	julia> sd = StringDocument("To be or not to be...")
 	StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
 
@@ -235,6 +244,7 @@ Access the document text as n-gram counts.
 	  "be"   => 1
 	  "be.." => 1
 	  "."    => 1
+```
 """
 function ngrams(d::NGramDocument, n::Integer)
     error("The n-gram complexity of an NGramDocument cannot be increased")
