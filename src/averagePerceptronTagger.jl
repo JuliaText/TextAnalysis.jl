@@ -10,7 +10,9 @@ The model learns by basic perceptron algorithm
 but after all iterations weights are being averaged
 """
 
-"""AVERAGE PERCEPTRON MODEL"""
+"""
+AVERAGE PERCEPTRON MODEL
+"""
 
 """
 This struct contains the actual Average Perceptron Model
@@ -108,7 +110,9 @@ function average_weights(self::AveragePerceptron)
     return nothing
 end
 
-"""PERCEPTRON TAGGER"""
+"""
+PERCEPTRON TAGGER
+"""
 
 """
 This struct contains the POS tagger "PerceptronTagger" which uses model in "AveragePerceptron"
