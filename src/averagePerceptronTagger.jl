@@ -8,13 +8,9 @@ which was original implemented by Matthew Honnibal.
 
 The model learns by basic perceptron algorithm
 but after all iterations weights are being averaged
-"""
 
-"""
 AVERAGE PERCEPTRON MODEL
-"""
 
-"""
 This struct contains the actual Average Perceptron Model
 """
 
@@ -112,9 +108,7 @@ end
 
 """
 PERCEPTRON TAGGER
-"""
 
-"""
 This struct contains the POS tagger "PerceptronTagger" which uses model in "AveragePerceptron"
 In this training can be done and weights can be saved
 Or a pretrain weights can be used (which are trained on same features)
