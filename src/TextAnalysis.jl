@@ -50,7 +50,7 @@ module TextAnalysis
     export strip_numbers, strip_non_letters, strip_indefinite_articles, strip_definite_articles, strip_articles
     export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
     export SentimentAnalyzer
-    export PerceptronTagger
+    export PerceptronTagger, train, tag
 
     include("tokenizer.jl")
     include("ngramizer.jl")

@@ -115,7 +115,7 @@ Or a pretrain weights can be used (which are trained on same features)
 and train more or can be used to predict
 
 To train:
-tagger = PerceptronTagger(load=false)
+tagger = PerceptronTagger(false)
 train(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
 
 To predict tag:
@@ -138,11 +138,12 @@ mutable struct PerceptronTagger
 
         """If load is true then a pretrain model will be import from location"""
         if load
-            location = "pretrainedMod.bson"
-            self.model.weights = BSON.load(location)[:weights]
-            self.tagdict = BSON.load(location)[:tagdict]
-            self.classes = self.model.classes = Set(BSON.load(location)[:classes])
-            println("loaded successfully")
+            location = "pretrainedMod.bson";
+            pretrained = BSON.load(location)
+            self.model.weights = pretrained[:weights]
+            self.tagdict = pretrained[:tagdict]
+            self.classes = self.model.classes = Set(pretrained[:classes])
+            println("loaded successfull")
         end
 
         return self
@@ -176,6 +177,7 @@ function normalize(word)
     """This function is used to normalize the given word
     params : word - String"""
 
+    word = string(word)
     if occursin("-", word) && (word[1] != "-")
         return "!HYPHEN"
     elseif occursin(r"^[\d]{4}$", word)
