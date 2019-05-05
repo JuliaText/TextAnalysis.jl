@@ -1,3 +1,5 @@
+# JuliaText TextAnalysis.jl Utility Functions
+
 function jackknife_avg(scores)
 
     #= The jackknife is a resampling technique especially useful for variance and bias estimation. 
@@ -17,11 +19,14 @@ function jackknife_avg(scores)
         such that m is the len(score_list)=#
         
         average = []
+        
         for i in scores
             # dummy : list a particular combo of m-1 scores
             dummy = [j for j in scores if i != j]
             append!(average, max(dummy...))
             end
+
         return sum(average)/length(average)
+
     end
 end
