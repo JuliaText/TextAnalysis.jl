@@ -34,7 +34,7 @@ We can often employ a trick that has come to be called the Hash Trick in which w
 with their hashed valued using a hash function that outputs integers from 1 to N.
 
 Parameters:
-	-  cardinality		= Max index used for hashing (default 100)
+	-  cardinality	    = Max index used for hashing (default 100)
  	-  hash_function    = function used for hashing process (default function present, see code-base)
 
 ```julia-repl
@@ -56,7 +56,7 @@ index_hash(str, TextHashFunc)
 Shows mapping of string to integer.
 
 Parameters:
-	-  str		       = Max index used for hashing (default 100)
+	-  str		   = Max index used for hashing (default 100)
  	-  TextHashFunc    = TextHashFunction type object
 
 ```julia-repl

@@ -47,7 +47,7 @@ operations and statistical techniques.
 Need to update lexicon before use.
 
 Parameters:
-	-  crps				= A Corpus of Documents
+	-  crps		    = A Corpus of Documents
  	-  terms            = A vector of string
 
 ```julia-repl
@@ -119,7 +119,7 @@ dtm(d, density)
 Creates a simple sparse matrix of DocumentTermMatrix object.
 
 Parameters:
-	-  d				= A DocumentTermMatrix object
+	-  d		    = A DocumentTermMatrix object
  	-  density          = pass :sparse to get a dense matrix output
 
 ```julia-repl
@@ -204,7 +204,7 @@ document do not have a lexicon associated with them, we have to pass in a lexico
 additional argument.
 
 Parameters:
-	-  d				= An AbstractDocument type object
+	-  d		    = An AbstractDocument type object
  	-  lexicon          = A lexicon in form of Dict{Strin, Int}
 
 ```julia-repl
@@ -243,7 +243,7 @@ Using a text hash function, we can represent a document as a vector with N entri
 by calling this function.
 
 Parameters:
-	-  d			   = An AbstractDocument type object
+	-  d		   = An AbstractDocument type object
  	-  TextHashFunc    = TextHashFunction type object
 
 ```julia-repl

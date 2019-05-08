@@ -46,7 +46,11 @@ mutable struct FileDocument <: AbstractDocument
 end
 
 """
+    FileDocument(pathname)
+
 A document represented using a plain text file on disk
+
+# Example
 ```julia-repl
 	julia> pathname = "/usr/share/dict/words"
 	"/usr/share/dict/words"
@@ -55,10 +59,10 @@ A document represented using a plain text file on disk
 	FileDocument("/usr/share/dict/words", TextAnalysis.DocumentMetadata(Languages.English(), "/usr/share/dict/words", "Unknown Author", "Unknown Time"))
 ```
 """
-function FileDocument(f::AbstractString)
-    d = FileDocument(String(f), DocumentMetadata())
-    d.metadata.title = f
-    return d
+function FileDocument(pathname::AbstractString)
+    doc = FileDocument(String(pathname), DocumentMetadata())
+    doc.metadata.title = pathname
+    return doc
 end
 
 ##############################################################################
@@ -73,10 +77,14 @@ mutable struct StringDocument{T<:AbstractString} <: AbstractDocument
 end
 
 """
+    StringDocument(str)
+
 A document represented using a UTF8 String stored in RAM
+
+# Example
 ```julia-repl
-    julia> sd = StringDocument(str)
-    StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+julia> sd = StringDocument(str)
+StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
 ```
 """
 StringDocument(txt::AbstractString) = StringDocument(txt, DocumentMetadata())
@@ -93,15 +101,19 @@ mutable struct TokenDocument{T<:AbstractString} <: AbstractDocument
 end
 
 """
+    TokenDocument(tokens)
+
 A document represented as a sequence of UTF8 tokens
+
+# Example
 ```julia-repl
 	julia> my_tokens = String["To", "be", "or", "not", "to", "be..."]
 	6-element Array{String,1}:
- 	"To"   
- 	"be"   
- 	"or"   
- 	"not"  
- 	"to"   
+ 	"To"
+ 	"be"
+ 	"or"
+ 	"not"
+ 	"to"
  	"be..."
 
 	julia> td = TokenDocument(my_tokens)
@@ -129,21 +141,26 @@ mutable struct NGramDocument{T<:AbstractString} <: AbstractDocument
 end
 
 """
-A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
-```julia-repl
-	julia> my_ngrams = Dict{String, Int}("To" => 1, "be" => 2,
-		                                "or" => 1, "not" => 1,
-		                                "to" => 1, "be..." => 1)
-	Dict{String,Int64} with 6 entries:
-	  "or"    => 1
-	  "be..." => 1
-	  "not"   => 1
-	  "to"    => 1
-	  "To"    => 1
-	  "be"    => 2
+    NGramDocument(text, n)
+    NGramDocument(ngrams)
 
-	julia> ngd = NGramDocument(my_ngrams)
-	NGramDocument{AbstractString}(Dict{AbstractString,Int64}("or"=>1,"be..."=>1,"not"=>1,"to"=>1,"To"=>1,"be"=>2), 1, TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
+
+# Example
+```julia-repl
+julia> my_ngrams = Dict{String, Int}("To" => 1, "be" => 2,
+		                             "or" => 1, "not" => 1,
+		                             "to" => 1, "be..." => 1)
+Dict{String,Int64} with 6 entries:
+	"or"    => 1
+	"be..." => 1
+	"not"   => 1
+	"to"    => 1
+	"To"    => 1
+	"be"    => 2
+
+julia> ngd = NGramDocument(my_ngrams)
+NGramDocument{AbstractString}(Dict{AbstractString,Int64}("or"=>1,"be..."=>1,"not"=>1,"to"=>1,"To"=>1,"be"=>2), 1, TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
 ```
 """
 function NGramDocument(txt::AbstractString, dm::DocumentMetadata, n::Integer=1)
@@ -163,13 +180,17 @@ end
 #
 ##############################################################################
 """
-Access the text of Document as a string.
-```julia-repl
-	julia> sd = StringDocument("To be or not to be...")
-	StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+    text(doc)
 
-	julia> text(sd)
-	"To be or not to be..."
+Access the text of Document as a string.
+
+# Example
+```julia-repl
+julia> sd = StringDocument("To be or not to be...")
+StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+
+julia> text(sd)
+"To be or not to be..."
 ```
 """
 function text(fd::FileDocument)
@@ -197,20 +218,25 @@ end
 #
 ##############################################################################
 """
+    tokens(doc)
+
 Access the document text as a token array.
+This works only for StringDocument, FileDocument, TokenDocument
+
+# Example
 ```julia-repl
-	julia> sd = StringDocument("To be or not to be...")
-	StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
-	
-	julia> tokens(sd)
-	7-element Array{String,1}:
- 	"To"  
- 	"be"  
- 	"or"  
- 	"not"
- 	"to"  
- 	"be.."
- 	"." 
+julia> sd = StringDocument("To be or not to be...")
+StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+
+julia> tokens(sd)
+7-element Array{String,1}:
+ "To"
+ "be"
+ "or"
+ "not"
+ "to"
+ "be.."
+ "."
 ```
 """
 tokens(d::(Union{FileDocument, StringDocument})) = tokenize(language(d), text(d))
@@ -221,7 +247,7 @@ end
 
 tokens!(d::TokenDocument, new_tokens::Vector{T}) where {T <: AbstractString} = (d.tokens = new_tokens)
 function tokens!(d::AbstractDocument, new_tokens::Vector{T}) where T <: AbstractString
-    error("The tokens of a $(typeof(d)) cannot be directly edited")
+    error("The tokens of a $(typeof(d))url cannot be directly edited")
 end
 
 ##############################################################################
@@ -230,23 +256,27 @@ end
 #
 ##############################################################################
 """
-Access the document text as n-gram counts.
-```julia-repl
-	julia> sd = StringDocument("To be or not to be...")
-	StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+    ngrams(doc)
 
-	julia> ngrams(sd)
-	 Dict{String,Int64} with 7 entries:
-	  "or"   => 1
-	  "not"  => 1
-	  "to"   => 1
-	  "To"   => 1
-	  "be"   => 1
-	  "be.." => 1
-	  "."    => 1
+Access the document text as n-gram counts.
+
+# Example
+```julia-repl
+julia> sd = StringDocument("To be or not to be...")
+StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+
+julia> ngrams(sd)
+ Dict{String,Int64} with 7 entries:
+  "or"   => 1
+  "not"  => 1
+  "to"   => 1
+  "To"   => 1
+  "be"   => 1
+  "be.." => 1
+  "."    => 1
 ```
 """
-function ngrams(d::NGramDocument, n::Integer)
+function ngrams(ngd::NGramDocument, n::Integer)
     error("The n-gram complexity of an NGramDocument cannot be increased")
 end
 ngrams(d::AbstractDocument, n::Integer) = ngramize(language(d), tokens(d), n)

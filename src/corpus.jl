@@ -13,11 +13,15 @@ mutable struct Corpus{T <: AbstractDocument}
 end
 
 """
+    Corpus(docs)
+
 Collections of documents are represented using the Corpus type.
+
+# Example
 ```julia-repl
-	julia> crps = Corpus([StringDocument("Document 1"),
+julia> crps = Corpus([StringDocument("Document 1"),
 		              StringDocument("Document 2")])
-	Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document 2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document 2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
 ```
 """
 function Corpus(docs::Vector{T}) where {T <: AbstractDocument}
@@ -32,11 +36,6 @@ end
 
 Corpus(docs::Vector{Any}) = Corpus(convert(Array{GenericDocument,1}, docs))
 
-##############################################################################
-#
-# Construct a Corpus from a directory of text files
-#
-##############################################################################
 """
 Construct a Corpus from a directory of text files.
 """
@@ -167,11 +166,15 @@ end
 #
 ##############################################################################
 """
+    lexicon(crps)
+
 Shows the lexicon of the corpus.
 The lexicon of a corpus consists of all the terms that occur in any document in the corpus.
-The lexical frequency of a term tells us how often a term occurs across all of the documents. 
-Often the most interesting words in a document are those words whose frequency within a document 
+The lexical frequency of a term tells us how often a term occurs across all of the documents.
+Often the most interesting words in a document are those words whose frequency within a document
 is higher than their frequency in the corpus as a whole.
+
+# Example
 ```julia-repl
 julia> crps = Corpus([StringDocument("Name Foo"),
                           StringDocument("Name Bar")])
@@ -209,8 +212,10 @@ lexical_frequency(crps::Corpus, term::AbstractString) =
 #
 ##############################################################################
 """
+    inverse_index(crps)
+
 Shows the inverse index of a corpus.
-If we are interested in a specific term, we often want to know which documents in a corpus 
+If we are interested in a specific term, we often want to know which documents in a corpus
 contain that term. The inverse index tells us this and therefore provides a simplistic sort of search algorithm.
 """
 inverse_index(crps::Corpus) = crps.inverse_index
@@ -253,17 +258,22 @@ hash_function!(crps::Corpus, f::TextHashFunction) = (crps.h = f; nothing)
 #
 ##############################################################################
 """
-A Corpus may contain many different types of documents, it is generally more convenient 
-to standardize all of the documents in a corpus using a single type. 
+    standardize!(crps, documentType)
+
+A Corpus may contain many different types of documents, it is generally more convenient
+to standardize all of the documents in a corpus using a single type.
 This can be done using the standardize! function.
+
+# Example
 ```julia-repl
-	julia> crps = Corpus([StringDocument("Document 1"),
-		                      TokenDocument("Document 2"),
-		                      NGramDocument("Document 3")])
-	Corpus{AbstractDocument}(AbstractDocument[StringDocument{String}("Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), TokenDocument{String}(["Document", "2"], DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
-	julia> standardize!(crps, NGramDocument)
-	julia> crps
-	Corpus{AbstractDocument}(AbstractDocument[NGramDocument{String}(Dict("1"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("2"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+julia> crps = Corpus([StringDocument("Document 1"),
+		              TokenDocument("Document 2"),
+		              NGramDocument("Document 3")])
+Corpus{AbstractDocument}(AbstractDocument[StringDocument{String}("Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), TokenDocument{String}(["Document", "2"], DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+
+julia> standardize!(crps, NGramDocument)
+julia> crps
+Corpus{AbstractDocument}(AbstractDocument[NGramDocument{String}(Dict("1"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("2"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
 ```
 """
 function standardize!(crps::Corpus, ::Type{T}) where T <: AbstractDocument
