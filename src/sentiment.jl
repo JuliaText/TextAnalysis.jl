@@ -35,7 +35,7 @@ function flatten(x)
     return reshape(x, (l, 1))
 end
 
-function get_sentiment(ip::Array{T, 1}, weight, rwi) where T <: AbstractString
+function get_sentiment(handle_unknown, ip::Array{T, 1}, weight, rwi) where T <: AbstractString
     model = (x,) -> begin
     a_1 = embedding(weight[:embedding_1]["embedding_1"]["embeddings:0"], x)
     a_2 = flatten(a_1)
@@ -45,7 +45,16 @@ function get_sentiment(ip::Array{T, 1}, weight, rwi) where T <: AbstractString
     end
     res = Array{Int, 1}()
     for ele in ip
-        push!(res, rwi[ele])
+	if ele in keys(rwi) && rwi[ele] <= size(weight[:embedding_1]["embedding_1"]["embeddings:0"])[2]   # there are only 5000 unique embeddings
+            push!(res, rwi[ele])
+	else
+	    for words in handle_unknown(ele) 
+		if words in keys(rwi) && rwi[words] <= size(weight[:embedding_1]["embedding_1"]["embeddings:0"])[2]
+		    push!(res, rwi[words])
+		end
+	    end	
+		
+	end
     end
     return model(pad_sequences(res))[1]
 end
@@ -74,10 +83,22 @@ function Base.show(io::IO, s::SentimentAnalyzer)
 end
 
 
-function(m::SentimentModel)(text::Array{T, 1}) where T <: AbstractString
-    return get_sentiment(text, m.weight, m.words)
+function(m::SentimentModel)(handle_unknown, text::Array{T, 1}) where T <: AbstractString
+    return get_sentiment(handle_unknown, text, m.weight, m.words)
 end
 
-function(m::SentimentAnalyzer)(d::AbstractDocument)
-    m.model(tokens(d))
+
+"""
+ ```
+ model = SentimentAnalyzer(doc)
+ model = SentimentAnalyzer(doc, handle_unknown)
+ ```
+ Return sentiment of the input doc in range 0 to 1, 0 being least sentiment score and 1 being
+ the highest:
+  -  doc              = Input Document for calculating document (AbstractDocument type)
+  -  handle_unknown   = A function for handling unknown words. Should return an array (default x->tuple())
+ """
+
+function(m::SentimentAnalyzer)(d::AbstractDocument, handle_unknown = x->tuple())
+    m.model(handle_unknown, tokens(d))
 end

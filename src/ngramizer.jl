@@ -11,11 +11,10 @@ function ngramize(lang::S, words::Vector{T}, n::Int) where {S <: Language, T <: 
 
     tokens = Dict{AbstractString, Int}()
 
-    for m in 1:n
-        for index in 1:(n_words - m + 1)
-            token = join(words[index:(index + m - 1)], " ")
-            tokens[token] = get(tokens, token, 0) + 1
-        end
+    for index in 1:(n_words - n + 1)
+        token = join(words[index:(index + n - 1)], " ")
+        tokens[token] = get(tokens, token, 0) + 1
+       
     end
 
     return tokens

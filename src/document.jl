@@ -6,7 +6,7 @@
 
 mutable struct DocumentMetadata
     language
-    name::String
+    title::String
     author::String
     timestamp::String
 end
@@ -21,7 +21,7 @@ Every document object also stores basic metadata about itself, including the fol
 """
 DocumentMetadata() = DocumentMetadata(
     Languages.English(),
-    "Unnamed Document",
+    "Untitled Document",
     "Unknown Author",
     "Unknown Time"
 )
@@ -57,7 +57,7 @@ A document represented using a plain text file on disk
 """
 function FileDocument(f::AbstractString)
     d = FileDocument(String(f), DocumentMetadata())
-    d.metadata.name = f
+    d.metadata.title = f
     return d
 end
 

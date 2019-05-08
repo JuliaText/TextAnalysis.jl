@@ -18,7 +18,7 @@ function summary(d::AbstractDocument)
     o = ""
     o *= "A $(typeof(d))\n"
     o *= " * Language: $(language(d))\n"
-    o *= " * Name: $(name(d))\n"
+    o *= " * Title: $(title(d))\n"
     o *= " * Author: $(author(d))\n"
     o *= " * Timestamp: $(timestamp(d))\n"
     if contains(Any[TokenDocument, NGramDocument], typeof(d))

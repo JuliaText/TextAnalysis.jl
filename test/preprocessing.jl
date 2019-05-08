@@ -28,7 +28,7 @@
     # Need to only remove words at word boundaries
     doc = Document("this is sample text")
     remove_words!(doc, ["sample"])
-    @test isequal(doc.text, "this is   text")
+    @test isequal(doc.text, "this is  text")
 
     doc = Document("this is sample text")
     prepare!(doc, strip_articles)
@@ -74,13 +74,33 @@
                 <script language=\"javascript\"> x = 20; </script>
             </head>
             <body>
-                <h1>Hello</h1><a href=\"world\">world</a>
+                <h1>Hello</h1><a href=\"world\"> world</a>
             </body>
         </html>
         """
     )
     remove_html_tags!(d)
     @test "Hello world" == strip(d.text)
+
+    style_html_doc = StringDocument(
+      """
+        <html>
+            <head>
+                <script language=\"javascript\"> x = 20; </script>
+            </head>
+            <body>
+                <style>
+                  .fake-style {
+                    color: #00ff00;
+                  }
+                </style>
+                <h1>Hello</h1><a href=\"world\"> world</a>
+            </body>
+        </html>
+      """
+     )
+    remove_html_tags!(style_html_doc)
+    @test "Hello world" == strip(style_html_doc.text)
 
     #Test #62
     remove_corrupt_utf8("abc") == "abc"
@@ -90,4 +110,20 @@
     crps = Corpus(StringDocument.(sample_texts))
     @test isempty(setdiff(frequent_terms(crps),["string","is"]))
     @test isempty(setdiff(sparse_terms(crps,0.3),["!"]))
+
+    #Tests strip_punctuation regex conditions
+    str = Document("These punctuations should be removed [-.,:;,!?'\"[](){}|\`#\$%@^&*_+<>")
+    answer = Document("These punctuations should be removed ")
+    prepare!(str, strip_punctuation)
+    @test isequal(str.text, answer.text)
+
+    str = Document("Intel(tm) Core i5-3300k, is a geat CPU! ")
+    answer = Document("Inteltm Core i53300k is a geat CPU ")   #tests old implementation   
+    prepare!(str, strip_punctuation)
+    @test isequal(str.text, answer.text)
+
+    #Tests no whitespace at end or begining
+    doc = Document("   this is sample text   ")
+    prepare!(doc, strip_whitespace)
+    @test isequal(doc.text, "this is sample text")
 end
