@@ -27,10 +27,9 @@ mutable struct AveragePerceptron
     end
 end
 
+"""Predicting the class using current weights by doing Dot-product of features
+and weights and return the scores"""
 function predict(self::AveragePerceptron, features)
-    """Predicting the class using current weights by doing Dot-product of features
-    and weights and return the scores"""
-
     scores = DefaultDict(0.0)
     for (feature, value) in features
         if feature ∉ keys(self.weights)
@@ -38,7 +37,7 @@ function predict(self::AveragePerceptron, features)
         end
         weights = self.weights[feature]
         for (label, weight) in weights
-            scores[label] += value*weight
+            scores[label] += value * weight
         end
     end
     function custmax(scores)
@@ -53,15 +52,14 @@ function predict(self::AveragePerceptron, features)
     return custmax(scores)
 end
 
+"""Applying the perceptron learning algorithm
+Increment the truth weights and decrementing the guess weights
+if the guess is wrong"""
 function update(self::AveragePerceptron, truth, guess, features)
-    """Applying the perceptron learning algorithm
-    Increment the truth weights and decrementing the guess weights
-    if the guess is wrong"""
-
     function upd_feat(c, f, w, v)
         param = (f, c)
         n_iters_at_this_weight = self.i - self._tstamps[param]
-        self._totals[param] += n_iters_at_this_weight*w
+        self._totals[param] += n_iters_at_this_weight * w
         self.weights[f][c] = w + v
         self._tstamps[param] = self.i
     end
@@ -83,9 +81,8 @@ function update(self::AveragePerceptron, truth, guess, features)
     return nothing
 end
 
+"""Averaging the weights over all time stamps"""
 function average_weights(self::AveragePerceptron)
-    """Averaging the weights over all time stamps"""
-
     function newRound(fl, in)
         temp = fl*(10^in)
         return (float(round(temp))/(10^in))
@@ -150,10 +147,9 @@ mutable struct PerceptronTagger
     end
 end
 
+"""makes a dictionary for single-tag words
+params : sentences - an array of tuples which contains word and correspinding tag"""
 function makeTagDict(self::PerceptronTagger, sentences)
-    """makes a dictionary for single-tag words
-    params : sentences - an array of tuples which contains word and correspinding tag"""
-
     counts = DefaultDict(()->DefaultDict(0))
     for sentence in sentences
         append!(self._sentences, sentences)
@@ -173,10 +169,9 @@ function makeTagDict(self::PerceptronTagger, sentences)
     end
 end
 
+"""This function is used to normalize the given word
+params : word - String"""
 function normalize(word)
-    """This function is used to normalize the given word
-    params : word - String"""
-
     word = string(word)
     if occursin("-", word) && (word[1] != "-")
         return "!HYPHEN"
@@ -189,19 +184,18 @@ function normalize(word)
     end
 end
 
+"""Converting the token into a feature representation, implemented as Dict
+If the features change, a new model should be trained
+params:
+i - index of word(or token) in sentence
+word - token
+context - array of tokens with starting and ending specifiers
+prev == "-START-" prev2 == "-START2-" - Start specifiers"""
 function getFeatures(self::PerceptronTagger, i, word, context, prev, prev2)
-    """Converting the token into a feature representation, implemented as Dict
-    If the features change, a new model should be trained
-    params:
-    i - index of word(or token) in sentence
-    word - token
-    context - array of tokens with starting and ending specifiers
-    prev == "-START-" prev2 == "-START2-" - Start specifiers"""
-
     function add(sep, name, args...)
         str = name
         for arg in args
-            str *= sep*arg
+            str *= sep * arg
         end
         if str in keys(features)
             features[str] += 1
@@ -241,10 +235,9 @@ function getFeatures(self::PerceptronTagger, i, word, context, prev, prev2)
     return features
 end
 
+"""Used for predicting the tags for given tokens
+tokens - array of tokens"""
 function tag(self::PerceptronTagger, tokens)
-    """Used for predicting the tags for given tokens
-    tokens - array of tokens"""
-
     prev, prev2 = self.START
     output = []
 
@@ -262,18 +255,17 @@ function tag(self::PerceptronTagger, tokens)
     return output
 end
 
+"""Used for training a new model or can be used for training
+an existing model by using pretrained weigths and classes
+
+Contains main training loop for number of epochs.
+After training weights, tagdict and classes are stored in the specified location.
+
+params:
+sentences - array of the all sentences
+save_loc - to specify the saving location
+nr_iter - total number of training iterations for given sentences(or number of epochs)"""
 function train(self::PerceptronTagger, sentences, save_loc=nothing, nr_iter=5)
-    """Used for training a new model or can be used for training
-    an existing model by using pretrained weigths and classes
-
-    Contains main training loop for number of epochs.
-    After training weights, tagdict and classes are stored in the specified location.
-
-    params:
-    sentences - array of the all sentences
-    save_loc - to specify the saving location
-    nr_iter - total number of training iterations for given sentences(or number of epochs)"""
-
     self._sentences = []
     makeTagDict(self, sentences)
     self.model.classes = self.classes
