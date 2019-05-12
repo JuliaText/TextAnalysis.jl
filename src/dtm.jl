@@ -16,7 +16,17 @@ end
 #
 ##############################################################################
 
-# create col index lookup dictionary from a (sorted?) vector of terms
+"""
+```
+columnindices(terms)
+```
+
+Creates a column index lookup dictionary from a vector of terms.
+
+Parameters:
+	-  terms            = A vector of string
+
+"""
 function columnindices(terms::Vector{String})
     column_indices = Dict{String, Int}()
     for i in 1:length(terms)
@@ -26,6 +36,40 @@ function columnindices(terms::Vector{String})
     column_indices
 end
 
+"""
+```
+m = DocumentTermMatrix(crps)
+m = DocumentTermMatrix(crps, terms)
+```
+
+Represent documents as a matrix of word counts so that we can apply linear algebra 
+operations and statistical techniques.
+Need to update lexicon before use.
+
+Parameters:
+	-  crps				= A Corpus of Documents
+ 	-  terms            = A vector of string
+
+```julia-repl
+julia> crps = Corpus([StringDocument("To be or not to be"),
+                      StringDocument("To become or not to become")])
+
+julia> update_lexicon!(crps)
+
+julia> m = DocumentTermMatrix(crps)
+DocumentTermMatrix(
+  [1, 1]  =  1
+  [2, 1]  =  1
+  [1, 2]  =  2
+  [2, 3]  =  2
+  [1, 4]  =  1
+  [2, 4]  =  1
+  [1, 5]  =  1
+  [2, 5]  =  1
+  [1, 6]  =  1
+  [2, 6]  =  1, ["To", "be", "become", "not", "or", "to"], Dict("or"=>5,"not"=>4,"to"=>6,"To"=>1,"be"=>2,"become"=>3))
+```
+"""
 function DocumentTermMatrix(crps::Corpus, terms::Vector{String})
     column_indices = columnindices(terms)
 
@@ -66,7 +110,43 @@ DocumentTermMatrix(dtm::SparseMatrixCSC{Int, Int},terms::Vector{String}) = Docum
 # Access the DTM of a DocumentTermMatrix
 #
 ##############################################################################
+"""
+```
+dtm(d)
+dtm(d, density)
+```
 
+Creates a simple sparse matrix of DocumentTermMatrix object.
+
+Parameters:
+	-  d				= A DocumentTermMatrix object
+ 	-  density          = pass :sparse to get a dense matrix output
+
+```julia-repl
+julia> crps = Corpus([StringDocument("To be or not to be"),
+                      StringDocument("To become or not to become")])
+
+julia> update_lexicon!(crps)
+
+julia> dtm(DocumentTermMatrix(crps))
+2×6 SparseArrays.SparseMatrixCSC{Int64,Int64} with 10 stored entries:
+  [1, 1]  =  1
+  [2, 1]  =  1
+  [1, 2]  =  2
+  [2, 3]  =  2
+  [1, 4]  =  1
+  [2, 4]  =  1
+  [1, 5]  =  1
+  [2, 5]  =  1
+  [1, 6]  =  1
+  [2, 6]  =  1
+
+julia> dtm(DocumentTermMatrix(crps), :dense)
+2×6 Array{Int64,2}:
+ 1  2  0  1  1  1
+ 1  0  2  1  1  1
+```
+"""
 function dtm(d::DocumentTermMatrix, density::Symbol)
     if density == :sparse
         return d.dtm
@@ -113,6 +193,26 @@ function dtm_entries(d::AbstractDocument, lex::Dict{String, Int})
     return (indices, values)
 end
 
+"""
+```
+dtv(d, lexicon)
+```
+
+In many cases, we don't need the entire document term matrix at once: we can make 
+do with just a single row. You can get this using the dtv function. Because individual's 
+document do not have a lexicon associated with them, we have to pass in a lexicon as an 
+additional argument.
+
+Parameters:
+	-  d				= An AbstractDocument type object
+ 	-  lexicon          = A lexicon in form of Dict{Strin, Int}
+
+```julia-repl
+julia> dtv(crps[1], lexicon(crps))
+1×6 Array{Int64,2}:
+ 1  2  0  1  1  1
+```
+"""
 function dtv(d::AbstractDocument, lex::Dict{String, Int})
     p = length(keys(lex))
     row = zeros(Int, 1, p)
@@ -133,7 +233,35 @@ end
 # columns of a DocumentTermMatrix-like encoding of the data
 #
 ##############################################################################
+"""
+```
+hash_dtv(d)
+hash_dtv(d, TextHashFunc)
+```
 
+Using a text hash function, we can represent a document as a vector with N entries
+by calling this function.
+
+Parameters:
+	-  d			   = An AbstractDocument type object
+ 	-  TextHashFunc    = TextHashFunction type object
+
+```julia-repl
+julia> crps = Corpus([StringDocument("To be or not to be"),
+                      StringDocument("To become or not to become")])
+
+julia> h = TextHashFunction(10)
+TextHashFunction(hash, 10)
+
+julia> hash_dtv(crps[1], h)
+1×10 Array{Int64,2}:
+ 0  2  0  0  1  3  0  0  0  0
+
+julia> hash_dtv(crps[1])
+1×100 Array{Int64,2}:
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
+```
+"""
 function hash_dtv(d::AbstractDocument, h::TextHashFunction)
     p = cardinality(h)
     res = zeros(Int, 1, p)
