@@ -48,12 +48,12 @@ function get_sentiment(handle_unknown, ip::Array{T, 1}, weight, rwi) where T <: 
 	if ele in keys(rwi) && rwi[ele] <= size(weight[:embedding_1]["embedding_1"]["embeddings:0"])[2]   # there are only 5000 unique embeddings
             push!(res, rwi[ele])
 	else
-	    for words in handle_unknown(ele) 
+	    for words in handle_unknown(ele)
 		if words in keys(rwi) && rwi[words] <= size(weight[:embedding_1]["embedding_1"]["embeddings:0"])[2]
 		    push!(res, rwi[words])
 		end
-	    end	
-		
+	    end
+
 	end
     end
     return model(pad_sequences(res))[1]
@@ -67,7 +67,7 @@ struct SentimentModel
         # Only load Flux once it is actually needed
         global Flux
         Flux = Base.require(TextAnalysis, :Flux)
-        
+
         new(read_weights(), read_word_ids())
     end
 end
@@ -89,15 +89,16 @@ end
 
 
 """
- ```
- model = SentimentAnalyzer(doc)
- model = SentimentAnalyzer(doc, handle_unknown)
- ```
- Return sentiment of the input doc in range 0 to 1, 0 being least sentiment score and 1 being
- the highest:
-  -  doc              = Input Document for calculating document (AbstractDocument type)
-  -  handle_unknown   = A function for handling unknown words. Should return an array (default x->tuple())
- """
+    model = SentimentAnalyzer(doc)
+    model = SentimentAnalyzer(doc, handle_unknown)
+
+Returns the sentiment of the input doc in range 0 to 1, 0 being least sentiment score and 1 being
+the highest.
+
+# Arguments
+-  doc              = Input Document for calculating document (`AbstractDocument` type)
+-  handle_unknown   = A function for handling unknown words. Should return an array (default x->tuple())
+"""
 
 function(m::SentimentAnalyzer)(d::AbstractDocument, handle_unknown = x->tuple())
     m.model(handle_unknown, tokens(d))
