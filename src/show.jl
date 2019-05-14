@@ -2,12 +2,6 @@ show(io::IO, d::AbstractDocument) = print(io, "A $(typeof(d))")
 show(io::IO, crps::Corpus) = print(io, "A Corpus")
 show(io::IO, dtm::DocumentTermMatrix) = print(io, "A DocumentTermMatrix")
 
-##############################################################################
-#
-# Pretty printing of TextAnalysis types
-#
-##############################################################################
-
 function summary(d::AbstractDocument)
     o = ""
     o *= "A $(typeof(d))\n"
@@ -19,7 +13,7 @@ function summary(d::AbstractDocument)
     if typeof(d) ∈ [TokenDocument, NGramDocument]
         o *= " * Snippet: ***SAMPLE TEXT NOT AVAILABLE***"
     else
-        sample_text = replace(text(d)[1:min(50, length(text(d)))], r"\s+", " ")
+        sample_text = replace(text(d)[1:min(50, length(text(d)))], r"\s+" => " ")
         o *= " * Snippet: $(sample_text)"
     end
     return o
