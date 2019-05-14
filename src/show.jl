@@ -1,8 +1,8 @@
-show(io::IO, d::AbstractDocument) = print(io, "A $(typeof(d))")
-show(io::IO, crps::Corpus) = print(io, "A Corpus")
-show(io::IO, dtm::DocumentTermMatrix) = print(io, "A DocumentTermMatrix")
+Base.show(io::IO, d::AbstractDocument) = print(io, "A $(typeof(d))")
+Base.show(io::IO, crps::Corpus) = print(io, "A Corpus")
+Base.show(io::IO, dtm::DocumentTermMatrix) = print(io, "A DocumentTermMatrix")
 
-function summary(d::AbstractDocument)
+function Base.summary(d::AbstractDocument)
     o = ""
     o *= "A $(typeof(d))\n"
     o *= " * Language: $(language(d))\n"
@@ -19,7 +19,7 @@ function summary(d::AbstractDocument)
     return o
 end
 
-function summary(crps::Corpus)
+function Base.summary(crps::Corpus)
     n = length(crps.documents)
     n_s = sum(map(d -> typeof(d) == StringDocument, crps.documents))
     n_f = sum(map(d -> typeof(d) == FileDocument, crps.documents))
@@ -36,7 +36,7 @@ function summary(crps::Corpus)
     return o
 end
 
-function summary(dtm::DocumentTermMatrix)
+function Base.summary(dtm::DocumentTermMatrix)
     n, p = size(dtm.dtm)
     @sprintf "A %dx%d DocumentTermMatrix" n p
 end
