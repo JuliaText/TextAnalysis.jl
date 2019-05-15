@@ -155,7 +155,7 @@ A trained model (using Flux) on IMDB word corpus with weights saved are used to 
 
 ## Summarizer
 
-TextAnalysis offers a summarizer for its various document types.
+TextAnalysis offers a simple text-rank based summarizer for its various document types.
 
     summarize(d, ns)
 
