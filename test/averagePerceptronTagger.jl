@@ -4,7 +4,7 @@
 
     @test typeof(tagger.classes) == Set{Any}
     @test length(tagger.classes) == 0
-    @test typeof(tagger.model) == AveragePerceptron
+    @test typeof(tagger.model) == TextAnalysis.AveragePerceptron
 
     train(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
     @test length(keys(tagger.model.weights)) == 51
