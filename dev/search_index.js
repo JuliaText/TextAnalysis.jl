@@ -177,6 +177,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "features/#Summarizer-1",
+    "page": "Features",
+    "title": "Summarizer",
+    "category": "section",
+    "text": "TextAnalysis offers a simple text-rank based summarizer for its various document types.summarize(d, ns)It takes 2 arguments:d : A document of type StringDocument, FileDocument or TokenDocument\nns : (Optional) Mention the number of sentences in the Summary, defaults to 5 sentences.julia> s = StringDocument(\"Assume this Short Document as an example. Assume this as an example summarizer. This has too foo sentences.\")\n\njulia> summarize(s, ns=2)\n2-element Array{SubString{String},1}:\n \"Assume this Short Document as an example.\"\n \"This has too foo sentences.\""
+},
+
+{
     "location": "semantic/#",
     "page": "Semantic Analysis",
     "title": "Semantic Analysis",
