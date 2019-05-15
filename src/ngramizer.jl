@@ -1,9 +1,10 @@
 """
     ngramize(lang, tokens, n)
 
+Compute the ngrams of `tokens` of the order `n`.
 
-Returns the ngrams of `tokens` with order of `n`.
 # Example
+
 ```julia-repl
 julia> ngramize(Languages.English(), ["To", "be", "or", "not", "to"], 3)
 Dict{AbstractString,Int64} with 3 entries:
@@ -29,7 +30,7 @@ end
 """
     onegramize(lang, tokens)
 
-Returns the unigrams dict for the input `tokens`
+Create the unigrams dict for input tokens
 
 # Example
 

@@ -92,7 +92,7 @@ end
     model = SentimentAnalyzer(doc)
     model = SentimentAnalyzer(doc, handle_unknown)
 
-Returns the sentiment of the input doc in range 0 to 1, 0 being least sentiment score and 1 being
+Predict sentiment of the input doc in range 0 to 1, 0 being least sentiment score and 1 being
 the highest.
 
 # Arguments

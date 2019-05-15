@@ -3,28 +3,28 @@ import Languages.name
 """
     title(doc)
 
-Returns the title metadata for `doc`
+Return the title metadata for `doc`
 """
 title(d::AbstractDocument) = d.metadata.title
 
 """
     language(doc)
 
-Returns the language metadata for `doc`
+Return the language metadata for `doc`
 """
 language(d::AbstractDocument) = d.metadata.language
 
 """
     author(doc)
 
-Returns the author metadata for `doc`
+Return the author metadata for `doc`
 """
 author(d::AbstractDocument) = d.metadata.author
 
 """
     timestamp(doc)
 
-Returns the timestamp metadata for `doc`
+Return the timestamp metadata for `doc`
 """
 timestamp(d::AbstractDocument) = d.metadata.timestamp
 
@@ -32,7 +32,7 @@ timestamp(d::AbstractDocument) = d.metadata.timestamp
 """
     title!(doc, str)
 
-Sets the title of `doc` to `str`
+Set the title of `doc` to `str`
 """
 function title!(d::AbstractDocument, nv::AbstractString)
     d.metadata.title = nv
@@ -41,7 +41,7 @@ end
 """
     language!(doc, lang)
 
-Sets the language of `doc` to `lang`.
+Set the language of `doc` to `lang`.
 
 # Example
 ```julia-repl
@@ -58,18 +58,18 @@ function language!(d::AbstractDocument, nv::T) where T <: Language
 end
 
 """
-    author!(doc, authr)
+    author!(doc, author)
 
-Sets the `author` metadata of doc to `authr`
+Set the author metadata of doc to `author`
 """
 function author!(d::AbstractDocument, nv::AbstractString)
     d.metadata.author = nv
 end
 
 """
-    author!(doc, timestmp)
+    author!(doc, timestamp)
 
-Sets the `timestamp` metadata of doc to `timestmp`
+Set the timestamp metadata of doc to `timestamp`
 """
 function timestamp!(d::AbstractDocument, nv::AbstractString)
     d.metadata.timestamp = nv
@@ -111,9 +111,10 @@ timestamps!(c::Corpus, nv::AbstractString) = timestamp!.(documents(c), Ref(nv))
 
 """
     titles!(crps, ::Vector{String})
-    titles!(crps, str)
+    titles!(crps, str::String)
 
-Updates the titles of the documents in `crps` to the strings in the input vector.
+Update titles of documents in `crps` to the ones in input vector.
+If the input is a String, then set the same title for all documents.
 
 See also: [`title!`](@ref), [`titles`](@ref)
 """
@@ -128,7 +129,7 @@ end
     languages!(crps, langs)
     languages!(crps, lang)
 
-Updates the languages of the documents in `crps` to `langs`, respectively.
+Update the languages of the documents in crps to `langs`.
 """
 function languages!(c::Corpus, nvs::Vector{T}) where T <: Language
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
@@ -141,7 +142,7 @@ end
     authors!(crps, athrs)
     authors!(crps, athr)
 
-Sets the authors of the documents in `crps` to the `athrs`, respectively.
+Set the authors of the documents in `crps` to the `athrs`, respectively.
 """
 function authors!(c::Corpus, nvs::Vector{String})
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
@@ -151,10 +152,10 @@ function authors!(c::Corpus, nvs::Vector{String})
 end
 
 """
-    timestamps!(crps, times)
-    timestamps!(crps, time)
+    timestamps!(crps, times ::Vector{String})
+    timestamps!(crps, time::AbstractString)
 
-Sets the timestamps of the documents in `crps` to the timestamps in `times`, respectively .
+Set the timestamps of the documents in `crps` to the timestamps in `times`, respectively.
 """
 function timestamps!(c::Corpus, nvs::Vector{String})
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))

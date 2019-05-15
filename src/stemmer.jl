@@ -11,7 +11,7 @@ const KOI8_R        = "KOI8_R"
 """
     stemmer_types()
 
-Lists the stemmer algorithms loaded
+List all the stemmer algorithms loaded.
 """
 function stemmer_types()
     cptr = ccall((:sb_stemmer_list, libstemmer), Ptr{Ptr{UInt8}}, ())
@@ -66,7 +66,9 @@ end
     stem(stemmer::Stemmer, str::AbstractString)
     stem(stemmer::Stemmer, words::Array)
 
-Applies the Stemming algorthms on input string or array of words and returns the processed
+Stem the input with the Stemming algorthm of `stemmer`.
+
+See also: [`stem!`](@ref)
 """
 function stem(stemmer::Stemmer, bstr::AbstractString)
     sres = ccall((:sb_stemmer_stem, libstemmer),
@@ -98,7 +100,7 @@ end
 """
     stemmer_for_document(doc)
 
-Returns the appropriate stemmer, corresponding to the Language of the document.
+Search for an appropriate stemmer based on the language `doc`.
 """
 function stemmer_for_document(d::AbstractDocument)
     Stemmer(lowercase(Languages.english_name(language(d))))
