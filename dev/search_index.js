@@ -209,6 +209,38 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "classify/#",
+    "page": "Classifier",
+    "title": "Classifier",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "classify/#Classifier-1",
+    "page": "Classifier",
+    "title": "Classifier",
+    "category": "section",
+    "text": "Text Analysis currently offers a Naive Bayes Classifier for text classification.To load the Naive Bayes Classifier, use the following command -using TextAnalysis: NaiveBayesClassifier, fit!, predict"
+},
+
+{
+    "location": "classify/#Basic-Usage-1",
+    "page": "Classifier",
+    "title": "Basic Usage",
+    "category": "section",
+    "text": "Its usage can be done in the following 3 steps.1- Create an instance of the Naive Bayes Classifier model -model = NaiveBayesClassifier(dict, classes)It takes two arguments-classes: An array of possible classes that the concerned data could belong to.\ndict:(Optional Argument) An Array of possible tokens (words). This is automatically updated if a new token is detected in the Step 2) or 3)2- Fitting the model weights on input -fit!(model, str, class)3- Predicting for the input case -predict(model, str)"
+},
+
+{
+    "location": "classify/#Example-1",
+    "page": "Classifier",
+    "title": "Example",
+    "category": "section",
+    "text": "julia> m = NaiveBayesClassifier([:legal, :financial])\nNaiveBayesClassifier{Symbol}(String[], Symbol[:legal, :financial], Array{Int64}(0,2))\njulia> fit!(m, \"this is financial doc\", :financial)\nNaiveBayesClassifier{Symbol}([\"financial\", \"this\", \"is\", \"doc\"], Symbol[:legal, :financial], [1 2; 1 2; 1 2; 1 2])\n\njulia> fit!(m, \"this is legal doc\", :legal)\nNaiveBayesClassifier{Symbol}([\"financial\", \"this\", \"is\", \"doc\", \"legal\"], Symbol[:legal, :financial], [1 2; 2 2; … ; 2 2; 2 1])\njulia> predict(m, \"this should be predicted as a legal document\")\nDict{Symbol,Float64} with 2 entries:\n  :legal     => 0.666667\n  :financial => 0.333333\n"
+},
+
+{
     "location": "example/#",
     "page": "Extended Example",
     "title": "Extended Example",
