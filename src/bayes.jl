@@ -5,7 +5,7 @@ export NaiveBayesClassifier
 simpleTokenise(s) = WordTokenizers.tokenize(lowercase(replace(s, "."=>"")))
 
 """
-Returns a dictionary mapping the elements in the input array to their frequencies.
+Create a dict that maps elements in input array to their frequencies.
 """
 function frequencies(xs)
     frequencies = Dict{eltype(xs),Int}()
@@ -18,8 +18,7 @@ end
 """
     features(::AbstractDict, dict)
 
-Returns an array with the mapping the value corresponding to elements of `dict` to
-the input `AbstractDict`.
+Compute an Array, mapping the value corresponding to elements of `dict` to the input `AbstractDict`.
 """
 function features(fs::AbstractDict, dict)
     bag = zeros(Int, size(dict))
@@ -42,7 +41,7 @@ end
 """
     NaiveBayesClassifier([dict, ]classes)
 
-A simple Naive Bayes Classifier for classifying documents.
+A Naive Bayes Classifier for classifying documents.
 
 # Example
 ```julia-repl
@@ -71,9 +70,9 @@ NaiveBayesClassifier(classes) = NaiveBayesClassifier(String[], classes)
 probabilities(c::NaiveBayesClassifier) = c.weights ./ sum(c.weights, dims = 1)
 
 """
-    extend!(::NaiveBayesClassifier, dictElement)
+    extend!(model::NaiveBayesClassifier, dictElement)
 
-Adds a new element to `dict` in the NaiveBayesClassifier model.
+Add the dictElement to dictionary of the Classifier `model`.
 """
 function extend!(c::NaiveBayesClassifier, dictElement)
     push!(c.dict, dictElement)
@@ -82,10 +81,10 @@ function extend!(c::NaiveBayesClassifier, dictElement)
 end
 
 """
-    fit!(::NaiveBayesClassifier, str, class)
-    fit!(::NaiveBayesClassifier, ::Features, class)
+    fit!(model::NaiveBayesClassifier, str, class)
+    fit!(model::NaiveBayesClassifier, ::Features, class)
 
-Fits the `weights` for the `NaiveBayesClassifier`  as per the inputs
+Fit the weights for the model on the input data.
 """
 function fit!(c::NaiveBayesClassifier, x::Features, class)
     n = findfirst(==(class), c.classes)
@@ -105,7 +104,7 @@ end
     predict(::NaiveBayesClassifier, str)
     predict(::NaiveBayesClassifier, ::Features)
 
-Predics the probabilities for each class on the input Features or string.
+Predict probabilities for each class on the input Features or String.
 """
 function predict(c::NaiveBayesClassifier, x::Features)
     ps = prod(probabilities(c) .^ x, dims = 1)
