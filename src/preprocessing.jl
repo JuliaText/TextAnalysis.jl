@@ -39,7 +39,7 @@ end
 """
     remove_corrupt_utf8(str::AbstractString)
 
-Returns the string after removeing the corrupt UTF8 characters in `str`.
+Remove corrupt UTF8 characters in `str`.
 
 See also: [`remove_corrupt_utf8!`](@ref)
 """
@@ -55,8 +55,8 @@ remove_corrupt_utf8!(d::FileDocument) = error("FileDocument cannot be modified")
     remove_corrupt_utf8!(doc::NGramDocument)
     remove_corrupt_utf8!(crps)
 
-Removes corrupt UTF8 characters for `doc` or each document in `crps`.
-This is not supported for `FileDocument`, or `crps` containing `FileDocument`.
+Remove corrupt UTF8 characters for `doc` or documents in `crps`.
+Does not support `FileDocument` or Corpus containing `FileDocument`.
 """
 function remove_corrupt_utf8!(d::StringDocument)
     d.text = remove_corrupt_utf8(d.text)
@@ -89,9 +89,9 @@ function remove_corrupt_utf8!(crps::Corpus)
 end
 
 """
-    remove_case(s::AbstractString)
+    remove_case(str::AbstractString)
 
-Converts the string to lowercase.
+Convert `str` to lowercase.
 
 See also: [`remove_case!`](@ref)
 """
@@ -99,14 +99,14 @@ remove_case(s::T) where {T <: AbstractString} = lowercase(s)
 
 
 """
-    remove_case!(d::TokenDocument)
-    remove_case!(d::StringDocument)
-    remove_case!(d::NGramDocument)
+    remove_case!(doc::TokenDocument)
+    remove_case!(doc::StringDocument)
+    remove_case!(doc::NGramDocument)
 
-    remove_case!(c::Corpus)
+    remove_case!(crps::Corpus)
 
-Converts the text of the document or corpus to lowercase. This method does not
-works with FileDocument.
+Convert the text of `doc` or `crps` to lowercase.
+Does not support `FileDocument` or `crps` containing `FileDocument`.
 
 # Example
 
@@ -158,9 +158,9 @@ const style_tags = Regex("<style\\b[^>]*>([\\s\\S]*?)</style>")
 const html_tags = Regex("<[^>]*>")
 
 """
-    remove_html_tags(s::AbstractString)
+    remove_html_tags(str::AbstractString)
 
-Removes the html tags from string, including the style and script tags.
+Remove html tags from `str`, including the style and script tags.
 
 See also: [`remove_html_tags!`](@ref)
 """
@@ -174,7 +174,8 @@ end
     remove_html_tags!(doc::StringDocument)
     remove_html_tags!(crps::Corpus)
 
-Removes the html tags from the `StringDocument` or all the documents in `crps`. This is supported only for StringDocument or Corpus made of these documents.
+Remove html tags from the `StringDocument` or documents `crps`.
+Does not work for documents other than `StringDocument`.
 
 # Example
 
@@ -214,10 +215,10 @@ end
 
 
 """
-    remove_words!(d::AbstractDocument, words::Vector)
-    remove_words!(c::Corpus, words::Vector)
+    remove_words!(doc::AbstractDocument, words::Vector)
+    remove_words!(crps::Corpus, words::Vector)
 
-Removes the tokens defined in the list `words` from the source Document or Corpus
+Remove the occurences of words from `doc` or `crps`.
 
 # Example
 
@@ -250,8 +251,8 @@ tag_pos!(entity) = error("Not yet implemented")
 """
     sparse_terms(crps [, alpha])
 
-Returns an array of the terms in `crps` occuring in less than `alpha` percentage
-of the documents in the corpus, defaults to `alpha = 0.05`
+Find the sparse terms from Corpus, occuring in less than `alpha` percentage of the documents.
+`alpha = 0.05` by default.
 
 # Example
 
@@ -285,8 +286,8 @@ end
 """
     frequent_terms(crps [, alpha])
 
-Returns an array of the terms in `crps` occuring in more than `alpha` percent
-of the documents in the corpus, defaults to `alpha = 0.95`
+Find the frequent terms from Corpus, occuring more than `alpha` percentage of the documents.
+`alpha = 0.05` by default.
 
 # Example
 
@@ -321,8 +322,8 @@ end
 """
     remove_sparse_terms!(crps [, alpha])
 
-Removes the sparse terms in `crps`, occuring less than `alpha` percent
-of all the documents in the Corpus. `alpha` defaults to 0.05.
+Remove sparse terms in crps, occuring less than `alpha` percent of documents.
+`alpha` defaults to 0.05.
 
 ```julia-repl
 julia> crps = Corpus([StringDocument("This is Document 1"),
@@ -340,20 +341,20 @@ See also: [`remove_frequent_terms!`](@ref), [`sparse_terms`](@ref)
 remove_sparse_terms!(crps::Corpus, alpha::Real = alpha_sparse) = remove_words!(crps, sparse_terms(crps, alpha))
 
 """
-    remove_sparse_terms!(crps [, alpha])
+    remove_frequent_terms!(crps [, alpha])
 
-Removes the terms in `crps`, occuring in more than `alpha` percent
-of all the documents in the Corpus. `alpha` defaults to 0.95.
+Remove terms in `crps`, occuring more than `alpha` percent of documents.
+`alpha` defaults to 0.95.
 
 ```julia-repl
 julia> crps = Corpus([StringDocument("This is Document 1"),
                       StringDocument("This is Document 2")])
 Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("This is Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("This is Document 2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
 
-julia> remove_sparse_terms!(crps, 0.5)
+julia> remove_frequent_terms!(crps)
 
 julia> crps
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("This is Document ", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("This is Document ", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 8, Dict("1"=>1,"is"=>2,"This"=>2,"2"=>1,"Document"=>2), Dict("1"=>[1],"is"=>[1, 2],"This"=>[1, 2],"2"=>[2],"Document"=>[1, 2]), TextHashFunction(hash, 100))
+Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("     1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("     2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 8, Dict("1"=>1,"is"=>2,"This"=>2,"2"=>1,"Document"=>2), Dict("1"=>[1],"is"=>[1, 2],"This"=>[1, 2],"2"=>[2],"Document"=>[1, 2]), TextHashFunction(hash, 100))
 ```
 
 See also: [`remove_sparse_terms!`](@ref), [`frequent_terms`](@ref)
@@ -365,7 +366,7 @@ remove_frequent_terms!(crps::Corpus, alpha::Real = alpha_frequent) = remove_word
     prepare!(doc, flags)
     prepare!(crps, flags)
 
-Preprocess `doc` or all the documents in a corpus based on the input flags.
+Preprocess document or corpus based on the input flags.
 
 # List of Flags
 
@@ -389,6 +390,7 @@ Preprocess `doc` or all the documents in a corpus based on the input flags.
 * strip_html_tags
 
 # Example
+
 ```julia-repl
 julia> doc = StringDocument("This is a document of mine")
 StringDocument{String}("This is a document of mine", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
@@ -436,8 +438,8 @@ end
 """
     remove_whitespace(s::AbstractString)
 
-Squashes multiple whitespaces to a single one. And removes all leading and
-trailing whitespaces in a string.
+Squash multiple whitespaces to a single one.
+And remove all leading and trailing whitespaces.
 
 See also: [`remove_whitespace!`](@ref)
 """
@@ -445,13 +447,13 @@ remove_whitespace(s::AbstractString) = replace(strip(s), r"\s+"=>" ")
 
 
 """
-    remove_whitespace!(s::AbstractDocument)
+    remove_whitespace!(doc)
     remove_whitespace!(crps)
 
-Squashes multiple whitespaces to a single space. And removes all leading and
-trailing whitespaces in a StringDocument and Corpus.
+Squash multiple whitespaces to a single space.
+And remove all leading and trailing whitespaces in document or crps.
 
-Does no-op for NGramDocument and TokenDocument.
+Does no-op for `FileDocument`, `TokenDocument` or `NGramDocument`.
 """
 function remove_whitespace!(d::StringDocument)
     d.text = remove_whitespace(d.text)
@@ -470,7 +472,7 @@ end
 """
     remove_patterns(str, rex::Regex)
 
-Removes the patterns matched in `str` by the input Regex `rex`.
+Remove the part of str matched by rex.
 
 See also: [`remove_patterns!`](@ref)
 """
@@ -503,8 +505,9 @@ end
     remove_patterns!(doc, rex::Regex)
     remove_patterns!(crps, rex::Regex)
 
-Removes the patterns matched to `rex` in `doc`or each document in `crps`.
-`FileDocument` and Corpus containing these documents cannot be modified.
+Remove patterns matched by `rex` in document or Corpus.
+
+Does not modify `FileDocument` or Corpus containing `FileDocument`.
 """
 remove_patterns!(d::FileDocument, rex::Regex) = error("FileDocument cannot be modified")
 

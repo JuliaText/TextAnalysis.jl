@@ -159,6 +159,8 @@ julia> tf(m)
 
 ## TF-IDF (Term Frequency - Inverse Document Frequency)
 
+    tf_idf(dtm)
+
 In many cases, raw word counts are not appropriate for use because:
 
 * (A) Some documents are longer than other documents
