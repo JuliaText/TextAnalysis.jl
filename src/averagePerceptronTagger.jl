@@ -115,11 +115,11 @@ To train:
 tagger = PerceptronTagger(false)
 train(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
 
-To predict tag:
-tag(tagger, ["today", "is"])
-
 To load pretrain model:
 tagger = PerceptronTagger(true)
+
+To predict tag:
+tag(tagger, ["today", "is"])
 """
 
 mutable struct PerceptronTagger
@@ -130,21 +130,23 @@ mutable struct PerceptronTagger
     END :: Array
     _sentences
 
-    function PerceptronTagger(load = false)
-        self = new(AveragePerceptron(), Dict(), Set(), ["-START-", "-START2-"], ["-END-", "-END2-"], [])
+        PerceptronTagger() = new(AveragePerceptron(), Dict(), Set(), ["-START-", "-START2-"], ["-END-", "-END2-"], [])
+end
 
-        """If load is true then a pretrain model will be import from location"""
-        if load
-            location = "pretrainedMod.bson";
-            pretrained = BSON.load(location)
-            self.model.weights = pretrained[:weights]
-            self.tagdict = pretrained[:tagdict]
-            self.classes = self.model.classes = Set(pretrained[:classes])
-            println("loaded successfull")
-        end
+function PerceptronTagger(load::Bool)
+    self = PerceptronTagger()
 
-        return self
+    """If load is true then a pretrain model will be import from location"""
+    if load
+        location = "src/pretrainedMod.bson";
+        pretrained = BSON.load(location)
+        self.model.weights = pretrained[:weights]
+        self.tagdict = pretrained[:tagdict]
+        self.classes = self.model.classes = Set(pretrained[:classes])
+        println("loaded successfull")
     end
+
+    return self
 end
 
 """makes a dictionary for single-tag words
@@ -237,7 +239,7 @@ end
 
 """Used for predicting the tags for given tokens
 tokens - array of tokens"""
-function tag(self::PerceptronTagger, tokens)
+function tag(self::PerceptronTagger, tokens::Vector{String})
     prev, prev2 = self.START
     output = []
 
@@ -265,7 +267,7 @@ params:
 sentences - array of the all sentences
 save_loc - to specify the saving location
 nr_iter - total number of training iterations for given sentences(or number of epochs)"""
-function train(self::PerceptronTagger, sentences, save_loc=nothing, nr_iter=5)
+function train(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)
     self._sentences = []
     makeTagDict(self, sentences)
     self.model.classes = self.classes
@@ -294,7 +296,11 @@ function train(self::PerceptronTagger, sentences, save_loc=nothing, nr_iter=5)
     self._sentences = nothing
     average_weights(self.model)
 
-    if save_loc != nothing
+    if save_loc != ""
         bson(save_loc, weights = self.model.weights, tagdict = self.tagdict, classes = collect(self.classes))
     end
 end
+
+train(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, nr_iter::Integer) = train(self::PerceptronTagger, sentences, "", nr_iter)
+train(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String) = train(self::PerceptronTagger, sentences, save_loc, 5)
+train(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}) = train(self::PerceptronTagger, sentences, "", 5)
