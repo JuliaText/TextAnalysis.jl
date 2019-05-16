@@ -126,3 +126,30 @@ function weighted_lcs(X, Y, weighted, return_string, f)
     return (join(lcs, " "))  # the lcs string
 
 end
+
+function FMeasureLCS(RLCS, PLCS, beta=1)
+    #=F-measure based on WLCS
+    
+    param beta : user defined parameter
+    type (beta) : float
+    
+    param r_lcs : recall factor
+    type (r_lcs) : float
+    
+    param p_lcs : precision factor
+    type (p_lcs) : float
+     
+    score : f measure score between a candidate
+    	    and a reference
+    =#
+    
+    try
+        return ((1+beta^2)*RLCS*PLCS)/(RLCS+(beta^2)*PLCS)
+    catch ex
+        if ex isa DivideError
+            return 0
+        else
+            rethrow(ex)
+        end
+    end
+end
