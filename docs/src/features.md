@@ -152,4 +152,23 @@ A trained model (using Flux) on IMDB word corpus with weights saved are used to 
 
 *  doc              = Input Document for calculating document (AbstractDocument type)
 *  handle_unknown   = A function for handling unknown words. Should return an array (default (x)->[])
- 
+
+## Summarizer
+
+TextAnalysis offers a simple text-rank based summarizer for its various document types.
+
+    summarize(d, ns)
+
+It takes 2 arguments:
+
+* `d` : A document of type `StringDocument`, `FileDocument` or `TokenDocument`
+* `ns` : (Optional) Mention the number of sentences in the Summary, defaults to `5` sentences.
+
+```julia
+julia> s = StringDocument("Assume this Short Document as an example. Assume this as an example summarizer. This has too foo sentences.")
+
+julia> summarize(s, ns=2)
+2-element Array{SubString{String},1}:
+ "Assume this Short Document as an example."
+ "This has too foo sentences."
+```
