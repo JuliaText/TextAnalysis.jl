@@ -19,4 +19,10 @@ s = summarize(d)
 
 s = summarize(d; ns=2)
 @test length(s) == 2
+
+short_doc = StringDocument("These is a small document. It has only 2 sentences in it.")
+
+s = summarize(short_doc)
+@test length(s) == 2
+
 end
