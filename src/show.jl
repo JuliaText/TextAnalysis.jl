@@ -38,7 +38,8 @@ end
 
 function Base.summary(dtm::DocumentTermMatrix)
     n, p = size(dtm.dtm)
-    @sprintf "A %dx%d DocumentTermMatrix" n p
+    o = "A $n X $p DocumentTermMatrix"
+    return o
 end
 
 repl_show(io::IO, d::AbstractDocument) = print(io, summary(d))
