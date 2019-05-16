@@ -30,7 +30,7 @@ end
 """
     onegramize(lang, tokens)
 
-Create the unigrams dict for input tokens
+Create the unigrams dict for input tokens.
 
 # Example
 

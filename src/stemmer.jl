@@ -100,7 +100,7 @@ end
 """
     stemmer_for_document(doc)
 
-Search for an appropriate stemmer based on the language `doc`.
+Search for an appropriate stemmer based on the language of the document.
 """
 function stemmer_for_document(d::AbstractDocument)
     Stemmer(lowercase(Languages.english_name(language(d))))
@@ -111,6 +111,7 @@ end
     stem!(crps)
 
 Stems the document or documents in `crps` with a suitable stemmer.
+
 Stemming cannot be done for `FileDocument` and Corpus made of these type of documents.
 """
 function stem!(d::AbstractDocument)

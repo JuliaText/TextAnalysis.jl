@@ -56,6 +56,7 @@ remove_corrupt_utf8!(d::FileDocument) = error("FileDocument cannot be modified")
     remove_corrupt_utf8!(crps)
 
 Remove corrupt UTF8 characters for `doc` or documents in `crps`.
+
 Does not support `FileDocument` or Corpus containing `FileDocument`.
 """
 function remove_corrupt_utf8!(d::StringDocument)
@@ -106,6 +107,7 @@ remove_case(s::T) where {T <: AbstractString} = lowercase(s)
     remove_case!(crps::Corpus)
 
 Convert the text of `doc` or `crps` to lowercase.
+
 Does not support `FileDocument` or `crps` containing `FileDocument`.
 
 # Example
@@ -175,6 +177,7 @@ end
     remove_html_tags!(crps::Corpus)
 
 Remove html tags from the `StringDocument` or documents `crps`.
+
 Does not work for documents other than `StringDocument`.
 
 # Example
@@ -251,8 +254,7 @@ tag_pos!(entity) = error("Not yet implemented")
 """
     sparse_terms(crps [, alpha])
 
-Find the sparse terms from Corpus, occuring in less than `alpha` percentage of the documents.
-`alpha = 0.05` by default.
+Find the sparse terms from Corpus, occuring in less than `alpha` percentage of the documents, with `alpha = 0.05` by default.
 
 # Example
 
@@ -286,8 +288,7 @@ end
 """
     frequent_terms(crps [, alpha])
 
-Find the frequent terms from Corpus, occuring more than `alpha` percentage of the documents.
-`alpha = 0.05` by default.
+Find the frequent terms from Corpus, occuring more than `alpha` percentage of the documents, with `alpha = 0.05` by default.
 
 # Example
 
@@ -322,8 +323,9 @@ end
 """
     remove_sparse_terms!(crps [, alpha])
 
-Remove sparse terms in crps, occuring less than `alpha` percent of documents.
-`alpha` defaults to 0.05.
+Remove sparse terms in crps, occuring less than `alpha` percent of documents, `alpha` defaults to 0.05.
+
+# Example
 
 ```julia-repl
 julia> crps = Corpus([StringDocument("This is Document 1"),
@@ -343,8 +345,9 @@ remove_sparse_terms!(crps::Corpus, alpha::Real = alpha_sparse) = remove_words!(c
 """
     remove_frequent_terms!(crps [, alpha])
 
-Remove terms in `crps`, occuring more than `alpha` percent of documents.
-`alpha` defaults to 0.95.
+Remove terms in `crps`, occuring more than `alpha` percent of documents, `alpha` defaults to 0.95.
+
+# Example
 
 ```julia-repl
 julia> crps = Corpus([StringDocument("This is Document 1"),
@@ -450,8 +453,7 @@ remove_whitespace(s::AbstractString) = replace(strip(s), r"\s+"=>" ")
     remove_whitespace!(doc)
     remove_whitespace!(crps)
 
-Squash multiple whitespaces to a single space.
-And remove all leading and trailing whitespaces in document or crps.
+Squash multiple whitespaces to a single space and remove all leading and trailing whitespaces in document or crps.
 
 Does no-op for `FileDocument`, `TokenDocument` or `NGramDocument`.
 """

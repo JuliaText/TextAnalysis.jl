@@ -2,6 +2,7 @@
     tf!(dtm::AbstractMatrix{Real}, tf::AbstractMatrix{AbstractFloat})
 
 Overwrite `tf` with the term frequency of the `dtm`.
+
 Works correctly if `dtm` and `tf` are same matrix.
 
 See also: [`tf`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
@@ -25,7 +26,8 @@ end
     tf!(dtm::SparseMatrixCSC{Real}, tf::SparseMatrixCSC{AbstractFloat})
 
 Overwrite `tf` with the term frequency of the `dtm`.
-It is assumed that `tf` has same nonzeros as `dtm`
+
+`tf` should have the has same nonzeros as `dtm`.
 
 See also: [`tf`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
 """
@@ -94,8 +96,8 @@ tf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf!(dtm, similar(dtm, Float64))
 """
     tf_idf!(dtm::AbstractMatrix{Real}, tf_idf::AbstractMatrix{AbstractFloat})
 
-Overwrite `tf_idf` with the tf-idf (Term Frequency - Inverse Doc Frequency)
-of the `dtm`.
+Overwrite `tf_idf` with the tf-idf (Term Frequency - Inverse Doc Frequency) of the `dtm`.
+
 `dtm` and `tf-idf` must be matrices of same dimensions.
 
 See also: [`tf`](@ref), [`tf!`](@ref) , [`tf_idf`](@ref)
@@ -124,6 +126,7 @@ end
     tf_idf!(dtm::SparseMatrixCSC{Real}, tfidf::SparseMatrixCSC{AbstractFloat})
 
 Overwrite `tfidf` with the tf-idf (Term Frequency - Inverse Doc Frequency) of the `dtm`.
+
 The arguments must have same number of nonzeros.
 
 See also: [`tf`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
@@ -171,8 +174,7 @@ tf_idf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf_idf!(dtm, dtm)
     tf(::SparseMatrixCSC{T}) where {T <: Real}
     tf(::Matrix{T}) where {T <: Real}
 
-Compute `tf-idf` value (Term Frequency - Inverse Document Frequency)
-for the input.
+Compute `tf-idf` value (Term Frequency - Inverse Document Frequency) for the input.
 
 In many cases, raw word counts are not appropriate for use because:
 
