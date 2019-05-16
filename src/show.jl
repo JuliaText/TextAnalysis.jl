@@ -21,10 +21,10 @@ end
 
 function Base.summary(crps::Corpus)
     n = length(crps.documents)
-    n_s = sum(map(d -> typeof(d) == StringDocument, crps.documents))
+    n_s = sum(map(d -> typeof(d) == StringDocument{String}, crps.documents))
     n_f = sum(map(d -> typeof(d) == FileDocument, crps.documents))
-    n_t = sum(map(d -> typeof(d) == TokenDocument, crps.documents))
-    n_ng = sum(map(d -> typeof(d) == NGramDocument, crps.documents))
+    n_t = sum(map(d -> typeof(d) == TokenDocument{String}, crps.documents))
+    n_ng = sum(map(d -> typeof(d) == NGramDocument{String}, crps.documents))
     o = ""
     o *= "A Corpus with $n documents:\n"
     o *= " * $n_s StringDocument's\n"
@@ -42,6 +42,6 @@ function Base.summary(dtm::DocumentTermMatrix)
     return o
 end
 
-repl_show(io::IO, d::AbstractDocument) = print(io, summary(d))
-repl_show(io::IO, crps::Corpus) = print(io, summary(crps))
-repl_show(io::IO, dtm::DocumentTermMatrix) = print(io, summary(dtm))
+Base.show(io::IO, ::MIME"text/plain", d::AbstractDocument) = print(io, summary(d))
+Base.show(io::IO, ::MIME"text/plain", crps::Corpus) = print(io, summary(crps))
+Base.show(io::IO, ::MIME"text/plain", dtm::DocumentTermMatrix) = print(io, summary(dtm))
