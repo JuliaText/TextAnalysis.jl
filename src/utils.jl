@@ -41,7 +41,7 @@ function listify_ngrams(ngram_doc)
     return flattened
 end
 
-function weighted_lcs(X, Y, weighted, return_string, f)
+function weighted_lcs(X, Y, weighted = true, return_string = false, f = sqrt)
     #=This function returns the longest common subsequence
     of two strings using the dynamic programming algorithm.
      param X : first string in tokenized form
@@ -53,6 +53,9 @@ function weighted_lcs(X, Y, weighted, return_string, f)
      param return_string : Function returns weighted LCS length when set to False (default).
                            Function returns longest common substring when set to True.
     type (return_string) : Boolean
+     param f: weighting function. The weighting function f must have the property
+              that f(x+y) > f(x) + f(y) for any positive integers x and y. 
+    type (f) : generic function which takes a float as an input and returns a float.
     =#
     
     m, n = length(X), length(Y)
