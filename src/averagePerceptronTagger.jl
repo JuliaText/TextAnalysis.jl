@@ -2,6 +2,8 @@ using DataStructures
 using Random
 using BSON
 
+export fit!, predict
+
 """
 This file contains the Average Perceptron model and Perceptron Tagger
 which was original implemented by Matthew Honnibal.
@@ -119,13 +121,13 @@ and train more or can be used to predict
 
 To train:
 tagger = PerceptronTagger(false)
-trainPerceptron(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
+fit!(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
 
 To load pretrain model:
 tagger = PerceptronTagger(true)
 
 To predict tag:
-predictTag(tagger, ["today", "is"])
+predict(tagger, ["today", "is"])
 """
 
 mutable struct PerceptronTagger
@@ -151,7 +153,7 @@ function PerceptronTagger(load::Bool)
         self.model.weights = pretrained[:weights]
         self.tagdict = pretrained[:tagdict]
         self.classes = self.model.classes = Set(pretrained[:classes])
-        println("loaded successfull")
+        println("loaded successfully")
     end
 
     return self
@@ -255,7 +257,7 @@ end
 Used for predicting the tags for given tokens
 tokens - array of tokens
 """
-function predictTag(self::PerceptronTagger, tokens::Vector{String})
+function predict(self::PerceptronTagger, tokens::Vector{String})
     prev, prev2 = self.START
     output = []
 
@@ -285,7 +287,7 @@ sentences - array of the all sentences
 save_loc - to specify the saving location
 nr_iter - total number of training iterations for given sentences(or number of epochs)
 """
-function trainPerceptron(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)
+function fit!(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)
     self._sentences = []
     makeTagDict(self, sentences)
     self.model.classes = self.classes
@@ -319,6 +321,6 @@ function trainPerceptron(self::PerceptronTagger, sentences::Vector{Vector{Tuple{
     end
 end
 
-trainPerceptron(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, nr_iter::Integer) = trainPerceptron(self::PerceptronTagger, sentences, "", nr_iter)
-trainPerceptron(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String) = trainPerceptron(self::PerceptronTagger, sentences, save_loc, 5)
-trainPerceptron(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}) = trainPerceptron(self::PerceptronTagger, sentences, "", 5)
+fit!(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, nr_iter::Integer) = fit!(self::PerceptronTagger, sentences, "", nr_iter)
+fit!(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String) = fit!(self::PerceptronTagger, sentences, save_loc, 5)
+fit!(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}) = fit!(self::PerceptronTagger, sentences, "", 5)
