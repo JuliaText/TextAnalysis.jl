@@ -63,7 +63,7 @@ function release(stm::Stemmer)
 end
 
 """
-    stem(stemmer::Stemmer, str::AbstractString)
+    stem(stemmer::Stemmer, str)
     stem(stemmer::Stemmer, words::Array)
 
 Stem the input with the Stemming algorthm of `stemmer`.

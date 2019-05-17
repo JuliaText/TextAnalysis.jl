@@ -37,7 +37,7 @@ end
 
 
 """
-    remove_corrupt_utf8(str::AbstractString)
+    remove_corrupt_utf8(str)
 
 Remove corrupt UTF8 characters in `str`.
 
@@ -50,9 +50,7 @@ end
 remove_corrupt_utf8!(d::FileDocument) = error("FileDocument cannot be modified")
 
 """
-    remove_corrupt_utf8!(doc::StringDocument)
-    remove_corrupt_utf8!(doc::TokenDocument)
-    remove_corrupt_utf8!(doc::NGramDocument)
+    remove_corrupt_utf8!(doc)
     remove_corrupt_utf8!(crps)
 
 Remove corrupt UTF8 characters for `doc` or documents in `crps`.
@@ -90,7 +88,7 @@ function remove_corrupt_utf8!(crps::Corpus)
 end
 
 """
-    remove_case(str::AbstractString)
+    remove_case(str)
 
 Convert `str` to lowercase.
 
@@ -100,11 +98,8 @@ remove_case(s::T) where {T <: AbstractString} = lowercase(s)
 
 
 """
-    remove_case!(doc::TokenDocument)
-    remove_case!(doc::StringDocument)
-    remove_case!(doc::NGramDocument)
-
-    remove_case!(crps::Corpus)
+    remove_case!(doc)
+    remove_case!(crps)
 
 Convert the text of `doc` or `crps` to lowercase.
 
@@ -160,7 +155,7 @@ const style_tags = Regex("<style\\b[^>]*>([\\s\\S]*?)</style>")
 const html_tags = Regex("<[^>]*>")
 
 """
-    remove_html_tags(str::AbstractString)
+    remove_html_tags(str)
 
 Remove html tags from `str`, including the style and script tags.
 
@@ -174,7 +169,7 @@ end
 
 """
     remove_html_tags!(doc::StringDocument)
-    remove_html_tags!(crps::Corpus)
+    remove_html_tags!(crps)
 
 Remove html tags from the `StringDocument` or documents `crps`.
 
@@ -218,8 +213,8 @@ end
 
 
 """
-    remove_words!(doc::AbstractDocument, words::Vector)
-    remove_words!(crps::Corpus, words::Vector)
+    remove_words!(doc, words::Vector{T}) where T <: AbstractString
+    remove_words!(crps, words::Vector{T}) where T <: AbstractString
 
 Remove the occurences of words from `doc` or `crps`.
 
@@ -252,9 +247,9 @@ end
 tag_pos!(entity) = error("Not yet implemented")
 
 """
-    sparse_terms(crps [, alpha])
+    sparse_terms(crps, alpha=0.05])
 
-Find the sparse terms from Corpus, occuring in less than `alpha` percentage of the documents, with `alpha = 0.05` by default.
+Find the sparse terms from Corpus, occuring in less than `alpha` percentage of the documents.
 
 # Example
 
@@ -286,9 +281,9 @@ function sparse_terms(crps::Corpus, alpha::Real = alpha_sparse)
 end
 
 """
-    frequent_terms(crps [, alpha])
+    frequent_terms(crps, alpha=0.95)
 
-Find the frequent terms from Corpus, occuring more than `alpha` percentage of the documents, with `alpha = 0.05` by default.
+Find the frequent terms from Corpus, occuring more than `alpha` percentage of the documents.
 
 # Example
 
@@ -321,9 +316,9 @@ function frequent_terms(crps::Corpus, alpha::Real = alpha_frequent)
 end
 
 """
-    remove_sparse_terms!(crps [, alpha])
+    remove_sparse_terms!(crps, alpha=0.05)
 
-Remove sparse terms in crps, occuring less than `alpha` percent of documents, `alpha` defaults to 0.05.
+Remove sparse terms in crps, occuring less than `alpha` percent of documents.
 
 # Example
 
@@ -343,9 +338,9 @@ See also: [`remove_frequent_terms!`](@ref), [`sparse_terms`](@ref)
 remove_sparse_terms!(crps::Corpus, alpha::Real = alpha_sparse) = remove_words!(crps, sparse_terms(crps, alpha))
 
 """
-    remove_frequent_terms!(crps [, alpha])
+    remove_frequent_terms!(crps, alpha=0.95)
 
-Remove terms in `crps`, occuring more than `alpha` percent of documents, `alpha` defaults to 0.95.
+Remove terms in `crps`, occuring more than `alpha` percent of documents.
 
 # Example
 
@@ -439,14 +434,14 @@ end
 
 
 """
-    remove_whitespace(s::AbstractString)
+    remove_whitespace(str)
 
 Squash multiple whitespaces to a single one.
 And remove all leading and trailing whitespaces.
 
 See also: [`remove_whitespace!`](@ref)
 """
-remove_whitespace(s::AbstractString) = replace(strip(s), r"\s+"=>" ")
+remove_whitespace(str::AbstractString) = replace(strip(str), r"\s+"=>" ")
 
 
 """

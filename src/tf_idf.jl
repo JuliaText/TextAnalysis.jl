@@ -55,9 +55,9 @@ tf!(dtm::AbstractMatrix{T}) where {T <: Real} = tf!(dtm, dtm)
 tf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf!(dtm, dtm)
 
 """
-    tf(::DocumentTermMatrix)
-    tf(::SparseMatrixCSC{T}) where {T <: Real}
-    tf(::Matrix{T}) where {T <: Real}
+    tf(dtm::DocumentTermMatrix)
+    tf(dtm::SparseMatrixCSC{T}) where {T <: Real}
+    tf(dtm::Matrix{T}) where {T <: Real}
 
 Compute the `term-frequency` of the input.
 
@@ -170,9 +170,9 @@ tf_idf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf_idf!(dtm, dtm)
 #tf_idf!(dtm::DocumentTermMatrix) = tf_idf!(dtm.dtm)
 
 """
-    tf(::DocumentTermMatrix)
-    tf(::SparseMatrixCSC{T}) where {T <: Real}
-    tf(::Matrix{T}) where {T <: Real}
+    tf(dtm::DocumentTermMatrix)
+    tf(dtm::SparseMatrixCSC{T}) where {T <: Real}
+    tf(dtm::Matrix{T}) where {T <: Real}
 
 Compute `tf-idf` value (Term Frequency - Inverse Document Frequency) for the input.
 

@@ -39,7 +39,7 @@ function title!(d::AbstractDocument, nv::AbstractString)
 end
 
 """
-    language!(doc, lang)
+    language!(doc, lang::T) where T <: Language
 
 Set the language of `doc` to `lang`.
 
@@ -67,7 +67,7 @@ function author!(d::AbstractDocument, nv::AbstractString)
 end
 
 """
-    author!(doc, timestamp)
+    author!(doc, timestamp::AbstractString)
 
 Set the timestamp metadata of doc to `timestamp`.
 """
@@ -111,7 +111,7 @@ timestamps!(c::Corpus, nv::AbstractString) = timestamp!.(documents(c), Ref(nv))
 
 """
     titles!(crps, vec::Vector{String})
-    titles!(crps, str::String)
+    titles!(crps, str)
 
 Update titles of the documents in a Corpus.
 
