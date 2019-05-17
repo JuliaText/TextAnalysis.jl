@@ -27,8 +27,10 @@ mutable struct AveragePerceptron
     end
 end
 
-"""Predicting the class using current weights by doing Dot-product of features
-and weights and return the scores"""
+"""
+Predicting the class using current weights by doing Dot-product of features
+and weights and return the scores
+"""
 function predict(self::AveragePerceptron, features)
     scores = DefaultDict(0.0)
     for (feature, value) in features
@@ -52,9 +54,11 @@ function predict(self::AveragePerceptron, features)
     return custmax(scores)
 end
 
-"""Applying the perceptron learning algorithm
+"""
+Applying the perceptron learning algorithm
 Increment the truth weights and decrementing the guess weights
-if the guess is wrong"""
+if the guess is wrong
+"""
 function update(self::AveragePerceptron, truth, guess, features)
     function upd_feat(c, f, w, v)
         param = (f, c)
@@ -81,7 +85,9 @@ function update(self::AveragePerceptron, truth, guess, features)
     return nothing
 end
 
-"""Averaging the weights over all time stamps"""
+"""
+Averaging the weights over all time stamps
+"""
 function average_weights(self::AveragePerceptron)
     function newRound(fl, in)
         temp = fl*(10^in)
@@ -113,13 +119,13 @@ and train more or can be used to predict
 
 To train:
 tagger = PerceptronTagger(false)
-train(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
+trainPerceptron(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
 
 To load pretrain model:
 tagger = PerceptronTagger(true)
 
 To predict tag:
-tag(tagger, ["today", "is"])
+predictTag(tagger, ["today", "is"])
 """
 
 mutable struct PerceptronTagger
@@ -136,7 +142,9 @@ end
 function PerceptronTagger(load::Bool)
     self = PerceptronTagger()
 
-    """If load is true then a pretrain model will be import from location"""
+    """
+    If load is true then a pretrain model will be import from location
+    """
     if load
         location = "src/pretrainedMod.bson";
         pretrained = BSON.load(location)
@@ -149,8 +157,10 @@ function PerceptronTagger(load::Bool)
     return self
 end
 
-"""makes a dictionary for single-tag words
-params : sentences - an array of tuples which contains word and correspinding tag"""
+"""
+makes a dictionary for single-tag words
+params : sentences - an array of tuples which contains word and correspinding tag
+"""
 function makeTagDict(self::PerceptronTagger, sentences)
     counts = DefaultDict(()->DefaultDict(0))
     for sentence in sentences
@@ -171,8 +181,10 @@ function makeTagDict(self::PerceptronTagger, sentences)
     end
 end
 
-"""This function is used to normalize the given word
-params : word - String"""
+"""
+This function is used to normalize the given word
+params : word - String
+"""
 function normalize(word)
     word = string(word)
     if occursin("-", word) && (word[1] != "-")
@@ -186,13 +198,15 @@ function normalize(word)
     end
 end
 
-"""Converting the token into a feature representation, implemented as Dict
+"""
+Converting the token into a feature representation, implemented as Dict
 If the features change, a new model should be trained
 params:
 i - index of word(or token) in sentence
 word - token
 context - array of tokens with starting and ending specifiers
-prev == "-START-" prev2 == "-START2-" - Start specifiers"""
+prev == "-START-" prev2 == "-START2-" - Start specifiers
+"""
 function getFeatures(self::PerceptronTagger, i, word, context, prev, prev2)
     function add(sep, name, args...)
         str = name
@@ -237,9 +251,11 @@ function getFeatures(self::PerceptronTagger, i, word, context, prev, prev2)
     return features
 end
 
-"""Used for predicting the tags for given tokens
-tokens - array of tokens"""
-function tag(self::PerceptronTagger, tokens::Vector{String})
+"""
+Used for predicting the tags for given tokens
+tokens - array of tokens
+"""
+function predictTag(self::PerceptronTagger, tokens::Vector{String})
     prev, prev2 = self.START
     output = []
 
@@ -257,7 +273,8 @@ function tag(self::PerceptronTagger, tokens::Vector{String})
     return output
 end
 
-"""Used for training a new model or can be used for training
+"""
+Used for training a new model or can be used for training
 an existing model by using pretrained weigths and classes
 
 Contains main training loop for number of epochs.
@@ -266,8 +283,9 @@ After training weights, tagdict and classes are stored in the specified location
 params:
 sentences - array of the all sentences
 save_loc - to specify the saving location
-nr_iter - total number of training iterations for given sentences(or number of epochs)"""
-function train(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)
+nr_iter - total number of training iterations for given sentences(or number of epochs)
+"""
+function trainPerceptron(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)
     self._sentences = []
     makeTagDict(self, sentences)
     self.model.classes = self.classes
@@ -301,6 +319,6 @@ function train(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, St
     end
 end
 
-train(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, nr_iter::Integer) = train(self::PerceptronTagger, sentences, "", nr_iter)
-train(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String) = train(self::PerceptronTagger, sentences, save_loc, 5)
-train(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}) = train(self::PerceptronTagger, sentences, "", 5)
+trainPerceptron(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, nr_iter::Integer) = trainPerceptron(self::PerceptronTagger, sentences, "", nr_iter)
+trainPerceptron(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String) = trainPerceptron(self::PerceptronTagger, sentences, save_loc, 5)
+trainPerceptron(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}) = trainPerceptron(self::PerceptronTagger, sentences, "", 5)

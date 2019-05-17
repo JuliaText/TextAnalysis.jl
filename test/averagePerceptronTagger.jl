@@ -7,7 +7,7 @@ using TextAnalysis: AveragePerceptron
     @test length(tagger.classes) == 0
     @test typeof(tagger.model) == AveragePerceptron
 
-    train(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
+    trainPerceptron(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
     @test length(keys(tagger.model.weights)) == 51
     @test tagger.classes == tagger.model.classes == Set(["JJ", "VBZ", "NN"])
 end
