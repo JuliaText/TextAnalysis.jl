@@ -56,6 +56,8 @@ remove_corrupt_utf8!(d::FileDocument) = error("FileDocument cannot be modified")
 Remove corrupt UTF8 characters for `doc` or documents in `crps`.
 
 Does not support `FileDocument` or Corpus containing `FileDocument`.
+
+See also: [`remove_corrupt_utf8`](@ref)
 """
 function remove_corrupt_utf8!(d::StringDocument)
     d.text = remove_corrupt_utf8(d.text)
@@ -116,6 +118,8 @@ julia> remove_case!(sd)
 julia> sd.text
 "the quick brown fox jumps over the lazy dog"
 ```
+
+See also: [`remove_case`](@ref)
 """
 remove_case!(d::FileDocument) = error("FileDocument cannot be modified")
 
@@ -195,6 +199,8 @@ julia> remove_html_tags!(html_doc)
 julia> strip(text(html_doc))
 "Hello world"
 ```
+
+See also: [`remove_html_tags`](@ref)
 """
 function remove_html_tags!(d::AbstractDocument)
     error("HTML tags can be removed only from a StringDocument")
@@ -451,6 +457,8 @@ remove_whitespace(str::AbstractString) = replace(strip(str), r"\s+"=>" ")
 Squash multiple whitespaces to a single space and remove all leading and trailing whitespaces in document or crps.
 
 Does no-op for `FileDocument`, `TokenDocument` or `NGramDocument`.
+
+See also: [`remove_whitespace`](@ref)
 """
 function remove_whitespace!(d::StringDocument)
     d.text = remove_whitespace(d.text)
@@ -505,6 +513,8 @@ end
 Remove patterns matched by `rex` in document or Corpus.
 
 Does not modify `FileDocument` or Corpus containing `FileDocument`.
+
+See also: [`remove_patterns`](@ref)
 """
 remove_patterns!(d::FileDocument, rex::Regex) = error("FileDocument cannot be modified")
 
