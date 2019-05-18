@@ -87,7 +87,7 @@ end
 """
     remove_case(s::AbstractString)
 
-Converts the string to lowercase. 
+Converts the string to lowercase.
 
 See also: [`remove_case!`](@ref)
 """
@@ -207,18 +207,6 @@ function remove_words!(entity::(Union{AbstractDocument,Corpus}),
     prepare!(entity, strip_patterns, skip_words = skipwords)
 end
 
-
-
-##############################################################################
-#
-# Part-of-Speech tagging
-#
-##############################################################################
-
-tag_pos!(entity) = error("Not yet implemented")
-
-
-
 ##############################################################################
 #
 # Drop terms based on frequency
@@ -305,7 +293,7 @@ end
     remove_whitespace(s::AbstractString)
 
 Squashes multiple whitespaces to a single one. And removes all leading and
-trailing whitespaces in a string. 
+trailing whitespaces in a string.
 
 """
 remove_whitespace(s::AbstractString) = replace(strip(s), r"\s+"=>" ")
@@ -315,9 +303,9 @@ remove_whitespace(s::AbstractString) = replace(strip(s), r"\s+"=>" ")
     remove_whitespace!(s::AbstractDocument)
 
 Squashes multiple whitespaces to a single space. And removes all leading and
-trailing whitespaces in a StringDocument and Corpus. 
+trailing whitespaces in a StringDocument and Corpus.
 
-Does no-op for NGramDocument and TokenDocument. 
+Does no-op for NGramDocument and TokenDocument.
 
 """
 function remove_whitespace!(d::StringDocument)
@@ -335,7 +323,7 @@ function remove_whitespace!(d::AbstractDocument)
 end
 
 
-function remove_patterns(s::AbstractString, rex::Regex) 
+function remove_patterns(s::AbstractString, rex::Regex)
   return replace(s, rex => "")
 end
 
