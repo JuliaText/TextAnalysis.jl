@@ -27,7 +27,7 @@ function rouge_n(references, candidate, n, averaging = true)
     rouge_recall : list containing all the rouge-n scores for
                    every reference against the candidate=#
     
-    ngram_cand = listify_ngrams(ngrams(StringDocument(candidate), n)
+    ngram_cand = listify_ngrams(ngrams(StringDocument(candidate), n))
     rouge_recall = []
     
     for ref in references
