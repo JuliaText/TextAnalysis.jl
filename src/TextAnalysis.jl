@@ -51,6 +51,7 @@ module TextAnalysis
     export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
     export SentimentAnalyzer
     export jackknife_avg, listify_ngrams, weighted_lcs, FMeasureLCS
+    export rouge_l_summary, rouge_l_sentence, rouge_n
 
     include("tokenizer.jl")
     include("ngramizer.jl")
@@ -77,5 +78,6 @@ module TextAnalysis
     include("bayes.jl")
     include("deprecations.jl")
     include("utils.jl")
+    include("rouge.jl")
     include("evaluate.jl")
 end
