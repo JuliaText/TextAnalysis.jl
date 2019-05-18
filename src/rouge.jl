@@ -7,7 +7,7 @@ http://www.aclweb.org/anthology/W04-1013 =#
 
 using TextAnalysis
 using WordTokenizers
-function rouge_n(references, candidate, n)
+function rouge_n(references, candidate, n, averaging = true)
     #= It is a n-gram recall between a candidate summary
     and a set of reference summaries.
         
@@ -46,13 +46,16 @@ function rouge_n(references, candidate, n)
     
     end
     
-    rouge_recall = jackknife_avg(rouge_recall)
+    if averaging == true
+        rouge_recall = jackknife_avg(rouge_recall)
+    end
+
     return(rouge_recall)
 
 end
 
 
-function rouge_l_sentence(references, candidate, beta=8)
+function rouge_l_sentence(references, candidate, beta=8, averaging = true)
     #= It calculates the rouge-l score between the candidate
     and the reference at the sentence level.
     
@@ -83,8 +86,10 @@ function rouge_l_sentence(references, candidate, beta=8)
         push!(rouge_l_list,score)
 
     end
-
-    return jackknife_avg(rouge_l_list)
+    if averaging == true
+        rouge_l_list = jackknife_avg(rouge_l_list)
+    end
+    return rouge_l_list
 
 end
 
@@ -122,7 +127,7 @@ function rouge_l_summary(references, candidate, beta, averaging=true)
     
             for cand_sent in cand_sent_list
                 arg2 = tokenize(cand_sent)
-                d = tokenize(weighted_lcs(arg1, arg2, false, true))
+                d = tokenize(weighted_lcs(arg1, arg2, false, true, sqrt))
                 append!(l_,d)
             end
     
@@ -137,7 +142,11 @@ function rouge_l_summary(references, candidate, beta, averaging=true)
         push!(rouge_l_list,score)
     
     end
-    
-    return jackknife_avg(rouge_l_list)
+
+    if averaging == true
+        rouge_l_list = jackknife_avg(rouge_l_list)
+    end
+
+    return rouge_l_list
 
 end
