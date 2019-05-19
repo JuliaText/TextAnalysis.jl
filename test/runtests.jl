@@ -3,7 +3,7 @@ using SparseArrays
 using Test
 using Languages
 using TextAnalysis
-
+using WordTokenizers
 
 # @testset "TextAnalysis" begin
 
