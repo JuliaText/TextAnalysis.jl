@@ -79,5 +79,4 @@ module TextAnalysis
     include("deprecations.jl")
     include("utils.jl")
     include("rouge.jl")
-    include("evaluate.jl")
 end
