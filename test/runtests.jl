@@ -22,7 +22,7 @@ include("lda.jl")
 include("summarizer.jl")
 include("sentiment.jl")
 include("bayes.jl")
-
+include("rouge.jl")
 
 
 # end
