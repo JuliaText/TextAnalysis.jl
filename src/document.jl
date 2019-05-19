@@ -12,12 +12,17 @@ mutable struct DocumentMetadata
 end
 
 """
-Every document object also stores basic metadata about itself, including the following pieces of information:
+    DocumentMetadata(language, title::String, author::String, timestamp::String)
 
-    language(): What language is the document in? Defaults to Languages.English(), a Language instance defined by the Languages package.
-    title(): What is the title of the document? Defaults to "Untitled Document".
-    author(): Who wrote the document? Defaults to "Unknown Author".
-    timestamp(): When was the document written? Defaults to "Unknown Time".
+Stores basic metadata about Document.
+
+...
+# Arguments
+- `language`: What language is the document in? Defaults to Languages.English(), a Language instance defined by the Languages package.
+- `title::String` : What is the title of the document? Defaults to "Untitled Document".
+- `author::String` : Who wrote the document? Defaults to "Unknown Author".
+- `timestamp::String` : When was the document written? Defaults to "Unknown Time".
+...
 """
 DocumentMetadata() = DocumentMetadata(
     Languages.English(),
@@ -34,11 +39,6 @@ DocumentMetadata() = DocumentMetadata(
 
 abstract type AbstractDocument; end
 
-##############################################################################
-#
-# FileDocument type and constructors
-#
-##############################################################################
 
 mutable struct FileDocument <: AbstractDocument
     filename::String
@@ -46,17 +46,17 @@ mutable struct FileDocument <: AbstractDocument
 end
 
 """
-    FileDocument(pathname)
+    FileDocument(pathname::AbstractString)
 
-A document represented using a plain text file on disk
+Represents a document using a plain text file on disk.
 
 # Example
 ```julia-repl
-	julia> pathname = "/usr/share/dict/words"
-	"/usr/share/dict/words"
+julia> pathname = "/usr/share/dict/words"
+"/usr/share/dict/words"
 
-	julia> fd = FileDocument(pathname)
-	FileDocument("/usr/share/dict/words", TextAnalysis.DocumentMetadata(Languages.English(), "/usr/share/dict/words", "Unknown Author", "Unknown Time"))
+julia> fd = FileDocument(pathname)
+FileDocument("/usr/share/dict/words", TextAnalysis.DocumentMetadata(Languages.English(), "/usr/share/dict/words", "Unknown Author", "Unknown Time"))
 ```
 """
 function FileDocument(pathname::AbstractString)
@@ -65,11 +65,6 @@ function FileDocument(pathname::AbstractString)
     return doc
 end
 
-##############################################################################
-#
-# StringDocument type and constructors
-#
-##############################################################################
 
 mutable struct StringDocument{T<:AbstractString} <: AbstractDocument
     text::T
@@ -77,9 +72,9 @@ mutable struct StringDocument{T<:AbstractString} <: AbstractDocument
 end
 
 """
-    StringDocument(str)
+    StringDocument(txt::AbstractString)
 
-A document represented using a UTF8 String stored in RAM
+Represents a document using a UTF8 String stored in RAM.
 
 # Example
 ```julia-repl
@@ -89,11 +84,6 @@ StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(La
 """
 StringDocument(txt::AbstractString) = StringDocument(txt, DocumentMetadata())
 
-##############################################################################
-#
-# TokenDocument type and constructors
-#
-##############################################################################
 
 mutable struct TokenDocument{T<:AbstractString} <: AbstractDocument
     tokens::Vector{T}
@@ -101,23 +91,25 @@ mutable struct TokenDocument{T<:AbstractString} <: AbstractDocument
 end
 
 """
-    TokenDocument(tokens)
+    TokenDocument(txt::AbstractString)
+    TokenDocument(txt::AbstractString, dm::DocumentMetadata)
+    TokenDocument(tkns::Vector{T}) where T <: AbstractString
 
-A document represented as a sequence of UTF8 tokens
+Represents a document as a sequence of UTF8 tokens.
 
 # Example
 ```julia-repl
-	julia> my_tokens = String["To", "be", "or", "not", "to", "be..."]
-	6-element Array{String,1}:
- 	"To"
- 	"be"
- 	"or"
- 	"not"
- 	"to"
- 	"be..."
+julia> my_tokens = String["To", "be", "or", "not", "to", "be..."]
+6-element Array{String,1}:
+    "To"
+    "be"
+    "or"
+    "not"
+    "to"
+    "be..."
 
-	julia> td = TokenDocument(my_tokens)
-	TokenDocument{String}(["To", "be", "or", "not", "to", "be..."], TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+julia> td = TokenDocument(my_tokens)
+TokenDocument{String}(["To", "be", "or", "not", "to", "be..."], TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
 ```
 """
 function TokenDocument(txt::AbstractString, dm::DocumentMetadata)
@@ -128,11 +120,6 @@ function TokenDocument(tkns::Vector{T}) where T <: AbstractString
 end
 TokenDocument(txt::AbstractString) = TokenDocument(String(txt), DocumentMetadata())
 
-##############################################################################
-#
-# NGramDocument type and constructors
-#
-##############################################################################
 
 mutable struct NGramDocument{T<:AbstractString} <: AbstractDocument
     ngrams::Dict{T,Int}
@@ -141,10 +128,11 @@ mutable struct NGramDocument{T<:AbstractString} <: AbstractDocument
 end
 
 """
-    NGramDocument(text, n)
-    NGramDocument(ngrams)
+    NGramDocument(txt::AbstractString, n::Integer=1)
+    NGramDocument(txt::AbstractString, dm::DocumentMetadata, n::Integer=1)
+    NGramDocument(ng::Dict{T, Int}, n::Integer=1) where T <: AbstractString
 
-A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
+Represents a document as a bag of n-grams, which are UTF8 n-grams and map to counts.
 
 # Example
 ```julia-repl
@@ -180,7 +168,9 @@ end
 #
 ##############################################################################
 """
-    text(doc)
+    text(fd::FileDocument)
+    text(sd::StringDocument)
+    text(ngd::NGramDocument)
 
 Access the text of Document as a string.
 
@@ -218,10 +208,10 @@ end
 #
 ##############################################################################
 """
-    tokens(doc)
+    tokens(d::TokenDocument)
+    tokens(d::(Union{FileDocument, StringDocument}))
 
 Access the document text as a token array.
-This works only for StringDocument, FileDocument, TokenDocument
 
 # Example
 ```julia-repl
@@ -230,13 +220,13 @@ StringDocument{String}("To be or not to be...", TextAnalysis.DocumentMetadata(La
 
 julia> tokens(sd)
 7-element Array{String,1}:
- "To"
- "be"
- "or"
- "not"
- "to"
- "be.."
- "."
+    "To"
+    "be"
+    "or"
+    "not"
+    "to"
+    "be.."
+    "."
 ```
 """
 tokens(d::(Union{FileDocument, StringDocument})) = tokenize(language(d), text(d))
@@ -247,7 +237,7 @@ end
 
 tokens!(d::TokenDocument, new_tokens::Vector{T}) where {T <: AbstractString} = (d.tokens = new_tokens)
 function tokens!(d::AbstractDocument, new_tokens::Vector{T}) where T <: AbstractString
-    error("The tokens of a $(typeof(d))url cannot be directly edited")
+    error("The tokens of a $(typeof(d)) cannot be directly edited")
 end
 
 ##############################################################################
@@ -256,7 +246,10 @@ end
 #
 ##############################################################################
 """
-    ngrams(doc)
+    ngrams(ngd::NGramDocument, n::Integer)
+    ngrams(d::AbstractDocument, n::Integer)
+    ngrams(d::NGramDocument)
+    ngrams(d::AbstractDocument)
 
 Access the document text as n-gram counts.
 

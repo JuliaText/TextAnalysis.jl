@@ -1,9 +1,3 @@
-##############################################################################
-#
-# Basic Corpus type
-#
-##############################################################################
-
 mutable struct Corpus{T <: AbstractDocument}
     documents::Vector{T}
     total_terms::Int
@@ -13,7 +7,7 @@ mutable struct Corpus{T <: AbstractDocument}
 end
 
 """
-    Corpus(docs)
+    Corpus(docs::Vector{T}) where {T <: AbstractDocument}
 
 Collections of documents are represented using the Corpus type.
 
@@ -37,6 +31,8 @@ end
 Corpus(docs::Vector{Any}) = Corpus(convert(Array{GenericDocument,1}, docs))
 
 """
+    DirectoryCorpus(dirname::AbstractString)
+
 Construct a Corpus from a directory of text files.
 """
 function DirectoryCorpus(dirname::AbstractString)
@@ -166,13 +162,11 @@ end
 #
 ##############################################################################
 """
-    lexicon(crps)
+    lexicon(crps::Corpus)
 
 Shows the lexicon of the corpus.
-The lexicon of a corpus consists of all the terms that occur in any document in the corpus.
-The lexical frequency of a term tells us how often a term occurs across all of the documents.
-Often the most interesting words in a document are those words whose frequency within a document
-is higher than their frequency in the corpus as a whole.
+
+Lexicon of a corpus consists of all the terms that occur in any document in the corpus.
 
 # Example
 ```julia-repl
@@ -200,7 +194,18 @@ function update_lexicon!(crps::Corpus)
     end
 end
 
+"""
+    lexicon_size(crps::Corpus)
+
+Tells the total number of terms in a lexicon.
+"""
 lexicon_size(crps::Corpus) = length(keys(crps.lexicon))
+
+"""
+    lexical_frequency(crps::Corpus, term::AbstractString)
+
+Tells us how often a term occurs across all of the documents.
+"""
 lexical_frequency(crps::Corpus, term::AbstractString) =
     (get(crps.lexicon, term, 0) / crps.total_terms)
 
@@ -212,9 +217,10 @@ lexical_frequency(crps::Corpus, term::AbstractString) =
 #
 ##############################################################################
 """
-    inverse_index(crps)
+    inverse_index(crps::Corpus)
 
 Shows the inverse index of a corpus.
+
 If we are interested in a specific term, we often want to know which documents in a corpus
 contain that term. The inverse index tells us this and therefore provides a simplistic sort of search algorithm.
 """
@@ -252,17 +258,10 @@ index_size(crps::Corpus) = length(crps.inverse_index)
 hash_function(crps::Corpus) = crps.h
 hash_function!(crps::Corpus, f::TextHashFunction) = (crps.h = f; nothing)
 
-##############################################################################
-#
-# Standardize the documents in a Corpus to a common type
-#
-##############################################################################
 """
-    standardize!(crps, documentType)
+    standardize!(crps::Corpus, ::Type{T}) where T <: AbstractDocument
 
-A Corpus may contain many different types of documents, it is generally more convenient
-to standardize all of the documents in a corpus using a single type.
-This can be done using the standardize! function.
+Standardize the documents in a Corpus to a common type.
 
 # Example
 ```julia-repl

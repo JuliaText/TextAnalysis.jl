@@ -1,18 +1,8 @@
-##############################################################################
-#
-# LSA
-#
-##############################################################################
 """
-```
-lsa(crps)
-lsa(dtm)
-```
-Performs Latent Semantic Analysis or LSA on a corpus.
+	lsa(dtm::DocumentTermMatrix)
+	lsa(crps::Corpus)
 
-Parameters:
-	-  cprs	    = A Corpus type object
-	-  dtm	    = A DocumentTermMatrix object
+Performs Latent Semantic Analysis or LSA on a corpus.
 """
 lsa(dtm::DocumentTermMatrix) = svd(tf_idf(dtm))
 lsa(crps::Corpus) = svd(tf_idf(DocumentTermMatrix(crps)))
