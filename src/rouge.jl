@@ -74,11 +74,11 @@ score : rouge-l score between the reference sentence and
             
 function rouge_l_sentence(references, candidate, beta=8, averaging = true)
     
-    ngram_cand = tokenize(candidate)
+    ngram_cand = tokenize(Languages.English(), candidate)
     rouge_l_list = []
 
     for ref in references
-        ngram_ref = tokenize(ref)
+        ngram_ref = tokenize(Languages.English(), ref)
         r_lcs = weighted_lcs(ngram_ref, ngram_cand,true, false, sqrt)/length(ngram_ref)
         p_lcs = weighted_lcs(ngram_ref, ngram_cand,true, false, sqrt)/length(ngram_cand)
         score = FMeasureLCS(r_lcs, p_lcs, beta)
@@ -121,11 +121,11 @@ function rouge_l_summary(references, candidate, beta, averaging=true)
     
         for ref_sent in ref_sent_list
             l_ = []
-            arg1 = tokenize(ref)
+            arg1 = tokenize(Languages.English(), ref)
     
             for cand_sent in cand_sent_list
-                arg2 = tokenize(cand_sent)
-                d = tokenize(weighted_lcs(arg1, arg2, false, true, sqrt))
+                arg2 = tokenize(Languages.English(), cand_sent)
+                d = tokenize(Languages.English(), weighted_lcs(arg1, arg2, false, true, sqrt))
                 append!(l_,d)
             end
     
@@ -134,8 +134,8 @@ function rouge_l_summary(references, candidate, beta, averaging=true)
     
         end
     
-        r_lcs = sum_value/length(tokenize(ref))
-        p_lcs = sum_value/length(tokenize(candidate))
+        r_lcs = sum_value/length(tokenize(Languages.English(), ref))
+        p_lcs = sum_value/length(tokenize(Languages.English(), candidate))
         score = FMeasureLCS(r_lcs, p_lcs, beta)
         push!(rouge_l_list,score)
     
