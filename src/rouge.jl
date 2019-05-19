@@ -5,28 +5,28 @@ Proceedings of the workshop on text summarization branches out (WAS 2004) (2004)
 Link to paper:
 http://www.aclweb.org/anthology/W04-1013 =#
 
-using TextAnalysis
-using WordTokenizers
-function rouge_n(references, candidate, n, averaging = true)
-    #= It is a n-gram recall between a candidate summary
-    and a set of reference summaries.
+
+#= It is a n-gram recall between a candidate summary
+and a set of reference summaries.
         
-    param references : list of reference strings
-    type references : Array{String,1}
+ param references : list of reference strings
+type references : Array{String,1}
     
-    param candidate :  the candidate string
-    type (candidate) : Array{String,1} 
+ param candidate :  the candidate string
+type (candidate) : Array{String,1} 
     
-    n : length of ngram
-    type (n) : int
+ param n : length of ngram
+type (n) : int
     
-    ngram_cand : list of ngrams in candidate
-    ngram_ref : list of ngrams in reference
-    r_lcs : recall factor
-    p_lcs : precision factor
-    rouge_recall : list containing all the rouge-n scores for
-                   every reference against the candidate=#
-    
+ngram_cand : list of ngrams in candidate
+ngram_ref : list of ngrams in reference
+r_lcs : recall factor
+p_lcs : precision factor
+rouge_recall : list containing all the rouge-n scores for
+               every reference against the candidate=#
+
+function rouge_n(references, candidate, n, averaging = true)
+
     ngram_cand = listify_ngrams(ngrams(StringDocument(candidate), n))
     rouge_recall = []
     
@@ -51,30 +51,29 @@ function rouge_n(references, candidate, n, averaging = true)
     end
 
     return(rouge_recall)
-
 end
 
-
-function rouge_l_sentence(references, candidate, beta=8, averaging = true)
-    #= It calculates the rouge-l score between the candidate
-    and the reference at the sentence level.
+#= It calculates the rouge-l score between the candidate
+and the reference at the sentence level.
     
-    param references : list of reference strings
-    type references : Array{String,1}
+ param references : list of reference strings
+type references : Array{String,1}
     
-    param candidate :  the candidate string
-    type (candidate) : Array{String,1} 
+ param candidate :  the candidate string
+type (candidate) : Array{String,1} 
     
-    param beta : user-defined parameter. Default value = 8 
-    type (beta) : float
+ param beta : user-defined parameter. Default value = 8 
+type (beta) : float
     
-    rouge_l_list : list containing all the rouge scores for
-                   every reference against the candidate
-    r_lcs : recall factor
-    p_lcs : precision factor
-    score : rouge-l score between the reference sentence and 
-            the candidate sentence =#
+rouge_l_list : list containing all the rouge scores for
+                every reference against the candidate
+r_lcs : recall factor
+p_lcs : precision factor
+score : rouge-l score between the reference sentence and 
+        the candidate sentence =#
             
+function rouge_l_sentence(references, candidate, beta=8, averaging = true)
+    
     ngram_cand = tokenize(candidate)
     rouge_l_list = []
 
@@ -90,29 +89,28 @@ function rouge_l_sentence(references, candidate, beta=8, averaging = true)
         rouge_l_list = jackknife_avg(rouge_l_list)
     end
     return rouge_l_list
-
 end
 
+#=It calculates the rouge-l score between the candidate
+and the reference at the summary level.
+ param references : list of reference summaries. Each of the summaries 
+                    must be tokenized list of words 
+type (references) : list
+    
+ param candidate : candidate summary tokenized into list of words
+type (candidate) : list
+ param beta : user-defined parameter
+type (beta) : float
+    
+rouge_l_list : list containing all the rouge scores for
+                every reference against the candidate
+    
+r_lcs : recall factor
+p_lcs : precision factor
+score : rouge-l score between a reference and the candidate
+=#
+
 function rouge_l_summary(references, candidate, beta, averaging=true)
-    #=It calculates the rouge-l score between the candidate
-    and the reference at the summary level.
-    
-    param references : list of reference summaries. Each of the summaries 
-                       must be tokenized list of words 
-    type (references) : list
-    
-    param candidate : candidate summary tokenized into list of words
-    type (candidate) : list
-     param beta : user-defined parameter
-    type (beta) : float
-    
-    rouge_l_list : list containing all the rouge scores for
-                   every reference against the candidate
-    
-    r_lcs : recall factor
-    p_lcs : precision factor
-    score : rouge-l score between a reference and the candidate
-    =#
 
     rouge_l_list = []
     cand_sent_list = split_sentences(candidate)
@@ -148,5 +146,4 @@ function rouge_l_summary(references, candidate, beta, averaging=true)
     end
 
     return rouge_l_list
-
 end
