@@ -11,6 +11,6 @@
     @test rouge_n(reference_summaries, candidate_summary, 2, true) >= 0.131
 
     @test rouge_n(reference_sentences, candidate_sentence, 2, true) >= 0.349
-    @test rouge_n(reference_sentences, candidate_sentence, 2, true) >= 0.666
+    @test rouge_n(reference_sentences, candidate_sentence, 1, true) >= 0.666
 
 end
