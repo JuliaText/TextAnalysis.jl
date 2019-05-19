@@ -1,11 +1,11 @@
 # JuliaText TextAnalysis.jl Utility Functions
 
-function jackknife_avg(scores)
+#= The jackknife is a resampling technique especially useful for variance and bias estimation. 
+Currently being used for averaging in ROUGE scores in evaluate.jl
+ :param scores: List of integers to average
+:type scores: Array{Int64,1} =#
 
-    #= The jackknife is a resampling technique especially useful for variance and bias estimation. 
-    Currently being used for averaging in ROUGE scores in evaluate.jl
-    :param scores: List of integers to average
-    :type scores: Array{Int64,1} =#
+function jackknife_avg(scores)
     
     if length(collect(Set(scores))) == 1
     
@@ -41,22 +41,23 @@ function listify_ngrams(ngram_doc)
     return flattened
 end
 
+#=This function returns the longest common subsequence
+of two strings using the dynamic programming algorithm.
+ param X : first string in tokenized form
+type (X) : Array{SubString{String},1}
+ param Y : second string in tokenized form
+type (Y) : Array{SubString{String},1}
+ param weighted : Weighted LCS is done if weighted is True (default)
+type (weighted) : Boolean
+ param return_string : Function returns weighted LCS length when set to False (default).
+                       Function returns longest common substring when set to True.
+type (return_string) : Boolean
+ param f: weighting function. The weighting function f must have the property
+          that f(x+y) > f(x) + f(y) for any positive integers x and y. 
+type (f) : generic function which takes a float as an input and returns a float.=#
+
 function weighted_lcs(X, Y, weighted = true, return_string = false, f = sqrt)
-    #=This function returns the longest common subsequence
-    of two strings using the dynamic programming algorithm.
-     param X : first string in tokenized form
-    type (X) : Array{SubString{String},1}
-     param Y : second string in tokenized form
-    type (Y) : Array{SubString{String},1}
-     param weighted : Weighted LCS is done if weighted is True (default)
-    type (weighted) : Boolean
-     param return_string : Function returns weighted LCS length when set to False (default).
-                           Function returns longest common substring when set to True.
-    type (return_string) : Boolean
-     param f: weighting function. The weighting function f must have the property
-              that f(x+y) > f(x) + f(y) for any positive integers x and y. 
-    type (f) : generic function which takes a float as an input and returns a float.
-    =#
+    
     
     m, n = length(X), length(Y)
     c_table = [zeros(n+1) for i in 1:m+1]
@@ -109,8 +110,8 @@ function weighted_lcs(X, Y, weighted = true, return_string = false, f = sqrt)
     lcs_length = convert(Int64, lcs_length)
     lcs = ["" for i in  1:(lcs_length+1)]
     lcs[lcs_length+1] = ""
-    i = m+1
-    j = n+1
+    i = m + 1
+    j = n + 1
     
     while i>1 && j>1
         if X[i-1] == Y[j-1]
@@ -127,7 +128,6 @@ function weighted_lcs(X, Y, weighted = true, return_string = false, f = sqrt)
     end
     
     return (join(lcs, " "))  # the lcs string
-
 end
 
 function FMeasureLCS(RLCS, PLCS, beta=1)
