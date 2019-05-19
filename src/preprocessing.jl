@@ -219,8 +219,8 @@ end
 
 
 """
-    remove_words!(doc, words::Vector{T}) where T <: AbstractString
-    remove_words!(crps, words::Vector{T}) where T <: AbstractString
+    remove_words!(doc, words::Vector{AbstractString})
+    remove_words!(crps, words::Vector{AbstractString})
 
 Remove the occurences of words from `doc` or `crps`.
 

@@ -49,7 +49,7 @@ function title!(d::AbstractDocument, nv::AbstractString)
 end
 
 """
-    language!(doc, lang::T) where T <: Language
+    language!(doc, lang::Language)
 
 Set the language of `doc` to `lang`.
 
@@ -65,7 +65,7 @@ Languages.Spanish()
 
 See also: [`language`](@ref), [`languages`](@ref), [`languages!`](@ref)
 """
-function language!(d::AbstractDocument, nv::T) where T <: Language
+function language!(d::AbstractDocument, nv::Language)
     d.metadata.language = nv
 end
 
@@ -151,8 +151,8 @@ function titles!(c::Corpus, nvs::Vector{String})
 end
 
 """
-    languages!(crps, langs::Vector{T}) where T <: Language
-    languages!(crps, lang::T) where T <: Language
+    languages!(crps, langs::Vector{Language})
+    languages!(crps, lang::Language)
 
 Update languages of documents in a Corpus.
 
