@@ -9,12 +9,14 @@ mutable struct DocumentMetadata
     title::String
     author::String
     timestamp::String
+    custom::Any
 end
 DocumentMetadata() = DocumentMetadata(
     Languages.English(),
     "Untitled Document",
     "Unknown Author",
-    "Unknown Time"
+    "Unknown Time",
+    nothing
 )
 
 ##############################################################################
