@@ -31,6 +31,8 @@ function jackknife_avg(scores)
     end
 end
 
+# Returns an array of ngram tokens from the ngram doc. 
+# param ngram_doc : Output from the function ngrams(StringDocument(text), n)
 function listify_ngrams(ngram_doc)
     flattened = []
     for item in ngram_doc
