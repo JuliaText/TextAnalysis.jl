@@ -21,8 +21,6 @@ It takes two arguments-
 * `dict`:(Optional Argument) An Array of possible tokens (words). This is automatically updated if a new token is detected in the Step 2) or 3)
 
 
-
-
 2- Fitting the model weights on input -
 
     fit!(model, str, class)
@@ -36,7 +34,6 @@ It takes two arguments-
 ```julia
 julia> m = NaiveBayesClassifier([:legal, :financial])
 NaiveBayesClassifier{Symbol}(String[], Symbol[:legal, :financial], Array{Int64}(0,2))
-
 ```
 
 ```julia
@@ -45,7 +42,6 @@ NaiveBayesClassifier{Symbol}(["financial", "this", "is", "doc"], Symbol[:legal, 
 
 julia> fit!(m, "this is legal doc", :legal)
 NaiveBayesClassifier{Symbol}(["financial", "this", "is", "doc", "legal"], Symbol[:legal, :financial], [1 2; 2 2; … ; 2 2; 2 1])
-
 ```
 
 ```julia
@@ -53,5 +49,4 @@ julia> predict(m, "this should be predicted as a legal document")
 Dict{Symbol,Float64} with 2 entries:
   :legal     => 0.666667
   :financial => 0.333333
-
 ```
