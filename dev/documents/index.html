@@ -3,13 +3,23 @@
 &quot;To be or not to be...&quot;
 
 julia&gt; sd = StringDocument(str)
-StringDocument{String}(&quot;To be or not to be...&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+A StringDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: To be or not to be...
 
 julia&gt; pathname = &quot;/usr/share/dict/words&quot;
 &quot;/usr/share/dict/words&quot;
 
 julia&gt; fd = FileDocument(pathname)
-FileDocument(&quot;/usr/share/dict/words&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;/usr/share/dict/words&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+A FileDocument
+ * Language: Languages.English()
+ * Title: /usr/share/dict/words
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: A A&#39;s AMD AMD&#39;s AOL AOL&#39;s Aachen Aachen&#39;s Aaliyah
 
 julia&gt; my_tokens = String[&quot;To&quot;, &quot;be&quot;, &quot;or&quot;, &quot;not&quot;, &quot;to&quot;, &quot;be...&quot;]
 6-element Array{String,1}:
@@ -21,7 +31,13 @@ julia&gt; my_tokens = String[&quot;To&quot;, &quot;be&quot;, &quot;or&quot;, &qu
  &quot;be...&quot;
 
 julia&gt; td = TokenDocument(my_tokens)
-TokenDocument{String}([&quot;To&quot;, &quot;be&quot;, &quot;or&quot;, &quot;not&quot;, &quot;to&quot;, &quot;be...&quot;], TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+A TokenDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
+
 
 julia&gt; my_ngrams = Dict{String, Int}(&quot;To&quot; =&gt; 1, &quot;be&quot; =&gt; 2,
                                     &quot;or&quot; =&gt; 1, &quot;not&quot; =&gt; 1,
@@ -35,26 +51,75 @@ Dict{String,Int64} with 6 entries:
   &quot;be&quot;    =&gt; 2
 
 julia&gt; ngd = NGramDocument(my_ngrams)
-NGramDocument{AbstractString}(Dict{AbstractString,Int64}(&quot;or&quot;=&gt;1,&quot;be...&quot;=&gt;1,&quot;not&quot;=&gt;1,&quot;to&quot;=&gt;1,&quot;To&quot;=&gt;1,&quot;be&quot;=&gt;2), 1, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))</code></pre><p>An NGramDocument consisting of bigrams or any higher order representation <code>N</code> can be easily created by passing the parameter <code>N</code> to <code>NGramDocument</code></p><pre><code class="language-julia">julia&gt; ngd = NGramDocument(&quot;To be or not to be ...&quot;, 2)
-NGramDocument{AbstractString}(Dict{AbstractString,Int64}(&quot;to be&quot;=&gt;1,&quot;not&quot;=&gt;1,&quot;be or&quot;=&gt;1,&quot;or&quot;=&gt;1,&quot;not to&quot;=&gt;1,&quot;To&quot;=&gt;1,&quot;..&quot;=&gt;1,&quot;.&quot;=&gt;1,&quot;be ..&quot;=&gt;1,&quot;be&quot;=&gt;2…), 2, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))</code></pre><p>For every type of document except a <code>FileDocument</code>, you can also construct a new document by simply passing in a string of text:</p><pre><code class="language-julia">julia&gt; sd = StringDocument(&quot;To be or not to be...&quot;)
-StringDocument{String}(&quot;To be or not to be...&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+A NGramDocument{AbstractString}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: ***SAMPLE TEXT NOT AVAILABLE***</code></pre><p>An NGramDocument consisting of bigrams or any higher order representation <code>N</code> can be easily created by passing the parameter <code>N</code> to <code>NGramDocument</code></p><pre><code class="language-julia">julia&gt; NGramDocument(&quot;To be or not to be ...&quot;, 2)
+A NGramDocument{AbstractString}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: ***SAMPLE TEXT NOT AVAILABLE***</code></pre><p>For every type of document except a <code>FileDocument</code>, you can also construct a new document by simply passing in a string of text:</p><pre><code class="language-julia">julia&gt; sd = StringDocument(&quot;To be or not to be...&quot;)
+A StringDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: To be or not to be...
 
 julia&gt; td = TokenDocument(&quot;To be or not to be...&quot;)
-TokenDocument{String}([&quot;To&quot;, &quot;be&quot;, &quot;or&quot;, &quot;not&quot;, &quot;to&quot;, &quot;be..&quot;, &quot;.&quot;], TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+A TokenDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
 
 julia&gt; ngd = NGramDocument(&quot;To be or not to be...&quot;)
-NGramDocument{String}(Dict(&quot;or&quot;=&gt;1,&quot;not&quot;=&gt;1,&quot;to&quot;=&gt;1,&quot;To&quot;=&gt;1,&quot;be&quot;=&gt;1,&quot;be..&quot;=&gt;1,&quot;.&quot;=&gt;1), 1, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))</code></pre><p>The system will automatically perform tokenization or n-gramization in order to produce the required data. Unfortunately, <code>FileDocument</code>&#39;s cannot be constructed this way because filenames are themselves strings. It would cause chaos if filenames were treated as the text contents of a document.</p><p>That said, there is one way around this restriction: you can use the generic <code>Document()</code> constructor function, which will guess at the type of the inputs and construct the appropriate type of document object:</p><pre><code class="language-julia">julia&gt; Document(&quot;To be or not to be...&quot;)
-StringDocument{String}(&quot;To be or not to be...&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
-
+A NGramDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: ***SAMPLE TEXT NOT AVAILABLE***</code></pre><p>The system will automatically perform tokenization or n-gramization in order to produce the required data. Unfortunately, <code>FileDocument</code>&#39;s cannot be constructed this way because filenames are themselves strings. It would cause chaos if filenames were treated as the text contents of a document.</p><p>That said, there is one way around this restriction: you can use the generic <code>Document()</code> constructor function, which will guess at the type of the inputs and construct the appropriate type of document object:</p><pre><code class="language-julia">julia&gt; Document(&quot;To be or not to be...&quot;)
+A StringDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: To be or not to be...
 julia&gt; Document(&quot;/usr/share/dict/words&quot;)
-FileDocument(&quot;/usr/share/dict/words&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;/usr/share/dict/words&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+A FileDocument
+ * Language: Languages.English()
+ * Title: /usr/share/dict/words
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: A A&#39;s AMD AMD&#39;s AOL AOL&#39;s Aachen Aachen&#39;s Aaliyah
 
 julia&gt; Document(String[&quot;To&quot;, &quot;be&quot;, &quot;or&quot;, &quot;not&quot;, &quot;to&quot;, &quot;be...&quot;])
-TokenDocument{String}([&quot;To&quot;, &quot;be&quot;, &quot;or&quot;, &quot;not&quot;, &quot;to&quot;, &quot;be...&quot;], TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+A TokenDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
 
 julia&gt; Document(Dict{String, Int}(&quot;a&quot; =&gt; 1, &quot;b&quot; =&gt; 3))
-NGramDocument{AbstractString}(Dict{AbstractString,Int64}(&quot;b&quot;=&gt;3,&quot;a&quot;=&gt;1), 1, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))</code></pre><p>This constructor is very convenient for working in the REPL, but should be avoided in permanent code because, unlike the other constructors, the return type of the <code>Document</code> function cannot be known at compile-time.</p><h2><a class="nav-anchor" id="Basic-Functions-for-Working-with-Documents-1" href="#Basic-Functions-for-Working-with-Documents-1">Basic Functions for Working with Documents</a></h2><p>Once you&#39;ve created a document object, you can work with it in many ways. The most obvious thing is to access its text using the <code>text()</code> function:</p><pre><code class="language-julia">julia&gt; sd = StringDocument(&quot;To be or not to be...&quot;)
-StringDocument{String}(&quot;To be or not to be...&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+A NGramDocument{AbstractString}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: ***SAMPLE TEXT NOT AVAILABLE***</code></pre><p>This constructor is very convenient for working in the REPL, but should be avoided in permanent code because, unlike the other constructors, the return type of the <code>Document</code> function cannot be known at compile-time.</p><h2><a class="nav-anchor" id="Basic-Functions-for-Working-with-Documents-1" href="#Basic-Functions-for-Working-with-Documents-1">Basic Functions for Working with Documents</a></h2><p>Once you&#39;ve created a document object, you can work with it in many ways. The most obvious thing is to access its text using the <code>text()</code> function:</p><pre><code class="language-julia">julia&gt; sd = StringDocument(&quot;To be or not to be...&quot;)
+A StringDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: To be or not to be...
 
 julia&gt; text(sd)
 &quot;To be or not to be...&quot;</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>This function works without warnings on <code>StringDocument</code>&#39;s and <code>FileDocument</code>&#39;s. For <code>TokenDocument</code>&#39;s it is not possible to know if the text can be reconstructed perfectly, so calling <code>text(TokenDocument(&quot;This is text&quot;))</code> will produce a warning message before returning an approximate reconstruction of the text as it existed before tokenization. It is entirely impossible to reconstruct the text of an <code>NGramDocument</code>, so <code>text(NGramDocument(&quot;This is text&quot;))</code> raises an error.</p></div></div><p>Instead of working with the text itself, you can work with the tokens or n-grams of a document using the <code>tokens()</code> and <code>ngrams()</code> functions:</p><pre><code class="language-julia">julia&gt; tokens(sd)
@@ -83,11 +148,21 @@ Dict{AbstractString,Int64} with 13 entries:
   &quot;not to&quot;  =&gt; 1
   &quot;to be..&quot; =&gt; 1
   &quot;be.. .&quot;  =&gt; 1</code></pre><p>If you have a <code>NGramDocument</code>, you can determine whether an <code>NGramDocument</code> contains unigrams, bigrams or a higher-order representation using the <code>ngram_complexity()</code> function:</p><pre><code class="language-julia">julia&gt; ngd = NGramDocument(&quot;To be or not to be ...&quot;, 2)
-NGramDocument{AbstractString}(Dict{AbstractString,Int64}(&quot;to be&quot;=&gt;1,&quot;not&quot;=&gt;1,&quot;be or&quot;=&gt;1,&quot;or&quot;=&gt;1,&quot;not to&quot;=&gt;1,&quot;To&quot;=&gt;1,&quot;..&quot;=&gt;1,&quot;.&quot;=&gt;1,&quot;be ..&quot;=&gt;1,&quot;be&quot;=&gt;2…), 2, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+A NGramDocument{AbstractString}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
 
 julia&gt; ngram_complexity(ngd)
-2</code></pre><p>This information is not available for other types of <code>Document</code> objects because it is possible to produce any level of complexity when constructing n-grams from raw text or tokens.</p><h2><a class="nav-anchor" id="Document-Metadata-1" href="#Document-Metadata-1">Document Metadata</a></h2><p>In addition to methods for manipulating the representation of the text of a document, every document object also stores basic metadata about itself, including the following pieces of information:</p><ul><li><code>language()</code>: What language is the document in? Defaults to <code>Languages.English()</code>, a Language instance defined by the Languages package.</li><li><code>title()</code>: What is the title of the document? Defaults to <code>&quot;Untitled Document&quot;</code>.</li><li><code>author()</code>: Who wrote the document? Defaults to <code>&quot;Unknown Author&quot;</code>.</li><li><code>timestamp()</code>: When was the document written? Defaults to <code>&quot;Unknown Time&quot;</code>.</li></ul><p>Try these functions out on a <code>StringDocument</code> to see how the defaults work in practice:</p><pre><code class="language-julia">julia&gt; sd = StringDocument(&quot;This document has too foo words&quot;)
-StringDocument{String}(&quot;This document has too foo words&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+2</code></pre><p>This information is not available for other types of <code>Document</code> objects because it is possible to produce any level of complexity when constructing n-grams from raw text or tokens.</p><h2><a class="nav-anchor" id="Document-Metadata-1" href="#Document-Metadata-1">Document Metadata</a></h2><p>In addition to methods for manipulating the representation of the text of a document, every document object also stores basic metadata about itself, including the following pieces of information:</p><ul><li><code>language()</code>: What language is the document in? Defaults to <code>Languages.English()</code>, a Language instance defined by the Languages package.</li><li><code>title()</code>: What is the title of the document? Defaults to <code>&quot;Untitled Document&quot;</code>.</li><li><code>author()</code>: Who wrote the document? Defaults to <code>&quot;Unknown Author&quot;</code>.</li><li><code>timestamp()</code>: When was the document written? Defaults to <code>&quot;Unknown Time&quot;</code>.</li></ul><p>Try these functions out on a <code>StringDocument</code> to see how the defaults work in practice:</p><pre><code class="language-julia">julia&gt; StringDocument(&quot;This document has too foo words&quot;)
+A StringDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: This document has too foo words
 
 julia&gt; language(sd)
 Languages.English()
@@ -113,21 +188,32 @@ julia&gt; timestamp!(sd, &quot;Desconocido&quot;)
 
 julia&gt; prepare!(str, strip_punctuation)
 
-julia&gt; str
-StringDocument{String}(&quot;here are some punctuations  &quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))</code></pre><ul><li>To remove case distinctions, use <code>remove_case!()</code> function:</li><li>At times you&#39;ll want to remove specific words from a document like a person&#39;s</li></ul><p>name. To do that, use the <code>remove_words!()</code> function:</p><pre><code class="language-julia">julia&gt; sd = StringDocument(&quot;Lear is mad&quot;)
-StringDocument{String}(&quot;Lear is mad&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+julia&gt; text(str)
+&quot;here are some punctuations &quot;</code></pre><ul><li>To remove case distinctions, use <code>remove_case!()</code> function:</li><li>At times you&#39;ll want to remove specific words from a document like a person&#39;s</li></ul><p>name. To do that, use the <code>remove_words!()</code> function:</p><pre><code class="language-julia">julia&gt; sd = StringDocument(&quot;Lear is mad&quot;)
+A StringDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: Lear is mad
 
 julia&gt; remove_case!(sd)
 
-julia&gt; sd
-StringDocument{String}(&quot;lear is mad&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))
+julia&gt; text(sd)
+&quot;lear is mad&quot;
 
 julia&gt; remove_words!(sd, [&quot;lear&quot;])
 
-julia&gt; sd
-StringDocument{String}(&quot; is mad&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))</code></pre><p>At other times, you&#39;ll want to remove whole classes of words. To make this easier, we can use several classes of basic words defined by the Languages.jl package:</p><ul><li><em>Articles</em> : &quot;a&quot;, &quot;an&quot;, &quot;the&quot;</li><li><em>Indefinite Articles</em> : &quot;a&quot;, &quot;an&quot;</li><li><em>Definite Articles</em> : &quot;the&quot;</li><li><em>Prepositions</em> : &quot;across&quot;, &quot;around&quot;, &quot;before&quot;, ...</li><li><em>Pronouns</em> : &quot;I&quot;, &quot;you&quot;, &quot;he&quot;, &quot;she&quot;, ...</li><li><em>Stop Words</em> : &quot;all&quot;, &quot;almost&quot;, &quot;alone&quot;, ...</li></ul><p>These special classes can all be removed using specially-named parameters:</p><ul><li><code>prepare!(sd, strip_articles)</code></li><li><code>prepare!(sd, strip_indefinite_articles)</code></li><li><code>prepare!(sd, strip_definite_articles)</code></li><li><code>prepare!(sd, strip_preposition)</code></li><li><code>prepare!(sd, strip_pronouns)</code></li><li><code>prepare!(sd, strip_stopwords)</code></li><li><code>prepare!(sd, strip_numbers)</code></li><li><code>prepare!(sd, strip_non_letters)</code></li><li><code>prepare!(sd, strip_spares_terms)</code></li><li><code>prepare!(sd, strip_frequent_terms)</code></li><li><code>prepare!(sd, strip_html_tags)</code></li></ul><p>These functions use words lists, so they are capable of working for many different languages without change, also these operations can be combined together for improved performance:</p><ul><li><code>prepare!(sd, strip_articles| strip_numbers| strip_html_tags)</code></li></ul><p>In addition to removing words, it is also common to take words that are closely related like &quot;dog&quot; and &quot;dogs&quot; and stem them in order to produce a smaller set of words for analysis. We can do this using the <code>stem!()</code> function:</p><pre><code class="language-julia">julia&gt; sd = StringDocument(&quot;Foo writes and foo bar write&quot;)
+julia&gt; text(sd)
+&quot; is mad&quot;</code></pre><p>At other times, you&#39;ll want to remove whole classes of words. To make this easier, we can use several classes of basic words defined by the Languages.jl package:</p><ul><li><em>Articles</em> : &quot;a&quot;, &quot;an&quot;, &quot;the&quot;</li><li><em>Indefinite Articles</em> : &quot;a&quot;, &quot;an&quot;</li><li><em>Definite Articles</em> : &quot;the&quot;</li><li><em>Prepositions</em> : &quot;across&quot;, &quot;around&quot;, &quot;before&quot;, ...</li><li><em>Pronouns</em> : &quot;I&quot;, &quot;you&quot;, &quot;he&quot;, &quot;she&quot;, ...</li><li><em>Stop Words</em> : &quot;all&quot;, &quot;almost&quot;, &quot;alone&quot;, ...</li></ul><p>These special classes can all be removed using specially-named parameters:</p><ul><li><code>prepare!(sd, strip_articles)</code></li><li><code>prepare!(sd, strip_indefinite_articles)</code></li><li><code>prepare!(sd, strip_definite_articles)</code></li><li><code>prepare!(sd, strip_preposition)</code></li><li><code>prepare!(sd, strip_pronouns)</code></li><li><code>prepare!(sd, strip_stopwords)</code></li><li><code>prepare!(sd, strip_numbers)</code></li><li><code>prepare!(sd, strip_non_letters)</code></li><li><code>prepare!(sd, strip_spares_terms)</code></li><li><code>prepare!(sd, strip_frequent_terms)</code></li><li><code>prepare!(sd, strip_html_tags)</code></li></ul><p>These functions use words lists, so they are capable of working for many different languages without change, also these operations can be combined together for improved performance:</p><ul><li><code>prepare!(sd, strip_articles| strip_numbers| strip_html_tags)</code></li></ul><p>In addition to removing words, it is also common to take words that are closely related like &quot;dog&quot; and &quot;dogs&quot; and stem them in order to produce a smaller set of words for analysis. We can do this using the <code>stem!()</code> function:</p><pre><code class="language-julia">julia&gt; sd = StringDocument(&quot;They write, it writes&quot;)
+A StringDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: They write, it writes
 
 julia&gt; stem!(sd)
 
-julia&gt; sd
-StringDocument{String}(&quot;Foo write and foo bar write&quot;, TextAnalysis.DocumentMetadata(Languages.English(), &quot;Untitled Document&quot;, &quot;Unknown Author&quot;, &quot;Unknown Time&quot;))</code></pre><footer><hr/><a class="previous" href="../"><span class="direction">Previous</span><span class="title">Home</span></a><a class="next" href="../corpus/"><span class="direction">Next</span><span class="title">Corpus</span></a></footer></article></body></html>
+julia&gt; text(sd)
+&quot;They write , it write&quot;</code></pre><footer><hr/><a class="previous" href="../"><span class="direction">Previous</span><span class="title">Home</span></a><a class="next" href="../corpus/"><span class="direction">Next</span><span class="title">Corpus</span></a></footer></article></body></html>

@@ -1,21 +1,11 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Features · TextAnalysis</title><link rel="canonical" href="https://juliatext.github.io/TextAnalysis.jl/stable/features/index.html"/><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/><script src="../assets/custom.js"></script></head><body><nav class="toc"><h1>TextAnalysis</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../documents/">Documents</a></li><li><a class="toctext" href="../corpus/">Corpus</a></li><li class="current"><a class="toctext" href>Features</a><ul class="internal"><li><a class="toctext" href="#Creating-a-Document-Term-Matrix-1">Creating a Document Term Matrix</a></li><li><a class="toctext" href="#Creating-Individual-Rows-of-a-Document-Term-Matrix-1">Creating Individual Rows of a Document Term Matrix</a></li><li><a class="toctext" href="#The-Hash-Trick-1">The Hash Trick</a></li><li><a class="toctext" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)-1">TF-IDF (Term Frequency - Inverse Document Frequency)</a></li><li><a class="toctext" href="#Sentiment-Analyzer-1">Sentiment Analyzer</a></li><li><a class="toctext" href="#Summarizer-1">Summarizer</a></li></ul></li><li><a class="toctext" href="../semantic/">Semantic Analysis</a></li><li><a class="toctext" href="../classify/">Classifier</a></li><li><a class="toctext" href="../example/">Extended Example</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Features</a></li></ul><a class="edit-page" href="https://github.com/JuliaText/TextAnalysis.jl/blob/master/docs/src/features.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Features</span><a class="fa fa-bars" href="#"></a></div></header><h2><a class="nav-anchor" id="Creating-a-Document-Term-Matrix-1" href="#Creating-a-Document-Term-Matrix-1">Creating a Document Term Matrix</a></h2><p>Often we want to represent documents as a matrix of word counts so that we can apply linear algebra operations and statistical techniques. Before we do this, we need to update the lexicon:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Features · TextAnalysis</title><link rel="canonical" href="https://juliatext.github.io/TextAnalysis.jl/stable/features/index.html"/><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/><script src="../assets/custom.js"></script></head><body><nav class="toc"><h1>TextAnalysis</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../documents/">Documents</a></li><li><a class="toctext" href="../corpus/">Corpus</a></li><li class="current"><a class="toctext" href>Features</a><ul class="internal"><li><a class="toctext" href="#Creating-a-Document-Term-Matrix-1">Creating a Document Term Matrix</a></li><li><a class="toctext" href="#Creating-Individual-Rows-of-a-Document-Term-Matrix-1">Creating Individual Rows of a Document Term Matrix</a></li><li><a class="toctext" href="#The-Hash-Trick-1">The Hash Trick</a></li><li><a class="toctext" href="#TF-(Term-Frequency)-1">TF (Term Frequency)</a></li><li><a class="toctext" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)-1">TF-IDF (Term Frequency - Inverse Document Frequency)</a></li><li><a class="toctext" href="#Sentiment-Analyzer-1">Sentiment Analyzer</a></li><li><a class="toctext" href="#Summarizer-1">Summarizer</a></li></ul></li><li><a class="toctext" href="../semantic/">Semantic Analysis</a></li><li><a class="toctext" href="../classify/">Classifier</a></li><li><a class="toctext" href="../example/">Extended Example</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Features</a></li></ul><a class="edit-page" href="https://github.com/JuliaText/TextAnalysis.jl/blob/master/docs/src/features.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Features</span><a class="fa fa-bars" href="#"></a></div></header><h2><a class="nav-anchor" id="Creating-a-Document-Term-Matrix-1" href="#Creating-a-Document-Term-Matrix-1">Creating a Document Term Matrix</a></h2><p>Often we want to represent documents as a matrix of word counts so that we can apply linear algebra operations and statistical techniques. Before we do this, we need to update the lexicon:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
                              StringDocument(&quot;To become or not to become&quot;)])
 
 julia&gt; update_lexicon!(crps)
 
 julia&gt; m = DocumentTermMatrix(crps)
-DocumentTermMatrix(
-  [1, 1]  =  1
-  [2, 1]  =  1
-  [1, 2]  =  2
-  [2, 3]  =  2
-  [1, 4]  =  1
-  [2, 4]  =  1
-  [1, 5]  =  1
-  [2, 5]  =  1
-  [1, 6]  =  1
-  [2, 6]  =  1, [&quot;To&quot;, &quot;be&quot;, &quot;become&quot;, &quot;not&quot;, &quot;or&quot;, &quot;to&quot;], Dict(&quot;or&quot;=&gt;5,&quot;not&quot;=&gt;4,&quot;to&quot;=&gt;6,&quot;To&quot;=&gt;1,&quot;be&quot;=&gt;2,&quot;become&quot;=&gt;3))</code></pre><p>A <code>DocumentTermMatrix</code> object is a special type. If you would like to use a simple sparse matrix, call <code>dtm()</code> on this object:</p><pre><code class="language-julia">julia&gt; dtm(m)
+A 2 X 6 DocumentTermMatrix</code></pre><p>A <code>DocumentTermMatrix</code> object is a special type. If you would like to use a simple sparse matrix, call <code>dtm()</code> on this object:</p><pre><code class="language-julia">julia&gt; dtm(m)
 2×6 SparseArrays.SparseMatrixCSC{Int64,Int64} with 10 stored entries:
   [1, 1]  =  1
   [2, 1]  =  1
@@ -46,8 +36,54 @@ julia&gt; index_hash(&quot;b&quot;, h)
  0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
  0  0  0  0  0  0  0  0  2  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0</code></pre><p>Moreover, if you do not specify a hash function for just one row of the hash DTM, a default hash function will be constructed for you:</p><pre><code class="language-julia">julia&gt; hash_dtv(crps[1])
 1×100 Array{Int64,2}:
- 0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0</code></pre><h2><a class="nav-anchor" id="TF-IDF-(Term-Frequency-Inverse-Document-Frequency)-1" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)-1">TF-IDF (Term Frequency - Inverse Document Frequency)</a></h2><p>In many cases, raw word counts are not appropriate for use because:</p><ul><li>(A) Some documents are longer than other documents</li><li>(B) Some words are more frequent than other words</li></ul><p>You can work around this by performing TF-IDF on a DocumentTermMatrix:</p><pre><code class="language-none">m = DocumentTermMatrix(crps)
-tf_idf(m)</code></pre><p>As you can see, TF-IDF has the effect of inserting 0&#39;s into the columns of words that occur in all documents. This is a useful way to avoid having to remove those words during preprocessing.</p><h2><a class="nav-anchor" id="Sentiment-Analyzer-1" href="#Sentiment-Analyzer-1">Sentiment Analyzer</a></h2><p>It can be used to find the sentiment score (between 0 and 1) of a word, sentence or a Document. A trained model (using Flux) on IMDB word corpus with weights saved are used to calculate the sentiments.</p><pre><code class="language-none">model = SentimentAnalyzer(doc)
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0</code></pre><h2><a class="nav-anchor" id="TF-(Term-Frequency)-1" href="#TF-(Term-Frequency)-1">TF (Term Frequency)</a></h2><p>Often we need to find out the proportion of a document is contributed by each term. This can be done by finding the term frequency function</p><pre><code class="language-none">tf(dtm)</code></pre><p>The paramter, <code>dtm</code> can be of the types - <code>DocumentTermMatrix</code> , <code>SparseMatrixCSC</code> or <code>Matrix</code></p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
+              StringDocument(&quot;To become or not to become&quot;)])
+
+julia&gt; update_lexicon!(crps)
+
+julia&gt; m = DocumentTermMatrix(crps)
+
+julia&gt; tf(m)
+2×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 10 stored entries:
+  [1, 1]  =  0.166667
+  [2, 1]  =  0.166667
+  [1, 2]  =  0.333333
+  [2, 3]  =  0.333333
+  [1, 4]  =  0.166667
+  [2, 4]  =  0.166667
+  [1, 5]  =  0.166667
+  [2, 5]  =  0.166667
+  [1, 6]  =  0.166667
+  [2, 6]  =  0.166667</code></pre><h2><a class="nav-anchor" id="TF-IDF-(Term-Frequency-Inverse-Document-Frequency)-1" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)-1">TF-IDF (Term Frequency - Inverse Document Frequency)</a></h2><pre><code class="language-none">tf_idf(dtm)</code></pre><p>In many cases, raw word counts are not appropriate for use because:</p><ul><li>(A) Some documents are longer than other documents</li><li>(B) Some words are more frequent than other words</li></ul><p>You can work around this by performing TF-IDF on a DocumentTermMatrix:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
+              StringDocument(&quot;To become or not to become&quot;)])
+
+julia&gt; update_lexicon!(crps)
+
+julia&gt; m = DocumentTermMatrix(crps)
+DocumentTermMatrix(
+  [1, 1]  =  1
+  [2, 1]  =  1
+  [1, 2]  =  2
+  [2, 3]  =  2
+  [1, 4]  =  1
+  [2, 4]  =  1
+  [1, 5]  =  1
+  [2, 5]  =  1
+  [1, 6]  =  1
+  [2, 6]  =  1, [&quot;To&quot;, &quot;be&quot;, &quot;become&quot;, &quot;not&quot;, &quot;or&quot;, &quot;to&quot;], Dict(&quot;or&quot;=&gt;5,&quot;not&quot;=&gt;4,&quot;to&quot;=&gt;6,&quot;To&quot;=&gt;1,&quot;be&quot;=&gt;2,&quot;become&quot;=&gt;3))
+
+julia&gt; tf_idf(m)
+2×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 10 stored entries:
+  [1, 1]  =  0.0
+  [2, 1]  =  0.0
+  [1, 2]  =  0.231049
+  [2, 3]  =  0.231049
+  [1, 4]  =  0.0
+  [2, 4]  =  0.0
+  [1, 5]  =  0.0
+  [2, 5]  =  0.0
+  [1, 6]  =  0.0
+  [2, 6]  =  0.0</code></pre><p>As you can see, TF-IDF has the effect of inserting 0&#39;s into the columns of words that occur in all documents. This is a useful way to avoid having to remove those words during preprocessing.</p><h2><a class="nav-anchor" id="Sentiment-Analyzer-1" href="#Sentiment-Analyzer-1">Sentiment Analyzer</a></h2><p>It can be used to find the sentiment score (between 0 and 1) of a word, sentence or a Document. A trained model (using Flux) on IMDB word corpus with weights saved are used to calculate the sentiments.</p><pre><code class="language-none">model = SentimentAnalyzer(doc)
 model = SentimentAnalyzer(doc, handle_unknown)</code></pre><ul><li>doc              = Input Document for calculating document (AbstractDocument type)</li><li>handle_unknown   = A function for handling unknown words. Should return an array (default (x)-&gt;[])</li></ul><h2><a class="nav-anchor" id="Summarizer-1" href="#Summarizer-1">Summarizer</a></h2><p>TextAnalysis offers a simple text-rank based summarizer for its various document types.</p><pre><code class="language-none">summarize(d, ns)</code></pre><p>It takes 2 arguments:</p><ul><li><code>d</code> : A document of type <code>StringDocument</code>, <code>FileDocument</code> or <code>TokenDocument</code></li><li><code>ns</code> : (Optional) Mention the number of sentences in the Summary, defaults to <code>5</code> sentences.</li></ul><pre><code class="language-julia">julia&gt; s = StringDocument(&quot;Assume this Short Document as an example. Assume this as an example summarizer. This has too foo sentences.&quot;)
 
 julia&gt; summarize(s, ns=2)
