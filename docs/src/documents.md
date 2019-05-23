@@ -266,6 +266,7 @@ julia> remove_words!(sd, ["lear"])
 julia> sd
 StringDocument{String}(" is mad", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
 ```
+
 At other times, you'll want to remove whole classes of words. To make this
 easier, we can use several classes of basic words defined by the Languages.jl
 package:
@@ -294,6 +295,7 @@ These special classes can all be removed using specially-named parameters:
 These functions use words lists, so they are capable of working for many
 different languages without change, also these operations can be combined
 together for improved performance:
+
 * `prepare!(sd, strip_articles| strip_numbers| strip_html_tags)`
 
 In addition to removing words, it is also common to take words that are

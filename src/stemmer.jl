@@ -8,8 +8,11 @@ const ISO_8859_1    = "ISO_8859_1"
 const CP850         = "CP850"
 const KOI8_R        = "KOI8_R"
 
-##
-# lists the stemmer algorithms loaded
+"""
+    stemmer_types()
+
+List all the stemmer algorithms loaded.
+"""
 function stemmer_types()
     cptr = ccall((:sb_stemmer_list, libstemmer), Ptr{Ptr{UInt8}}, ())
     (C_NULL == cptr) && error("error getting stemmer types")
@@ -50,7 +53,7 @@ mutable struct Stemmer
     end
 end
 
-show(io::IO, stm::Stemmer) = println(io, "Stemmer algorithm:$(stm.alg) encoding:$(stm.enc)")
+Base.show(io::IO, stm::Stemmer) = println(io, "Stemmer algorithm:$(stm.alg) encoding:$(stm.enc)")
 
 function release(stm::Stemmer)
     (C_NULL == stm.cptr) && return
@@ -59,6 +62,14 @@ function release(stm::Stemmer)
     nothing
 end
 
+"""
+    stem(stemmer::Stemmer, str)
+    stem(stemmer::Stemmer, words::Array)
+
+Stem the input with the Stemming algorthm of `stemmer`.
+
+See also: [`stem!`](@ref)
+"""
 function stem(stemmer::Stemmer, bstr::AbstractString)
     sres = ccall((:sb_stemmer_stem, libstemmer),
                 Ptr{UInt8},
@@ -83,13 +94,26 @@ function stem(stemmer::Stemmer, words::Array)
     for idx in 1:l
         ret[idx] = stem(stemmer, words[idx])
     end
-    ret
+    return ret
 end
 
+"""
+    stemmer_for_document(doc)
+
+Search for an appropriate stemmer based on the language of the document.
+"""
 function stemmer_for_document(d::AbstractDocument)
     Stemmer(lowercase(Languages.english_name(language(d))))
 end
 
+"""
+    stem!(doc)
+    stem!(crps)
+
+Stems the document or documents in `crps` with a suitable stemmer.
+
+Stemming cannot be done for `FileDocument` and Corpus made of these type of documents.
+"""
 function stem!(d::AbstractDocument)
     stemmer = stemmer_for_document(d)
     stem!(stemmer, d)

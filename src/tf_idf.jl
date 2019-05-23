@@ -1,21 +1,12 @@
-##############################################################################
-#
-# TF
-#
-##############################################################################
+"""
+    tf!(dtm::AbstractMatrix{Real}, tf::AbstractMatrix{AbstractFloat})
 
-tf(dtm::Matrix{T}) where {T <: Real} = tf!(dtm, Array{Float64}(undef, size(dtm)...))
+Overwrite `tf` with the term frequency of the `dtm`.
 
-tf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf!(dtm, similar(dtm, Float64))
+Works correctly if `dtm` and `tf` are same matrix.
 
-tf!(dtm::AbstractMatrix{T}) where {T <: Real} = tf!(dtm, dtm)
-
-tf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf!(dtm, dtm)
-
-tf(dtm::DocumentTermMatrix) = tf(dtm.dtm)
-
-# The second Matrix will be overwritten with the result
-# Will work correctly if dtm and tfidf are the same matrix
+See also: [`tf`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
+"""
 function tf!(dtm::AbstractMatrix{T1}, tf::AbstractMatrix{T2}) where {T1 <: Real, T2 <: AbstractFloat}
     n, p = size(dtm)
 
@@ -31,7 +22,15 @@ function tf!(dtm::AbstractMatrix{T1}, tf::AbstractMatrix{T2}) where {T1 <: Real,
     return tf
 end
 
-# assumes second matrix has same nonzeros as first one
+"""
+    tf!(dtm::SparseMatrixCSC{Real}, tf::SparseMatrixCSC{AbstractFloat})
+
+Overwrite `tf` with the term frequency of the `dtm`.
+
+`tf` should have the has same nonzeros as `dtm`.
+
+See also: [`tf`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
+"""
 function tf!(dtm::SparseMatrixCSC{T}, tf::SparseMatrixCSC{F}) where {T <: Real, F <: AbstractFloat}
     rows = rowvals(dtm)
     dtmvals = nonzeros(dtm)
@@ -48,31 +47,61 @@ function tf!(dtm::SparseMatrixCSC{T}, tf::SparseMatrixCSC{F}) where {T <: Real, 
           tfvals[j] = dtmvals[j] / max(words_in_documents[row], one(T))
        end
     end
-    tf
+    return tf
 end
 
-##############################################################################
-#
-# TF-IDF
-#
-##############################################################################
+tf!(dtm::AbstractMatrix{T}) where {T <: Real} = tf!(dtm, dtm)
 
-tf_idf(dtm::Matrix{T}) where {T <: Real} = tf_idf!(dtm, Array{Float64}(undef, size(dtm)...))
+tf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf!(dtm, dtm)
 
-tf_idf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf_idf!(dtm, similar(dtm, Float64))
+"""
+    tf(dtm::DocumentTermMatrix)
+    tf(dtm::SparseMatrixCSC{Real})
+    tf(dtm::Matrix{Real})
 
-tf_idf!(dtm::AbstractMatrix{T}) where {T <: Real} = tf_idf!(dtm, dtm)
+Compute the `term-frequency` of the input.
 
-tf_idf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf_idf!(dtm, dtm)
+# Example
 
-tf_idf(dtm::DocumentTermMatrix) = tf_idf(dtm.dtm)
+```julia-repl
+julia> crps = Corpus([StringDocument("To be or not to be"),
+              StringDocument("To become or not to become")])
 
-# This does not make sense, since DocumentTermMatrix is based on an array of integers
-#tf_idf!(dtm::DocumentTermMatrix) = tf_idf!(dtm.dtm)
+julia> update_lexicon!(crps)
 
+julia> m = DocumentTermMatrix(crps)
 
-# The second Matrix will be overwritten with the result
-# Will work correctly if dtm and tfidf are the same matrix
+julia> tf(m)
+2×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 10 stored entries:
+  [1, 1]  =  0.166667
+  [2, 1]  =  0.166667
+  [1, 2]  =  0.333333
+  [2, 3]  =  0.333333
+  [1, 4]  =  0.166667
+  [2, 4]  =  0.166667
+  [1, 5]  =  0.166667
+  [2, 5]  =  0.166667
+  [1, 6]  =  0.166667
+  [2, 6]  =  0.166667
+```
+
+See also: [`tf!`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
+"""
+tf(dtm::DocumentTermMatrix) = tf(dtm.dtm)
+
+tf(dtm::Matrix{T}) where {T <: Real} = tf!(dtm, Array{Float64}(undef, size(dtm)...))
+
+tf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf!(dtm, similar(dtm, Float64))
+
+"""
+    tf_idf!(dtm::AbstractMatrix{Real}, tf_idf::AbstractMatrix{AbstractFloat})
+
+Overwrite `tf_idf` with the tf-idf (Term Frequency - Inverse Doc Frequency) of the `dtm`.
+
+`dtm` and `tf-idf` must be matrices of same dimensions.
+
+See also: [`tf`](@ref), [`tf!`](@ref) , [`tf_idf`](@ref)
+"""
 function tf_idf!(dtm::AbstractMatrix{T1}, tfidf::AbstractMatrix{T2}) where {T1 <: Real, T2 <: AbstractFloat}
     n, p = size(dtm)
 
@@ -93,7 +122,15 @@ function tf_idf!(dtm::AbstractMatrix{T1}, tfidf::AbstractMatrix{T2}) where {T1 <
     return tfidf
 end
 
-# sparse version
+"""
+    tf_idf!(dtm::SparseMatrixCSC{Real}, tfidf::SparseMatrixCSC{AbstractFloat})
+
+Overwrite `tfidf` with the tf-idf (Term Frequency - Inverse Doc Frequency) of the `dtm`.
+
+The arguments must have same number of nonzeros.
+
+See also: [`tf`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
+"""
 function tf_idf!(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F}) where {T <: Real, F <: AbstractFloat}
     rows = rowvals(dtm)
     dtmvals = nonzeros(dtm)
@@ -117,5 +154,63 @@ function tf_idf!(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F}) where {T <:
        end
     end
 
-    tfidf
+    return tfidf
 end
+
+"""
+    tf_idf!(dtm)
+
+Compute tf-idf for `dtm`
+"""
+tf_idf!(dtm::AbstractMatrix{T}) where {T <: Real} = tf_idf!(dtm, dtm)
+
+tf_idf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf_idf!(dtm, dtm)
+
+# This does not make sense, since DocumentTermMatrix is based on an array of integers
+#tf_idf!(dtm::DocumentTermMatrix) = tf_idf!(dtm.dtm)
+
+"""
+    tf(dtm::DocumentTermMatrix)
+    tf(dtm::SparseMatrixCSC{Real})
+    tf(dtm::Matrix{Real})
+
+Compute `tf-idf` value (Term Frequency - Inverse Document Frequency) for the input.
+
+In many cases, raw word counts are not appropriate for use because:
+
+- Some documents are longer than other documents
+- Some words are more frequent than other words
+
+A simple workaround this can be done by performing `TF-IDF` on a `DocumentTermMatrix`
+
+# Example
+
+```julia-repl
+julia> crps = Corpus([StringDocument("To be or not to be"),
+              StringDocument("To become or not to become")])
+
+julia> update_lexicon!(crps)
+
+julia> m = DocumentTermMatrix(crps)
+
+julia> tf_idf(m)
+2×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 10 stored entries:
+  [1, 1]  =  0.0
+  [2, 1]  =  0.0
+  [1, 2]  =  0.231049
+  [2, 3]  =  0.231049
+  [1, 4]  =  0.0
+  [2, 4]  =  0.0
+  [1, 5]  =  0.0
+  [2, 5]  =  0.0
+  [1, 6]  =  0.0
+  [2, 6]  =  0.0
+```
+
+See also: [`tf!`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
+"""
+tf_idf(dtm::DocumentTermMatrix) = tf_idf(dtm.dtm)
+
+tf_idf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf_idf!(dtm, similar(dtm, Float64))
+
+tf_idf(dtm::Matrix{T}) where {T <: Real} = tf_idf!(dtm, Array{Float64}(undef, size(dtm)...))
