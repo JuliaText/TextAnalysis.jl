@@ -112,7 +112,12 @@ Does not support `FileDocument` or `crps` containing `FileDocument`.
 ```julia-repl
 julia> str = "The quick brown fox jumps over the lazy dog"
 julia> sd = StringDocument(str)
-StringDocument{String}("The quick brown fox jumps over the lazy dog", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+A StringDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: The quick brown fox jumps over the lazy dog
 
 julia> remove_case!(sd)
 julia> sd.text
@@ -192,7 +197,12 @@ julia> html_doc = StringDocument(
                </html>
              "
             )
-StringDocument{String}("<html>\n            <head><script language=\"javascript\">x = 20;</script></head>\n            <body>\n                <h1>Hello</h1><a href=\"world\">world</a>\n            </body>\n        </html>\n      ", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+A StringDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet:  <html> <head><s
 
 julia> remove_html_tags!(html_doc)
 
@@ -262,7 +272,14 @@ Find the sparse terms from Corpus, occuring in less than `alpha` percentage of t
 ```
 julia> crps = Corpus([StringDocument("This is Document 1"),
                       StringDocument("This is Document 2")])
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("This is Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("This is Document 2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+A Corpus with 2 documents:
+* 2 StringDocument's
+* 0 FileDocument's
+* 0 TokenDocument's
+* 0 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
 
 julia> sparse_terms(crps, 0.5)
 2-element Array{String,1}:
@@ -296,7 +313,14 @@ Find the frequent terms from Corpus, occuring more than `alpha` percentage of th
 ```
 julia> crps = Corpus([StringDocument("This is Document 1"),
                       StringDocument("This is Document 2")])
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("This is Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("This is Document 2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+A Corpus with 2 documents:
+ * 2 StringDocument's
+ * 0 FileDocument's
+ * 0 TokenDocument's
+ * 0 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
 
 julia> frequent_terms(crps)
 3-element Array{String,1}:
@@ -331,12 +355,22 @@ Remove sparse terms in crps, occuring less than `alpha` percent of documents.
 ```julia-repl
 julia> crps = Corpus([StringDocument("This is Document 1"),
                       StringDocument("This is Document 2")])
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("This is Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("This is Document 2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+A Corpus with 2 documents:
+ * 2 StringDocument's
+ * 0 FileDocument's
+ * 0 TokenDocument's
+ * 0 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
 
 julia> remove_sparse_terms!(crps, 0.5)
 
-julia> crps
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("This is Document ", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("This is Document ", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 8, Dict("1"=>1,"is"=>2,"This"=>2,"2"=>1,"Document"=>2), Dict("1"=>[1],"is"=>[1, 2],"This"=>[1, 2],"2"=>[2],"Document"=>[1, 2]), TextHashFunction(hash, 100))
+julia> crps[1].text
+"This is Document "
+
+julia> crps[2].text
+"This is Document "
 ```
 
 See also: [`remove_frequent_terms!`](@ref), [`sparse_terms`](@ref)
@@ -353,12 +387,22 @@ Remove terms in `crps`, occuring more than `alpha` percent of documents.
 ```julia-repl
 julia> crps = Corpus([StringDocument("This is Document 1"),
                       StringDocument("This is Document 2")])
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("This is Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("This is Document 2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+A Corpus with 2 documents:
+* 2 StringDocument's
+* 0 FileDocument's
+* 0 TokenDocument's
+* 0 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
 
 julia> remove_frequent_terms!(crps)
 
-julia> crps
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("     1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("     2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 8, Dict("1"=>1,"is"=>2,"This"=>2,"2"=>1,"Document"=>2), Dict("1"=>[1],"is"=>[1, 2],"This"=>[1, 2],"2"=>[2],"Document"=>[1, 2]), TextHashFunction(hash, 100))
+julia> text(crps[1])
+"     1"
+
+julia> text(crps[2])
+"     2"
 ```
 
 See also: [`remove_sparse_terms!`](@ref), [`frequent_terms`](@ref)
@@ -397,12 +441,17 @@ Preprocess document or corpus based on the input flags.
 
 ```julia-repl
 julia> doc = StringDocument("This is a document of mine")
-StringDocument{String}("This is a document of mine", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+A StringDocument{String}
+ * Language: Languages.English()
+ * Title: Untitled Document
+ * Author: Unknown Author
+ * Timestamp: Unknown Time
+ * Snippet: This is a document of mine
 
 julia> prepare!(doc, strip_pronouns | strip_articles)
 
-julia> doc
-StringDocument{String}("This is   document of ", TextAnalysis.DocumentMetadata(Languages.English(), "Untitled Document", "Unknown Author", "Unknown Time"))
+julia> text(doc)
+"This is   document of "
 ```
 """
 function prepare!(crps::Corpus, flags::UInt32; skip_patterns = Set{AbstractString}(), skip_words = Set{AbstractString}())
