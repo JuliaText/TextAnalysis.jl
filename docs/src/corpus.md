@@ -7,7 +7,14 @@ using the Corpus type:
 ```julia
 julia> crps = Corpus([StringDocument("Document 1"),
                       StringDocument("Document 2")])
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document 2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+A Corpus with 2 documents:
+ * 2 StringDocument's
+ * 0 FileDocument's
+ * 0 TokenDocument's
+ * 0 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
 ```
 
 ## Standardizing a Corpus
@@ -18,8 +25,16 @@ A `Corpus` may contain many different types of documents:
 julia> crps = Corpus([StringDocument("Document 1"),
                           TokenDocument("Document 2"),
                           NGramDocument("Document 3")])
-Corpus{AbstractDocument}(AbstractDocument[StringDocument{String}("Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), TokenDocument{String}(["Document", "2"], DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+A Corpus with 3 documents:
+ * 1 StringDocument's
+ * 0 FileDocument's
+ * 1 TokenDocument's
+ * 1 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
 ```
+
 It is generally more convenient to standardize all of the documents in a
 corpus using a single type. This can be done using the `standardize!`
 function:
@@ -32,7 +47,14 @@ After this step, you can check that the corpus only contains `NGramDocument`'s:
 
 ```julia
 julia> crps
-Corpus{AbstractDocument}(AbstractDocument[NGramDocument{String}(Dict("1"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("2"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+A Corpus with 3 documents:
+ * 0 StringDocument's
+ * 0 FileDocument's
+ * 0 TokenDocument's
+ * 3 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
 ```
 
 ## Processing a Corpus
@@ -46,8 +68,11 @@ julia> crps = Corpus([StringDocument("Document ..!!"),
 
 julia> prepare!(crps, strip_punctuation)
 
-julia> crps
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document   ", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document   ", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+julia> text(crps[1])
+"Document "
+
+julia> text(crps[2])
+"Document "
 ```
 
 These operations are run on each document in the corpus individually.
