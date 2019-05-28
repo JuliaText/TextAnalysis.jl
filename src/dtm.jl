@@ -38,7 +38,10 @@ julia> crps = Corpus([StringDocument("To be or not to be"),
 julia> update_lexicon!(crps)
 
 julia> m = DocumentTermMatrix(crps)
-DocumentTermMatrix(
+A 2 X 6 DocumentTermMatrix
+
+julia> m.dtm
+2×6 SparseArrays.SparseMatrixCSC{Int64,Int64} with 10 stored entries:
   [1, 1]  =  1
   [2, 1]  =  1
   [1, 2]  =  2
@@ -48,7 +51,7 @@ DocumentTermMatrix(
   [1, 5]  =  1
   [2, 5]  =  1
   [1, 6]  =  1
-  [2, 6]  =  1, ["To", "be", "become", "not", "or", "to"], Dict("or"=>5,"not"=>4,"to"=>6,"To"=>1,"be"=>2,"become"=>3))
+  [2, 6]  =  1
 ```
 """
 function DocumentTermMatrix(crps::Corpus, terms::Vector{String})

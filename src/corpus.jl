@@ -15,7 +15,14 @@ Collections of documents are represented using the Corpus type.
 ```julia-repl
 julia> crps = Corpus([StringDocument("Document 1"),
 		              StringDocument("Document 2")])
-Corpus{StringDocument{String}}(StringDocument{String}[StringDocument{String}("Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), StringDocument{String}("Document 2", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+A Corpus with 2 documents:
+ * 2 StringDocument's
+ * 0 FileDocument's
+ * 0 TokenDocument's
+ * 0 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
 ```
 """
 function Corpus(docs::Vector{T}) where {T <: AbstractDocument}
@@ -172,6 +179,15 @@ Lexicon of a corpus consists of all the terms that occur in any document in the 
 ```julia-repl
 julia> crps = Corpus([StringDocument("Name Foo"),
                           StringDocument("Name Bar")])
+A Corpus with 2 documents:
+* 2 StringDocument's
+* 0 FileDocument's
+* 0 TokenDocument's
+* 0 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
+
 julia> lexicon(crps)
 Dict{String,Int64} with 0 entries
 ```
@@ -268,11 +284,27 @@ Standardize the documents in a Corpus to a common type.
 julia> crps = Corpus([StringDocument("Document 1"),
 		              TokenDocument("Document 2"),
 		              NGramDocument("Document 3")])
-Corpus{AbstractDocument}(AbstractDocument[StringDocument{String}("Document 1", DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), TokenDocument{String}(["Document", "2"], DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+A Corpus with 3 documents:
+ * 1 StringDocument's
+ * 0 FileDocument's
+ * 1 TokenDocument's
+ * 1 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
+
 
 julia> standardize!(crps, NGramDocument)
+
 julia> crps
-Corpus{AbstractDocument}(AbstractDocument[NGramDocument{String}(Dict("1"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("2"=>1,"Document"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time")), NGramDocument{String}(Dict("Document"=>1,"3"=>1), 1, DocumentMetadata(English(), "Untitled Document", "Unknown Author", "Unknown Time"))], 0, Dict{String,Int64}(), Dict{String,Array{Int64,1}}(), TextHashFunction(hash, 100))
+A Corpus with 3 documents:
+ * 0 StringDocument's
+ * 0 FileDocument's
+ * 0 TokenDocument's
+ * 3 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
 ```
 """
 function standardize!(crps::Corpus, ::Type{T}) where T <: AbstractDocument
