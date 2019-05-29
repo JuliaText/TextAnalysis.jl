@@ -11,7 +11,7 @@ struct BIOES <: tag_scheme end
 const available_schemes = ["BIO1", "BIO2", "BIOES"]
 
 """
-    convert_tag_scheme(tags, current_scheme, new_scheme)
+    tag_scheme!(tags, current_scheme, new_scheme)
 
 Convert `tags` from `current_scheme` to `new_scheme`.
 
@@ -26,7 +26,7 @@ function tag_scheme!(tags, current_scheme::String, new_scheme::String)
     new_scheme = uppercase(new_scheme)
     (length(tags) == 0 || current_scheme == new_scheme) && return
 
-    if new_scheme ∉ available_schemes || !tag_scheme(tags, current_scheme)
+    if new_scheme ∉ available_schemes
         error("Invalid tagging scheme")
     end
 
