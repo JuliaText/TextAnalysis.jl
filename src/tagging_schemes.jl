@@ -58,10 +58,6 @@ function tag_scheme!(tags, current_scheme::BIO1, new_scheme::BIO2)
     end
 end
 
-function tag_scheme!(tags, current_scheme::BIO1, new_scheme::BIOES)
-    tag_scheme!(tag_scheme!(tags, BIO1(), BIO2()), BIO2(), BIOES())
-end
-
 function tag_scheme!(tags, current_scheme::BIO2, new_scheme::BIO1)
     for i in eachindex(tags)
         if tags[i] == 'O' || tags[i][1] == "O"
@@ -85,11 +81,49 @@ function tag_scheme!(tags, current_scheme::BIO2, new_scheme::BIO1)
 end
 
 function tag_scheme!(tags, current_scheme::BIO2, new_scheme::BIOES)
-end
+    for i in eachindex(tags)
+        if tags[i] == 'O' || tags[i][1] == 'O'
+            tags[i] = "O"
+            continue
+        end
 
-function tag_scheme!(tags, current_scheme::BIOES, new_scheme::BIO1)
-    tag_scheme!(tag_scheme!(tags, BIOES(), BIO2()), BIO2(), BIO1())
+        if tags[i][1] == 'I' && (i == length(tags) ||
+                                 tags[i+1][2:end] != tags[i][2:end])
+            tags[i] = 'E' * tags[i][2:end]
+        elseif tags[i][1] == 'B' && (i == length(tags) ||
+                                 tags[i+1][2:end] != tags[i][2:end])
+            tags[i] = 'S' * tags[i][2:end]
+        else
+            (tags[i][1] == 'I' || tags[i][1] == 'B') && continue
+            error("Invalid tags")
+        end
+    end
 end
 
 function tag_scheme!(tags, current_scheme::BIOES, new_scheme::BIO2)
+    for i in eachindex(tags)
+        if tags[i] == 'O' || tags[i][1] == 'O'
+            tags[i] = "O"
+            continue
+        end
+        (tags[i][1] == 'B' || tags[i][1] == 'I') && continue
+
+        if tags[i][1] == 'E'
+            tags[i] = 'I' * tags[i][2:end]
+        elseif tags[i][1] == 'S'
+            tags[i] = 'B' * tags[i][2:end]
+        else
+            error("Invalid tags")
+        end
+    end
+end
+
+function tag_scheme!(tags, current_scheme::BIO1, new_scheme::BIOES)
+    tag_scheme!(tags, BIO1(), BIO2())
+    tag_scheme!(tags, BIO2(), BIOES())
+end
+
+function tag_scheme!(tags, current_scheme::BIOES, new_scheme::BIO1)
+    tag_scheme!(tags, BIOES(), BIO2())
+    tag_scheme!(tags, BIO2(), BIO1())
 end
