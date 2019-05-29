@@ -225,3 +225,29 @@ julia> summarize(s, ns=2)
  "Assume this Short Document as an example."
  "This has too foo sentences."
 ```
+
+## Tagging_schemes
+
+There are many tagging schemes used for sequence labelling.
+TextAnalysis currently offers functions for conversion between these tagging format.
+
+*   BIO1
+*   BIO2
+*   BIOES
+
+```julia
+julia> tags = ["I-LOC", "O", "I-PER", "B-MISC", "I-MISC", "B-PER", "I-PER", "I-PER"]
+
+julia> tag_scheme!(tags, "BIO1", "BIOES")
+
+julia> tags
+8-element Array{String,1}:
+ "S-LOC"
+ "O"
+ "S-PER"
+ "B-MISC"
+ "E-MISC"
+ "B-PER"
+ "I-PER"
+ "E-PER"
+```
