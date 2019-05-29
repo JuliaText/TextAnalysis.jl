@@ -11,22 +11,39 @@ struct BIOES <: tag_scheme end
 const available_schemes = ["BIO1", "BIO2", "BIOES"]
 
 """
-    tag_scheme!(tags, current_scheme, new_scheme)
+    tag_scheme!(tags, current_scheme::String, new_scheme::String)
 
 Convert `tags` from `current_scheme` to `new_scheme`.
 
-Delimiter between prefix and tag type is assumed to be `-`.
 List of tagging schemes currently supported-
  * BIO1 (BIO)
  * BIO2
  * BIOES
+
+# Example
+```julia-repl
+julia> tags = ["I-LOC", "O", "I-PER", "B-MISC", "I-MISC", "B-PER", "I-PER", "I-PER"]
+
+julia> tag_scheme!(tags, "BIO1", "BIOES")
+
+julia> tags
+8-element Array{String,1}:
+ "S-LOC"
+ "O"
+ "S-PER"
+ "B-MISC"
+ "E-MISC"
+ "B-PER"
+ "I-PER"
+ "E-PER"
+```
 """
 function tag_scheme!(tags, current_scheme::String, new_scheme::String)
     current_scheme = uppercase(current_scheme)
     new_scheme = uppercase(new_scheme)
     (length(tags) == 0 || current_scheme == new_scheme) && return
 
-    if new_scheme ∉ available_schemes
+    if new_scheme ∉ available_schemes || current_scheme ∉ available_schemes
         error("Invalid tagging scheme")
     end
 
