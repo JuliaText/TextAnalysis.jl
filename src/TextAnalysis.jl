@@ -79,4 +79,8 @@ module TextAnalysis
     include("deprecations.jl")
     include("utils.jl")
     include("rouge.jl")
+
+    # CRF
+    include("CRF/crf.jl")
+    include("CRF/utils.jl")
 end
