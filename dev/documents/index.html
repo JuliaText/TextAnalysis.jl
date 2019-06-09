@@ -147,7 +147,19 @@ Dict{AbstractString,Int64} with 13 entries:
   &quot;be or&quot;   =&gt; 1
   &quot;not to&quot;  =&gt; 1
   &quot;to be..&quot; =&gt; 1
-  &quot;be.. .&quot;  =&gt; 1</code></pre><p>If you have a <code>NGramDocument</code>, you can determine whether an <code>NGramDocument</code> contains unigrams, bigrams or a higher-order representation using the <code>ngram_complexity()</code> function:</p><pre><code class="language-julia">julia&gt; ngd = NGramDocument(&quot;To be or not to be ...&quot;, 2)
+  &quot;be.. .&quot;  =&gt; 1</code></pre><p>The <code>ngrams()</code> function can also be called with multiple arguments:</p><pre><code class="language-julia">julia&gt; ngrams(sd, 2, 3)
+Dict{AbstractString,Int64} with 11 entries:
+  &quot;or not to&quot;   =&gt; 1
+  &quot;be or&quot;       =&gt; 1
+  &quot;not to&quot;      =&gt; 1
+  &quot;be or not&quot;   =&gt; 1
+  &quot;not to be..&quot; =&gt; 1
+  &quot;To be&quot;       =&gt; 1
+  &quot;or not&quot;      =&gt; 1
+  &quot;to be.. .&quot;   =&gt; 1
+  &quot;to be..&quot;     =&gt; 1
+  &quot;be.. .&quot;      =&gt; 1
+  &quot;To be or&quot;    =&gt; 1</code></pre><p>If you have a <code>NGramDocument</code>, you can determine whether an <code>NGramDocument</code> contains unigrams, bigrams or a higher-order representation using the <code>ngram_complexity()</code> function:</p><pre><code class="language-julia">julia&gt; ngd = NGramDocument(&quot;To be or not to be ...&quot;, 2)
 A NGramDocument{AbstractString}
  * Language: Languages.English()
  * Title: Untitled Document
