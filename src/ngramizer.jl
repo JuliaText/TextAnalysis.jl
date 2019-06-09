@@ -13,16 +13,18 @@ Dict{AbstractString,Int64} with 3 entries:
   "To be or"  => 1
 ```
 """
-function ngramize(lang::S, words::Vector{T}, n::Int) where {S <: Language, T <: AbstractString}
-    (n == 1) && return onegramize(lang, words)
+function ngramize(lang::S, words::Vector{T}, nlist::Integer...) where {S <: Language, T <: AbstractString}
+    (length(nlist) == 1) && (first(nlist) == 1) && return onegramize(lang, words)
 
     n_words = length(words)
 
     tokens = Dict{AbstractString, Int}()
 
-    for index in 1:(n_words - n + 1)
-        token = join(words[index:(index + n - 1)], " ")
-        tokens[token] = get(tokens, token, 0) + 1
+    for n in nlist
+        for index in 1:(n_words - n + 1)
+            token = join(words[index:(index + n - 1)], " ")
+            tokens[token] = get(tokens, token, 0) + 1
+        end
     end
     return tokens
 end
