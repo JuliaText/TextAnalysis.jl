@@ -1,3 +1,7 @@
+using Flux
+using Flux.Tracker
+using Flux: params, identity
+
 # First input sequence
 # Layer for W, b:weights and biases
 # Then calculate prob for the input sequence  W
@@ -11,15 +15,21 @@ predicts the most probable tag sequence `y`,
 over the set of all possible tagging sequences `Y`.
 ````
 """
-mutable struct CRF # Calculates Argmax( log ∑ )
-    num_labels::Int # number of possible tags / labels, including Start and End
-    num_features::Int
-    W::Array{Float32,2} # Size of W = Number of feature
-    b::Array{Float32,2} # b is of `n` length2
+mutable struct CRF{S} # Calculates Argmax( log ∑ )
+    W::S    # Array{Float32,2} # Size of W = Number of feature
+    b::S    # Array{Float32,2} # b is of `n` length2
     f::Function # Feature function
 end
 
-function CRF(num_labels::Int, num_features::Int, f::Function)
-    return CRF(num_labels, num_features, rand(num_features, num_labels * num_labels),
-                rand(num_features, num_labels * num_labels), f)
+CRF(num_labels::Int, num_features::Int) = CRF(num_labels::Int, num_features::Int, identity)
+
+function CRF(num_labels::Int, num_features::Int, f::Function;
+             initW = glorot_uniform, initb = zeros)
+    return CRF(param(initW(num_features, num_labels * num_labels)),
+                param(initb(num_features, num_labels * num_labels)), f)
+end
+
+function (a::CRF)(x)
+    W, b, f = a.W, a.b, a.f
+    W*f(x) .+ b
 end
