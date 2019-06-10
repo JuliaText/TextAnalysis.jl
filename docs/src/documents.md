@@ -226,6 +226,24 @@ Dict{AbstractString,Int64} with 13 entries:
   "be.. ."  => 1
 ```
 
+The `ngrams()` function can also be called with multiple arguments:
+
+```julia
+julia> ngrams(sd, 2, 3)
+Dict{AbstractString,Int64} with 11 entries:
+  "or not to"   => 1
+  "be or"       => 1
+  "not to"      => 1
+  "be or not"   => 1
+  "not to be.." => 1
+  "To be"       => 1
+  "or not"      => 1
+  "to be.. ."   => 1
+  "to be.."     => 1
+  "be.. ."      => 1
+  "To be or"    => 1
+```
+
 If you have a `NGramDocument`, you can determine whether an `NGramDocument`
 contains unigrams, bigrams or a higher-order representation using the `ngram_complexity()` function:
 

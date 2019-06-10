@@ -14,4 +14,14 @@
                                              "sample text" => 1,
                                              "is some" => 1,
                                               "some sample" => 1))
+    ngs = TextAnalysis.ngramize(Languages.English(), tkns, 1, 2)
+    @test isequal(ngs, Dict{String,Int}("this is" => 1,
+                                             "is some" => 1,
+                                             "some sample" => 1,
+                                             "sample text" => 1,
+                                             "this" => 1,
+                                             "is" => 1,
+                                             "some" => 1,
+                                             "sample" => 1,
+                                             "text" => 1))
 end
