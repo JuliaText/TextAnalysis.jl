@@ -33,3 +33,9 @@ function (a::CRF)(x)
     W, b, f = a.W, a.b, a.f
     W*f(x) .+ b
 end
+
+function Base.show(io::IO, l::CRF)
+    print(io, "CRF with ", Int(sqrt(size(l.W, 2))), " distinct tags and ",
+            size(l.W,1), " input features and feature function ",
+            print(io, l.f))
+end
