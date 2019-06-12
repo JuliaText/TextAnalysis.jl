@@ -60,6 +60,9 @@ module TextAnalysis
     include("corpus.jl")
     include("metadata.jl")
     include("preprocessing.jl")
+
+    include("fastpreprocess.jl")
+
     # Load libstemmer from our deps.jl
     const depsjl_path = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
     if !isfile(depsjl_path)
@@ -79,4 +82,5 @@ module TextAnalysis
     include("deprecations.jl")
     include("utils.jl")
     include("rouge.jl")
+
 end
