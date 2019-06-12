@@ -82,5 +82,5 @@ module TextAnalysis
 
     # CRF
     include("CRF/crf.jl")
-    include("CRF/utils.jl")
+    include("CRF/predict.jl")
 end
