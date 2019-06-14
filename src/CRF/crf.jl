@@ -2,11 +2,6 @@ using Flux
 using Flux.Tracker
 using Flux: params, identity
 
-# First input sequence
-# Layer for W, b:weights and biases
-# Then calculate prob for the input sequence  W
-# Then calculate loss and then update.
-
 """
 Linear Chain - CRF Layer.
 
@@ -32,11 +27,19 @@ function CRF(num_labels::Int, num_features::Int, f::Function;
 end
 
 function Base.show(io::IO, l::CRF)
-    print(io, "CRF with ", Int(sqrt(size(l.W, 2))), " distinct tags and ",
-            size(l.W,1), " input features and feature function ",
-            print(io, l.f))
+    print(io, "CRF with `", Int(sqrt(size(l.W, 2))), "` distinct tags and `",
+            size(l.W,1), "` input features and feature function `",
+            l.f,"`")
 end
 
 # minimize `-log(p(y|X))`
-function crf_loss(a::CRF, input_seq, label_seq)
-end
+# function crf_loss(a::CRF, input_seq, label_seq)
+#     length(input_seq) == length(label_seq) &&
+#             throw("The length of input and label sequence must match")
+#
+#     loss = 0
+#
+#     for (input, label) in zip(input_seq, label_seq)
+#         loss += preds_single(a, input)
+#
+# end
