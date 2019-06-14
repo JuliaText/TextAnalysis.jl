@@ -125,3 +125,38 @@ function words_remove(ps, ws)
     end
     return false
 end
+
+function try_fast(text, lang)
+    length(text) < 1 && return
+
+    indef_a = indefinite_articles(lang)
+    def_a = definite_articles(lang)
+    stop = stopwords(lang)
+    prepo = prepositions(lang)
+    pron = pronouns(lang)
+
+    ws = vcat(indef_a, def_a, stop, prepo, pron)
+
+    ps = PreprocessBuffer(text)
+
+    # TODO: Check case insensitive in words
+
+    while !isdone(ps)
+        (corrupt_utf8(ps) ||
+        whitespace(ps) ||
+        punctuation(ps) ||
+        numbers(ps) ||
+        words_remove(ps, ws)) && continue
+
+        push!(ps.buffer, ps[])
+        ps.idx += 1
+    end
+
+    return String(ps.buffer)
+end
+
+function try_fast(doc::StringDocument)
+    doc.text =  try_fast(doc.text, Languages.English())
+end
+
+# HTML placed before words
