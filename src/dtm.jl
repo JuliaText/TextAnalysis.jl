@@ -1,22 +1,15 @@
-##############################################################################
-#
-# Basic DocumentTermMatrix type
-#
-##############################################################################
-
 mutable struct DocumentTermMatrix
     dtm::SparseMatrixCSC{Int, Int}
     terms::Vector{String}
     column_indices::Dict{String, Int}
 end
 
-##############################################################################
-#
-# Construct a DocumentTermMatrix from a Corpus
-#
-##############################################################################
 
-# create col index lookup dictionary from a (sorted?) vector of terms
+"""
+    columnindices(terms::Vector{String})
+
+Creates a column index lookup dictionary from a vector of terms.
+"""
 function columnindices(terms::Vector{String})
     column_indices = Dict{String, Int}()
     for i in 1:length(terms)
@@ -26,6 +19,41 @@ function columnindices(terms::Vector{String})
     column_indices
 end
 
+"""
+    DocumentTermMatrix(crps::Corpus)
+    DocumentTermMatrix(crps::Corpus, terms::Vector{String})
+    DocumentTermMatrix(crps::Corpus, lex::AbstractDict)
+    DocumentTermMatrix(dtm::SparseMatrixCSC{Int, Int},terms::Vector{String})
+
+Represent documents as a matrix of word counts.
+
+Allow us to apply linear algebra operations and statistical techniques.
+Need to update lexicon before use.
+
+# Examples
+```julia-repl
+julia> crps = Corpus([StringDocument("To be or not to be"),
+                      StringDocument("To become or not to become")])
+
+julia> update_lexicon!(crps)
+
+julia> m = DocumentTermMatrix(crps)
+A 2 X 6 DocumentTermMatrix
+
+julia> m.dtm
+2×6 SparseArrays.SparseMatrixCSC{Int64,Int64} with 10 stored entries:
+  [1, 1]  =  1
+  [2, 1]  =  1
+  [1, 2]  =  2
+  [2, 3]  =  2
+  [1, 4]  =  1
+  [2, 4]  =  1
+  [1, 5]  =  1
+  [2, 5]  =  1
+  [1, 6]  =  1
+  [2, 6]  =  1
+```
+"""
 function DocumentTermMatrix(crps::Corpus, terms::Vector{String})
     column_indices = columnindices(terms)
 
@@ -61,12 +89,39 @@ DocumentTermMatrix(crps::Corpus, lex::AbstractDict) = DocumentTermMatrix(crps, s
 
 DocumentTermMatrix(dtm::SparseMatrixCSC{Int, Int},terms::Vector{String}) = DocumentTermMatrix(dtm, terms, columnindices(terms))
 
-##############################################################################
-#
-# Access the DTM of a DocumentTermMatrix
-#
-##############################################################################
+"""
+    dtm(crps::Corpus)
+    dtm(d::DocumentTermMatrix)
+    dtm(d::DocumentTermMatrix, density::Symbol)
 
+Creates a simple sparse matrix of DocumentTermMatrix object.
+
+# Examples
+```julia-repl
+julia> crps = Corpus([StringDocument("To be or not to be"),
+                      StringDocument("To become or not to become")])
+
+julia> update_lexicon!(crps)
+
+julia> dtm(DocumentTermMatrix(crps))
+2×6 SparseArrays.SparseMatrixCSC{Int64,Int64} with 10 stored entries:
+  [1, 1]  =  1
+  [2, 1]  =  1
+  [1, 2]  =  2
+  [2, 3]  =  2
+  [1, 4]  =  1
+  [2, 4]  =  1
+  [1, 5]  =  1
+  [2, 5]  =  1
+  [1, 6]  =  1
+  [2, 6]  =  1
+
+julia> dtm(DocumentTermMatrix(crps), :dense)
+2×6 Array{Int64,2}:
+ 1  2  0  1  1  1
+ 1  0  2  1  1  1
+```
+"""
 function dtm(d::DocumentTermMatrix, density::Symbol)
     if density == :sparse
         return d.dtm
@@ -113,6 +168,21 @@ function dtm_entries(d::AbstractDocument, lex::Dict{String, Int})
     return (indices, values)
 end
 
+"""
+    dtv(d::AbstractDocument, lex::Dict{String, Int})
+
+Produce a single row of a DocumentTermMatrix.
+
+Individual documents do not have a lexicon associated with them,
+we have to pass in a lexicon as an additional argument.
+
+# Examples
+```julia-repl
+julia> dtv(crps[1], lexicon(crps))
+1×6 Array{Int64,2}:
+ 1  2  0  1  1  1
+```
+"""
 function dtv(d::AbstractDocument, lex::Dict{String, Int})
     p = length(keys(lex))
     row = zeros(Int, 1, p)
@@ -133,7 +203,29 @@ end
 # columns of a DocumentTermMatrix-like encoding of the data
 #
 ##############################################################################
+"""
+    hash_dtv(d::AbstractDocument)
+    hash_dtv(d::AbstractDocument, h::TextHashFunction)
 
+Represents a document as a vector with N entries.
+
+# Examples
+```julia-repl
+julia> crps = Corpus([StringDocument("To be or not to be"),
+                      StringDocument("To become or not to become")])
+
+julia> h = TextHashFunction(10)
+TextHashFunction(hash, 10)
+
+julia> hash_dtv(crps[1], h)
+1×10 Array{Int64,2}:
+ 0  2  0  0  1  3  0  0  0  0
+
+julia> hash_dtv(crps[1])
+1×100 Array{Int64,2}:
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
+```
+"""
 function hash_dtv(d::AbstractDocument, h::TextHashFunction)
     p = cardinality(h)
     res = zeros(Int, 1, p)
@@ -146,6 +238,13 @@ end
 
 hash_dtv(d::AbstractDocument) = hash_dtv(d, TextHashFunction())
 
+
+"""
+    hash_dtm(crps::Corpus)
+    hash_dtm(crps::Corpus, h::TextHashFunction)
+
+Represents a Corpus as a Matrix with N entries.
+"""
 function hash_dtm(crps::Corpus, h::TextHashFunction)
     n, p = length(crps), cardinality(h)
     res = zeros(Int, n, p)
