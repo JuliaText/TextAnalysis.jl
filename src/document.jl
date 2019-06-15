@@ -81,18 +81,17 @@ TokenDocument(txt::AbstractString) = TokenDocument(String(txt), DocumentMetadata
 
 mutable struct NGramDocument{T<:AbstractString} <: AbstractDocument
     ngrams::Dict{T,Int}
-    n::Int
+    n::Union{Int,Vector{Int}}
     metadata::DocumentMetadata
 end
-function NGramDocument(txt::AbstractString, dm::DocumentMetadata, n::Integer=1)
-    NGramDocument(ngramize(dm.language, tokenize(dm.language, String(txt)), n),
-        n, dm)
+function NGramDocument(txt::AbstractString, dm::DocumentMetadata, n::Integer...=1)
+    NGramDocument(ngramize(dm.language, tokenize(dm.language, String(txt)), n...), (length(n) == 1) ? Int(first(n)) : Int[n...], dm)
 end
-function NGramDocument(txt::AbstractString, n::Integer=1)
-    NGramDocument(txt, DocumentMetadata(), n)
+function NGramDocument(txt::AbstractString, n::Integer...=1)
+    NGramDocument(txt, DocumentMetadata(), n...)
 end
-function NGramDocument(ng::Dict{T, Int}, n::Integer=1) where T <: AbstractString
-    NGramDocument(merge(Dict{AbstractString,Int}(), ng), n, DocumentMetadata())
+function NGramDocument(ng::Dict{T, Int}, n::Integer...=1) where T <: AbstractString
+    NGramDocument(merge(Dict{AbstractString,Int}(), ng), (length(n) == 1) ? Int(first(n)) : Int[n...], DocumentMetadata())
 end
 
 ##############################################################################
@@ -146,7 +145,7 @@ end
 function ngrams(d::NGramDocument, n::Integer)
     error("The n-gram complexity of an NGramDocument cannot be increased")
 end
-ngrams(d::AbstractDocument, n::Integer) = ngramize(language(d), tokens(d), n)
+ngrams(d::AbstractDocument, n::Integer...) = ngramize(language(d), tokens(d), n...)
 ngrams(d::NGramDocument) = d.ngrams
 ngrams(d::AbstractDocument) = ngrams(d, 1)
 

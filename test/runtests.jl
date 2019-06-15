@@ -3,7 +3,7 @@ using SparseArrays
 using Test
 using Languages
 using TextAnalysis
-
+using WordTokenizers
 
 # @testset "TextAnalysis" begin
 
@@ -22,8 +22,8 @@ include("lda.jl")
 include("summarizer.jl")
 include("sentiment.jl")
 include("bayes.jl")
+include("rouge.jl")
 include("averagePerceptronTagger.jl")
-
 
 # end
 end
