@@ -193,6 +193,38 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "features/#Parts-of-Speech-Tagger-1",
+    "page": "Features",
+    "title": "Parts of Speech Tagger",
+    "category": "section",
+    "text": "This tagger can be used to find the POS tag of a word or token in a given sentence. It is a based on Average Perceptron Algorithm. The model can be trained from scratch and weights are saved in specified location. The pretrained model can also be loaded and can be used directly to predict tags."
+},
+
+{
+    "location": "features/#To-train-model:-1",
+    "page": "Features",
+    "title": "To train model:",
+    "category": "section",
+    "text": "julia> tagger = PerceptronTagger(false) #we can use tagger = PerceptronTagger()\njulia> fit!(tagger, [[(\"today\",\"NN\"),(\"is\",\"VBZ\"),(\"good\",\"JJ\"),(\"day\",\"NN\")]])\niteration : 1\niteration : 2\niteration : 3\niteration : 4\niteration : 5"
+},
+
+{
+    "location": "features/#To-load-pretrained-model:-1",
+    "page": "Features",
+    "title": "To load pretrained model:",
+    "category": "section",
+    "text": "julia> tagger = PerceptronTagger(true)\nloaded successfully\nPerceptronTagger(AveragePerceptron(Set(Any[\"JJS\", \"NNP_VBZ\", \"NN_NNS\", \"CC\", \"NNP_NNS\", \"EX\", \"NNP_TO\", \"VBD_DT\", \"LS\", (\"Council\", \"NNP\")  …  \"NNPS\", \"NNP_LS\", \"VB\", \"NNS_NN\", \"NNP_SYM\", \"VBZ\", \"VBZ_JJ\", \"UH\", \"SYM\", \"NNP_NN\", \"CD\"]), Dict{Any,Any}(\"i+2 word wetlands\"=>Dict{Any,Any}(\"NNS\"=>0.0,\"JJ\"=>0.0,\"NN\"=>0.0),\"i-1 tag+i word NNP basic\"=>Dict{Any,Any}(\"JJ\"=>0.0,\"IN\"=>0.0),\"i-1 tag+i word DT chloride\"=>Dict{Any,Any}(\"JJ\"=>0.0,\"NN\"=>0.0),\"i-1 tag+i word NN choo\"=>Dict{Any,Any}(\"NNP\"=>0.0,\"NN\"=>0.0),\"i+1 word antarctica\"=>Dict{Any,Any}(\"FW\"=>0.0,\"NN\"=>0.0),\"i-1 tag+i word -START- appendix\"=>Dict{Any,Any}(\"NNP\"=>0.0,\"NNPS\"=>0.0,\"NN\"=>0.0),\"i-1 word wahoo\"=>Dict{Any,Any}(\"JJ\"=>0.0,\"VBD\"=>0.0),\"i-1 tag+i word DT children\'s\"=>Dict{Any,Any}(\"NNS\"=>0.0,\"NN\"=>0.0),\"i word dnipropetrovsk\"=>Dict{Any,Any}(\"NNP\"=>0.003,\"NN\"=>-0.003),\"i suffix hla\"=>Dict{Any,Any}(\"JJ\"=>0.0,\"NN\"=>0.0)…), DefaultDict{Any,Any,Int64}(), DefaultDict{Any,Any,Int64}(), 1, [\"-START-\", \"-START2-\"]), Dict{Any,Any}(\"is\"=>\"VBZ\",\"at\"=>\"IN\",\"a\"=>\"DT\",\"and\"=>\"CC\",\"for\"=>\"IN\",\"by\"=>\"IN\",\"Retrieved\"=>\"VBN\",\"was\"=>\"VBD\",\"He\"=>\"PRP\",\"in\"=>\"IN\"…), Set(Any[\"JJS\", \"NNP_VBZ\", \"NN_NNS\", \"CC\", \"NNP_NNS\", \"EX\", \"NNP_TO\", \"VBD_DT\", \"LS\", (\"Council\", \"NNP\")  …  \"NNPS\", \"NNP_LS\", \"VB\", \"NNS_NN\", \"NNP_SYM\", \"VBZ\", \"VBZ_JJ\", \"UH\", \"SYM\", \"NNP_NN\", \"CD\"]), [\"-START-\", \"-START2-\"], [\"-END-\", \"-END2-\"], Any[])"
+},
+
+{
+    "location": "features/#To-predict-tags:-1",
+    "page": "Features",
+    "title": "To predict tags:",
+    "category": "section",
+    "text": "julia> predict(tagger, [\"today\", \"is\"])\n2-element Array{Any,1}:\n (\"today\", \"NN\")\n (\"is\", \"VBZ\")PerceptronTagger(load::Bool)load      = Boolean argument if true then pretrained model is loadedfit!(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)self      = PerceptronTagger object\nsentences = Vector of Vector of Tuple of pair of word or token and its POS tag [see above example]\nsave_loc  = location of file to save the trained weights\nnr_iter   = Number of iterations to pass the sentences to train the model ( default 5)predict(self::PerceptronTagger, tokens)self      = PerceptronTagger\ntokens    = Vector of words or tokens for which to predict tags"
+},
+
+{
     "location": "semantic/#",
     "page": "Semantic Analysis",
     "title": "Semantic Analysis",
