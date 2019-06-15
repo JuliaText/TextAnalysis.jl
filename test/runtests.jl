@@ -23,8 +23,7 @@ include("summarizer.jl")
 include("sentiment.jl")
 include("bayes.jl")
 include("rouge.jl")
-
+include("averagePerceptronTagger.jl")
 
 # end
 end
-
