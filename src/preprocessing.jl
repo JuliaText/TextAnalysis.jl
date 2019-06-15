@@ -235,7 +235,15 @@ end
 #
 ##############################################################################
 
-tag_pos!(entity) = error("Not yet implemented")
+function tag_pos!(doc::Union{TokenDocument, StringDocument})
+    if typeof(doc) == StringDocument
+        doc = tokenize(doc.text)
+    else
+        doc = doc.tokens
+    end
+    tagger = PerceptronTagger(true)
+    doc = predict(tagger, doc)
+end
 
 """
     sparse_terms(crps, alpha=0.05])
