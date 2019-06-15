@@ -235,14 +235,14 @@ end
 #
 ##############################################################################
 
-function tag_pos!(doc::Union{TokenDocument, StringDocument})
-    if typeof(doc) == StringDocument
-        doc = tokenize(doc.text)
-    else
-        doc = doc.tokens
-    end
+function tag_pos!(entity::Union{Corpus, TokenDocument, StringDocument})
+    @warn "tag_pos! is deprecated, Use Perceptrontagger instead"
     tagger = PerceptronTagger(true)
-    doc = predict(tagger, doc)
+    if typeof(entity) == Corpus
+        entity.documents = broadcast(x -> predict(tagger, x), entity.documents)
+    elseif typeof(entity) == StringDocument
+        entity = predict(tagger, tokenize(entity.text))
+    end
 end
 
 """
