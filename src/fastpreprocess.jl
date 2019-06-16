@@ -43,21 +43,10 @@ function corrupt_utf8(ps)
 end
 
 """
-    whitespace(ps::PreprocessBuffer)
-
-Squash multiple whitespaces to a single one.
-And remove all leading and trailing whitespaces.
-"""
-function whitespace(ps)
-    return false
-end
-
-"""
     punctuation(ps::PreprocessBuffer)
 
 Squash multiple whitespaces to a single one.
 And remove all leading and trailing whitespaces.
-
 """
 function punctuation(ps)
     return false
@@ -67,7 +56,6 @@ end
     numbers(::PreprocessBuffer)
 
 Removes all numbers.
-
 """
 function numbers(ps)
     return false
@@ -105,25 +93,48 @@ function lookahead(ps::PreprocessBuffer, s; boundary = false)
 end
 
 """
+Helper function for words_remove.
+"""
+function next_token(ps::PreprocessBuffer)
+    i = ps.idx
+    while i < length(ps.input) && isletter(ps[i])
+        i += 1
+    end
+
+    return String(ps.input[ps.idx:i-1])
+end
+
+"""
 Matches true for characters corresponding to Regex("[a-zA-Z0-9_]")
 """
 word_character(ch) = isascii(ch) && (isuppercase(ch) || islowercase(ch) ||
                                             isdigit(ch) || ch == '_')
 
-
 """
     words_remove(::PreprocessBuffer, ws)
 
-Removes ws from the PreprocessBuffer.
+Removes words from the PreprocessBuffer.
 """
 function words_remove(ps, ws)
     ps.idx != 1 && word_character(ps[ps.idx - 1]) && return false
-    for s in ws
-        lookahead(ps, s, boundary=true) || continue
-        ps.idx += length(s)
-        return true
+    isletter(ps[ps.idx]) || return false
+
+    token = next_token(ps)
+    # println(token)
+
+    if token ∉ ws
+        append!(ps.buffer, ps.input[ps.idx:ps.idx + length(token) ])
+        ps.idx = ps.idx + length(token) + 1
+    else
+        ps.idx += length(token)
     end
-    return false
+
+    return true
+end
+
+function next(ps::PreprocessBuffer)
+    push!(ps.buffer, ps[])
+    ps.idx += 1
 end
 
 function try_fast(text, lang)
@@ -135,21 +146,16 @@ function try_fast(text, lang)
     prepo = prepositions(lang)
     pron = pronouns(lang)
 
-    ws = vcat(indef_a, def_a, stop, prepo, pron)
-
+    ws = SortedSet(vcat(indef_a, def_a, stop, prepo, pron))
     ps = PreprocessBuffer(text)
 
     # TODO: Check case insensitive in words
 
     while !isdone(ps)
-        (corrupt_utf8(ps) ||
-        whitespace(ps) ||
+        corrupt_utf8(ps) ||
         punctuation(ps) ||
         numbers(ps) ||
-        words_remove(ps, ws)) && continue
-
-        push!(ps.buffer, ps[])
-        ps.idx += 1
+        words_remove(ps, ws) || next(ps)
     end
 
     return String(ps.buffer)
@@ -157,6 +163,13 @@ end
 
 function try_fast(doc::StringDocument)
     doc.text =  try_fast(doc.text, Languages.English())
+end
+
+# Only for String Document
+function fastpreprocess(crps::Corpus, flags)
+
+    # strip
+
 end
 
 # HTML placed before words
