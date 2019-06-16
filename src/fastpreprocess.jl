@@ -137,7 +137,8 @@ function next(ps::PreprocessBuffer)
     ps.idx += 1
 end
 
-function try_fast(text, lang)
+# ws of type Sorted Set
+function fastpreprocess(text::String, lang)
     length(text) < 1 && return
 
     indef_a = indefinite_articles(lang)
@@ -161,15 +162,11 @@ function try_fast(text, lang)
     return String(ps.buffer)
 end
 
-function try_fast(doc::StringDocument)
+function fastpreprocess(doc::StringDocument)
     doc.text =  try_fast(doc.text, Languages.English())
 end
 
 # Only for String Document
 function fastpreprocess(crps::Corpus, flags)
-
-    # strip
-
 end
-
 # HTML placed before words
