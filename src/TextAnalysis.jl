@@ -53,6 +53,7 @@ module TextAnalysis
     export SentimentAnalyzer
     export jackknife_avg, listify_ngrams, weighted_lcs, fmeasure_lcs
     export rouge_l_summary, rouge_l_sentence, rouge_n
+    export PerceptronTagger, fit!, predict
 
     include("tokenizer.jl")
     include("ngramizer.jl")
@@ -83,5 +84,5 @@ module TextAnalysis
     include("deprecations.jl")
     include("utils.jl")
     include("rouge.jl")
-
+    include("averagePerceptronTagger.jl")
 end
