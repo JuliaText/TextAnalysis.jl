@@ -1,7 +1,7 @@
 using Flux
 using Flux.Tracker
 using Flux: params, identity
-
+using LinearAlgebra
 """
 Linear Chain - CRF Layer.
 
