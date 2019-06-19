@@ -19,4 +19,4 @@ jobs:
         - julia --project=docs/ docs/make.jl
       after_success: skip
 after_success:
-  - julia -e 'cd(Pkg.dir("TextAnalysis")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';
+- julia -e 'cd(Pkg.dir("TextAnalysis")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';
