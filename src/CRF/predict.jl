@@ -6,7 +6,7 @@ Probabilities for the first tag in the tagging sequence.
 """
 function preds_first(a::CRF, x)
     s, f = a.s, a.f
-    dot.(f(x), s)
+    sum(s .* f(x), dims=1)
 end
 
 """
@@ -14,23 +14,32 @@ Probabilities for the tags other than the starting one.
 """
 function preds_single(a::CRF, x)
     W, b, f = a.W, a.b, a.f
-    f(x) * W + b
+    sum(W .* f(x) + b, dims=1)
 end
 
 # TODO: Parallel
 # Helper for forward pass, returns max_probs and corresponding arg_max for all the labels
 function forward_unit_max(a::CRF, x, prev)
-    preds = log_sum_exp(preds_single(a, x) .+ prev)
+    preds = preds_single(a, x)
+    println(preds)
 
-    max_values = zeros(length(prev))
-    label_indices = zeros(length(prev))
+    k = length(prev)
 
-    for j in 1:length(prev)
-        k = preds[:, j:j + length(prev) - 1]
-        i = ceil(j/length(prev))
+    max_values = zeros(k)
+    label_indices = zeros(k)
 
-        max_values[i], label_indices[i] = findmax()
+    for j in range(1, step=k,length(preds))
+        k = preds[j:j + k - 1]
+        println((k))
+        println((prev))
+
+        k = k .+ prev
+
+        # i = ceil(j/length(prev))
+
+        # max_values[i], label_indices[i] = findmax()
     end
+    sleep(10000)
 
     return log_sum_exp(max_values), label_indices
 end
@@ -39,7 +48,7 @@ end
 Computes the forward pass for viterbi algorithm.
 """
 function forward_pass(a::CRF, x)
-    α_val = log_sum_exp(preds_first(a, x[1, :]))
+    α_val = dropdims(preds_first(a, x[1,:]), dims=1)
     α_idx = zeros(size(x, 1), size(a.s, 2))
 
     for i in 2:size(x, 1)
@@ -53,7 +62,7 @@ end
 """
 Computes the forward pass for viterbi algorithm.
 """
-function backward_pass(a::CRF, (α_idx_last, α_idx))[
+function backward_pass(a::CRF, (α_idx_last, α_idx))
     labels = zeros(size(α_idx,1))
     labels[end] = α_idx_last
 
@@ -67,7 +76,7 @@ end
 
 Predicts the most probable label sequence of `input_sequence`.
 """
-function viterbi_decode(a::CRF, x_seq::Array{Number, 2})
+function viterbi_decode(a::CRF, x_seq::Array{Any, 1})
     size(x_seq,1) == 0 && throw("Input sequence is empty")
     α_star, α_max = backward_pass(a, forward_pass(a, x_seq))
 end
