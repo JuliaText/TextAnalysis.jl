@@ -69,7 +69,7 @@ end
 
 Predicts the most probable label sequence of `input_sequence`.
 """
-function viterbi_decode(a::CRF, x_seq::Array{Any, 1})
+function viterbi_decode(a::CRF, x_seq)
     size(x_seq,1) == 0 && throw("Input sequence is empty")
     α_star, α_max = backward_pass(a, forward_pass(a, x_seq))
 end
