@@ -7,6 +7,10 @@ module TextAnalysis
     using DataFrames
     using WordTokenizers
 
+    using Flux
+    using Flux.Tracker
+    using Flux: params, identity
+
     import DataFrames.DataFrame
     import Base.depwarn
 

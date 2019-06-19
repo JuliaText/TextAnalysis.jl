@@ -2,13 +2,13 @@ using Flux
 using Flux.Tracker
 using Flux: params, identity
 using LinearAlgebra
+
 """
 Linear Chain - CRF Layer.
 
 For input sequence `x`,
 predicts the most probable tag sequence `y`,
 over the set of all possible tagging sequences `Y`.
-````
 """
 mutable struct CRF{S,A} # Calculates Argmax( log ∑ )
     W::S    # Array{Float32,2} # Size of W = Number of feature
@@ -30,6 +30,10 @@ function Base.show(io::IO, l::CRF)
     print(io, "CRF with `", Int(sqrt(size(l.W, 2))), "` distinct tags and `",
             size(l.W,1), "` input features and feature function `",
             l.f,"`")
+end
+
+function (a::CRF)(x_seq)
+    viterbi_decode(a, x_seq)
 end
 
 # minimize `-log(p(y|X))`
