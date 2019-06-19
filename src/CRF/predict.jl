@@ -21,27 +21,18 @@ end
 # Helper for forward pass, returns max_probs and corresponding arg_max for all the labels
 function forward_unit_max(a::CRF, x, prev)
     preds = preds_single(a, x)
-    println(preds)
+    n = length(prev)
 
-    k = length(prev)
+    max_values = zeros(n)
+    label_indices = zeros(n)
 
-    max_values = zeros(k)
-    label_indices = zeros(k)
-
-    for j in range(1, step=k,length(preds))
-        k = preds[j:j + k - 1]
-        println((k))
-        println((prev))
-
-        k = k .+ prev
-
-        # i = ceil(j/length(prev))
-
-        # max_values[i], label_indices[i] = findmax()
+    for j in range(1, step=n, length(preds))
+        i = Int(ceil(j/n))
+        k = preds[j:j + n - 1] + prev
+        max_values[i], label_indices[i] = findmax(k.data)
     end
-    sleep(10000)
 
-    return log_sum_exp(max_values), label_indices
+    return max_values, label_indices
 end
 
 """
@@ -63,12 +54,14 @@ end
 Computes the forward pass for viterbi algorithm.
 """
 function backward_pass(a::CRF, (α_idx_last, α_idx))
-    labels = zeros(size(α_idx,1))
+    labels = Array{Int32, 1}(undef, size(α_idx,1))
     labels[end] = α_idx_last
 
-    for i in reverse(1:size(α_idx,1) - 1)
-        labels[i] = α_idx[labels[i + 1]]
+    for i in reverse(2:size(α_idx,1))
+        labels[i-1] =  α_idx[i, labels[i]]
     end
+
+    return reverse(labels)
 end
 
 """
