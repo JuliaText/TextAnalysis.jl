@@ -158,3 +158,148 @@ function fmeasure_lcs(RLCS, PLCS, beta=1)
         end
     end
 end
+
+# Calculates Word CoOccurence matrix. 
+# The input to the function can be a single string with a window size
+# based on which the co-occurence will be evaluated. A list of strings
+# of variable window size can also be taken as input. 
+# Returns a DataFrame which can be used to calculate the CoOccurence of a pair 
+# of words easily. 
+                    
+# param inputDoc : string or array of strings
+# param integer  : sliding window size. The number of words before and after 
+#                  a token to be considered in context. 
+# param stripStopwords : Whether to remove stopwords or not.
+                    
+# output : A DataFrame df. df[Word1][Word2] returns the co-occurence value.
+                  
+
+function word_cooccurence_matrix(inputDoc, window = 2, stripStopwords = false)
+    if typeof(inputDoc) == String
+        sd = StringDocument(lowercase(inputDoc))
+        prepare!(sd, strip_punctuation)
+        if stripStopwords == true
+            prepare!(sd, strip_stopwords)
+            sd = StringDocument(join([i for i in split(text(sd), " ") if i!= ""], " "))
+        end
+        sd = split(text(sd), " ")
+        if length(sd) < 2*window + 1
+                        throw(ArgumentError(string("Window Size is greater than the length of string provided\nPlease make sure that the value of 2*window+1 is lesser than the length of string provided.")))
+        end
+        candidate_list = []
+        for item in enumerate(sd)
+            if item[1] < length(sd) - 2 * window + 1 
+                temp = []
+                for i in range(1 , 2 * window + 1)
+                    push!(temp,sd[item[1] + i - 1])
+                end
+                push!(candidate_list,temp)
+            end
+        end
+    else
+        if typeof(inputDoc) == Array{String,1}
+            
+            if window != 0
+                candidate_list = []
+                for doc in enumerate(inputDoc)
+                    sd = StringDocument(lowercase(doc[2]))
+                    prepare!(sd, strip_punctuation)
+                    if stripStopwords == true
+                        prepare!(sd, strip_stopwords)
+                        sd = StringDocument(join([i for i in split(text(sd), " ") if i!= ""], " "))
+                    end
+                    sd = split(text(sd), " ")
+                    if length(sd) < 2*window + 1
+                        throw(ArgumentError(string("Window Size is greater than the length of document provided at index ", doc[1], "\nPlease make sure that the value of 2*window+1 is lesser than the minimum length of documents provided.")))
+                    end
+                    for item in enumerate(sd)
+                        if item[1] < length(sd) - 2 * window + 1 
+                            temp = []
+                            for i in range(1 , 2 * window + 1)
+                                push!(temp,sd[item[1] + i - 1])
+                            end
+                            push!(candidate_list,temp)
+                        end
+                    end
+                end
+            else
+                candidate_list = []
+                for doc in inputDoc
+                    sd = StringDocument(lowercase(doc))
+                    prepare!(sd, strip_punctuation)
+                    if stripStopwords == true
+                        prepare!(sd, strip_stopwords)
+                        sd = StringDocument(join([i for i in split(text(sd), " ") if i!= ""], " "))
+                    end
+                    sd = split(text(sd), " ")
+                    push!(candidate_list, sd)
+                end
+            end
+            
+        else 
+            throw(ArgumentError("Argument must be a String or a List of Strings i.e Array{String,1}"))
+        end
+    end
+    wordlist = sort(unique(split(join([join(i, " ") for i in candidate_list], " "), " ")))
+    word_matrix = []
+    for i in wordlist
+        temp = [0 for i in range(1, length(wordlist))]
+        matches = Dict()
+        for keywords in candidate_list
+            if window == 0
+                mid = trunc(Int, floor(7/2))
+            else
+                mid = window+1
+            end
+            if i == keywords[mid]
+                for token in keywords
+                    if token in keys(matches)
+                        matches[token] += 1
+                    else
+                        matches[token] = 1 
+                    end
+                end
+            else
+                if candidate_list[length(candidate_list)] == keywords
+                    for keyword in keywords[mid+1:length(keywords)]
+                        if keyword == i
+                            for token in keywords
+                                if token in keys(matches)
+                                    matches[token] += 1
+                                else
+                                    matches[token] = 1 
+                                end
+                            end
+                        end
+                    end
+                end
+                if candidate_list[length(candidate_list)] == keywords
+                    for keyword in keywords[1:mid-1]
+                        if keyword == i
+                            for token in keywords
+                                if token in keys(matches)
+                                    matches[token] += 1
+                                else
+                                    matches[token] = 1 
+                                end
+                            end
+                        end
+                    end
+                end                                                                                   
+            end
+        end
+        for key in keys(matches)
+            indexes = [i[1] for i in enumerate(wordlist) if i[2] == key]
+            for index in indexes
+                temp[index]  = matches[wordlist[index]]
+            end
+        end
+        if length(word_matrix) == 0
+            word_matrix = temp
+        else
+            word_matrix = hcat(word_matrix, temp)
+        end
+    end
+    coom = DataFrame(word_matrix, columns = wordlist, index = wordlist)
+    return(coom)                                                                                               
+end
