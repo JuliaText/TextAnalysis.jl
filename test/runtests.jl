@@ -25,5 +25,7 @@ include("bayes.jl")
 include("rouge.jl")
 include("averagePerceptronTagger.jl")
 
+include("crf.jl")
+
 # end
 end
