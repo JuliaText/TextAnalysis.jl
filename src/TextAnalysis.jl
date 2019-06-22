@@ -58,6 +58,8 @@ module TextAnalysis
     export rouge_l_summary, rouge_l_sentence, rouge_n
     export PerceptronTagger, fit!, predict
 
+    export CRF, predict, crf_loss
+
     include("tokenizer.jl")
     include("ngramizer.jl")
     include("document.jl")
@@ -85,8 +87,11 @@ module TextAnalysis
     include("utils.jl")
     include("rouge.jl")
     include("averagePerceptronTagger.jl")
-    
+
     # CRF
     include("CRF/crf.jl")
     include("CRF/predict.jl")
+    include("CRF/crf_utils.jl")
+    include("CRF/loss.jl")
+
 end
