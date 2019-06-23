@@ -21,11 +21,11 @@ Preprocessing functions
 """
 mutable struct PreprocessBuffer
     input::Vector{Char}
-    buffer::Vector{Char}
+    # buffer::Vector{Char}
     idx::Int
 end
 
-PreprocessBuffer(input) = PreprocessBuffer(input, [], 1)
+PreprocessBuffer(input) = PreprocessBuffer(input, 1)
 
 PreprocessBuffer(input::AbstractString) = PreprocessBuffer(collect(input))
 
@@ -61,47 +61,48 @@ function numbers(ps)
     return false
 end
 
-"""
-    lookahead(::PreprocessBuffer, s; boundary = false)
-
-Peek at the input to see if `s` is coming up next. `boundary` specifies whether
-a word boundary should follow `s`.
-
-```
-julia> lookahead(PreprocessBuffer("foo bar"), "foo")
-true
-julia> lookahead(PreprocessBuffer("foo bar"), "bar")
-false
-julia> lookahead(PreprocessBuffer("foo bar"), "foo", boundary = true)
-true
-julia> lookahead(PreprocessBuffer("foobar"), "foo", boundary = true)
-false
-```
-"""
-function lookahead(ps::PreprocessBuffer, s; boundary = false)
-    ps.idx + length(s) - 1 > length(ps.input) && return false
-
-    for j = 1:length(s)
-        ps.input[ps.idx - 1 + j] == s[j] || return false
-    end
-    if boundary
-        next = ps.idx + length(s)
-        next > length(ps.input) && return true
-        (isletter(ps[next]) || ps[next] == '-') && return false
-    end
-    return true
-end
+# """
+#     lookahead(::PreprocessBuffer, s; boundary = false)
+#
+# Peek at the input to see if `s` is coming up next. `boundary` specifies whether
+# a word boundary should follow `s`.
+#
+# ```
+# julia> lookahead(PreprocessBuffer("foo bar"), "foo")
+# true
+# julia> lookahead(PreprocessBuffer("foo bar"), "bar")
+# false
+# julia> lookahead(PreprocessBuffer("foo bar"), "foo", boundary = true)
+# true
+# julia> lookahead(PreprocessBuffer("foobar"), "foo", boundary = true)
+# false
+# ```
+# """
+# function lookahead(ps::PreprocessBuffer, s; boundary = false)
+#     ps.idx + length(s) - 1 > length(ps.input) && return false
+#
+#     for j = 1:length(s)
+#         ps.input[ps.idx - 1 + j] == s[j] || return false
+#     end
+#     if boundary
+#         next = ps.idx + length(s)
+#         next > length(ps.input) && return true
+#         (isletter(ps[next]) || ps[next] == '-') && return false
+#     end
+#     return true
+# end
 
 """
 Helper function for words_remove.
 """
-function next_token(ps::PreprocessBuffer)
+function next_token(ps::PreprocessBuffer, ws)
     i = ps.idx
     while i < length(ps.input) && isletter(ps[i])
         i += 1
     end
 
-    return String(ps.input[ps.idx:i-1])
+    String(ps.input[ps.idx:i-1]) ∈ ws && return true, i
+    return false, i
 end
 
 """
@@ -119,21 +120,21 @@ function words_remove(ps, ws)
     ps.idx != 1 && word_character(ps[ps.idx - 1]) && return false
     isletter(ps[ps.idx]) || return false
 
-    token = next_token(ps)
+    match, i = next_token(ps, ws)
     # println(token)
 
-    if token ∉ ws
-        append!(ps.buffer, ps.input[ps.idx:ps.idx + length(token) ])
-        ps.idx = ps.idx + length(token) + 1
+    if match == false
+        ps.idx = ps.idx + i
     else
-        ps.idx += length(token)
+        deleteat!(ps.input, ps.idx:i - 1)
+        ps.idx += 1
     end
 
     return true
 end
 
 function next(ps::PreprocessBuffer)
-    push!(ps.buffer, ps[])
+    # push!(ps.buffer, ps[])
     ps.idx += 1
 end
 
@@ -159,11 +160,12 @@ function fastpreprocess(text::String, lang)
         words_remove(ps, ws) || next(ps)
     end
 
-    return String(ps.buffer)
+    return String(ps.input)
 end
 
 function fastpreprocess(doc::StringDocument)
-    doc.text =  try_fast(doc.text, Languages.English())
+    doc.text =  fastpreprocess(doc.text, Languages.English())
+    println()
 end
 
 # Only for String Document
