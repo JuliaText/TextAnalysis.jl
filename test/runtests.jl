@@ -24,7 +24,7 @@ include("sentiment.jl")
 include("bayes.jl")
 include("taggingschemes.jl")
 include("rouge.jl")
-
+include("averagePerceptronTagger.jl")
 
 # end
 end

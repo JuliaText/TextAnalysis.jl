@@ -59,7 +59,6 @@
     @test isequal(doc.text, "this is sample text")
 
     # stem!(sd)
-    # tag_pos!(sd)
 
     # Do preprocessing on TokenDocument, NGramDocument, Corpus
     d = NGramDocument("this is sample text")
@@ -118,7 +117,7 @@
     @test isequal(str.text, answer.text)
 
     str = Document("Intel(tm) Core i5-3300k, is a geat CPU! ")
-    answer = Document("Inteltm Core i53300k is a geat CPU ")   #tests old implementation   
+    answer = Document("Inteltm Core i53300k is a geat CPU ")   #tests old implementation
     prepare!(str, strip_punctuation)
     @test isequal(str.text, answer.text)
 
