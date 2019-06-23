@@ -2,7 +2,7 @@
 # as it computes in polynomial time
 
 """
-Probabilities for the first tag in the tagging sequence.
+Scores for the first tag in the tagging sequence.
 """
 function preds_first(a::CRF, x)
     s, f = a.s, a.f
@@ -10,7 +10,7 @@ function preds_first(a::CRF, x)
 end
 
 """
-Probabilities for the tags other than the starting one.
+Scores for the tags other than the starting one.
 """
 function preds_single(a::CRF, x)
     W, b, f = a.W, a.b, a.f
@@ -28,7 +28,7 @@ function forward_unit_max(a::CRF, x, prev)
 
     for j in range(1, step=n, length(preds))
         i = Int(ceil(j/n))
-        k = preds[j:j + n - 1] + prev
+        k = exp.(preds[j:j + n - 1]) * prev
         max_values[i], label_indices[i] = findmax(k.data)
     end
 
@@ -49,7 +49,6 @@ function forward_pass(a::CRF, x)
     return findmax(α_val)[2], α_idx
 end
 
-# TODO: Speeding up.
 """
 Computes the forward pass for viterbi algorithm.
 """
