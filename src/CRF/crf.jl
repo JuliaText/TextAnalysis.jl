@@ -11,8 +11,8 @@ predicts the most probable tag sequence `y`,
 over the set of all possible tagging sequences `Y`.
 """
 mutable struct CRF{S,A} # Calculates Argmax( log ∑ )
-    W::S    # Array{Float32,2} # Size of W = Number of feature
-    b::S    # Array{Float32,2} # b is of `n` length
+    W::S    # TrackedArray{Float32,2} # Size of W = Number of feature
+    b::S    # TrackedArray{Float32,2} # b is of `n` length
     s::A    # For the first element.
     f::Function # Feature function
 end

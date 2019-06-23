@@ -1,6 +1,7 @@
 using Flux: onehot, train!, Params, gradient
 using Flux
-using TextAnalysis: CRF
+using TextAnalysis: CRF, crf_loss
+
 # @testset "crf" begin
 
     path = "data/weather.csv"
@@ -50,29 +51,7 @@ using TextAnalysis: CRF
     opt = ADAM(0.01)
 
     Flux.train!(loss, params(m), zip(train_X, train_Y), opt)
-    # function train!(loss, ps, data, opt; cb = () -> ())
-    #     ps = Params(ps)
-    #     @progress for d in data
-    #         try
-    #             gs = gradient(ps) do
-    #                 loss(d...)
-    #             end
-    #             update!(opt, ps, gs)
-    #             if cb() == :stop
-    #                 depwarn("Use of `:stop` is deprecated; use `Flux.stop()` instead", :stop)
-    #                 break
-    #             end
-    #         catch ex
-    #             if ex isa StopException
-    #                 break
-    #             else
-    #                 rethrow(ex)
-    #             end
-    #         end
-    #     end
-    # end
 
-    train!()
 # end
 
 # TODO: sequence of varying lengths.

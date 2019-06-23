@@ -1,41 +1,47 @@
-function forward_pass_unit(a::CRF, x, prev)
+function forward_algo_unit(a::CRF, x, prev)
     preds = preds_single(a, x)
-    n = length(prev)
+    n = size(a.s, 2)
+    println("----------------")
 
-    unit_scores = zeros(n)
+    unit_scores = []
+    global kkk
+    kkk = preds
+
     for j in range(1, step=n, length(preds))
-        unit_scores[Int(ceil(j/n))] = log_sum_exp(preds[j:j + n - 1] + prev)
+        push!(unit_scores, log_sum_exp(preds[j:j + n - 1] .+ prev))
     end
 
+    println(unit_scores)
+    println(typeof(unit_scores))
     return unit_scores
 end
 
 # For stable implementation, done in log space
-function forward_pass(a::CRF, input_seq)
-    log_α_forward#=[i,:]=# =  repeat(log.(sum((dropdims(preds_first(a, x[1,:]), dims=1)),
-                                        dims = 1)), 3)
+function forward_algorithm(a::CRF, x)
+    log_α_forward = log(sum(preds_first(a, x[:,1])))
 
-    for i in 2:size(x, 1)
-        log_α_forward = forward_pass_unit(a, x[i, :], log_α_forward)
+    for i in 2:size(x, 2)
+        log_α_forward = forward_algo_unit(a, x[:,1], log_α_forward)
     end
+    sleep(10000)
 
     return log_α_forward
 end
 
 # Normalization (partition) function - `Z`
 function partition_function(a::CRF, input_seq, label_seq)
-    return log(sum.(forward_pass(a, input_seq)))
+    return log(sum.(forward_algorithm(a, input_seq)))
 end
 
 # TODO: Check for possible speedups.
 # Calculating the score of the desired label_seq against input_seq.
 function score_sequence(a::CRF, input_seq, label_seq)
-    score = preds_first(a, input_seq[1])' * label_seq[1]
+    score = sum(preds_first(a, input_seq[:, 1])' .* label_seq[1])
 
-    for i in 2:length(input_seq)
-        score *= preds_single(a, input_seq[i])' * (label_seq[i-1]' * label_seq[i]')
+    for i in 2:length(label_seq)
+        score *= sum(preds_single(a, input_seq[:, i])' .*
+                collect(Iterators.flatten((label_seq[i-1] * label_seq[i]')')))
     end
-
     return score
 end
 
