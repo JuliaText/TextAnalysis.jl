@@ -173,8 +173,7 @@ end
                     
 # output : A DataFrame df. df[Word1][Word2] returns the co-occurence value.
                   
-
-function word_cooccurrence_matrix(inputDoc, window = 2, stripStopwords = false)
+function word_cooccurence_matrix(inputDoc, window = 2, stripStopwords = false)
     if typeof(inputDoc) == String
         sd = StringDocument(lowercase(inputDoc))
         prepare!(sd, strip_punctuation)
@@ -245,49 +244,61 @@ function word_cooccurrence_matrix(inputDoc, window = 2, stripStopwords = false)
     for i in wordlist
         temp = [0 for i in range(1, length(wordlist))]
         matches = Dict()
-        for keywords in candidate_list
-            if window == 0
-                mid = trunc(Int, floor(7/2))
-            else
-                mid = window+1
-            end
-            if i == keywords[mid]
-                for token in keywords
-                    if token in keys(matches)
-                        matches[token] += 1
-                    else
-                        matches[token] = 1 
+        if window == 0
+            temp = [0 for i in range(1, length(wordlist))]
+            matches = Dict()
+            for keywords in candidate_list
+                if i in keywords
+                    for token in keywords
+                        if token in keys(matches)
+                            matches[token] += 1
+                        else
+                            matches[token] = 1 
+                        end
                     end
                 end
-            else
-                if candidate_list[length(candidate_list)] == keywords
-                    for keyword in keywords[mid+1:length(keywords)]
-                        if keyword == i
-                            for token in keywords
-                                if token in keys(matches)
-                                    matches[token] += 1
-                                else
-                                    matches[token] = 1 
+            end
+        else
+            mid = window+1                                                                               
+            for keywords in candidate_list
+                if i == keywords[mid]
+                    for token in keywords
+                        if token in keys(matches)
+                            matches[token] += 1
+                        else
+                            matches[token] = 1 
+                        end
+                    end
+                else
+                    if candidate_list[length(candidate_list)] == keywords
+                        for keyword in keywords[mid+1:length(keywords)]
+                            if keyword == i
+                                for token in keywords
+                                    if token in keys(matches)
+                                        matches[token] += 1
+                                    else
+                                        matches[token] = 1 
+                                    end
                                 end
                             end
                         end
                     end
-                end
-                if candidate_list[length(candidate_list)] == keywords
-                    for keyword in keywords[1:mid-1]
-                        if keyword == i
-                            for token in keywords
-                                if token in keys(matches)
-                                    matches[token] += 1
-                                else
-                                    matches[token] = 1 
+                    if candidate_list[1] == keywords
+                        for keyword in keywords[1:mid-1]
+                            if keyword == i
+                                for token in keywords
+                                    if token in keys(matches)
+                                        matches[token] += 1
+                                    else
+                                        matches[token] = 1 
+                                    end
                                 end
                             end
                         end
-                    end
-                end                                                                                   
+                    end                                                                                   
+                end
             end
-        end
+        end                                                                                               
         for key in keys(matches)
             indexes = [i[1] for i in enumerate(wordlist) if i[2] == key]
             for index in indexes
@@ -299,7 +310,10 @@ function word_cooccurrence_matrix(inputDoc, window = 2, stripStopwords = false)
         else
             word_matrix = hcat(word_matrix, temp)
         end
-    end
-    coom = DataFrame(word_matrix, columns = wordlist, index = wordlist)
+    end   
+    
+    wordlist = convert(Array{String,1}, wordlist)
+    print(length(wordlist), "\n")                                                                                                         
+    coom = NamedArray(word_matrix, (wordlist, wordlist), ("Rows", "Cols"))
     return(coom)                                                                                               
 end
