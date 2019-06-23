@@ -171,9 +171,11 @@ end
 #                  a token to be considered in context. 
 # param stripStopwords : Whether to remove stopwords or not.
                     
-# output : A DataFrame df. df[Word1][Word2] returns the co-occurence value.
+# output : A NamedArray arr. arr[Word1, Word2] returns the co-occurrence value of
+#          a pair of words. arr[Word, :] returns cooccurence value of Word with all 
+#          other words
                   
-function word_cooccurence_matrix(inputDoc, window = 2, stripStopwords = false)
+function word_cooccurrence_matrix(inputDoc, window = 2, stripStopwords = false)
     if typeof(inputDoc) == String
         sd = StringDocument(lowercase(inputDoc))
         prepare!(sd, strip_punctuation)
