@@ -33,6 +33,7 @@ Base.getindex(ps::PreprocessBuffer, i = ps.idx) = ps.input[i]
 
 isdone(ps::PreprocessBuffer) = ps.idx > length(ps.input)
 
+# TODO: Remove whitespace at the end, beginning and multiple whitepsaces into one.
 """
     corrupt_utf8(ps::PreprocessBuffer)
 
@@ -97,7 +98,7 @@ Helper function for words_remove.
 """
 function next_token(ps::PreprocessBuffer, ws)
     i = ps.idx
-    while i < length(ps.input) && isletter(ps[i])
+    while i <= length(ps.input) && isletter(ps[i])
         i += 1
     end
 
@@ -121,11 +122,14 @@ function words_remove(ps, ws)
     isletter(ps[ps.idx]) || return false
 
     match, i = next_token(ps, ws)
-    # println(token)
 
     if match == false
         ps.idx = ps.idx + i
     else
+        if ps.idx > 1 && isspace(ps[ps.idx - 1])
+            ps.idx -= 1
+        end
+
         deleteat!(ps.input, ps.idx:i - 1)
         ps.idx += 1
     end
@@ -134,13 +138,12 @@ function words_remove(ps, ws)
 end
 
 function next(ps::PreprocessBuffer)
-    # push!(ps.buffer, ps[])
     ps.idx += 1
 end
 
 # ws of type Sorted Set
-function fastpreprocess(text::String, lang)
-    length(text) < 1 && return
+function fastpreprocess(txt::String, lang)
+    length(txt) < 1 && return
 
     indef_a = indefinite_articles(lang)
     def_a = definite_articles(lang)
@@ -149,7 +152,7 @@ function fastpreprocess(text::String, lang)
     pron = pronouns(lang)
 
     ws = SortedSet(vcat(indef_a, def_a, stop, prepo, pron))
-    ps = PreprocessBuffer(text)
+    ps = PreprocessBuffer(txt)
 
     # TODO: Check case insensitive in words
 
@@ -165,7 +168,7 @@ end
 
 function fastpreprocess(doc::StringDocument)
     doc.text =  fastpreprocess(doc.text, Languages.English())
-    println()
+    nothing
 end
 
 # Only for String Document
