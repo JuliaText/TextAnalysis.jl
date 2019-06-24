@@ -175,7 +175,7 @@ end
 #          a pair of words. arr[Word, :] returns cooccurence value of Word with all 
 #          other words
                   
-function word_cooccurrence_matrix(inputDoc, window = 2, stripStopwords = false)
+function word_cooccurence_matrix(inputDoc, window = 2, stripStopwords = false)
     if typeof(inputDoc) == String
         sd = StringDocument(lowercase(inputDoc))
         prepare!(sd, strip_punctuation)
@@ -272,10 +272,10 @@ function word_cooccurrence_matrix(inputDoc, window = 2, stripStopwords = false)
                         end
                     end
                 else
-                    if candidate_list[length(candidate_list)] == keywords
-                        for keyword in keywords[mid+1:length(keywords)]
-                            if keyword == i
-                                for token in keywords
+                    if candidate_list[length(candidate_list)] == keywords                                                                   
+                        for keyword in enumerate(keywords)                                                                               
+                            if keyword[2] == i && keyword[1] > mid                                                                              
+                                for token in keywords[keyword[1]-mid+1:length(keywords)]
                                     if token in keys(matches)
                                         matches[token] += 1
                                     else
@@ -285,10 +285,10 @@ function word_cooccurrence_matrix(inputDoc, window = 2, stripStopwords = false)
                             end
                         end
                     end
-                    if candidate_list[1] == keywords
-                        for keyword in keywords[1:mid-1]
-                            if keyword == i
-                                for token in keywords
+                    if candidate_list[1] == keywords                                                                          
+                        for keyword in enumerate(keywords)
+                            if keyword[2] == i && keyword[1] < mid                                                                                
+                                for token in keywords[1:keyword[1]+mid-1]
                                     if token in keys(matches)
                                         matches[token] += 1
                                     else
@@ -314,8 +314,8 @@ function word_cooccurrence_matrix(inputDoc, window = 2, stripStopwords = false)
         end
     end   
     
-    wordlist = convert(Array{String,1}, wordlist)
-    print(length(wordlist), "\n")                                                                                                         
+    wordlist = convert(Array{String,1}, wordlist)                                                                                                        
     coom = NamedArray(word_matrix, (wordlist, wordlist), ("Rows", "Cols"))
+    
     return(coom)                                                                                               
 end
