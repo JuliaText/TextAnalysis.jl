@@ -59,7 +59,7 @@ Removes the corrupt UTF8 chars.
 function corrupt_utf8(ps)
     isvalid(ps[ps.idx]) && return false
 
-    deleteat!(ps, ps.idx)
+    deleteat!(ps.input, ps.idx)
     return true
 end
 
@@ -198,9 +198,9 @@ This does not work for Corpora consisting of `FileDocument`,
 `TokenDocument` or `NGramDocument`
 
 """
-fastpreprocess(txt::String, lang, flags) = fastpreprocess(txt, build_set(flags, lang))
+fastpreprocess(txt::String, lang = Languages.English(), flags = 0) = fastpreprocess(txt, build_set(flags, lang))
 
-function build_set(flags, lang)
+function build_set(flags, lang = Languages.English())
     ws = SortedSet()
 
     ((flags & strip_indefinite_articles) > 0) && union!(ws, indefinite_articles(lang))
@@ -212,12 +212,10 @@ function build_set(flags, lang)
     ws
 end
 
+# TODO: Check case insensitive in words
 function fastpreprocess(txt::String, ws::SortedSet)
     length(txt) < 1 && return
-
     ps = PreprocessBuffer(txt)
-
-    # TODO: Check case insensitive in words
 
     while !isdone(ps)
         whitespace(ps) ||
@@ -228,20 +226,19 @@ function fastpreprocess(txt::String, ws::SortedSet)
     end
 
     trailing_whitespace(ps)
-
     return String(ps.input)
 end
 
-function fastpreprocess(doc::StringDocument, flags)
-    doc.text =  fastpreprocess(doc.text, build_set(flags, lang(doc)))
+function fastpreprocess(doc::StringDocument, flags = 0)
+    doc.text =  fastpreprocess(doc.text, build_set(flags, language(doc)))
 end
 
 # Only for String Document
-function fastpreprocess(crps::Corpus, flags)
-    ws = build_set(flags, lang(crps[1]))
+function fastpreprocess(crps::Corpus, flags = 0)
+    ws = build_set(flags, language(crps[1]))
 
     for doc in crps
-        doc.text = fastpreprocess(doc.text, ws)))
+        doc.text = fastpreprocess(doc.text, ws)
     end
     crps
 end
