@@ -1,10 +1,4 @@
 # More stable implementation as exponentiation creates large nos.
-function log_sum_exp(z)
-    # @assert eltype(z) <: Number
-    m = maximum(z)
-    global kkk
-    kkk = z
-    println(log(sum(exp.(z .- m))))
-    println(m)
-    log(sum(exp.(z .- m))) + m
-end
+# where m = maximum(z, dims = 2)
+log_sum_exp(z, m ) = log.(sum((exp.(z .- m)), dims = 2)) .+ m
+log_sum_exp(z) = log_sum_exp(z, maximum(z, dims = 2))

@@ -14,7 +14,7 @@ Scores for the tags other than the starting one.
 """
 function preds_single(a::CRF, x)
     W, b, f = a.W, a.b, a.f
-    sum(W .* f(x) + b, dims=1)
+    reshape(sum(W .* f(x) + b, dims=1), size(a.W,2), :)
 end
 
 # TODO: Parallel

@@ -1,8 +1,8 @@
-using Flux: onehot, train!, Params, gradient
 using Flux
+using Flux: onehot, train!, Params, gradient
 using TextAnalysis: CRF, crf_loss
 
-# @testset "crf" begin
+@testset "crf" begin
 
     path = "data/weather.csv"
     function load(path::String)
@@ -35,23 +35,26 @@ using TextAnalysis: CRF, crf_loss
 
     X, Y = load(path)
 
+    normalize(X, minn, maxx) = (X .- minn) ./ (maxx - minn)
+
+    X = [normalize(x, minimum(minimum.(X)),  maximum(maximum.(X))) for x in X]
+
     labels = unique(Iterators.flatten(Y))
     num_labels = length(labels)
     num_features = size(X[1], 1)
-
     Y = map.(ch -> onehot(ch, labels), Y)
-
-    train_X = X[1:10]
-    train_Y = Y[1:10]
 
     m = CRF(num_labels, num_features)
 
     loss(x, y) = crf_loss(m, x, y) # TODO: change this to loss = crf_loss(m)
 
-    opt = ADAM(0.01)
+    opt = Descent(0.01)
 
-    Flux.train!(loss, params(m), zip(train_X, train_Y), opt)
+    l1 = sum[loss(x,y) for (x,y) in zip(X,Y)]
+    Flux.train!(loss, params(m), zip(X, Y), opt)
+    l2 = sum[loss(x,y) for (x,y) in zip(X,Y)]
 
-# end
+    @test l1 > l2
+end
 
 # TODO: sequence of varying lengths.
