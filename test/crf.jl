@@ -2,9 +2,11 @@ using Flux
 using Flux: onehot, train!, Params, gradient
 using TextAnalysis: CRF, crf_loss
 
-@testset "crf" begin
+Flux.@treelike TextAnalysis.CRF
 
+@testset "crf" begin
     path = "data/weather.csv"
+
     function load(path::String)
         stream = open(path, "r")
         Xs = []
@@ -36,7 +38,6 @@ using TextAnalysis: CRF, crf_loss
     X, Y = load(path)
 
     normalize(X, minn, maxx) = (X .- minn) ./ (maxx - minn)
-
     X = [normalize(x, minimum(minimum.(X)),  maximum(maximum.(X))) for x in X]
 
     labels = unique(Iterators.flatten(Y))
@@ -44,17 +45,44 @@ using TextAnalysis: CRF, crf_loss
     num_features = size(X[1], 1)
     Y = map.(ch -> onehot(ch, labels), Y)
 
-    m = CRF(num_labels, num_features)
+    @testset "Only CRFs" begin
+        m = TextAnalysis.CRF(num_labels, num_features)
 
-    loss(x, y) = crf_loss(m, x, y) # TODO: change this to loss = crf_loss(m)
+        loss(x, y) = crf_loss(m, x, y) # TODO: change this to loss = crf_loss(m)
 
-    opt = Descent(0.01)
+        opt = Descent(0.01)
 
-    l1 = sum[loss(x,y) for (x,y) in zip(X,Y)]
-    Flux.train!(loss, params(m), zip(X, Y), opt)
-    l2 = sum[loss(x,y) for (x,y) in zip(X,Y)]
+        l1 = sum([loss(x,y) for (x,y) in zip(X,Y)])
 
-    @test l1 > l2
+        Flux.train!(loss, params(m), zip(X, Y), opt)
+        Flux.train!(loss, params(m), zip(X, Y), opt)
+
+        l2 = sum([loss(x,y) for (x,y) in zip(X,Y)])
+
+        @test l1 > l2
+    end
+
+    @testset "CRF with Dense" begin
+        num_features = 3
+        d = Dense(2, num_features)
+        c = TextAnalysis.CRF(num_labels, num_features)
+
+        loss(x, y) = crf_loss(c, d(x), y)
+
+        opt = Descent(0.01)
+
+        l1 = sum([loss(x,y) for (x,y) in zip(X,Y)])
+        dense_param_1 = d.W[1]
+
+        Flux.train!(loss, params(c, d), zip(X, Y), opt)
+        Flux.train!(loss, params(c, d), zip(X, Y), opt)
+
+        dense_param_2 = d.W[1]
+        l2 = sum([loss(x,y) for (x,y) in zip(X,Y)])
+
+        @test l1 > l2
+        @test dense_param_1 != dense_param_2
+    end
 end
 
 # TODO: sequence of varying lengths.
