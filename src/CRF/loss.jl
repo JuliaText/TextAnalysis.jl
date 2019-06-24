@@ -2,7 +2,7 @@ unit_scores(a::CRF, x, prev) = log_sum_exp(preds_single(a, x) .+ prev')
 
 # For stable implementation, done in log space
 function forward_algorithm(a::CRF, x)
-    log_α_forward = log(sum(preds_first(a, x[:,1])))
+    log_α_forward = log(sum(exp.(preds_first(a, x[:,1]))))
 
     for i in 2:size(x, 2)
         log_α_forward = unit_scores(a, x[:,1], log_α_forward)
@@ -18,10 +18,10 @@ partition_function(a::CRF, input_seq, label_seq) = sum(exp.(forward_algorithm(a,
 
 # Calculating the score of the desired label_seq against input_seq.
 function score_sequence(a::CRF, input_seq, label_seq)
-    score = sum(preds_first(a, input_seq[:, 1])' .* label_seq[1])
+    score = exp(sum(preds_first(a, input_seq[:, 1])' .* label_seq[1]))
 
     for i in 2:length(label_seq)
-        score *= sum(preds_single(a, input_seq[:, i]) .* (label_seq[i] * label_seq[i-1]'))
+        score *= exp(sum(preds_single(a, input_seq[:, i]) .* (label_seq[i] * label_seq[i-1]')))
     end
 
     return score

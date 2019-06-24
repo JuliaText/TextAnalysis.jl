@@ -17,11 +17,9 @@ mutable struct CRF{S,A, F} # Calculates Argmax( log ∑ )
     f::F    # Feature function
 end
 
-Flux.@treelike CRF
+CRF(num_labels::Integer, num_features::Integer) = CRF(num_labels::Integer, num_features::Integer, identity)
 
-CRF(num_labels::Int, num_features::Int) = CRF(num_labels::Int, num_features::Int, identity)
-
-function CRF(num_labels::Int, num_features::Int, f::Function;
+function CRF(num_labels::Integer, num_features::Integer, f::Function;
             initW = rand, initb = zeros, inits = rand)
     return CRF(param(initW(num_features, num_labels, num_labels)),
                 param(initb(num_features, num_labels, num_labels)),
