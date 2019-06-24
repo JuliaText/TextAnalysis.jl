@@ -193,6 +193,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "features/#Tagging_schemes-1",
+    "page": "Features",
+    "title": "Tagging_schemes",
+    "category": "section",
+    "text": "There are many tagging schemes used for sequence labelling. TextAnalysis currently offers functions for conversion between these tagging format.BIO1\nBIO2\nBIOESjulia> tags = [\"I-LOC\", \"O\", \"I-PER\", \"B-MISC\", \"I-MISC\", \"B-PER\", \"I-PER\", \"I-PER\"]\n\njulia> tag_scheme!(tags, \"BIO1\", \"BIOES\")\n\njulia> tags\n8-element Array{String,1}:\n \"S-LOC\"\n \"O\"\n \"S-PER\"\n \"B-MISC\"\n \"E-MISC\"\n \"B-PER\"\n \"I-PER\"\n \"E-PER\""
+},
+
+{
     "location": "features/#Parts-of-Speech-Tagger-1",
     "page": "Features",
     "title": "Parts of Speech Tagger",
