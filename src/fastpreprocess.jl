@@ -47,13 +47,49 @@ function corrupt_utf8(ps)
 end
 
 """
-    punctuation(ps::PreprocessBuffer)
+    whitespace(ps::PreprocessBuffer)
 
 Squash multiple whitespaces to a single one.
 And remove all leading and trailing whitespaces.
 """
+function whitespace(ps)
+    isspace(ps) || return false
+
+    ps.idx != 1 && !isspace(ps[ps.idx - 1]) && return false
+
+    deleteat!(ps, ps.idx)
+    return true
+
+    # If prev is whitespace then delete.
+end
+
+function trailing_whitespace(ps)
+    isspace(ps[i]) || return
+
+    i = length(ps.input)
+
+    while (i > 0) && isspace(ps[i])
+        i -= 1
+    end
+
+    deleteat!(ps, i + 1: length(ps.input))
+end
+
+"""
+    punctuation(ps::PreprocessBuffer)
+
+Remove punctuations.
+"""
 function punctuation(ps)
-    return false
+    ispunct(ps[]) || return false
+
+    if ps.idx > 1 && isspace(ps[ps.idx - 1])
+        deleteat!(ps, ps.idx - 1:ps.idx)
+    else
+        deleteat!(ps, ps.idx)
+    end
+
+    return true
 end
 
 """
@@ -62,7 +98,15 @@ end
 Removes all numbers.
 """
 function numbers(ps)
-    return false
+    isdigit(ps[]) || return false
+
+    if ps.idx > 1 && isspace(ps[ps.idx - 1])
+        deleteat!(ps, ps.idx - 1:ps.idx)
+    else
+        deleteat!(ps, ps.idx)
+    end
+
+    return true
 end
 
 # """
@@ -165,6 +209,8 @@ function fastpreprocess(txt::String, lang)
         numbers(ps) ||
         words_remove(ps, ws) || next(ps)
     end
+
+    trailing_whitespace(ps)
 
     return String(ps.input)
 end
