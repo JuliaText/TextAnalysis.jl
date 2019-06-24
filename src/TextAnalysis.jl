@@ -9,7 +9,7 @@ module TextAnalysis
 
     using Flux
     using Flux.Tracker
-    using Flux: params, identity
+    using Flux: params, identity, @treelike
 
     import DataFrames.DataFrame
     import Base.depwarn
