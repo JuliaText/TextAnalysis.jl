@@ -8,7 +8,7 @@ sd = StringDocument(join([i for i in split(text(sd), " ") if i!= ""], " "))
 sd = sort(unique(split(text(sd), " ")))
 wordlist = sd
 convert(Array{String,1}, wordlist)
-x= word_cooccurence_matrix(txt, 5, true)
+x= word_cooccurrence_matrix(txt, 5, true)
 for i in range(1, length(wordlist))
     @test x[i, i] >= 1
 end
