@@ -19,8 +19,8 @@ Preprocessing functions
 * pronouns
 
 
-Turns a string into a readable and writable stream,
-used for preprocessing and flushing out the processed text.
+Turns a string into a readable and writable stream of `Char`s,
+used for preprocessing and flushing out the processes text.
 
 Utility functions (lexers) such as `spaces` and `number` read characters from the stream
 and match against it.
@@ -168,33 +168,48 @@ function next(ps::PreprocessBuffer)
 end
 
 """
-Preprocessing functions
+    fastpreprocess(::StringDocument, flags)
+    fastpreprocess(::Corpus, flags)
+    fastpreprocess(::String, lang::T, flags) where T <: Language
+    fastpreprocess(::String, ::SortedSet, flags)
 
-* strip_case
+## Preprocessing functions currently available
 
 * corrupt_utf8
 * whitespace
 * punctuation
 * numbers
-* indefinite_articles
-* definite_articles
-* articles
-* stopwords
-* prepositions
-* pronouns
+
+### Flags for functions requiring `words_remove`
+
+* strip_indefinite_articles
+* strip_definite_articles
+* strip_articles
+* strip_stopwords
+* strip_prepositions
+* strip_pronouns
+
+## Usage
+
+
+## Note:
+
+This does not work for Corpora consisting of `FileDocument`,
+`TokenDocument` or `NGramDocument`
+
 """
-function fastpreprocess(txt::String, lang)
-    length(txt) < 1 && return
+fastpreprocess(txt::String, lang, flags) = fastpreprocess(txt, build_set(flags, lang))
 
-    indef_a = indefinite_articles(lang)
-    def_a = definite_articles(lang)
-    stop = stopwords(lang)
-    prepo = prepositions(lang)
-    pron = pronouns(lang)
+function build_set(flags, lang)
+    ws = SortedSet()
 
-    ws = SortedSet(vcat(indef_a, def_a, stop, prepo, pron))
+    ((flags & strip_indefinite_articles) > 0) && union!(ws, indefinite_articles(lang))
+    ((flags & strip_definite_articles) > 0) && union!(ws, definite_articles(lang))
 
-    return fastpreprocess(txt, ws)
+    ((flags & strip_prepositions) > 0) && union!(ws, prepositions(lang))
+    ((flags & strip_pronouns) > 0) && union!(ws, pronouns(lang))
+    ((flags & strip_stopwords) > 0) && union!(ws, stopwords(lang))
+    ws
 end
 
 function fastpreprocess(txt::String, ws::SortedSet)
@@ -217,12 +232,18 @@ function fastpreprocess(txt::String, ws::SortedSet)
     return String(ps.input)
 end
 
-function fastpreprocess(doc::StringDocument)
-    doc.text =  fastpreprocess(doc.text, Languages.English())
-    nothing
+function fastpreprocess(doc::StringDocument, flags)
+    doc.text =  fastpreprocess(doc.text, build_set(flags, lang(doc)))
 end
 
 # Only for String Document
 function fastpreprocess(crps::Corpus, flags)
+    ws = build_set(flags, lang(crps[1]))
+
+    for doc in crps
+        doc.text = fastpreprocess(doc.text, ws)))
+    end
+    crps
 end
+
 # HTML placed before words
