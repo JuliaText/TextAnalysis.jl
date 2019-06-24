@@ -1,12 +1,11 @@
-# TODO
-# * strip_sparse_terms
-# * strip_frequent_terms
+# TODO Figure out the following:
+# * strip_sparse_terms - to utilize `words_remove` and `sparse_terms` (of preprocessing.jl).
+# * strip_frequent_terms - to utilize `words_remove` and `frequent_terms` (of preprocessing.jl).
 # * strip_html_tags
 # * strip_non_letters
+# * strip_case
 """
 Preprocessing functions
-
-* strip_case
 
 * corrupt_utf8
 * whitespace
@@ -18,10 +17,28 @@ Preprocessing functions
 * stopwords
 * prepositions
 * pronouns
+
+
+Turns a string into a readable and writable stream,
+used for preprocessing and flushing out the processed text.
+
+Utility functions (lexers) such as `spaces` and `number` read characters from the stream
+and match against it.
+
+Functions (lexers) return `true` or `false` to indicate whether they matched anything
+in the input stream. They can therefore be combined easily, e.g.
+
+    spacesornumber(ts) = whtiespace(ts) || numbers(ts)
+
+either deletes two consectutively read whitespaces or removes a number character, if matched.
+
+For certain cases like `strip_pronouns`, `strip_prepositions`, `strip_stopwords`, etc.
+These are stored into a `SortedSet` for faster preprocessing and
+matches words / tokens against the characters in the stream
+in the function `words_remove`.
 """
 mutable struct PreprocessBuffer
     input::Vector{Char}
-    # buffer::Vector{Char}
     idx::Int
 end
 
@@ -63,6 +80,11 @@ function whitespace(ps)
     # If prev is whitespace then delete.
 end
 
+"""
+    trailing_whitespace(ps::PreprocessBuffer)
+
+Remove the whitespaces at the end of the input stream.
+"""
 function trailing_whitespace(ps)
     isspace(ps[length(ps.input)]) || return
     i = length(ps.input) - 1
@@ -77,7 +99,7 @@ end
 """
     punctuation(ps::PreprocessBuffer)
 
-Remove punctuations.
+Remove punctuations, as matched by `ispunct`.
 """
 function punctuation(ps)
     ispunct(ps[]) || return false
@@ -98,39 +120,10 @@ function numbers(ps)
     return true
 end
 
-# """
-#     lookahead(::PreprocessBuffer, s; boundary = false)
-#
-# Peek at the input to see if `s` is coming up next. `boundary` specifies whether
-# a word boundary should follow `s`.
-#
-# ```
-# julia> lookahead(PreprocessBuffer("foo bar"), "foo")
-# true
-# julia> lookahead(PreprocessBuffer("foo bar"), "bar")
-# false
-# julia> lookahead(PreprocessBuffer("foo bar"), "foo", boundary = true)
-# true
-# julia> lookahead(PreprocessBuffer("foobar"), "foo", boundary = true)
-# false
-# ```
-# """
-# function lookahead(ps::PreprocessBuffer, s; boundary = false)
-#     ps.idx + length(s) - 1 > length(ps.input) && return false
-#
-#     for j = 1:length(s)
-#         ps.input[ps.idx - 1 + j] == s[j] || return false
-#     end
-#     if boundary
-#         next = ps.idx + length(s)
-#         next > length(ps.input) && return true
-#         (isletter(ps[next]) || ps[next] == '-') && return false
-#     end
-#     return true
-# end
-
 """
 Helper function for words_remove.
+Matches the next token in the stream against the `ws::SortedSet`.
+Returns whether it matched and the idx of the token end
 """
 function next_token(ps::PreprocessBuffer, ws)
     i = ps.idx
@@ -174,7 +167,22 @@ function next(ps::PreprocessBuffer)
     return true
 end
 
-# ws of type Sorted Set
+"""
+Preprocessing functions
+
+* strip_case
+
+* corrupt_utf8
+* whitespace
+* punctuation
+* numbers
+* indefinite_articles
+* definite_articles
+* articles
+* stopwords
+* prepositions
+* pronouns
+"""
 function fastpreprocess(txt::String, lang)
     length(txt) < 1 && return
 
@@ -185,6 +193,13 @@ function fastpreprocess(txt::String, lang)
     pron = pronouns(lang)
 
     ws = SortedSet(vcat(indef_a, def_a, stop, prepo, pron))
+
+    return fastpreprocess(txt, ws)
+end
+
+function fastpreprocess(txt::String, ws::SortedSet)
+    length(txt) < 1 && return
+
     ps = PreprocessBuffer(txt)
 
     # TODO: Check case insensitive in words
@@ -197,7 +212,7 @@ function fastpreprocess(txt::String, lang)
         words_remove(ps, ws) || next(ps)
     end
 
-    # trailing_whitespace(ps)
+    trailing_whitespace(ps)
 
     return String(ps.input)
 end
