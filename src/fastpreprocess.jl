@@ -40,7 +40,10 @@ isdone(ps::PreprocessBuffer) = ps.idx > length(ps.input)
 Removes the corrupt UTF8 chars.
 """
 function corrupt_utf8(ps)
-    return false
+    isvalid(ps[ps.idx]) && return false
+
+    deleteat!(ps, ps.idx)
+    return true
 end
 
 """
