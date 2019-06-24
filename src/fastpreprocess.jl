@@ -53,26 +53,25 @@ Squash multiple whitespaces to a single one.
 And remove all leading and trailing whitespaces.
 """
 function whitespace(ps)
-    isspace(ps) || return false
+    isspace(ps[ps.idx]) || return false
 
-    ps.idx != 1 && !isspace(ps[ps.idx - 1]) && return false
+    ps.idx != 1 && !isspace(ps[ps.idx - 1]) && return next(ps)
 
-    deleteat!(ps, ps.idx)
+    deleteat!(ps.input, ps.idx)
     return true
 
     # If prev is whitespace then delete.
 end
 
 function trailing_whitespace(ps)
-    isspace(ps[i]) || return
-
-    i = length(ps.input)
+    isspace(ps[length(ps.input)]) || return
+    i = length(ps.input) - 1
 
     while (i > 0) && isspace(ps[i])
         i -= 1
     end
 
-    deleteat!(ps, i + 1: length(ps.input))
+    deleteat!(ps.input, i + 1: length(ps.input))
 end
 
 """
@@ -83,12 +82,7 @@ Remove punctuations.
 function punctuation(ps)
     ispunct(ps[]) || return false
 
-    if ps.idx > 1 && isspace(ps[ps.idx - 1])
-        deleteat!(ps, ps.idx - 1:ps.idx)
-    else
-        deleteat!(ps, ps.idx)
-    end
-
+    deleteat!(ps.input, ps.idx)
     return true
 end
 
@@ -100,12 +94,7 @@ Removes all numbers.
 function numbers(ps)
     isdigit(ps[]) || return false
 
-    if ps.idx > 1 && isspace(ps[ps.idx - 1])
-        deleteat!(ps, ps.idx - 1:ps.idx)
-    else
-        deleteat!(ps, ps.idx)
-    end
-
+    deleteat!(ps.input, ps.idx)
     return true
 end
 
@@ -148,6 +137,7 @@ function next_token(ps::PreprocessBuffer, ws)
     while i <= length(ps.input) && isletter(ps[i])
         i += 1
     end
+    i < length(ps.input) && isdigit(ps[i]) && return false, i
 
     String(ps.input[ps.idx:i-1]) ∈ ws && return true, i
     return false, i
@@ -171,14 +161,9 @@ function words_remove(ps, ws)
     match, i = next_token(ps, ws)
 
     if match == false
-        ps.idx = ps.idx + i
+        ps.idx = i
     else
-        if ps.idx > 1 && isspace(ps[ps.idx - 1])
-            ps.idx -= 1
-        end
-
         deleteat!(ps.input, ps.idx:i - 1)
-        ps.idx += 1
     end
 
     return true
@@ -186,6 +171,7 @@ end
 
 function next(ps::PreprocessBuffer)
     ps.idx += 1
+    return true
 end
 
 # ws of type Sorted Set
@@ -204,13 +190,14 @@ function fastpreprocess(txt::String, lang)
     # TODO: Check case insensitive in words
 
     while !isdone(ps)
+        whitespace(ps) ||
         corrupt_utf8(ps) ||
         punctuation(ps) ||
         numbers(ps) ||
         words_remove(ps, ws) || next(ps)
     end
 
-    trailing_whitespace(ps)
+    # trailing_whitespace(ps)
 
     return String(ps.input)
 end
