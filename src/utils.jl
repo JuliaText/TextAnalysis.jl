@@ -175,7 +175,7 @@ end
 #          a pair of words. arr[Word, :] returns cooccurence value of Word with all 
 #          other words
                   
-function word_cooccurence_matrix(inputDoc, window = 2, stripStopwords = false)
+function word_cooccurrence_matrix(inputDoc, window = 2, stripStopwords = false)
     if typeof(inputDoc) == String
         sd = StringDocument(lowercase(inputDoc))
         prepare!(sd, strip_punctuation)
