@@ -54,6 +54,7 @@ module TextAnalysis
     export strip_numbers, strip_non_letters, strip_indefinite_articles, strip_definite_articles, strip_articles
     export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
     export SentimentAnalyzer
+    export tag_scheme!
     export jackknife_avg, listify_ngrams, weighted_lcs, fmeasure_lcs
     export rouge_l_summary, rouge_l_sentence, rouge_n
     export PerceptronTagger, fit!, predict
@@ -84,6 +85,7 @@ module TextAnalysis
     include("sentiment.jl")
     include("bayes.jl")
     include("deprecations.jl")
+    include("tagging_schemes.jl")
     include("utils.jl")
     include("rouge.jl")
     include("averagePerceptronTagger.jl")
