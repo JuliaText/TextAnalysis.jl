@@ -50,7 +50,7 @@ function forward_pass(a::CRF, x)
 end
 
 """
-Computes the forward pass for viterbi algorithm.
+Computes the backward pass for viterbi algorithm.
 """
 function backward_pass(a::CRF, (α_idx_last, α_idx))
     labels = Array{Int32, 1}(undef, size(α_idx,1))
