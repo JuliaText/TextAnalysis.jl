@@ -6,6 +6,7 @@ module TextAnalysis
     using Languages
     using DataFrames
     using WordTokenizers
+    using DataStructures
 
     import DataFrames.DataFrame
     import Base.depwarn
@@ -83,4 +84,7 @@ module TextAnalysis
     include("utils.jl")
     include("rouge.jl")
     include("averagePerceptronTagger.jl")
+
+    include("coom.jl")
+
 end
