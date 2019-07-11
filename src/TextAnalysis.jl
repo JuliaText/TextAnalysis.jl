@@ -7,6 +7,7 @@ module TextAnalysis
     using DataFrames
     using WordTokenizers
     using DataStructures
+    using Statistics
 
     import DataFrames.DataFrame
     import Base.depwarn
@@ -43,8 +44,8 @@ module TextAnalysis
     export TextHashFunction, index_hash, cardinality, hash_function, hash_function!
     export hash_dtv, each_hash_dtv, hash_dtm, hash_tdm
     export standardize!
-    export tf, tf_idf, lsa, lda, summarize
-    export tf!, tf_idf!, lsa!, lda!
+    export tf, tf_idf, bm_25, lsa, lda, summarize
+    export tf!, tf_idf!, bm_25!, lsa!, lda!
     export remove_patterns!, remove_patterns
 
     export strip_patterns, strip_corrupt_utf8, strip_case, stem_words, tag_part_of_speech, strip_whitespace, strip_punctuation
