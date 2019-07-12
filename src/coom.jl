@@ -110,7 +110,7 @@ CooMatrix(crps::Corpus; window::Int=5, normalize::Bool=true) = begin
     CooMatrix{Float64}(crps, lexicon(crps), window=window, normalize=normalize)
 end
 
-# StringDocument methods
+# Document methods
 function CooMatrix{T}(doc::AbstractDocument,
                       terms::Vector{String};
                       window::Int=5,
