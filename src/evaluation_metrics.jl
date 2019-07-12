@@ -65,8 +65,7 @@ See [Rouge: A package for automatic evaluation of summaries](http://www.aclweb.o
 
 See also: [`rouge_l_sentence()`](@ref), [`rouge_l_summary`](@ref)
 """
-function rouge_l_summary(references, candidate, beta, averaging=true)
-
+function rouge_l_summary(references, candidate, β, averaging=true)
     rouge_l_list = []
     cand_sent_list = split_sentences(candidate)
 
@@ -77,25 +76,20 @@ function rouge_l_summary(references, candidate, beta, averaging=true)
         for ref_sent in ref_sent_list
             l_ = []
             arg1 = tokenize(Languages.English(), ref)
-
             for cand_sent in cand_sent_list
                 arg2 = tokenize(Languages.English(), cand_sent)
                 d = tokenize(Languages.English(), weighted_lcs(arg1, arg2, false, true, sqrt))
                 append!(l_,d)
             end
-
-            sum_value = sum_value + length(unique(l_))
+            sum_value += length(unique(l_))
         end
 
-        r_lcs = sum_value/length(tokenize(Languages.English(), ref))
-        p_lcs = sum_value/length(tokenize(Languages.English(), candidate))
-        score = fmeasure_lcs(r_lcs, p_lcs, beta)
+        r_lcs = sum_value / length(tokenize(Languages.English(), ref))
+        p_lcs = sum_value / length(tokenize(Languages.English(), candidate))
+        score = fmeasure_lcs(r_lcs, p_lcs, β)
         push!(rouge_l_list,score)
     end
 
-    if averaging == true
-        rouge_l_list = jackknife_avg(rouge_l_list)
-    end
-
+    averaging == true && return jackknife_avg(rouge_l_list)
     return rouge_l_list
 end

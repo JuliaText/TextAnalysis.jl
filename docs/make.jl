@@ -15,7 +15,8 @@ makedocs(
         "Features" => "features.md",
         "Semantic Analysis" => "semantic.md",
         "Classifier" => "classify.md",
-        "Extended Example" => "example.md"
+        "Extended Example" => "example.md",
+        "Evaluation Metrics" => "evaluation_metrics.md"
     ],
 )
 

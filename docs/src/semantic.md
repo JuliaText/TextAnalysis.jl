@@ -1,8 +1,11 @@
 ## LSA: Latent Semantic Analysis
 
-Often we want to think about documents from the perspective of semantic
-content. One standard approach to doing this is to perform Latent Semantic
-Analysis or LSA on the corpus. You can do this using the `lsa` function:
+Often we want to think about documents
+from the perspective of semantic content.
+One standard approach to doing this,
+is to perform Latent Semantic Analysis or LSA on the corpus.
+
+You can do this using the `lsa` function:
 
     lsa(crps)
 
