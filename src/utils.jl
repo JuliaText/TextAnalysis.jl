@@ -1,8 +1,9 @@
 # The jackknife is a resampling technique especially useful for variance and bias estimation.
-#Currently being used for averaging in ROUGE scores in evaluate.jl
-# :param scores: List of integers to average
-#:type scores: Array{Int64,1}
+"""
+    jackknife_avg(`scores`)
 
+Apply jackknife on the input list of `scores`
+"""
 function jackknife_avg(scores)
     if length(collect(Set(scores))) == 1
         #= In case the elements of the array are all equal=#
@@ -22,31 +23,19 @@ function jackknife_avg(scores)
     end
 end
 
-#This function returns the longest common subsequence
-#of two strings using the dynamic programming algorithm.
-# param X : first string in tokenized form
-#type (X) : Array{SubString{String},1}
-# param Y : second string in tokenized form
-#type (Y) : Array{SubString{String},1}
-# param weighted : Weighted LCS is done if weighted is True (default)
-#type (weighted) : Boolean
-# param return_string : Function returns weighted LCS length when set to False (default).
-#                       Function returns longest common substring when set to True.
-#type (return_string) : Boolean
-# param f: weighting function. The weighting function f must have the property
-#          that f(x+y) > f(x) + f(y) for any positive integers x and y.
-#type (f) : generic function which takes a float as an input and returns a float.
+"""
+    weighted_lcs(X, Y, weight_score::Bool, returns_string::Bool, weigthing_function::Function)
 
-function weighted_lcs(X, Y, weighted = true, return_string = false, f = sqrt)
+Compute the Weighted Longest Common Subsequence of X and Y.
+"""
+function weighted_lcs(X, Y, weighted = true, returns_string = false, f = sqrt)
     m, n = length(X), length(Y)
     c_table = [zeros(n+1) for i in 1:m+1]
     w_table = [zeros(n+1) for i in 1:m+1]
 
-    for i in 1:(m+1)
-        for j in 1:(n+1)
-            if i == 1 || j == 1
-                continue
-            elseif X[i-1] == Y[j-1]
+    for i in 2:(m+1)
+        for j in 2:(n+1)
+            if X[i-1] == Y[j-1]
                 k = w_table[i-1][j-1]
                 if weighted == true
                     increment = (f(k+1)) - (f(k))
@@ -68,7 +57,7 @@ function weighted_lcs(X, Y, weighted = true, return_string = false, f = sqrt)
     end
 
     lcs_length = (c_table[m+1][n+1])
-    if return_string == false
+    if returns_string == false
         return lcs_length
     end
 
@@ -99,23 +88,20 @@ function weighted_lcs(X, Y, weighted = true, return_string = false, f = sqrt)
     return (join(lcs, " "))  # the lcs string
 end
 
+"""
+    fmeasure_lcs(RLCS, PLCS, β)
 
-# F-measure based on WLCS
-# param beta : user defined parameter
-#type (beta) : float
+Compute the F-measure based on WLCS.
 
-# param r_lcs : recall factor
-#type (r_lcs) : float
+# Arguments
 
-# param p_lcs : precision factor
-#type (p_lcs) : float
-
-#score : f measure score between a candidate
-#    	    and a reference
-
-function fmeasure_lcs(RLCS, PLCS, beta=1)
+- `RLCS` - Recall Factor
+- `PLCS` - Precision Factor
+- `β` - Parameter
+"""
+function fmeasure_lcs(RLCS, PLCS, β=1)
     try
-        return ((1+beta^2)*RLCS*PLCS)/(RLCS+(beta^2)*PLCS)
+        return ((1 + β ^ 2) * RLCS * PLCS) / (RLCS + (β ^ 2) * PLCS)
     catch ex
         if ex isa DivideError
             return 0

@@ -1,7 +1,7 @@
 """
     rouge_n(references::Array{T}, candidate::AbstractString, n; avg::Bool, lang::Language) where T<: AbstractString
 
-Computes n-gram recall between `candidate` and the `reference` summaries.
+Compute n-gram recall between `candidate` and the `references` summaries.
 
 See [Rouge: A package for automatic evaluation of summaries](http://www.aclweb.org/anthology/W04-1013)
 
