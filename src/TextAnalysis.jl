@@ -82,8 +82,8 @@ module TextAnalysis
     include("deprecations.jl")
     include("tagging_schemes.jl")
     include("utils.jl")
-    include("rouge.jl")
     include("averagePerceptronTagger.jl")
 
+    include("evaluation_metrics.jl")
     include("coom.jl")
 end
