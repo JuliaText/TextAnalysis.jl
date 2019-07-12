@@ -29,61 +29,42 @@ function rouge_match_score(ref, candidate::Dict)
     return matches
 end
 
-# It calculates the rouge-l score between the candidate
-#and the reference at the sentence level.
+"""
+    rouge_l_sentence(references, candidate, β, average)
 
-# param references : list of reference strings
-#type references : Array{String,1}
+Calculate the ROUGE-L score between `references` and `candidate` at sentence level.
 
-# param candidate :  the candidate string
-#type (candidate) : Array{String,1}
+See [Rouge: A package for automatic evaluation of summaries](http://www.aclweb.org/anthology/W04-1013)
 
-# param beta : user-defined parameter. Default value = 8
-#type (beta) : float
-
-#rouge_l_list : list containing all the rouge scores for
-#                every reference against the candidate
-#r_lcs : recall factor
-#p_lcs : precision factor
-#score : rouge-l score between the reference sentence and
-#        the candidate sentence
-
-function rouge_l_sentence(references, candidate, beta=8, averaging = true)
+See also: [`rouge_n`](@ref), [`rouge_l_summary`](@ref)
+"""
+function rouge_l_sentence(references, candidate, β=8, average = true)
     ngram_cand = tokenize(Languages.English(), candidate)
     rouge_l_list = []
 
     for ref in references
         ngram_ref = tokenize(Languages.English(), ref)
-        r_lcs = weighted_lcs(ngram_ref, ngram_cand,true, false, sqrt)/length(ngram_ref)
-        p_lcs = weighted_lcs(ngram_ref, ngram_cand,true, false, sqrt)/length(ngram_cand)
-        score = fmeasure_lcs(r_lcs, p_lcs, beta)
-        push!(rouge_l_list,score)
+        r_lcs = weighted_lcs(ngram_ref, ngram_cand, true, false, sqrt) / length(ngram_ref)
+        p_lcs = weighted_lcs(ngram_ref, ngram_cand, true, false, sqrt) / length(ngram_cand)
+        score = fmeasure_lcs(r_lcs, p_lcs, β)
+        push!(rouge_l_list, score)
     end
 
-    if averaging == true
+    if average == true
         rouge_l_list = jackknife_avg(rouge_l_list)
     end
     return rouge_l_list
 end
 
-#It calculates the rouge-l score between the candidate
-#and the reference at the summary level.
-# param references : list of reference summaries. Each of the summaries
-#                    must be tokenized list of words
-#type (references) : list
+"""
+    rouge_l_summary(references, candidate, β, average)
 
-# param candidate : candidate summary tokenized into list of words
-#type (candidate) : list
-# param beta : user-defined parameter
-#type (beta) : float
+Calculate the ROUGE-L score between `references` and `candidate` at summary level.
 
-#rouge_l_list : list containing all the rouge scores for
-#                every reference against the candidate
+See [Rouge: A package for automatic evaluation of summaries](http://www.aclweb.org/anthology/W04-1013)
 
-#r_lcs : recall factor
-#p_lcs : precision factor
-#score : rouge-l score between a reference and the candidate
-
+See also: [`rouge_l_sentence()`](@ref), [`rouge_l_summary`](@ref)
+"""
 function rouge_l_summary(references, candidate, beta, averaging=true)
 
     rouge_l_list = []
