@@ -123,7 +123,7 @@ by each term. This can be done by finding the term frequency function
 
     tf(dtm)
 
-The paramter, `dtm` can be of the types - `DocumentTermMatrix` , `SparseMatrixCSC` or `Matrix`
+The parameter, `dtm` can be of the types - `DocumentTermMatrix` , `SparseMatrixCSC` or `Matrix`
 
 ```julia
 julia> crps = Corpus([StringDocument("To be or not to be"),
@@ -194,6 +194,41 @@ julia> tf_idf(m)
 As you can see, TF-IDF has the effect of inserting 0's into the columns of
 words that occur in all documents. This is a useful way to avoid having to
 remove those words during preprocessing.
+
+## Okapi BM-25
+
+From the document term matparamterix, [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) document-word statistic can be created.
+
+    bm_25(dtm::AbstractMatrix; κ, β)
+    bm_25(dtm::DocumentTermMatrixm, κ, β)
+
+It can also be used via the following methods Overwrite the `bm25` with calculated weights.
+
+    bm_25!(dtm, bm25, κ, β)
+
+The inputs matrices can also be a `Sparse Matrix`.
+The parameters κ and β default to 2 and 0.75 respectively.
+
+Here is an example usage -
+
+```julia
+julia> crps = Corpus([StringDocument("a a a sample text text"), StringDocument("another example example text text"), StringDocument(""), StringDocument("another another text text text text")])
+
+julia> update_lexicon!(crps)
+
+julia> m = DocumentTermMatrix(crps)
+
+julia> bm_25(m)
+4×5 SparseArrays.SparseMatrixCSC{Float64,Int64} with 8 stored entries:
+  [1, 1]  =  1.29959
+  [2, 2]  =  0.882404
+  [4, 2]  =  1.40179
+  [2, 3]  =  1.54025
+  [1, 4]  =  1.89031
+  [1, 5]  =  0.405067
+  [2, 5]  =  0.405067
+  [4, 5]  =  0.676646
+```
 
 ## Sentiment Analyzer
 

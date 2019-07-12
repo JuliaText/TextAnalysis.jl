@@ -3,8 +3,8 @@
 Natural Language Processing tasks require certain Evaluation Metrics.
 As of now TextAnalysis provides the following evaluation metrics.
 
-* ROUGE-N
-* ROUGE-L
+* [ROUGE-N](https://en.wikipedia.org/wiki/ROUGE_(metric))
+* [ROUGE-L](https://en.wikipedia.org/wiki/ROUGE_(metric))
 
 ## ROUGE-N
 This metric evaluatrion based on the overlap of N-grams
