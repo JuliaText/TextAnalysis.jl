@@ -53,7 +53,6 @@ module TextAnalysis
     export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
     export SentimentAnalyzer
     export tag_scheme!
-    export jackknife_avg, listify_ngrams, weighted_lcs, fmeasure_lcs
     export rouge_l_summary, rouge_l_sentence, rouge_n
     export PerceptronTagger, fit!, predict
 
@@ -87,5 +86,4 @@ module TextAnalysis
     include("averagePerceptronTagger.jl")
 
     include("coom.jl")
-
 end

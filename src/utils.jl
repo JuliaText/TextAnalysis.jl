@@ -1,5 +1,3 @@
-# JuliaText TextAnalysis.jl Utility Functions
-
 # The jackknife is a resampling technique especially useful for variance and bias estimation.
 #Currently being used for averaging in ROUGE scores in evaluate.jl
 # :param scores: List of integers to average
@@ -22,18 +20,6 @@ function jackknife_avg(scores)
 
         return sum(average)/length(average)
     end
-end
-
-# Returns an array of ngram tokens from the ngram doc.
-# param ngram_doc : Output from the function ngrams(StringDocument(text), n)
-function listify_ngrams(ngram_doc)
-    flattened = []
-    for item in ngram_doc
-        for i in 1:item[2]
-            push!(flattened, item[1])
-        end
-    end
-    return flattened
 end
 
 #This function returns the longest common subsequence

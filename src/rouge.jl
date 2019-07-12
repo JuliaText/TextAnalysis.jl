@@ -1,53 +1,32 @@
-# ROUGE score implementation
-#Lin C.Y. , 2004
-#Rouge: A package for automatic evaluation of summaries
-#Proceedings of the workshop on text summarization branches out (WAS 2004) (2004), pp. 25-26
-#Link to paper:
-#http://www.aclweb.org/anthology/W04-1013
+"""
+    rouge_n(references::Array{T}, candidate::AbstractString, n; avg::Bool, lang::Language) where T<: AbstractString
 
+Computes n-gram recall between `candidate` and the `reference` summaries.
 
-#It is a n-gram recall between a candidate summary
-#and a set of reference summaries.
+See [Rouge: A package for automatic evaluation of summaries](http://www.aclweb.org/anthology/W04-1013)
 
-# param references : list of reference strings
-#type references : Array{String,1}
+See also: [`rouge_l_sentence`](@ref), [`rouge_l_summary`](@ref)
+"""
+function rouge_n(references, candidate, n; avg = true, lang = Languages.English())
+    ng_candidate = ngramize(lang, candidate, n)
+    ng_refs = [ngramize(lang, ref, n) for ref in references]
 
-# param candidate :  the candidate string
-#type (candidate) : Array{String,1}
-
-# param n : length of ngram
-#type (n) : int
-
-#ngram_cand : list of ngrams in candidate
-#ngram_ref : list of ngrams in reference
-#r_lcs : recall factor
-#p_lcs : precision factor
-#rouge_recall : list containing all the rouge-n scores for
-#               every reference against the candidate
-
-function rouge_n(references, candidate, n, averaging = true)
-
-    ngram_cand = listify_ngrams(ngrams(StringDocument(candidate), n))
-    rouge_recall = []
-
-    for ref in references
-        matches = 0  #variable counting the no.of matching ngrams
-        ngram_ref = listify_ngrams(ngrams(StringDocument(ref), n))
-
-        for ngr in ngram_cand
-            if ngr in ngram_ref
-                matches += 1
-            end
-        end
-
-        push!(rouge_recall, matches/length(ngram_ref))
+    rouge_recall = Array{Float64,1}()
+    for ref in ng_refs
+        push!(rouge_recall, rouge_match_score(keys(ref), ng_candidate) / sum(values(ref)) )
     end
 
-    if averaging == true
-        rouge_recall = jackknife_avg(rouge_recall)
-    end
+    avg == true && return jackknife_avg(rouge_recall)
+    return rouge_recall
+end
 
-    return(rouge_recall)
+function rouge_match_score(ref, candidate::Dict)
+    matches = 0
+    for p in keys(candidate)
+        p ∉ ref && continue
+        matches += candidate[p]
+    end
+    return matches
 end
 
 # It calculates the rouge-l score between the candidate
