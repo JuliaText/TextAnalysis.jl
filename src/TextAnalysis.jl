@@ -46,7 +46,7 @@ module TextAnalysis
     export CooMatrix, coom
     export standardize!
     export tf, tf_idf, bm_25, lsa, lda, summarize
-    export tf!, tf_idf!, bm_25!, lsa!, lda!
+    export tf!, tf_idf!, bm_25!, lda!
     export remove_patterns!, remove_patterns
 
     export strip_patterns, strip_corrupt_utf8, strip_case, stem_words, tag_part_of_speech, strip_whitespace, strip_punctuation
