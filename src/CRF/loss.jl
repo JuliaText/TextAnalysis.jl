@@ -1,19 +1,28 @@
 # For stable implementation, done in log space
 # Normalization / partition function / Forward Algorithm score - `Z`
+function forward_algorithm_stable(c::CRF, x)
+    log_α_forward = preds_first(c, x[1])
+
+    for i in 2:length(x)
+        log_α_forward = log_sum_exp(log_α_forward .+ preds_single(c, x[i])')
+    end
+
+    return log_α_forward
+end
+
 function forward_algorithm(c::CRF, x)
     log_α_forward = exp.(preds_first(c, x[1]))
 
     for i in 2:length(x)
         log_α_forward = log_α_forward * exp.(preds_single(c, x[i]))
     end
-    return log_sum_exp(log_α_forward)
+
+    return log_α_forward
 end
-
-# forward_algorithm_score(c::CRF, input_seq) = log_sum_exp(forward_algorithm(c, input_seq))
-
 # Calculating the score of the desired label_seq against input_seq.
-# Not exponentiated as required for leg log likelihood,
+# Not exponentiated as required for negative log likelihood,
 # thereby preventing operation
+#### Does not return exponentiated score.
 function score_sequence(c::CRF, input_seq, label_seq)
     score = sum(preds_first(c, input_seq[1])' .* label_seq[1])
 
@@ -29,5 +38,5 @@ end
 The partition function is needed to reduce the score_sequence
 to probabilities ( b/w 0 and 1 )
 """
-crf_loss(c::CRF, input_seq, label_seq) = forward_score(c, input_seq) -
+crf_loss(c::CRF, input_seq, label_seq) = forward_algorithm(c, input_seq) -
                                          score_sequence(c, input_seq, label_seq)

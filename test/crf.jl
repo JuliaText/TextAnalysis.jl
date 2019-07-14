@@ -4,7 +4,7 @@ using Flux: onehot, train!, Params, gradient
 Flux.@treelike TextAnalysis.CRF
 
 @testset "crf" begin
-    @testset "Basic" begin
+    @testset "Loss function" begin
         input_seq = [rand(3) for i in 1:3]
         c = TextAnalysis.CRF(2, 3)
 
@@ -20,8 +20,10 @@ Flux.@treelike TextAnalysis.CRF
 
         s1 = sum(exp.(scores))
         s2 = sum(TextAnalysis.forward_algorithm(c, input_seq))
+        s3 = sum(exp.(TextAnalysis.forward_algorithm_stable(c, input_seq)))
 
-        isapprox(s1, s2, atol=1e-8)
+        @test isapprox(s1, s2, atol=1e-8)
+        @test (s1 - s3) / max(s1, s3) <= 0.25
     end
 
     path = "data/weather.csv"
