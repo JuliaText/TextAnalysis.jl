@@ -1,12 +1,30 @@
 using Flux
 using Flux: onehot, train!, Params, gradient
-using TextAnalysis: CRF, crf_loss
 
 Flux.@treelike TextAnalysis.CRF
 
 @testset "crf" begin
-    path = "data/weather.csv"
+    @testset "Basic" begin
+        input_seq = [rand(3) for i in 1:3]
+        c = TextAnalysis.CRF(2, 3)
 
+        scores = []
+        push!(scores, TextAnalysis.score_sequence(c, input_seq, [onehot(1, 1:2), onehot(1, 1:2), onehot(1, 1:2)]))
+        push!(scores, TextAnalysis.score_sequence(c, input_seq, [onehot(1, 1:2), onehot(1, 1:2), onehot(2, 1:2)]))
+        push!(scores, TextAnalysis.score_sequence(c, input_seq, [onehot(1, 1:2), onehot(2, 1:2), onehot(1, 1:2)]))
+        push!(scores, TextAnalysis.score_sequence(c, input_seq, [onehot(1, 1:2), onehot(2, 1:2), onehot(2, 1:2)]))
+        push!(scores, TextAnalysis.score_sequence(c, input_seq, [onehot(2, 1:2), onehot(1, 1:2), onehot(1, 1:2)]))
+        push!(scores, TextAnalysis.score_sequence(c, input_seq, [onehot(2, 1:2), onehot(1, 1:2), onehot(2, 1:2)]))
+        push!(scores, TextAnalysis.score_sequence(c, input_seq, [onehot(2, 1:2), onehot(2, 1:2), onehot(1, 1:2)]))
+        push!(scores, TextAnalysis.score_sequence(c, input_seq, [onehot(2, 1:2), onehot(2, 1:2), onehot(2, 1:2)]))
+
+        s1 = sum(exp.(scores))
+        s2 = sum(TextAnalysis.forward_algorithm(c, input_seq))
+
+        isapprox(s1, s2, atol=1e-8)
+    end
+
+    path = "data/weather.csv"
     function load(path::String)
         stream = open(path, "r")
         Xs = []
