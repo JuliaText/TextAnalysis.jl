@@ -1,37 +1,33 @@
-unit_scores(a::CRF, x, prev) = log_sum_exp(preds_single(a, x) .+ prev')
-
 # For stable implementation, done in log space
-function forward_algorithm(a::CRF, x)
-    log_α_forward = log(sum(exp.(preds_first(a, x[:,1]))))
+# Normalization / partition function / Forward Algorithm score - `Z`
+function forward_algorithm(c::CRF, x)
+    log_α_forward = exp.(preds_first(c, x[1]))
 
-    for i in 2:size(x, 2)
-        log_α_forward = unit_scores(a, x[:,1], log_α_forward)
+    for i in 2:length(x)
+        log_α_forward = log_α_forward * exp.(preds_single(c, x[i]))
     end
-
-    # println(log_α_forward)
-    # println("_____--------------------____________---")
-    return log_α_forward
+    return log_sum_exp(log_α_forward)
 end
 
-# Normalization (partition) function - `Z`
-partition_function(a::CRF, input_seq, label_seq) = sum(exp.(forward_algorithm(a, input_seq)))
+# forward_algorithm_score(c::CRF, input_seq) = log_sum_exp(forward_algorithm(c, input_seq))
 
 # Calculating the score of the desired label_seq against input_seq.
-function score_sequence(a::CRF, input_seq, label_seq)
-    score = exp(sum(preds_first(a, input_seq[:, 1])' .* label_seq[1]))
+# Not exponentiated as required for leg log likelihood,
+# thereby preventing operation
+function score_sequence(c::CRF, input_seq, label_seq)
+    score = sum(preds_first(c, input_seq[1])' .* label_seq[1])
 
     for i in 2:length(label_seq)
-        score *= exp(sum(preds_single(a, input_seq[:, i]) .* (label_seq[i] * label_seq[i-1]')))
+        score += sum(preds_single(c, input_seq[i]) .* (label_seq[i-1] * label_seq[i]'))
     end
-
     return score
 end
+
+# REGULARIZATION TERM AND EMISSION SCORES
 
 """
 The partition function is needed to reduce the score_sequence
 to probabilities ( b/w 0 and 1 )
 """
-function crf_loss(a::CRF, input_seq, label_seq)
-    return -log(score_sequence(a, input_seq, label_seq) /
-                partition_function(a, input_seq, label_seq))
-end
+crf_loss(c::CRF, input_seq, label_seq) = forward_score(c, input_seq) -
+                                         score_sequence(c, input_seq, label_seq)
