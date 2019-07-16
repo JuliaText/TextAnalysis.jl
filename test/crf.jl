@@ -19,7 +19,7 @@ Flux.@treelike TextAnalysis.CRF
         push!(scores, TextAnalysis.score_sequence(c, input_seq, [onehot(2, 1:2), onehot(2, 1:2), onehot(2, 1:2)]))
 
         s1 = sum(exp.(scores))
-        s2 = sum(TextAnalysis.forward_algorithm(c, input_seq))
+        s2 = sum(TextAnalysis.forward_algorithm_cpu(c, input_seq))
         s3 = sum(exp.(TextAnalysis.forward_algorithm_stable(c, input_seq)))
 
         @test isapprox(s1, s2, atol=1e-8)

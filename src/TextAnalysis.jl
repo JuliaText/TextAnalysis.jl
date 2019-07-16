@@ -10,6 +10,8 @@ module TextAnalysis
     using Flux
     using Flux.Tracker
     using Flux: params, identity, @treelike
+    using CuArrays
+    using CUDAnative
 
     import DataFrames.DataFrame
     import Base.depwarn

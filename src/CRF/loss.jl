@@ -1,5 +1,8 @@
-# For stable implementation, done in log space
+using Flux: onecold
+using CUDAnative
+
 # Normalization / partition function / Forward Algorithm score - `Z`
+
 function forward_algorithm_stable(c::CRF, x)
     log_α_forward = preds_first(c, x[1])
 
@@ -10,7 +13,17 @@ function forward_algorithm_stable(c::CRF, x)
     return log(sum(exp.(log_α_forward)))
 end
 
-function forward_algorithm(c::CRF, x)
+function forward_algorithm_gpu(c::CRF, x)
+    log_α_forward = CUDAnative.exp.(preds_first(c, x[1]))
+
+    for i in 2:length(x)
+        log_α_forward = log_α_forward * CUDAnative.exp.(preds_single(c, x[i]))
+    end
+
+    return sum(log_α_forward)
+end
+
+function forward_algorithm_cpu(c::CRF, x)
     log_α_forward = exp.(preds_first(c, x[1]))
 
     for i in 2:length(x)
@@ -24,10 +37,10 @@ end
 # thereby preventing operation
 #### Does not return exponentiated score.
 function score_sequence(c::CRF, input_seq, label_seq)
-    score = sum(preds_first(c, input_seq[1])' .* label_seq[1])
+    score = onecold(label_seq[1], preds_first(c, input_seq[1]))
 
     for i in 2:length(label_seq)
-        score += sum(preds_single(c, input_seq[i]) .* (label_seq[i-1] * label_seq[i]'))
+        score += onecold(label_seq[i-1], preds_single(c, input_seq[i]) * label_seq[i])
     end
     return score
 end
@@ -38,5 +51,8 @@ end
 The partition function is needed to reduce the score_sequence
 to probabilities ( b/w 0 and 1 )
 """
-crf_loss(c::CRF, input_seq, label_seq) = log(forward_algorithm(c, input_seq)) -
-                                         score_sequence(c, input_seq, label_seq)
+crf_loss_gpu(c::CRF, input_seq, label_seq) = log(forward_algorithm_gpu(c, input_seq)) -
+                                                score_sequence(c, input_seq, label_seq)
+
+crf_loss_cpu(c::CRF, input_seq, label_seq) = log(forward_algorithm_cpu(c, input_seq)) -
+                                                score_sequence(c, input_seq, label_seq)

@@ -1,5 +1,5 @@
 # Decoding is done by using Viterbi Algorithm
-# as it computes in polynomial time
+# Computes in polynomial time
 
 """
 Scores for the first tag in the tagging sequence.
@@ -17,7 +17,6 @@ function preds_single(a::CRF, x)
     reshape(sum(W .* f(x) + b, dims=1), size(a.W,2), :)
 end
 
-# TODO: Parallel
 # Helper for forward pass, returns max_probs and corresponding arg_max for all the labels
 function forward_unit_max(a::CRF, x, prev)
     preds = preds_single(a, x)
@@ -39,11 +38,12 @@ end
 Computes the forward pass for viterbi algorithm.
 """
 function forward_pass(a::CRF, x)
-    α_val = dropdims(preds_first(a, x[1,:]), dims=1)
-    α_idx = zeros(size(x, 1), size(a.s, 2))
+    n = size(a.s, 1)
+    α_val = preds_first(a, x[1])
+    α_idx = [[onehot(i,1:n) for i in 1:n] for i in 1:length(x)]
 
     for i in 2:size(x, 1)
-        α_val, α_idx[i,:] = forward_unit_max(a, x[i, :], α_val)
+        α_val, α_idx[i] = forward_unit_max(a, x[i, :], α_val)
     end
 
     return findmax(α_val)[2], α_idx
@@ -53,7 +53,7 @@ end
 Computes the backward pass for viterbi algorithm.
 """
 function backward_pass(a::CRF, (α_idx_last, α_idx))
-    labels = Array{Int32, 1}(undef, size(α_idx,1))
+    labels = Array{Flux.OneHotVector, 1}(undef, size(α_idx,1))
     labels[end] = α_idx_last
 
     for i in reverse(2:size(α_idx,1))
