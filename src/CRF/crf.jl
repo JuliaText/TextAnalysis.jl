@@ -1,7 +1,5 @@
 using Flux
-using Flux.Tracker
-using Flux: params, identity, @treelike
-using LinearAlgebra
+using Flux: param, identity, onehot, onecold, @treelike
 
 """
 Linear Chain - CRF Layer.
@@ -9,27 +7,29 @@ Linear Chain - CRF Layer.
 For input sequence `x`,
 predicts the most probable tag sequence `y`,
 over the set of all possible tagging sequences `Y`.
+
+In this CRF, two kinds of potentials are defined,
+emission and Transition.
 """
-mutable struct CRF{S,A, F} # Calculates Argmax( log ∑ )
-    W::S    # TrackedArray{Float32,2} # Size of W = Number of feature
-    b::S    # TrackedArray{Float32,2} # b is of `n` length
-    s::A    # For the first element.
-    f::F    # Feature function
+mutable struct CRF{S}
+    W::S        # Transition Scores
+    n::Int      # Num Labels
 end
 
-CRF(num_labels::Integer, num_features::Integer) = CRF(num_labels::Integer, num_features::Integer, identity)
+"""
+Second last index for start tag,
+last one for stop tag .
+"""
+function CRF(n::Integer; initW=rand)
+    W = initW(n + 2, n + 2)
+    W[:, n + 1] .= -10000
+    W[n + 2, :] .= -10000
 
-function CRF(num_labels::Integer, num_features::Integer, f::Function;
-            initW = rand, initb = zeros, inits = rand)
-    return CRF(param(initW(num_features, num_labels, num_labels)),
-                param(initb(num_features, num_labels, num_labels)),
-                param(inits(num_features, num_labels)), f)
+    return CRF(param(W), n)
 end
 
-function Base.show(io::IO, l::CRF)
-    print(io, "CRF with `", size(l.W, 2), "` distinct tags and `",
-            size(l.W,1), "` input features and feature function `",
-            l.f,"`")
+function Base.show(io::IO, c::CRF)
+    print(io, "CRF with ", c.n + 2, " distinct tags (including START and STOP tags).")
 end
 
 function (a::CRF)(x_seq)
