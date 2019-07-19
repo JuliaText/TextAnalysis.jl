@@ -4,75 +4,66 @@
 """
 Scores for the first tag in the tagging sequence.
 """
-function preds_first(a::CRF, x)
-    s, f = a.s, a.f
-    sum(s .* f(x), dims=1)
+function preds_first(c::CRF, y)
+    c.W[c.n + 1, onecold(y, 1:length(y))]
+end
+
+"""
+Scores for the last tag in the tagging sequence.
+"""
+function preds_last(c::CRF, y)
+    c.W[onecold(y, 1:length(y)), c.n + 2]
 end
 
 """
 Scores for the tags other than the starting one.
 """
-function preds_single(a::CRF, x)
-    W, b, f = a.W, a.b, a.f
-    reshape(sum(W .* f(x) + b, dims=1), size(a.W,2), :)
+function preds_single(c::CRF, y, y_prev)
+    c.W[onecold(y_prev, 1:length(y_prev)), onecold(y, 1:length(y))]
 end
 
 # Helper for forward pass, returns max_probs and corresponding arg_max for all the labels
-function forward_unit_max(a::CRF, x, prev)
-    preds = preds_single(a, x)
-    n = length(prev)
-
-    max_values = zeros(n)
-    label_indices = zeros(n)
-
-    for j in range(1, step=n, length(preds))
-        i = Int(ceil(j/n))
-        k = exp.(preds[j:j + n - 1]) * prev
-        max_values[i], label_indices[i] = findmax(k.data)
-    end
-
-    return max_values, label_indices
+function forward_pass_unit(k)
+    α_idx = [i[1]  for i in argmax(k, dims=1)]
+    α = [k[j, i] for (i,j) in enumerate(α_idx)]
+    return α, α_idx
 end
 
 """
 Computes the forward pass for viterbi algorithm.
 """
-function forward_pass(a::CRF, x)
-    n = size(a.s, 1)
-    α_val = preds_first(a, x[1])
-    α_idx = [[onehot(i,1:n) for i in 1:n] for i in 1:length(x)]
+function _decode(c::CRF, x, init_vit_vars)
+    α_idx = zeros(Int, c.n + 2, length(x))
 
-    for i in 2:size(x, 1)
-        α_val, α_idx[i] = forward_unit_max(a, x[i, :], α_val)
+    forward_var, α_idx[:, 1] = forward_pass_unit(Tracker.data((c.W .+ x[1]') .+ init_vit_vars))
+
+    for i in 2:length(x)
+        forward_var, α_idx[:, i] = forward_pass_unit(Tracker.data((c.W .+ x[i]') .+ forward_var'))
     end
 
-    return findmax(α_val)[2], α_idx
-end
+    labels = zeros(Int, length(x))
+    labels[end] = argmax(forward_var + Tracker.data(c.W[:, c.n + 2])')[2]
 
-"""
-Computes the backward pass for viterbi algorithm.
-"""
-function backward_pass(a::CRF, (α_idx_last, α_idx))
-    labels = Array{Flux.OneHotVector, 1}(undef, size(α_idx,1))
-    labels[end] = α_idx_last
-
-    for i in reverse(2:size(α_idx,1))
-        labels[i-1] =  α_idx[i, labels[i]]
+    for i in reverse(2:length(x))
+        labels[i - 1] =  α_idx[labels[i], i]
     end
 
-    return reverse(labels)
+    @assert α_idx[labels[1], 1] == c.n + 1 # Check for START Tag
+    return onehotseq(labels, c.n)
 end
+
+onehotseq(seq, num_labels) = [onehot(i, 1:num_labels) for i in seq]
 
 """
     viterbi_decode(::CRF, input_sequence)
 
 Predicts the most probable label sequence of `input_sequence`.
 """
-function viterbi_decode(a::CRF, x_seq)
-    size(x_seq,1) == 0 && throw("Input sequence is empty")
-    α_star, α_max = backward_pass(a, forward_pass(a, x_seq))
+function viterbi_decode(c::CRF, x_seq, init_vit_vars)
+    length(x_seq) == 0 && throw("Input sequence is empty")
+    return _decode(cpu(c), cpu.(x_seq), cpu(init_vit_vars))
 end
 
-function predict(a::CRF, x_seq)
-    viterbi_decode(a, x_seq)
-end
+# function predict(c::CRF, x_seq)
+#     viterbi_decode(c, x_seq)
+# end
