@@ -8,10 +8,7 @@ module TextAnalysis
     using WordTokenizers
 
     using Flux
-    using Flux.Tracker
-    using Flux: params, identity, @treelike
-    using CuArrays
-    using CUDAnative
+    using Flux: param, identity, onehot, onecold, @treelike
 
     import DataFrames.DataFrame
     import Base.depwarn
