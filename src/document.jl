@@ -171,7 +171,8 @@ A NGramDocument{AbstractString}
  * Title: Untitled Document
  * Author: Unknown Author
  * Timestamp: Unknown Time
- * Snippet: ***SAMPLE TEXT NOT AVAILABLE***```
+ * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
+```
 """
 function NGramDocument(txt::AbstractString, dm::DocumentMetadata, n::Integer...=1)
     NGramDocument(ngramize(dm.language, tokenize(dm.language, String(txt)), n...), (length(n) == 1) ? Int(first(n)) : Int[n...], dm)

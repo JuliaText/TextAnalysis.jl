@@ -1,5 +1,5 @@
 using Flux
-using Flux: gradient, LSTM, Dense, reset!
+using Flux: gradient, LSTM, Dense, reset!, onehot
 using TextAnalysis: score_sequence, forward_score
 
 @testset "crf" begin
@@ -148,4 +148,3 @@ using TextAnalysis: score_sequence, forward_score
         @test crf_param_1 != crf_param_2
     end
 end
-
