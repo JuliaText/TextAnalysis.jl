@@ -1,8 +1,6 @@
 using JSON
 using BSON
 
-Flux = nothing # Will be filled once we actually use sentiment analysis
-
 function pad_sequences(l, maxlen=500)
     if length(l) <= maxlen
         res = zeros(maxlen - length(l))

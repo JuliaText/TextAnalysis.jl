@@ -1,6 +1,3 @@
-using Flux
-using Flux: param, identity, onehot, onecold, @treelike
-
 """
 Linear Chain - CRF Layer.
 
@@ -20,18 +17,20 @@ end
 Second last index for start tag,
 last one for stop tag .
 """
-function CRF(n::Integer; initW=rand)
-    W = initW(n + 2, n + 2)
+function CRF(n::Integer)
+    W = rand(Float32, n + 2, n + 2)
     W[:, n + 1] .= -10000
     W[n + 2, :] .= -10000
 
     return CRF(param(W), n)
 end
 
+@treelike CRF
+
 function Base.show(io::IO, c::CRF)
     print(io, "CRF with ", c.n + 2, " distinct tags (including START and STOP tags).")
 end
 
-function (a::CRF)(x_seq)
-    viterbi_decode(a, x_seq)
+function (a::CRF)(x_seq, init_α)
+    viterbi_decode(a, x_seq, init_α)
 end

@@ -8,7 +8,7 @@ module TextAnalysis
     using WordTokenizers
 
     using Flux
-    using Flux: param, identity, onehot, onecold, @treelike
+    using Flux: identity, onehot, onecold, @treelike
 
     import DataFrames.DataFrame
     import Base.depwarn
