@@ -30,13 +30,6 @@ julia> c = CRF(NUM_LABELS) # The API internally append the START and END tags to
 CRF with 4 distinct tags (including START and STOP tags).
 ```
 
-Flux provides an API for collecting params and moving to GPU - `@treelike`.
-Lets apply that to the CRF.
-
-```julia
-julia> Flux.@treelike CRF
-```
-
 Now as for the initial variable in Viterbi Decode or Forward Algorithm,
 we define our input as
 

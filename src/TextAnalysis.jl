@@ -58,7 +58,7 @@ module TextAnalysis
     export rouge_l_summary, rouge_l_sentence, rouge_n
     export PerceptronTagger, fit!, predict
 
-    export CRF, predict, crf_loss
+    export CRF, viterbi_decode, crf_loss
 
     include("tokenizer.jl")
     include("ngramizer.jl")

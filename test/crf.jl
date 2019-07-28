@@ -1,8 +1,6 @@
 using Flux
-using Flux: onehot, train!, Params, gradient, LSTM, Dense, reset!
-using TextAnalysis: CRF, score_sequence, forward_score, viterbi_decode, crf_loss
-
-Flux.@treelike TextAnalysis.CRF
+using Flux: gradient, LSTM, Dense, reset!
+using TextAnalysis: score_sequence, forward_score
 
 @testset "crf" begin
     @testset "Loss function" begin
@@ -25,7 +23,7 @@ Flux.@treelike TextAnalysis.CRF
         s1 = sum(exp.(scores))
         s2 = exp(forward_score(c, input_seq, init_α))
 
-        @test (s1 - s2) / max(s1,s2) <= 0.00000001
+        @test (s1 - s2) / max(s1, s2) <= 0.00000001
     end
 
     @testset "Viterbi Decode" begin
@@ -95,9 +93,6 @@ Flux.@treelike TextAnalysis.CRF
 
         X, Y = load(path)
 
-        # normalize(X, minn, maxx) = (X .- minn) ./ (maxx - minn)
-        # X = [normalize(x, minimum(minimum.(X)),  maximum(maximum.(X))) for x in X]
-
         labels = unique(Iterators.flatten(Y))
         num_labels = length(labels)
         num_features = length(X[1][1])
@@ -109,13 +104,9 @@ Flux.@treelike TextAnalysis.CRF
         lstm = LSTM(num_features, LSTM_STATE_SIZE)
         m(x) = d_out.(lstm.(x))
 
-        Flux.@treelike TextAnalysis.CRF
-        c = TextAnalysis.CRF(num_labels)
+        c = CRF(num_labels)
         init_α = fill(-10000, (c.n + 2, 1))
         init_α[c.n + 1] = 0
-
-        using TextAnalysis: crf_loss
-        Flux.@treelike CRF
 
         loss(xs, ys) = crf_loss(c, m(xs), ys, init_α)
 
@@ -158,4 +149,3 @@ Flux.@treelike TextAnalysis.CRF
     end
 end
 
-# TODO: sequence of varying lengths.
