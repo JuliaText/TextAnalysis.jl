@@ -15,7 +15,8 @@ makedocs(
         "Features" => "features.md",
         "Semantic Analysis" => "semantic.md",
         "Classifier" => "classify.md",
-        "Extended Example" => "example.md"
+        "Extended Example" => "example.md",
+        "Conditional Random Fields" => "crf.md"
     ],
 )
 

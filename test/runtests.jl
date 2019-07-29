@@ -9,6 +9,8 @@ using WordTokenizers
 
 println("Running tests:")
 
+include("crf.jl")
+
 include("tokenizer.jl")
 include("ngramizer.jl")
 include("document.jl")
@@ -25,6 +27,7 @@ include("bayes.jl")
 include("taggingschemes.jl")
 include("rouge.jl")
 include("averagePerceptronTagger.jl")
+
 
 # end
 end

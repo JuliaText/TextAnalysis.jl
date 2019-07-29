@@ -15,7 +15,6 @@ AVERAGE PERCEPTRON MODEL
 
 This struct contains the actual Average Perceptron Model
 """
-
 mutable struct AveragePerceptron
     classes :: Set
     weights :: Dict
@@ -129,7 +128,6 @@ tagger = PerceptronTagger(true)
 To predict tag:
 predict(tagger, ["today", "is"])
 """
-
 mutable struct PerceptronTagger
     model :: AveragePerceptron
     tagdict :: Dict
