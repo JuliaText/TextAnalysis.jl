@@ -6,6 +6,7 @@ module TextAnalysis
     using Languages
     using DataFrames
     using WordTokenizers
+    using DataDeps
 
     using Flux
     using Flux: identity, onehot, onecold, @treelike
@@ -59,6 +60,10 @@ module TextAnalysis
     export PerceptronTagger, fit!, predict
 
     export CRF, viterbi_decode, crf_loss
+
+    function __init__()
+        include(joinpath(@__DIR__, "avgPerceptronTagger_DataDeps.jl"))
+    end
 
     include("tokenizer.jl")
     include("ngramizer.jl")

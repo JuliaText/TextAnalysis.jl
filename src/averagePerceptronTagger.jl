@@ -142,11 +142,9 @@ end
 function PerceptronTagger(load::Bool)
     self = PerceptronTagger()
 
-    """
-    If load is true then a pretrain model will be import from location
-    """
+    # If load is true then a pretrain model will be import from location
     if load
-        location = "src/pretrainedMod.bson";
+        location = joinpath(datadep"POS Perceptron Tagger Weights", "POSWeights.bson")
         pretrained = BSON.load(location)
         self.model.weights = pretrained[:weights]
         self.tagdict = pretrained[:tagdict]
