@@ -9,8 +9,8 @@ using WordTokenizers
 
 println("Running tests:")
 
+include("ner.jl")
 include("crf.jl")
-
 include("tokenizer.jl")
 include("ngramizer.jl")
 include("document.jl")
