@@ -16,7 +16,8 @@ makedocs(
         "Semantic Analysis" => "semantic.md",
         "Classifier" => "classify.md",
         "Extended Example" => "example.md",
-        "Conditional Random Fields" => "crf.md"
+        "Conditional Random Fields" => "crf.md",
+        "Named Entity Recognition" => "ner.md"
     ],
 )
 
