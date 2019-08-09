@@ -7,7 +7,8 @@ module TextAnalysis
     using DataFrames
     using WordTokenizers
 
-    using Flux
+    using DataDeps
+    using Flux, Tracker
     using Flux: identity, onehot, onecold, @treelike
 
     import DataFrames.DataFrame
@@ -60,6 +61,8 @@ module TextAnalysis
 
     export CRF, viterbi_decode, crf_loss
 
+    export NERTagger, Tracker, Flux
+
     include("tokenizer.jl")
     include("ngramizer.jl")
     include("document.jl")
@@ -73,6 +76,10 @@ module TextAnalysis
         error("Snowball Stemmer not installed properly, run Pkg.build(\"TextAnalysis\"), restart Julia and try again")
     end
     include(depsjl_path)
+
+    function __init__()
+        include(joinpath(@__DIR__, "Sequence Labelling/NER_DataDeps.jl"))
+    end
 
     include("stemmer.jl")
     include("dtm.jl")
@@ -95,4 +102,7 @@ module TextAnalysis
     include("CRF/crf_utils.jl")
     include("CRF/loss.jl")
 
+    # NER
+    include("Sequence Labelling/ner.jl")
+    include("Sequence Labelling/sequence_labelling.jl")
 end
