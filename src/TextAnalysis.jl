@@ -9,7 +9,7 @@ module TextAnalysis
 
     using DataDeps
     using Flux, Tracker
-    using Flux: identity, onehot, onecold, @treelike
+    using Flux: identity, onehot, onecold, @treelike, onehotbatch
 
     import DataFrames.DataFrame
     import Base.depwarn

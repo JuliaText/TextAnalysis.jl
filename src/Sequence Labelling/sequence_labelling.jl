@@ -11,13 +11,10 @@ mutable struct BiLSTM_CNN_CRF_Model{C, W, L, D, O, A}
     backward::L # Backward LSTM
     d_out::D # Dense_out
     c::O # CRF
-    init_α::A
+    init_α::A # For CRF layer
     UNK_Word_idx::Integer
     UNK_char_idx::Integer
 end
-
-# BiLSTM_CNN_CRF_Model(labels, chars_idx, words_idx) =
-            # BiLSTM_CNN_CRF_Model(labels, chars_idx, words_idx, :cpu)
 
 function BiLSTM_CNN_CRF_Model(labels, chars_idx, words_idx, UNK_char_idx, UNK_Word_idx; CHAR_EMBED_DIMS=25, WORD_EMBED_DIMS=100,
                               CNN_OUTPUT_SIZE=30, CONV_PAD= (0,2), CONV_WINDOW_LENGTH = 3, LSTM_STATE_SIZE = 200)
@@ -65,19 +62,6 @@ function (a::BiLSTM_CNN_CRF_Model)(x)
     Flux.reset!(a.forward_lstm)
     [a.labels[oh.ix] for oh in oh_outs]
 end
-
-# function load(m::BiLSTM_CNN_CRF_Model, weights_path)
-#     m.conv1 = BSON.load(joinpath(weights_path, "conv_cpu.bson"))[:conv_cpu]
-#     println("ConvLoaded")
-#     m.W_word_Embed = BSON.load(joinpath(weights_path, "W_word_cpu.bson"))[:W_word_cpu].data
-#     println("W Word loaded")
-#     m.W_Char_Embed = BSON.load(joinpath(weights_path, "W_char_cpu.bson"))[:W_char_cpu].data
-#     println("W char loaded")
-#     m.forward_lstm = BSON.load(joinpath(weights_path, "forward_lstm.bson"))[:forward_lstm_cpu]
-#     m.backward = BSON.load(joinpath(weights_path, "backward_lstm.bson"))[:backward_lstm_cpu]
-#     m.d_out = BSON.load(joinpath(weights_path, "d_cpu.bson"))[:d_cpu]
-#     m.c = BSON.load(joinpath(weights_path, "crf.bson"))[:crf_cpu]
-# end
 
 onehotinput(m::BiLSTM_CNN_CRF_Model, word) = (onehot(get(m.words_idx, lowercase(word), m.UNK_Word_idx), 1:length(m.words_idx)),
                 onehotbatch([get(m.chars_idx, c, m.UNK_char_idx) for c in word], 1:length(m.chars_idx)))

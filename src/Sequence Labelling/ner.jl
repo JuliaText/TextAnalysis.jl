@@ -23,7 +23,7 @@ function NERTagger(dicts_path, weights_path)
     NERmodel(model)
 end
 
-function (a::NERmodel)(sentence::String)
+function (a::NERmodel)(sentence::AbstractString)
     a(WordTokenizers.tokenize(sentence))
 end
 
