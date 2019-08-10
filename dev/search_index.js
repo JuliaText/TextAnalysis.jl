@@ -165,7 +165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Features",
     "title": "TF (Term Frequency)",
     "category": "section",
-    "text": "Often we need to find out the proportion of a document is contributed by each term. This can be done by finding the term frequency functiontf(dtm)The paramter, dtm can be of the types - DocumentTermMatrix , SparseMatrixCSC or Matrixjulia> crps = Corpus([StringDocument(\"To be or not to be\"),\n              StringDocument(\"To become or not to become\")])\n\njulia> update_lexicon!(crps)\n\njulia> m = DocumentTermMatrix(crps)\n\njulia> tf(m)\n2×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 10 stored entries:\n  [1, 1]  =  0.166667\n  [2, 1]  =  0.166667\n  [1, 2]  =  0.333333\n  [2, 3]  =  0.333333\n  [1, 4]  =  0.166667\n  [2, 4]  =  0.166667\n  [1, 5]  =  0.166667\n  [2, 5]  =  0.166667\n  [1, 6]  =  0.166667\n  [2, 6]  =  0.166667"
+    "text": "Often we need to find out the proportion of a document is contributed by each term. This can be done by finding the term frequency functiontf(dtm)The parameter, dtm can be of the types - DocumentTermMatrix , SparseMatrixCSC or Matrixjulia> crps = Corpus([StringDocument(\"To be or not to be\"),\n              StringDocument(\"To become or not to become\")])\n\njulia> update_lexicon!(crps)\n\njulia> m = DocumentTermMatrix(crps)\n\njulia> tf(m)\n2×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 10 stored entries:\n  [1, 1]  =  0.166667\n  [2, 1]  =  0.166667\n  [1, 2]  =  0.333333\n  [2, 3]  =  0.333333\n  [1, 4]  =  0.166667\n  [2, 4]  =  0.166667\n  [1, 5]  =  0.166667\n  [2, 5]  =  0.166667\n  [1, 6]  =  0.166667\n  [2, 6]  =  0.166667"
 },
 
 {
@@ -174,6 +174,22 @@ var documenterSearchIndex = {"docs": [
     "title": "TF-IDF (Term Frequency - Inverse Document Frequency)",
     "category": "section",
     "text": "tf_idf(dtm)In many cases, raw word counts are not appropriate for use because:(A) Some documents are longer than other documents\n(B) Some words are more frequent than other wordsYou can work around this by performing TF-IDF on a DocumentTermMatrix:julia> crps = Corpus([StringDocument(\"To be or not to be\"),\n              StringDocument(\"To become or not to become\")])\n\njulia> update_lexicon!(crps)\n\njulia> m = DocumentTermMatrix(crps)\nDocumentTermMatrix(\n  [1, 1]  =  1\n  [2, 1]  =  1\n  [1, 2]  =  2\n  [2, 3]  =  2\n  [1, 4]  =  1\n  [2, 4]  =  1\n  [1, 5]  =  1\n  [2, 5]  =  1\n  [1, 6]  =  1\n  [2, 6]  =  1, [\"To\", \"be\", \"become\", \"not\", \"or\", \"to\"], Dict(\"or\"=>5,\"not\"=>4,\"to\"=>6,\"To\"=>1,\"be\"=>2,\"become\"=>3))\n\njulia> tf_idf(m)\n2×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 10 stored entries:\n  [1, 1]  =  0.0\n  [2, 1]  =  0.0\n  [1, 2]  =  0.231049\n  [2, 3]  =  0.231049\n  [1, 4]  =  0.0\n  [2, 4]  =  0.0\n  [1, 5]  =  0.0\n  [2, 5]  =  0.0\n  [1, 6]  =  0.0\n  [2, 6]  =  0.0As you can see, TF-IDF has the effect of inserting 0\'s into the columns of words that occur in all documents. This is a useful way to avoid having to remove those words during preprocessing."
+},
+
+{
+    "location": "features/#Okapi-BM-25-1",
+    "page": "Features",
+    "title": "Okapi BM-25",
+    "category": "section",
+    "text": "From the document term matparamterix, Okapi BM25 document-word statistic can be created.bm_25(dtm::AbstractMatrix; κ, β)\nbm_25(dtm::DocumentTermMatrixm, κ, β)It can also be used via the following methods Overwrite the bm25 with calculated weights.bm_25!(dtm, bm25, κ, β)The inputs matrices can also be a Sparse Matrix. The parameters κ and β default to 2 and 0.75 respectively.Here is an example usage -julia> crps = Corpus([StringDocument(\"a a a sample text text\"), StringDocument(\"another example example text text\"), StringDocument(\"\"), StringDocument(\"another another text text text text\")])\n\njulia> update_lexicon!(crps)\n\njulia> m = DocumentTermMatrix(crps)\n\njulia> bm_25(m)\n4×5 SparseArrays.SparseMatrixCSC{Float64,Int64} with 8 stored entries:\n  [1, 1]  =  1.29959\n  [2, 2]  =  0.882404\n  [4, 2]  =  1.40179\n  [2, 3]  =  1.54025\n  [1, 4]  =  1.89031\n  [1, 5]  =  0.405067\n  [2, 5]  =  0.405067\n  [4, 5]  =  0.676646"
+},
+
+{
+    "location": "features/#Co-occurrence-matrix-(COOM)-1",
+    "page": "Features",
+    "title": "Co occurrence matrix (COOM)",
+    "category": "section",
+    "text": "The elements of the Co occurrence matrix indicate how many times two words co-occur in a (sliding) word window of a given size. The COOM can be calculated for objects of type Corpus, AbstractDocument (with the exception of NGramDocument).CooMatrix(crps; window, normalize)\nCooMatrix(doc; window, normalize)It takes following keyword arguments:window::Integer -length of the Window size, defaults to 5. The actual size of the sliding window is 2 * window + 1, with the keyword argument window specifying how many words to consider to the left and right of the center one\nnormalize::Bool -normalizes counts to distance between words, defaults to trueIt returns the CooMatrix structure from which the matrix can be extracted using coom(::CooMatrix). The terms can also be extracted from this. Here is an example usage -\njulia> crps = Corpus([StringDocument(\"this is a string document\"),\n\njulia> C = CooMatrix(crps, window=1, normalize=false)\nCooMatrix{Float64}(\n  [2, 1]  =  2.0\n  [6, 1]  =  2.0\n  [1, 2]  =  2.0\n  [3, 2]  =  2.0\n  [2, 3]  =  2.0\n  [6, 3]  =  2.0\n  [5, 4]  =  4.0\n  [4, 5]  =  4.0\n  [6, 5]  =  4.0\n  [1, 6]  =  2.0\n  [3, 6]  =  2.0\n  [5, 6]  =  4.0, [\"string\", \"document\", \"token\", \"this\", \"is\", \"a\"], OrderedDict(\"string\"=>1,\"document\"=>2,\"token\"=>3,\"this\"=>4,\"is\"=>5,\"a\"=>6))\n\njulia> coom(C)\n6×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 12 stored entries:\n  [2, 1]  =  2.0\n  [6, 1]  =  2.0\n  [1, 2]  =  2.0\n  [3, 2]  =  2.0\n  [2, 3]  =  2.0\n  [6, 3]  =  2.0\n  [5, 4]  =  4.0\n  [4, 5]  =  4.0\n  [6, 5]  =  4.0\n  [1, 6]  =  2.0\n  [3, 6]  =  2.0\n  [5, 6]  =  4.0\n\njulia> C.terms\n6-element Array{String,1}:\n \"string\"\n \"document\"\n \"token\"\n \"this\"\n \"is\"\n \"a\"\nIt can also be called to calculate the terms for a specific list of words / terms in the document. In other cases it calculates the the co occurrence elements for all the terms.CooMatrix(crps, terms; window, normalize)\nCooMatrix(doc, terms; window, normalize)julia> C = CooMatrix(crps, [\"this\", \"is\", \"a\"], window=1, normalize=false)\nCooMatrix{Float64}(\n  [2, 1]  =  4.0\n  [1, 2]  =  4.0\n  [3, 2]  =  4.0\n  [2, 3]  =  4.0, [\"this\", \"is\", \"a\"], OrderedCollections.OrderedDict(\"this\"=>1,\"is\"=>2,\"a\"=>3))\nThe type can also be specified for CooMatrix with the weights of type T. T defaults to Float64.CooMatrix{T}(crps; window, normalize) where T <: AbstractFloat\nCooMatrix{T}(doc; window, normalize) where T <: AbstractFloat\nCooMatrix{T}(crps, terms; window, normalize) where T <: AbstractFloat\nCooMatrix{T}(doc, terms; window, normalize) where T <: AbstractFloatRemarks:The sliding window used to count co-occurrences does not take into consideration sentence stops however, it does with documents i.e. does not span across documents\nThe co-occurrence matrices of the documents in a corpus are summed up when calculating the matrix for an entire corpusnote: Note\nThe Co occurrence matrix does not work for NGramDocument, or a Corpus containing an NGramDocument.julia> C = CooMatrix(NGramDocument(\"A document\"), window=1, normalize=false) # fails, documents are NGramDocument\nERROR: The tokens of an NGramDocument cannot be reconstructed"
 },
 
 {
@@ -245,7 +261,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Semantic Analysis",
     "title": "LSA: Latent Semantic Analysis",
     "category": "section",
-    "text": "Often we want to think about documents from the perspective of semantic content. One standard approach to doing this is to perform Latent Semantic Analysis or LSA on the corpus. You can do this using the lsa function:lsa(crps)"
+    "text": "Often we want to think about documents from the perspective of semantic content. One standard approach to doing this, is to perform Latent Semantic Analysis or LSA on the corpus.lsa(crps)\nlsa(dtm)lsa uses tf_idf for statistics.julia> crps = Corpus([StringDocument(\"this is a string document\"), TokenDocument(\"this is a token document\")])\n\njulia> F1.lsa(crps)\nLinearAlgebra.SVD{Float64,Float64,Array{Float64,2}}([1.0 0.0; 0.0 1.0], [0.138629, 0.138629], [0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 1.0])lsa can also be performed on a DocumentTermMatrix.julia> update_lexicon!(crps)\n\njulia> m = DocumentTermMatrix(crps)\nA 2 X 6 DocumentTermMatrix\n\njulia> F2 = lsa(m)\nSVD{Float64,Float64,Array{Float64,2}}([1.0 0.0; 0.0 1.0], [0.138629, 0.138629], [0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 1.0])"
 },
 
 {
@@ -302,6 +318,30 @@ var documenterSearchIndex = {"docs": [
     "title": "Extended Usage Example",
     "category": "section",
     "text": "To show you how text analysis might work in practice, we\'re going to work with a text corpus composed of political speeches from American presidents given as part of the State of the Union Address tradition.using TextAnalysis, MultivariateStats, Clustering\n\ncrps = DirectoryCorpus(\"sotu\")\n\nstandardize!(crps, StringDocument)\n\ncrps = Corpus(crps[1:30])\n\nremove_case!(crps)\nprepare!(crps, strip_punctuation)\n\nupdate_lexicon!(crps)\nupdate_inverse_index!(crps)\n\ncrps[\"freedom\"]\n\nm = DocumentTermMatrix(crps)\n\nD = dtm(m, :dense)\n\nT = tf_idf(D)\n\ncl = kmeans(T, 5)"
+},
+
+{
+    "location": "evaluation_metrics/#",
+    "page": "Evaluation Metrics",
+    "title": "Evaluation Metrics",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "evaluation_metrics/#Evaluation-Metrics-1",
+    "page": "Evaluation Metrics",
+    "title": "Evaluation Metrics",
+    "category": "section",
+    "text": "Natural Language Processing tasks require certain Evaluation Metrics. As of now TextAnalysis provides the following evaluation metrics.ROUGE-N\nROUGE-L"
+},
+
+{
+    "location": "evaluation_metrics/#ROUGE-N-1",
+    "page": "Evaluation Metrics",
+    "title": "ROUGE-N",
+    "category": "section",
+    "text": "This metric evaluatrion based on the overlap of N-grams between the system and reference summaries.rouge_n(references, candidate, n; avg, lang)The function takes the following arguments -references::Array{T} where T<: AbstractString = The list of reference summaries.\ncandidate::AbstractString = Input candidate summary, to be scored against reference summaries.\nn::Integer = Order of NGrams\navg::Bool = Setting this parameter to true, applies jackkniving the calculated scores. Defaults to true\nlang::Language = Language of the text, usefule while generating N-grams. Defaults to English i.e. Languages.English()julia> candidate_summary =  \"Brazil, Russia, China and India are growing nations. They are all an important part of BRIC as well as regular part of G20 summits.\"\n\"Brazil, Russia, China and India are growing nations. They are all an important part of BRIC as well as regular part of G20 summits.\"\n\njulia> reference_summaries = [\"Brazil, Russia, India and China are the next big poltical powers in the global economy. Together referred to as BRIC(S) along with South Korea.\", \"Brazil, Russia, India and China are together known as the  BRIC(S) and have been invited to the G20 summit.\"]\n2-element Array{String,1}:\n \"Brazil, Russia, India and China are the next big poltical powers in the global economy. Together referred to as BRIC(S) along with South Korea.\"\n \"Brazil, Russia, India and China are together known as the  BRIC(S) and have been invited to the G20 summit.\"                                    \n\njulia> rouge_n(reference_summaries, candidate_summary, 2, avg=true)\n0.1317241379310345\n\njulia> rouge_n(reference_summaries, candidate_summary, 1, avg=true)\n0.5051282051282051"
 },
 
 {
