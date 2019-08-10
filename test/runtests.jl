@@ -10,6 +10,7 @@ using WordTokenizers
 println("Running tests:")
 
 include("ner.jl")
+include("coom.jl")
 include("crf.jl")
 include("tokenizer.jl")
 include("ngramizer.jl")
@@ -21,13 +22,12 @@ include("dtm.jl")
 include("stemmer.jl")
 include("tf_idf.jl")
 include("lda.jl")
+include("lsa.jl")
 include("summarizer.jl")
 include("sentiment.jl")
 include("bayes.jl")
 include("taggingschemes.jl")
-include("rouge.jl")
 include("averagePerceptronTagger.jl")
+include("evaluation_metrics.jl")
 
-
-# end
 end
