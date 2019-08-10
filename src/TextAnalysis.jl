@@ -80,10 +80,6 @@ module TextAnalysis
     end
     include(depsjl_path)
 
-    function __init__()
-        include(joinpath(@__DIR__, "Sequence Labelling/NER_DataDeps.jl"))
-    end
-
     include("stemmer.jl")
     include("dtm.jl")
     include("tf_idf.jl")
@@ -107,6 +103,11 @@ module TextAnalysis
     include("CRF/loss.jl")
 
     # NER
-    include("Sequence Labelling/ner.jl")
-    include("Sequence Labelling/sequence_labelling.jl")
+    include("sequence/ner_datadeps.jl")
+    include("sequence/ner.jl")
+    include("sequence/sequence_models.jl")
+
+    function __init__()
+        ner_datadep_register()
+    end
 end
