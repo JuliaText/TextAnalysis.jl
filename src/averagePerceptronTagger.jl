@@ -299,6 +299,24 @@ function predict(self::PerceptronTagger, tokens::Vector{String})
     return output
 end
 
+function (tagger::PerceptronTagger)(input)
+    predict(tagger, input)
+end
+
+predict(tagger::PerceptronTagger, sentence::String) =
+        predict(tagger, tokenize(Languages.English(), sentence))
+predict(tagger::PerceptronTagger, sd::StringDocument) =
+        predict(tagger, text(sd))
+predict(tagger::PerceptronTagger, fd::FileDocument) =
+        predict(tagger, text(fd))
+predict(tagger::PerceptronTagger, td::TokenDocument) =
+        predict(tagger, tokens(td))
+function predict(tagger::PerceptronTagger, ngd::NGramDocument)
+    @warn "POS tagging for NGramDocument not available."
+end
+
+
+
 """
     fit!(::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)
 
