@@ -61,10 +61,6 @@ module TextAnalysis
 
     export CRF, viterbi_decode, crf_loss
 
-    function __init__()
-        include(joinpath(@__DIR__, "avgPerceptronTagger_DataDeps.jl"))
-    end
-
     include("tokenizer.jl")
     include("ngramizer.jl")
     include("document.jl")

@@ -1,8 +1,22 @@
 using DataStructures
 using Random
 using BSON
+using DataDeps
 
 export fit!, predict
+
+register(DataDep("POS Perceptron Tagger Weights",
+    """
+    The trained weights for the average Perceptron Tagger on Part of Speech Tagging task.
+    """,
+    "https://github.com/JuliaText/TextAnalysis.jl/raw/2467ae2f379490af9ba1b181ce25f1a415a4be4d/src/pretrainedMod.bson",
+    "3305c8ee73d9de6d653d6a6e4eaf83dc5031114aaebe621b1625f11d7810a5f4",
+    post_fetch_method = function(fn)
+        file = readdir(".")[1]
+        println(readdir("."))
+        mv(file, "POSWeights.bson")
+    end
+))
 
 """
 This file contains the Average Perceptron model and Perceptron Tagger
@@ -57,7 +71,7 @@ end
 
 """
 Applying the perceptron learning algorithm
-Increment the truth weights and decrementing the guess weights
+Increment the truth weights and decrementing the guess weights,
 if the guess is wrong
 """
 function update(self::AveragePerceptron, truth, guess, features)
@@ -111,22 +125,32 @@ function average_weights(self::AveragePerceptron)
 end
 
 """
-PERCEPTRON TAGGER
+# PERCEPTRON TAGGER
 
 This struct contains the POS tagger "PerceptronTagger" which uses model in "AveragePerceptron"
 In this training can be done and weights can be saved
 Or a pretrain weights can be used (which are trained on same features)
 and train more or can be used to predict
 
-To train:
-tagger = PerceptronTagger(false)
-fit!(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
+## To train:
 
-To load pretrain model:
-tagger = PerceptronTagger(true)
+```julia
+julia> tagger = PerceptronTagger(false)
 
-To predict tag:
-predict(tagger, ["today", "is"])
+julia> fit!(tagger, [[("today","NN"),("is","VBZ"),("good","JJ"),("day","NN")]])
+```
+
+## To load pretrain model:
+
+```julia
+julia> tagger = PerceptronTagger(true)
+```
+
+## To predict tag:
+
+```julia
+julia> predict(tagger, ["today", "is"])
+```
 """
 mutable struct PerceptronTagger
     model :: AveragePerceptron
@@ -199,11 +223,13 @@ end
 """
 Converting the token into a feature representation, implemented as Dict
 If the features change, a new model should be trained
-params:
-i - index of word(or token) in sentence
-word - token
-context - array of tokens with starting and ending specifiers
-prev == "-START-" prev2 == "-START2-" - Start specifiers
+
+# Arguments:
+
+- `i` - index of word(or token) in sentence
+- `word` - token
+- `context` - array of tokens with starting and ending specifiers
+- `prev` == "-START-" prev2 == "-START2-" - Start specifiers
 """
 function getFeatures(self::PerceptronTagger, i, word, context, prev, prev2)
     function add(sep, name, args...)
@@ -250,8 +276,10 @@ function getFeatures(self::PerceptronTagger, i, word, context, prev, prev2)
 end
 
 """
-Used for predicting the tags for given tokens
-tokens - array of tokens
+    predict(::PerceptronTagger, tokens)
+    predict(::PerceptronTagger, sentence)
+
+Used for predicting the tags for given sentence or array of tokens
 """
 function predict(self::PerceptronTagger, tokens::Vector{String})
     prev, prev2 = self.START
@@ -272,16 +300,19 @@ function predict(self::PerceptronTagger, tokens::Vector{String})
 end
 
 """
+    fit!(::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)
+
 Used for training a new model or can be used for training
 an existing model by using pretrained weigths and classes
 
 Contains main training loop for number of epochs.
 After training weights, tagdict and classes are stored in the specified location.
 
-params:
-sentences - array of the all sentences
-save_loc - to specify the saving location
-nr_iter - total number of training iterations for given sentences(or number of epochs)
+# Arguments:
+- `::PerceptronTagger` : Input PerceptronTagger model
+- `sentences::Vector{Vector{Tuple{String, String}}}` : Array of the all token seqeunces with target POS tag
+- `save_loc::String` : To specify the saving location
+- `nr_iter::Integer` : Total number of training iterations for given sentences(or number of epochs)
 """
 function fit!(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)
     self._sentences = []
