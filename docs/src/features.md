@@ -417,8 +417,26 @@ PerceptronTagger(AveragePerceptron(Set(Any["JJS", "NNP_VBZ", "NN_NNS", "CC", "NN
 ```
 
 ### To predict tags:
+
+The perceptron tagger can predict tags over various document types-
+
+    predict(tagger, sentence::String)
+    predict(tagger, Tokens::Array{String, 1})
+    predict(tagger, sd::StringDocument)
+    predict(tagger, fd::FileDocument)
+    predict(tagger, td::TokenDocument)
+
+This can also be done by -
+    tagger(input)
+
+
 ```julia
 julia> predict(tagger, ["today", "is"])
+2-element Array{Any,1}:
+ ("today", "NN")
+ ("is", "VBZ")
+
+julia> tagger(["today", "is"])
 2-element Array{Any,1}:
  ("today", "NN")
  ("is", "VBZ")
