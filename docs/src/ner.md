@@ -21,10 +21,14 @@ julia> ner = NERTagger()
 !!! note
     When you call `NERTagger()` for the first time, the package will request permission for download the `Model_dicts` and `Model_weights`. Upon downloading, these are store locally and managed by `DataDeps`. So, on subsequent uses the weights will not need to be downloaded again.
 
-Once we create an instance, we can call it to tag a sentence or a sequence of tokens.
+Once we create an instance, we can call it to tag a String (sentence), sequence of tokens, `AbstractDocument` or `Corpus`.
 
     (ner::NERTagger)(sentence::String)
     (ner::NERTagger)(tokens::Array{String, 1})
+    (ner::NERTagger)(sd::StringDocument)
+    (ner::NERTagger)(fd::FileDocument)
+    (ner::NERTagger)(td::TokenDocument)
+    (ner::NERTagger)(crps::Corpus)
 
 ```julia
 julia> sentence = "This package is maintained by John Doe."
@@ -109,4 +113,28 @@ julia> zipped[2]
  ("ORG", "party")
  ("O", "politiian")
  ("O", ".")
+```
+
+Since the tagging the Named Entities is done on sentence level,
+the text of `AbstractDocument` is sentence_tokenized and then labelled for over sentence.
+However is not possible for `NGramDocument` as text cannot be recreated.
+For `TokenDocument`, text is approximated for splitting into sentences, hence the following throws a warning when tagging the `Corpus`.
+
+```julia
+julia> crps = Corpus([StringDocument("We aRE vErY ClOSE tO ThE HEaDQuarTeRS."), TokenDocument("this is Bangalore.")])
+A Corpus with 2 documents:
+ * 1 StringDocument's
+ * 0 FileDocument's
+ * 1 TokenDocument's
+ * 0 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
+
+julia> ner(crps)
+┌ Warning: TokenDocument's can only approximate the original text
+└ @ TextAnalysis ~/.julia/dev/TextAnalysis/src/document.jl:220
+2-element Array{Array{Array{String,1},1},1}:
+ [["O", "O", "O", "O", "O", "O", "O", "O"]]
+ [["O", "O", "LOC", "O"]]
 ```
