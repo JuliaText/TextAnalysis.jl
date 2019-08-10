@@ -9,6 +9,9 @@ module TextAnalysis
     using DataStructures
     using Statistics
 
+    using Flux
+    using Flux: identity, onehot, onecold, @treelike
+
     import DataFrames.DataFrame
     import Base.depwarn
 
@@ -58,6 +61,8 @@ module TextAnalysis
     export rouge_l_summary, rouge_l_sentence, rouge_n
     export PerceptronTagger, fit!, predict
 
+    export CRF, viterbi_decode, crf_loss
+
     include("tokenizer.jl")
     include("ngramizer.jl")
     include("document.jl")
@@ -88,4 +93,10 @@ module TextAnalysis
 
     include("evaluation_metrics.jl")
     include("coom.jl")
+    # CRF
+    include("CRF/crf.jl")
+    include("CRF/predict.jl")
+    include("CRF/crf_utils.jl")
+    include("CRF/loss.jl")
+
 end

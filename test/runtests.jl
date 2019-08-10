@@ -10,6 +10,8 @@ using WordTokenizers
 println("Running tests:")
 
 include("coom.jl")
+include("crf.jl")
+
 include("tokenizer.jl")
 include("ngramizer.jl")
 include("document.jl")

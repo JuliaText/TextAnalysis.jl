@@ -70,7 +70,6 @@ julia> index_hash("b", h)
 7
 ```
 """
-
 function index_hash(s::AbstractString, h::TextHashFunction)
     return Int(rem(h.hash_function(s), h.cardinality)) + 1
 end
