@@ -21,21 +21,23 @@ using TextAnalysis: AveragePerceptron
         @test typeof(tagger.model) == AveragePerceptron
     end
 
+    sample_file = joinpath(dirname(@__FILE__), "data", "poem.txt")
+
 
     @testset "Tagging over sentences and documents" begin
-        tagger = Perceptrontagger(true)
+        tagger = PerceptronTagger(true)
         text = "This is a text"
+        @test tagger(text) == predict(tagger, text)
 
         sd = StringDocument(text)
         @test length(predict(tagger, text)) == 4
         @test length(predict(tagger, sd)) == 4
 
-        sample_file = joinpath(dirname(@__FILE__), "data", "poem.txt")
-
         text2 = read(sample_file, String)
         fd = FileDocument(sample_file)
         @test length(predict(tagger, fd)) == length(predict(tagger, text2))
 
-        @test tagger(text) == predict(tagger, text)
+        td = TokenDocument(text)
+        @test length(predict(tagger, td)) == 4
     end
 end
