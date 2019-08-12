@@ -1,0 +1,26 @@
+name = "TextAnalysis"
+uuid = "a2db99b7-8b79-58f8-94bf-bbc811eef33d"
+license = "MIT"
+desc = "Julia package for text analysis"
+
+[deps]
+WordTokenizers = "796a5d58-b03d-544a-977e-18100b691f6e"
+DataDeps = "124859b0-ceae-595e-8997-d05f6a7a8dfe"
+Languages = "8ef0a80b-9436-5d2c-a485-80b904378c43"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
