@@ -1,6 +1,8 @@
 language: julia
 os:
   - linux
+env:
+  - DATADEPS_ALWAYS_ACCEPT=true
 julia:
   - 0.7
   - 1.0

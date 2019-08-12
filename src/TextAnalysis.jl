@@ -6,6 +6,8 @@ module TextAnalysis
     using Languages
     using DataFrames
     using WordTokenizers
+
+    using DataDeps
     using DataStructures
     using Statistics
 
@@ -70,6 +72,7 @@ module TextAnalysis
     include("corpus.jl")
     include("metadata.jl")
     include("preprocessing.jl")
+
     # Load libstemmer from our deps.jl
     const depsjl_path = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
     if !isfile(depsjl_path)
@@ -99,4 +102,7 @@ module TextAnalysis
     include("CRF/crf_utils.jl")
     include("CRF/loss.jl")
 
+    function __init__()
+        pos_tagger_datadep_register()
+    end
 end
