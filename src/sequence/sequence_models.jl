@@ -1,5 +1,4 @@
 using BSON, Tracker
-
 mutable struct BiLSTM_CNN_CRF_Model{C, W, L, D, O, A}
     labels::Array{String, 1} # List of Labels
     chars_idx::Dict{Char, Int64} # Dict that maps chars to indices in W_Char_Embed

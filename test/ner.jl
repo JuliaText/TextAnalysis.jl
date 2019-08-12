@@ -1,4 +1,4 @@
-using WordTokenizers
+using WordTokenizers, TextAnalysis, Test
 
 @testset "NER" begin
     ner = NERTagger()

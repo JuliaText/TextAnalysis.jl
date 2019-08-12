@@ -1,3 +1,6 @@
+println("Running tests:")
+include("ner.jl")
+
 module TestTextAnalysis
 using SparseArrays
 using Test
@@ -5,11 +8,6 @@ using Languages
 using TextAnalysis
 using WordTokenizers
 
-# @testset "TextAnalysis" begin
-
-println("Running tests:")
-
-include("ner.jl")
 include("coom.jl")
 include("crf.jl")
 include("tokenizer.jl")
