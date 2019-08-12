@@ -16,9 +16,10 @@ SparseArrays =       "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 LinearAlgebra =      "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 DataStructures =     "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 WordTokenizers =     "796a5d58-b03d-544a-977e-18100b691f6e"
+BinaryProvider =     "b99e7846-7c00-51b0-8f62-c81ae34c0232"
 
 [compat]
-julia = "1.0"
+julia = "1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
