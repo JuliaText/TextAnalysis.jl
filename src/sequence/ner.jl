@@ -7,10 +7,14 @@ struct NERmodel{M}
     model::M
 end
 
-function load_model_dicts(filepath)
+load_model_dicts(filepath) = load_model_dicts(filepath, true)
+
+function load_model_dicts(filepath, remove_tag_prefix)
     labels = BSON.load(joinpath(filepath, "labels.bson"))[:labels]
     chars_idx = BSON.load(joinpath(filepath, "char_to_embed_idx.bson"))[:get_char_index]
     words_idx = BSON.load(joinpath(filepath, "word_to_embed_idx.bson"))[:get_word_index]
+
+    remove_tag_prefix || return [labels...], chars_idx, words_idx
 
     return remove_ner_label_prefix.([labels...]), chars_idx, words_idx
 end
