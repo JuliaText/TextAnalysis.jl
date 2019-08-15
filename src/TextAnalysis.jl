@@ -66,7 +66,7 @@ module TextAnalysis
 
     export CRF, viterbi_decode, crf_loss
 
-    export NERTagger, Tracker, Flux
+    export NERTagger, POS_Tagger, Tracker, Flux
 
     include("tokenizer.jl")
     include("ngramizer.jl")
@@ -99,19 +99,23 @@ module TextAnalysis
 
     include("evaluation_metrics.jl")
     include("coom.jl")
+
     # CRF
     include("CRF/crf.jl")
     include("CRF/predict.jl")
     include("CRF/crf_utils.jl")
     include("CRF/loss.jl")
 
-    # NER
+    # NER and POS
     include("sequence/ner_datadeps.jl")
     include("sequence/ner.jl")
+    include("sequence/pos_datadeps.jl")
+    include("sequence/pos.jl")
     include("sequence/sequence_models.jl")
 
     function __init__()
         pos_tagger_datadep_register()
         ner_datadep_register()
+        pos_datadep_register()
     end
 end
