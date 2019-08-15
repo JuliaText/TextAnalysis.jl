@@ -6,6 +6,7 @@ using WordTokenizers
 
 println("Running tests:")
 
+include("pos.jl")
 include("ner.jl")
 include("coom.jl")
 include("crf.jl")
