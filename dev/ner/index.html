@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Named Entity Recognition · TextAnalysis</title><link rel="canonical" href="https://juliatext.github.io/TextAnalysis.jl/stable/ner/index.html"/><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/><script src="../assets/custom.js"></script></head><body><nav class="toc"><h1>TextAnalysis</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../documents/">Documents</a></li><li><a class="toctext" href="../corpus/">Corpus</a></li><li><a class="toctext" href="../features/">Features</a></li><li><a class="toctext" href="../semantic/">Semantic Analysis</a></li><li><a class="toctext" href="../classify/">Classifier</a></li><li><a class="toctext" href="../example/">Extended Example</a></li><li><a class="toctext" href="../evaluation_metrics/">Evaluation Metrics</a></li><li><a class="toctext" href="../crf/">Conditional Random Fields</a></li><li class="current"><a class="toctext" href>Named Entity Recognition</a><ul class="internal"></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Named Entity Recognition</a></li></ul><a class="edit-page" href="https://github.com/JuliaText/TextAnalysis.jl/blob/master/docs/src/ner.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Named Entity Recognition</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Named-Entity-Recognition-1" href="#Named-Entity-Recognition-1">Named Entity Recognition</a></h1><p>The API provided is a pretrained model for tagging Named Entities. The current model support 4 types of Named Entities -</p><ul><li><code>PER</code>: Person</li><li><code>LOC</code>: Location</li><li><code>ORG</code>: Organisation</li><li><code>MISC</code>: Miscellaneous</li><li><code>O</code>: Not a Named Entity</li></ul><p>To use the API, we first load the model weights into an instance of tagger. The function also accepts the path of model<em>weights and model</em>dicts (for character and word embeddings)</p><pre><code class="language-none">NERTagger()
+NERTagger(dicts_path, weights_path)</code></pre><pre><code class="language-julia">julia&gt; ner = NERTagger()</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>When you call <code>NERTagger()</code> for the first time, the package will request permission for download the <code>Model_dicts</code> and <code>Model_weights</code>. Upon downloading, these are store locally and managed by <code>DataDeps</code>. So, on subsequent uses the weights will not need to be downloaded again.</p></div></div><p>Once we create an instance, we can call it to tag a String (sentence), sequence of tokens, <code>AbstractDocument</code> or <code>Corpus</code>.</p><pre><code class="language-none">(ner::NERTagger)(sentence::String)
+(ner::NERTagger)(tokens::Array{String, 1})
+(ner::NERTagger)(sd::StringDocument)
+(ner::NERTagger)(fd::FileDocument)
+(ner::NERTagger)(td::TokenDocument)
+(ner::NERTagger)(crps::Corpus)</code></pre><pre><code class="language-julia">julia&gt; sentence = &quot;This package is maintained by John Doe.&quot;
+&quot;This package is maintained by John Doe.&quot;
+
+julia&gt; tags = ner(sentence)
+8-element Array{String,1}:
+ &quot;O&quot;
+ &quot;O&quot;
+ &quot;O&quot;
+ &quot;O&quot;
+ &quot;O&quot;
+ &quot;PER&quot;
+ &quot;PER&quot;
+ &quot;O&quot;
+</code></pre><p>The API tokenizes the input sentences via the default tokenizer provided by <code>WordTokenizers</code>, this currently being set to the multilingual <code>TokTok Tokenizer.</code></p><pre><code class="language-none">julia&gt; using WordTokenizers
+
+julia&gt; collect(zip(WordTokenizers.tokenize(sentence), tags))
+8-element Array{Tuple{String,String},1}:
+ (&quot;This&quot;, &quot;O&quot;)
+ (&quot;package&quot;, &quot;O&quot;)
+ (&quot;is&quot;, &quot;O&quot;)
+ (&quot;maintained&quot;, &quot;O&quot;)
+ (&quot;by&quot;, &quot;O&quot;)
+ (&quot;John&quot;, &quot;PER&quot;)
+ (&quot;Doe&quot;, &quot;PER&quot;)
+ (&quot;.&quot;, &quot;O&quot;)
+</code></pre><p>For tagging a multisentence text or document, once can use <code>split_sentences</code> from <code>WordTokenizers.jl</code> package and run the ner model on each.</p><pre><code class="language-julia">julia&gt; sentences = &quot;Rabinov is winding up his term as ambassador. He will be replaced by Eliahu Ben-Elissar, a former Israeli envoy to Egypt and right-wing Likud party politiian.&quot; # Sentence taken from CoNLL 2003 Dataset
+
+julia&gt; splitted_sents = WordTokenizers.split_sentences(sentences)
+
+julia&gt; tag_sequences = ner.(splitted_sents)
+2-element Array{Array{String,1},1}:
+ [&quot;PER&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;]
+ [&quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;PER&quot;, &quot;PER&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;MISC&quot;, &quot;O&quot;, &quot;O&quot;, &quot;LOC&quot;, &quot;O&quot;, &quot;O&quot;, &quot;ORG&quot;, &quot;ORG&quot;, &quot;O&quot;, &quot;O&quot;]
+
+julia&gt; zipped = [collect(zip(tag_sequences[i], WordTokenizers.tokenize(splitted_sents[i]))) for i in eachindex(splitted_sents)]
+
+julia&gt; zipped[1]
+9-element Array{Tuple{String,String},1}:
+ (&quot;PER&quot;, &quot;Rabinov&quot;)
+ (&quot;O&quot;, &quot;is&quot;)
+ (&quot;O&quot;, &quot;winding&quot;)
+ (&quot;O&quot;, &quot;up&quot;)
+ (&quot;O&quot;, &quot;his&quot;)
+ (&quot;O&quot;, &quot;term&quot;)
+ (&quot;O&quot;, &quot;as&quot;)
+ (&quot;O&quot;, &quot;ambassador&quot;)
+ (&quot;O&quot;, &quot;.&quot;)
+
+julia&gt; zipped[2]
+20-element Array{Tuple{String,String},1}:
+ (&quot;O&quot;, &quot;He&quot;)
+ (&quot;O&quot;, &quot;will&quot;)
+ (&quot;O&quot;, &quot;be&quot;)
+ (&quot;O&quot;, &quot;replaced&quot;)
+ (&quot;O&quot;, &quot;by&quot;)
+ (&quot;PER&quot;, &quot;Eliahu&quot;)
+ (&quot;PER&quot;, &quot;Ben-Elissar&quot;)
+ (&quot;O&quot;, &quot;,&quot;)
+ (&quot;O&quot;, &quot;a&quot;)
+ (&quot;O&quot;, &quot;former&quot;)
+ (&quot;MISC&quot;, &quot;Israeli&quot;)
+ (&quot;O&quot;, &quot;envoy&quot;)
+ (&quot;O&quot;, &quot;to&quot;)
+ (&quot;LOC&quot;, &quot;Egypt&quot;)
+ (&quot;O&quot;, &quot;and&quot;)
+ (&quot;O&quot;, &quot;right-wing&quot;)
+ (&quot;ORG&quot;, &quot;Likud&quot;)
+ (&quot;ORG&quot;, &quot;party&quot;)
+ (&quot;O&quot;, &quot;politiian&quot;)
+ (&quot;O&quot;, &quot;.&quot;)</code></pre><p>Since the tagging the Named Entities is done on sentence level, the text of <code>AbstractDocument</code> is sentence_tokenized and then labelled for over sentence. However is not possible for <code>NGramDocument</code> as text cannot be recreated. For <code>TokenDocument</code>, text is approximated for splitting into sentences, hence the following throws a warning when tagging the <code>Corpus</code>.</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;We aRE vErY ClOSE tO ThE HEaDQuarTeRS.&quot;), TokenDocument(&quot;this is Bangalore.&quot;)])
+A Corpus with 2 documents:
+ * 1 StringDocument&#39;s
+ * 0 FileDocument&#39;s
+ * 1 TokenDocument&#39;s
+ * 0 NGramDocument&#39;s
+
+Corpus&#39;s lexicon contains 0 tokens
+Corpus&#39;s index contains 0 tokens
+
+julia&gt; ner(crps)
+┌ Warning: TokenDocument&#39;s can only approximate the original text
+└ @ TextAnalysis ~/.julia/dev/TextAnalysis/src/document.jl:220
+2-element Array{Array{Array{String,1},1},1}:
+ [[&quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;, &quot;O&quot;]]
+ [[&quot;O&quot;, &quot;O&quot;, &quot;LOC&quot;, &quot;O&quot;]]</code></pre><footer><hr/><a class="previous" href="../crf/"><span class="direction">Previous</span><span class="title">Conditional Random Fields</span></a></footer></article></body></html>
