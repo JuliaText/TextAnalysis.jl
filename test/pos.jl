@@ -21,7 +21,9 @@ using WordTokenizers
     end
 
     @testset "Documents and Corpus" begin
-        test1 = "A little too small"
+        pos = POS_Tagger()
+
+        text1 = "A little too small"
         text2 = "Here Foo Bar, please have some chocolate."
 
         sd = StringDocument(text1)
