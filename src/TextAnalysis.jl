@@ -11,8 +11,9 @@ module TextAnalysis
     using DataStructures
     using Statistics
 
-    using Flux
-    using Flux: identity, onehot, onecold, @treelike
+    using DataDeps
+    using Flux, Tracker
+    using Flux: identity, onehot, onecold, @treelike, onehotbatch
 
     import DataFrames.DataFrame
     import Base.depwarn
@@ -65,6 +66,8 @@ module TextAnalysis
 
     export CRF, viterbi_decode, crf_loss
 
+    export NERTagger, Tracker, Flux
+
     include("tokenizer.jl")
     include("ngramizer.jl")
     include("document.jl")
@@ -102,7 +105,13 @@ module TextAnalysis
     include("CRF/crf_utils.jl")
     include("CRF/loss.jl")
 
+    # NER
+    include("sequence/ner_datadeps.jl")
+    include("sequence/ner.jl")
+    include("sequence/sequence_models.jl")
+
     function __init__()
         pos_tagger_datadep_register()
+        ner_datadep_register()
     end
 end

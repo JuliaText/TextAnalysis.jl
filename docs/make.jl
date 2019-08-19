@@ -17,7 +17,8 @@ makedocs(
         "Classifier" => "classify.md",
         "Extended Example" => "example.md",
         "Evaluation Metrics" => "evaluation_metrics.md",
-        "Conditional Random Fields" => "crf.md"
+        "Conditional Random Fields" => "crf.md",
+        "Named Entity Recognition" => "ner.md"
     ],
 )
 
