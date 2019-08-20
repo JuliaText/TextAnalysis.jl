@@ -1,29 +1,49 @@
 """
-ASGD Weight-Dropped LSTM
+ULMFiT - Custom layers
+
+This file contains the custom layers defined for this model:
+    AWD_LSTM
+    WeightDroppedLSTM
+    VarDrop
+    PooledDense
 """
 
-using Flux
-import Flux: gate, tanh, σ, Tracker, params, gpu, cpu, _testmode!, rand!, _dropout_kernel
+using Flux: gate, _testmode!
 
-cd(@__DIR__)
-include("utils.jl")
-
-gpu!(entity) = nothing
-cpu!(entity) = nothing
+# gpu!(entity) = nothing
+# cpu!(entity) = nothing
 reset_masks!(entity) = nothing
 reset_probability!(entity) = nothing
 
-# Generates Mask
+"""
+Drop mask generator
+
+This function generates dropout mask for given 'x' with p probability
+    or
+It can be used to generate the mask by giving the shape of the desired mask and probaility
+"""
 function drop_mask(x, p)
     y = similar(x, size(x))
-    rand!(y)
-    y .= _dropout_kernel.(y, p, 1 - p)
+    Flux.rand!(y)
+    y .= Flux._dropout_kernel.(y, p, 1 - p)
     return y
 end
 
 drop_mask(shape::Tuple, p; type = Float32) = (mask = rand(type, shape...);mask .= _dropout_kernel.(mask, p, 1 - p))
 
 #################### Weight-Dropped LSTM Cell ######################
+"""
+Weight-Dropped LSTM Cell
+
+This is an LSTM layer with dropped weights functionality, that is, DropConnect technique
+
+cite this paper to know about DropConnec:
+http://yann.lecun.com/exdb/publis/pdf/wan-icml-13.pdf
+
+Moreover this also follows the Vartional DropOut citeria, that is,
+the drop mask is remains same for a whole training pass.
+This is done by saving the masks in 'maskWi' and 'maskWh' fields
+"""
 mutable struct WeightDroppedLSTMCell{A, V, M}
     Wi::A
     Wh::A
@@ -36,17 +56,18 @@ mutable struct WeightDroppedLSTMCell{A, V, M}
     active::Bool
 end
 
-function WeightDroppedLSTMCell(in::Integer, out::Integer, probability::Float64=0.0;
+function WeightDroppedLSTMCell(in::Integer, out::Integer, p::Float64=0.0;
     init = Flux.glorot_uniform)
+    @assert 0 ≤ p ≤ 1
     cell = WeightDroppedLSTMCell(
         param(init(out*4, in)),
         param(init(out*4, out)),
         param(init(out*4)),
         param(zeros(Float32, out)),
         param(zeros(Float32, out)),
-        probability,
-        drop_mask((out*4, in), probability),
-        drop_mask((out*4, out), probability),
+        p,
+        drop_mask((out*4, in), p),
+        drop_mask((out*4, out), p),
         true
     )
     cell.b.data[gate(out, 2)] .= 1
@@ -71,13 +92,31 @@ Flux.@treelike WeightDroppedLSTMCell
 
 _testmode!(m::WeightDroppedLSTMCell, test) = (m.active = !test)
 
-# Weight-Dropped LSTM [stateful]
+"""
+WeightDroppedLSTM layer
+
+This makes the WeightDroppedLSTMCell stateful, by wrapping the layer in a Recur field.
+
+Defining an instance:
+
+julia> wd = WeightDroppedLSTM(4, 5, 0.3);
+"""
 function WeightDroppedLSTM(a...; kw...)
     cell = WeightDroppedLSTMCell(a...;kw...)
     hidden = (cell.h, cell.c)
     return Flux.Recur(cell, hidden, hidden)
 end
 
+"""
+reset_masks!
+
+This is an important funciton since it used to reset the masks
+which are saved in WeightDroppedLSTMCell after every pass.
+
+julia> wd = WeightDroppedLSTM()
+
+julia> reset_masks!(wd)
+"""
 function reset_masks!(wd::T) where T <: Flux.Recur{<:WeightDroppedLSTMCell}
     wd.cell.maskWi = drop_mask(wd.cell.Wi, wd.cell.p)
     wd.cell.maskWh = drop_mask(wd.cell.Wh, wd.cell.p)
@@ -86,40 +125,56 @@ end
 ####################################################################
 
 ################## ASGD Weight-Dropped LSTM Layer ##################
+"""
+Average SGD Weight-Dropped LSTM
+
+This custom layer is used for training the Language model,
+instead of standard LSTM layer.
+This layer carries two addtional functionality:
+    Weight-dropping (DropConnect)
+    Averaging of weights
+
+AWD_LSTM is basically a wrapper aroung WeightDroppedLSTM layer,
+it has three fields:
+    layer : WeightDroppedLSTM layer
+    T     : Trigger iteration, to trigger averaging
+    accum : After triggring the accumlation of weights is saved here
+
+cite this paper to know more:
+https://arxiv.org/pdf/1708.02182.pdf
+"""
 mutable struct AWD_LSTM
     layer::Flux.Recur
     T::Integer
     accum
 end
 
-AWD_LSTM(in::Integer, out::Integer, probability::Float64=0.0; kw...) = AWD_LSTM(WeightDroppedLSTM(in, out, probability; kw...), -1, [])
+AWD_LSTM(in::Integer, out::Integer, p::Float64=0.0; kw...) = AWD_LSTM(WeightDroppedLSTM(in, out, p; kw...), -1, [])
 
 Flux.@treelike AWD_LSTM
 
 (m::AWD_LSTM)(in) = m.layer(in)
 
+# To set the trigger point for the AWD_LSTM layer
 set_trigger!(t, m) = nothing
 set_trigger!(trigger_point::Integer, m::AWD_LSTM) = m.T = trigger_point;
 
-function gpu!(m::AWD_LSTM)
-    m.layer = gpu(m.layer)
-    isempty(m.accum) || (m.accum = gpu(m.accum))
-    return
-end
-
-function cpu!(m::AWD_LSTM)
-    m.layer = cpu(m.layer)
-    isempty(m.accum) || (m.accum = cpu(m.accum))
-    return
-end
-
+# resets mask of the WeightDroppedLSTM layer contained in AWD_LSTM
 reset_masks!(awd::AWD_LSTM) = reset_masks!(awd.layer)
 
-# Averaged Stochastic Gradient Descent Step
+"""
+Averaged Stochastic Gradient Descent Step
+
+This funciton performs the Averaging step to the given AWD_LSTM layer,
+if the trigger point or trigger iteration is reached.
+Arguments:
+    i       : current iteration of the training loop
+    layer   : AWD_LSTM layer
+"""
 asgd_step!(i, l) = nothing
 
 function asgd_step!(iter::Integer, layer::AWD_LSTM)
-    if iter >= layer.T
+    if (iter >= layer.T) & (T > 0)
         p = get_trainable_params([layer])
         avg_fact = 1/max(iter - layer.T + 1, 1)
         if avg_fact != 1
@@ -135,11 +190,20 @@ function asgd_step!(iter::Integer, layer::AWD_LSTM)
 end
 ####################################################################
 
+########################## Varitional DropOut ######################
 """
 Variational Dropout
+
+Unlike standard dropout layer, which applies new dropout mask to every Array ot Matrix passed to it,
+this layer saves the mask applied till it is explicitly set to reset mode using 'reset_masks!'.
+
+Usage:
+julia> vd = VarDrop()
+
+To reset mask:
+julia> reset_masks!(vd)
 """
 
-########################## Varitional DropOut ######################
 mutable struct VarDrop{F}
     p::F
     mask
@@ -147,37 +211,43 @@ mutable struct VarDrop{F}
     active::Bool
 end
 
-VarDrop(probability::Float64=0.0) = VarDrop(probability, Array{Float32, 2}(UndefInitializer(), 0, 0), true, true)
+VarDrop(p::Float64=0.0) = VarDrop(p, Array{Float32, 2}(UndefInitializer(), 0, 0), true, true)
 
-function (vd::VarDrop)(inp)
-    vd.active || return inp
+function (vd::VarDrop)(in)
+    vd.active || return in
     if vd.reset
-        vd.mask = drop_mask(inp, vd.p)
+        vd.mask = drop_mask(in, vd.p)
         vd.reset = false
     end
-    return inp .* vd.mask
+    return (in .* vd.mask)
 end
 
 _testmode!(vd::VarDrop, test) = (vd.active = !test)
 
-reset_masks!(vd::VarDrop) = (vd.reset = true;)
+# method for reseting mask of VarDrop
+reset_masks!(vd::VarDrop) = (vd.reset = true)
 
-function gpu!(vd::VarDrop)
-    vd.mask = gpu(vd.mask);
-    return
-end
+######################################################################
 
-function cpu!(vd::VarDrop)
-    vd.mask = cpu(vd.mask);
-    return
-end
-####################################################################
-
+################# Varitional Dropped Embeddings ######################
 """
 Embeddings with varitional dropout
-"""
 
-################# Varitional Dropped Embeddings ####################
+This struct defines an embedding layer with Varitional Embedding dropout functionality.
+Instead of randomly dropping values of embedding matrix,
+this layer drops all values of a specific word, in other words,
+it drops a word from the embedding matrix for that particular pass.
+
+Since this follows Variational DropOut criteria, it also saves the drop mask,
+which should be reset to new mask explicilty using 'reset_masks!' function
+
+Usage:
+It takes input size, embedding size and dropout probability
+julia> de = DroppedEmbeddings(1000, 20, 0.4)
+
+To reset mask:
+julia> reset_masks!(de)
+"""
 mutable struct DroppedEmbeddings{A, F}
     emb::A
     p::F
@@ -185,12 +255,12 @@ mutable struct DroppedEmbeddings{A, F}
     active::Bool
 end
 
-function DroppedEmbeddings(in::Integer, embed_size::Integer, probability::Float64=0.0;
+function DroppedEmbeddings(in::Integer, embed_size::Integer, p::Float64=0.0;
     init = Flux.glorot_uniform)
-        de = DroppedEmbeddings{AbstractArray, typeof(probability)}(
+        de = DroppedEmbeddings{AbstractArray, typeof(p)}(
             param(init(in, embed_size)),
-            probability,
-            drop_mask((in, embed_size), probability),
+            p,
+            drop_mask((in,), p),
             true
         )
     return de
@@ -205,29 +275,29 @@ Flux.@treelike DroppedEmbeddings
 
 _testmode!(de::DroppedEmbeddings, test) = (de.active = !test)
 
-function gpu!(de::DroppedEmbeddings)
-    de.emb = gpu(de.emb)
-    de.mask = gpu(de.mask)
-    return
-end
-
-function cpu!(de::DroppedEmbeddings)
-    de.emb = cpu(de.emb)
-    de.mask = cpu(de.mask)
-    return
-end
-
 function reset_masks!(de::DroppedEmbeddings)
     de.mask = drop_mask(de.emb, de.p)
     return
 end
 ####################################################################
 
+################# Concat Pooling Dense layer #######################
 """
 Concat-Pooled linear layer
-"""
 
-################# Concat Pooling Dense layer #######################
+This is basically a modified version of the Dense layer.
+It takes the vector of all output of RNN at all time-steps,
+then it calculates the mean and max pools of those outputs and
+concatenates output RNN at the last time-step with these max and mean pools.
+This concatenation is them passes forward same as done in a 'Dense' layer
+
+Usage:
+The first argument ['hidden_sz'] it takes is equal to the
+length of the output of the RNN layer just before this layer.
+other two arguments are output size and activation function
+
+julia> pd = PooledDense(40, 20)    # if the output size of the RNN layer is 40
+"""
 mutable struct PooledDense{F, S, T}
     W::S
     b::T
@@ -254,7 +324,14 @@ end
 
 ####################################################################
 
-# Get the trainable params in the given layers
+"""
+Get trainable params
+
+This is an important function for model training, especially for AWD_LSTM layer
+since this while getting params of the model it does not include the 'h' and 'c' params of LSTMs.
+This is useful while calculating gradients since calculating params for 'h' and 'c' fields
+in LSTM is unnecessary here.
+"""
 function get_trainable_params(layers)
     p = []
     function get_awd_params(awd::AWD_LSTM)
