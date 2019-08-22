@@ -33,7 +33,7 @@ end
 Flux.@treelike TextClassifier
 
 """
-Validate
+Cross Validate
 
 This function will be used to cross-validate the classifier
 
@@ -49,9 +49,11 @@ gen will be used for validation
 function validate(tc::TextClassifier, gen::Channel, num_of_batches::Union{Colon, Integer})
     classifier = mapleaves(Tracker.data, tc)
     Flux.testmode!(classifier)
-    loss, trues = 0, 0
+    loss = 0
     iters = take!(gen)
     (num_of_batches != : & num_of_batches < iters) && (iters = num_of_batches)
+    len = size(tc.linear_layers[end-2].b, 1)
+    TP, FP, FN, TN = zeros(len, 1), zeros(len, 1), zeros(len, 1), zeros(len, 1)
     for i=1:iters
         X = map(x -> indices(x, classifier.vocab, "_unk_"), take!(gen))
         H = classifier.rnn_layers.(X)
@@ -59,14 +61,19 @@ function validate(tc::TextClassifier, gen::Channel, num_of_batches::Union{Colon,
         Y = gpu(take!(gen))
         l = crossentropy(H, Y)
         Flux.reset!(classifier.rnn_layers)
-        temp = zeros(size(H))
-        temp[argmax(H, dims=1)] .= true
-        trues += sum(temp .* Y)
+        tp, tn, fp, fn = confusion_matrix([H], [Y])
+        TP .+= tp
+        TN .+= tn
+        FP .+= fp
+        FN .+= fn
         loss += l
     end
-    accuracy = trues/num_of_batches
+    precisions = TP./(TP .+ FP)
+    recalls = TP./(TP .+ FN)
+    F1_scores = (2 .* (precisions .* recalls))./(precisions .+ recalls)
+    accuracies = (TP .+ TN)./(TP .+ TN .+ FP .+ FN)
     loss /= num_of_batches
-    return (loss, accuracy)
+    return loss, accuracies, precisions, recalls, F1_scores
 end
 
 """
@@ -167,8 +174,8 @@ end
 """
 predict
 
-This is just an helping function which can be used to test the model after training.
-It returns the predictions done by the model for given sentences
+This function can be used to test the model after training.
+It returns the predictions done by the model for given text sentences
 """
 function predict(tc::TextClassifier, text_sents::Vector{String})
     classifier = mapleaves(Tracker.data, tc)

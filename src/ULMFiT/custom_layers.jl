@@ -8,7 +8,7 @@ This file contains the custom layers defined for this model:
     PooledDense
 """
 
-using Flux: gate, _testmode!
+import Flux: gate, _testmode!, _dropout_kernel
 
 # gpu!(entity) = nothing
 # cpu!(entity) = nothing
@@ -108,7 +108,7 @@ function WeightDroppedLSTM(a...; kw...)
 end
 
 """
-reset_masks!
+reset_masks!(m)
 
 This is an important funciton since it used to reset the masks
 which are saved in WeightDroppedLSTMCell after every pass.
@@ -213,13 +213,13 @@ end
 
 VarDrop(p::Float64=0.0) = VarDrop(p, Array{Float32, 2}(UndefInitializer(), 0, 0), true, true)
 
-function (vd::VarDrop)(in)
-    vd.active || return in
+function (vd::VarDrop)(x)
+    vd.active || return x
     if vd.reset
-        vd.mask = drop_mask(in, vd.p)
+        vd.mask = drop_mask(x, vd.p)
         vd.reset = false
     end
-    return (in .* vd.mask)
+    return (x .* vd.mask)
 end
 
 _testmode!(vd::VarDrop, test) = (vd.active = !test)
@@ -235,17 +235,19 @@ Embeddings with varitional dropout
 
 This struct defines an embedding layer with Varitional Embedding dropout functionality.
 Instead of randomly dropping values of embedding matrix,
-this layer drops all values of a specific word, in other words,
-it drops a word from the embedding matrix for that particular pass.
+this layer drops all values of a specific token, in other words,
+that token is dropped from the embedding matrix for that particular pass.
 
 Since this follows Variational DropOut criteria, it also saves the drop mask,
-which should be reset to new mask explicilty using 'reset_masks!' function
+which should be reset to new mask explicilty using `reset_masks!` function
 
-Usage:
+# Usage:
 It takes input size, embedding size and dropout probability
+
 julia> de = DroppedEmbeddings(1000, 20, 0.4)
 
 To reset mask:
+
 julia> reset_masks!(de)
 """
 mutable struct DroppedEmbeddings{A, F}
@@ -266,9 +268,9 @@ function DroppedEmbeddings(in::Integer, embed_size::Integer, p::Float64=0.0;
     return de
 end
 
-function (de::DroppedEmbeddings)(in::AbstractArray, tying::Bool=false)
+function (de::DroppedEmbeddings)(x::AbstractArray, tying::Bool=false)
     dropped = de.active ? de.emb .* de.mask : de.emb
-    return tying ? dropped * in : transpose(dropped[in, :])
+    return tying ? dropped * x : transpose(dropped[x, :])
 end
 
 Flux.@treelike DroppedEmbeddings
@@ -283,20 +285,22 @@ end
 
 ################# Concat Pooling Dense layer #######################
 """
-Concat-Pooled linear layer
+Concat-Pooled Dense layer
 
-This is basically a modified version of the Dense layer.
-It takes the vector of all output of RNN at all time-steps,
-then it calculates the mean and max pools of those outputs and
+This is basically a modified version of the `Dense` layer.
+It takes the `Vector` of outputs of RNN at all time-steps,
+then it calculates the mean and max pools for those outputs and
 concatenates output RNN at the last time-step with these max and mean pools.
-This concatenation is them passes forward same as done in a 'Dense' layer
+Then this conatenated `Vector` is multiplied with weights and added with bias
+and passes through specified activation function.
 
 Usage:
-The first argument ['hidden_sz'] it takes is equal to the
-length of the output of the RNN layer just before this layer.
-other two arguments are output size and activation function
+The first argument `hidden_sz` takes length of the ouput of the preceding RNN layer.
+Other two arguments are output size and activation function
 
-julia> pd = PooledDense(40, 20)    # if the output size of the RNN layer is 40
+# Example
+
+julia> pd = PooledDense(40, 20)    # if the output size of the RNN layer is 40 in this case
 """
 mutable struct PooledDense{F, S, T}
     W::S
@@ -313,24 +317,42 @@ end
 
 Flux.@treelike PooledDense
 
-function (a::PooledDense)(in)
+function (a::PooledDense)(x)
     W, b, σ = a.W, a.b, a.σ
-    in = cat(in..., dims=3)
-    maxpool = maximum(in, dims=3)[:, :, 1]
-    meanpool = (sum(in, dims=3)/size(in, 3))[:, :, 1]
-    hc = cat(in[:, :, 1], maxpool, meanpool, dims=1)
+    x = cat(x..., dims=3)
+    maxpool = maximum(x, dims=3)[:, :, 1]
+    meanpool = (sum(x, dims=3)/size(x, 3))[:, :, 1]
+    hc = cat(x[:, :, 1], maxpool, meanpool, dims=1)
     σ.(W*hc .+ b)
 end
 
 ####################################################################
 
 """
-Get trainable params
+get_trainable_params(layers)
 
-This is an important function for model training, especially for AWD_LSTM layer
-since this while getting params of the model it does not include the 'h' and 'c' params of LSTMs.
-This is useful while calculating gradients since calculating params for 'h' and 'c' fields
-in LSTM is unnecessary here.
+This funciton works same as `params` function except for `AWD_LSTM` layer.
+While getting `Params` of the `AWD_LSTM` it does not include the `h` and `c` `params` of `AWD_LSTM`.
+This is useful while calculating gradients because calculating gradients for `h` and `c` fields
+in `AWD_LSTM` is unnecessary here.
+
+# Example:
+
+julia> layers = Chain(DroppedEmbeddings(4,5,0.2),
+                    AWD_LSTM(5, 3),
+                    Dense(3, 2),
+                    softmax
+                );
+julia> p1 = params(layers);
+julia> p2 = get_trainable_params(layers);
+
+julia> length(p1)
+8
+
+julia> length(p2)
+6
+
+`Params` from all the other layers are included in p2 except for `h` and `c`
 """
 function get_trainable_params(layers)
     p = []

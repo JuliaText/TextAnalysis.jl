@@ -3,7 +3,7 @@ Helping functions
 """
 
 # Converts vector of words to vector of indices
-function indices(wordVect::Vector, vocab::Vector, unk)
+function indices(wordVect::Vector, vocab::Vector, unk::String="_unk_")
     function index(x, unk)
         idx = something(findfirst(isequal(x), vocab), 0)
         idx > 0 || return findfirst(isequal(unk), vocab)
@@ -27,8 +27,8 @@ end
 init_weights(extreme::AbstractFloat, dims...) = randn(Float32, dims...) .* sqrt(Float32(extreme))
 
 # Generator, whenever it should be called two times since it gives X in first and y in second call
-function generator(c::Channel, corpus; batchsize::Integer=64, bptt::Integer=70)
-    X_total = post_pad_sequences(chunk(corpus, batchsize))
+function generator(c::Channel, corpus::AbstractDocument; batchsize::Integer=64, bptt::Integer=70)
+    X_total = post_pad_sequences(chunk(tokens(corpus), batchsize))
     n_batches = Int(floor(length(X_total[1])/bptt))
     put!(c, n_batches)
     for i=1:n_batches
@@ -39,25 +39,17 @@ function generator(c::Channel, corpus; batchsize::Integer=64, bptt::Integer=70)
     end
 end
 
-# To save model
-function save_model!(m::LanguageModel, filepath::String="ULMFiT-LM.bson")
-    weights = cpu.(Tracker.data.(params(m)))
-    @save filepath weights
-end
+"""
+confusion_matrix(H::Vector, Y::Vector)
 
-# To load model
-function load_model!(lm::LanguageModel, filepath::String=joinpath(datadep"pretrained-ULMFiT", "weights.bson"))
-    @load filepath weights
-    Flux.loadparams!(lm, weights)
-end
-
-function load_model!()
-    lm = LanguageModel()
-    load_model!(lm)
-    return lm
-end
-
-function load_model!(filepath::String)
-    lm = LanguageModel()
-    load_model!(lm, filepath)
+Returns the TP, TN, FP and FN values of confusion matrix for each class.
+"""
+function confusion_matrix(H::Vector, Y::Vector)
+    H = cat(H..., dims=3)
+    Y = cat(Y..., dims=3)
+    TP = sum(sum(H .* Y, dims=2), dims=3)
+    FN = sum(sum(((-1 .* H) .+ 1) .* Y, dims=2), dims=3)
+    FP = sum(sum(H .* ((-1 .* Y) .+ 1), dims=2), dims=3)
+    TN = sum(sum(((-1 .* H) .+ 1) .* ((-1 .* Y) .+ 1), dims=2), dims=3)
+    return TP, TN, FP, FN
 end

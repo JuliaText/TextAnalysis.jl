@@ -10,20 +10,22 @@ The novel methods describe the ULMFiT paper are used:
 """
 
 """
-Discriminative fine-tuning
+discriminative_step!(layers, ηL::Float64, l, opts::Vector)
 
+Discriminative fine-tuning Step
 This function performs the backpropagation step with discriminative fine-tune method,
 that is, it uses different learning rates for different layers.
 
 Arguments:
 
 layers      : layers whose weights are going to get updated
-ηL          : learning rate of the last layer in 'layers'
-opts        : 'Vector' of optimizers used to update weights for corresponding layers
+ηL          : learning rate of the last layer in `layers`
+opts        : `Vector` of optimizers used to update weights for corresponding layers
 
 NOTE: length(opts) == length(layers)
 """
 function discriminative_step!(layers, ηL::Float64, l, opts::Vector)
+    @assert length(opts) == length(layers)
     # Gradient calculation
     grads = Tracker.gradient(() -> l, get_trainable_params(layers))
 
@@ -52,7 +54,6 @@ function fine_tune_lm!(lm::LanguageModel, data_loader::Channel=imdb_fine_tune_da
 
     opts = [ADAM(0.001, (0.7, 0.99)) for i=1:4]
     cut = num_of_iters * epochs * stlr_cut_frac
-    gpu!.(lm.layers)
 
     # Fine-Tuning loops
     for epoch=1:epochs
@@ -81,4 +82,37 @@ function fine_tune_lm!(lm::LanguageModel, data_loader::Channel=imdb_fine_tune_da
             reset_masks!.(lm.layers)
         end
     end
+end
+
+"""
+get_vocab(corpus::TokenDocument, lm::LanguageModel)
+
+Returns vocabulary of the given tokenized corpus based on the given language model vocabulary.
+"""
+function get_vocab(corpus::TokenDocument, lm::LanguageModel)
+    u = unique(tokens(corpus))
+    new_vocab = intersect(vocab, lm.vocab)
+    return new_vocab
+end
+
+
+"""
+set_vocab!(lm::LanguageModel, vocab::Vector)
+
+Sets new vocabulary to the LanguageModel in `vocab` field.
+With keeping the same embeddings of previous vocabulary.
+
+Recommended to use this with `get_vocab` function:
+
+Example:
+julia> new_vocab = get_vocab(corpus, lm);
+
+julia> set_vocab!(lm, new_vocab)
+"""
+function set_vocab!(lm::LanguageModel, vocab::Vector)
+    idxs = indices(vocab, lm.vocab)
+    lm.vocab = vocab
+    lm.layers[1].emb = param(Tracker.data(lm.layers[1].emb)[idxs, :])
+    lm.layers[1].mask = gpu(drop_mask((length(vocab),), lm.layers[1].p))
+    return
 end
