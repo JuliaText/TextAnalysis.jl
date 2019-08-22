@@ -1,7 +1,7 @@
 using WordTokenizers
 
 @testset "POS" begin
-    pos = POS_Tagger()
+    pos = PoSTagger()
 
     @testset "Basic" begin
         str = "The very first major corpus of English for computer analysis was the Brown Corpus."
@@ -21,7 +21,7 @@ using WordTokenizers
     end
 
     @testset "Documents and Corpus" begin
-        pos = POS_Tagger()
+        pos = PoSTagger()
 
         text1 = "A little too small"
         text2 = "Here Foo Bar, please have some chocolate."

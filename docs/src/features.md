@@ -470,25 +470,25 @@ The current model tags all the POS Tagging is done based on [convention used in 
 To use the API, we first load the model weights into an instance of tagger.
 The function also accepts the path of model_weights and model_dicts (for character and word embeddings)
 
-    POS_Tagger()
-    POS_Tagger(dicts_path, weights_path)
+    PoSTagger()
+    PoSTagger(dicts_path, weights_path)
 
 ```julia
-julia> pos = POS_Tagger()
+julia> pos = PoSTagger()
 
 ```
 
 !!! note
-    When you call `POS_Tagger()` for the first time, the package will request permission for download the `Model_dicts` and `Model_weights`. Upon downloading, these are store locally and managed by `DataDeps`. So, on subsequent uses the weights will not need to be downloaded again.
+    When you call `PoSTagger()` for the first time, the package will request permission for download the `Model_dicts` and `Model_weights`. Upon downloading, these are store locally and managed by `DataDeps`. So, on subsequent uses the weights will not need to be downloaded again.
 
 Once we create an instance, we can call it to tag a String (sentence), sequence of tokens, `AbstractDocument` or `Corpus`.
 
-    (pos::POS_Tagger)(sentence::String)
-    (pos::POS_Tagger)(tokens::Array{String, 1})
-    (pos::POS_Tagger)(sd::StringDocument)
-    (pos::POS_Tagger)(fd::FileDocument)
-    (pos::POS_Tagger)(td::TokenDocument)
-    (pos::POS_Tagger)(crps::Corpus)
+    (pos::PoSTagger)(sentence::String)
+    (pos::PoSTagger)(tokens::Array{String, 1})
+    (pos::PoSTagger)(sd::StringDocument)
+    (pos::PoSTagger)(fd::FileDocument)
+    (pos::PoSTagger)(td::TokenDocument)
+    (pos::PoSTagger)(crps::Corpus)
 
 ```julia
 
