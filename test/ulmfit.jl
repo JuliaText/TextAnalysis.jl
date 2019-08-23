@@ -100,5 +100,5 @@ end
     lm = LanguageModel()
     tc = TextClassifier(lm)
     @test tc.rnn_layers == lm.layers[1:8]
-    @test length(tc.linear_layers) == 5
+    @test length(tc.linear_layers) == 6
 end

@@ -1,7 +1,7 @@
-using DelimitedFiles
-
 """
 ULMFiT - LANGUAGE MODEL
+
+    LanguageModel(vocab::AbstractDocument=FileDocument(), load_pretrained::Bool=false;kw...)
 
 The Language model structure for ULMFit is defined by 'LanguageModel' struct.
 It contains has two fields:
@@ -13,16 +13,20 @@ The field 'layers' also includes the Variational Dropout layers.
 It takes several dropout probabilities for different dropout for different layers.
 
 [Usage and arguments are discussed in the docs]
+There are several keyword argunments to set the dropout probabilities
+of the layers of model checkout those arguments in the docs.
+# Example:
 
+julia> lm = LanguageModel()
 """
 mutable struct LanguageModel
     vocab :: Vector
     layers :: Flux.Chain
 end
 
-function LanguageModel(load_pretrained::Bool=false ;embedding_size::Integer=400, hid_lstm_sz::Integer=1150, out_lstm_sz::Integer=embedding_size,
+function LanguageModel(vocab::AbstractDocument=FileDocument("vocabs/lm_vocab.txt"), load_pretrained::Bool=false;embedding_size::Integer=400, hid_lstm_sz::Integer=1150, out_lstm_sz::Integer=embedding_size,
     embed_drop_prob::Float64 = 0.05, in_drop_prob::Float64 = 0.4, hid_drop_prob::Float64 = 0.5, layer_drop_prob::Float64 = 0.3, final_drop_prob::Float64 = 0.3)
-    vocab = intern.(string.(readdlm("vocab.csv",',', header=false)[:, 1]))
+    vocab = intern.(tokens(vocab))
     de = gpu(DroppedEmbeddings(length(vocab), embedding_size, embed_drop_prob; init = (dims...) -> init_weights(0.1, dims...)))
     lm = LanguageModel(
         vocab,
@@ -46,31 +50,32 @@ end
 Flux.@treelike LanguageModel
 
 # Tests the language model
-function test_lm(lm, data_gen, num_of_iters::Integer; unknown_token::String="_unk_")
+function test_lm(lm::LanguageModel, data_gen, num_of_iters::Integer; unknown_token::String="_unk_")
     model_layers = mapleaves(Tracker.data, lm.layers)
     testmode!(model_layers)
-    sum_l, l_vect = 0, []
+    l_vect = []
     len = length(vocab)
     TP, FP, FN, TN = zeros(len, 1), zeros(len, 1), zeros(len, 1), zeros(len, 1)
     for iter=1:num_of_iters
-        x, y = take!(gen), take!(gen)
-        h = broadcast(w -> indices(w, lm.vocab, unknown_token), x)
-        h = model_layers.(h)
-        y = broadcast(x -> gpu(Flux.onehotbatch(x, lm.vocab, "_unk_")), y)
-        l = sum(crossentropy.(h, y))
+        X, Y = take!(gen), take!(gen)
+        H = broadcast(w -> indices(w, lm.vocab, unknown_token), X)
+        H = model_layers.(H)
+        Y = broadcast(x -> gpu(Flux.onehotbatch(x, lm.vocab, "_unk_")), Y)
+        l = sum(crossentropy.(H, Y))
         Flux.reset!(model_layers)
-        tp, tn, fp, fn = confusion_matrix(h, y)
-        TP .+= tp
-        TN .+= tn
-        FP .+= fp
-        FN .+= fn
-        sum_l += l
+        for (h, y) in zip(H, Y)
+            TP .+= sum(h .* y, dims=2)
+            FN .+= sum(((-1 .* h) .+ 1) .* y, dims=2)
+            FP .+= sum(h .* ((-1 .* y) .+ 1), dims=2)
+            TN .+= sum(((-1 .* h) .+ 1) .* ((-1 .* y) .+ 1), dims=2)
+        end
         push!(l_vect, l)
     end
     precisions = TP./(TP .+ FP)
     recalls = TP./(TP .+ FN)
     F1 = (2 .* (precisions .* recalls))./(precisions .+ recalls)
-    return sum_l/num_of_iters, l_vect, precisions, recalls, F1
+    accuracy = (TP[1] + TN[1])/(TP[1] + TN[1] + FP[1] + FN[1])
+    return l_vect, accuarcy, precisions, recalls, F1
 end
 
 # computes the forward pass while training

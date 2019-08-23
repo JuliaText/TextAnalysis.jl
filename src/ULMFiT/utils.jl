@@ -38,18 +38,3 @@ function generator(c::Channel, corpus::AbstractDocument; batchsize::Integer=64, 
         put!(c, batch[2:end])
     end
 end
-
-"""
-confusion_matrix(H::Vector, Y::Vector)
-
-Returns the TP, TN, FP and FN values of confusion matrix for each class.
-"""
-function confusion_matrix(H::Vector, Y::Vector)
-    H = cat(H..., dims=3)
-    Y = cat(Y..., dims=3)
-    TP = sum(sum(H .* Y, dims=2), dims=3)
-    FN = sum(sum(((-1 .* H) .+ 1) .* Y, dims=2), dims=3)
-    FP = sum(sum(H .* ((-1 .* Y) .+ 1), dims=2), dims=3)
-    TN = sum(sum(((-1 .* H) .+ 1) .* ((-1 .* Y) .+ 1), dims=2), dims=3)
-    return TP, TN, FP, FN
-end

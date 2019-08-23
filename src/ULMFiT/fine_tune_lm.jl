@@ -10,7 +10,7 @@ The novel methods describe the ULMFiT paper are used:
 """
 
 """
-discriminative_step!(layers, ηL::Float64, l, opts::Vector)
+    discriminative_step!(layers, ηL::Float64, l, opts::Vector)
 
 Discriminative fine-tuning Step
 This function performs the backpropagation step with discriminative fine-tune method,
@@ -42,7 +42,9 @@ function discriminative_step!(layers, ηL::Float64, l, opts::Vector)
 end
 
 """
-fine_tune_lm!
+    fine_tune_lm!(lm::LanguageModel, data_loader::Channel=imdb_fine_tune_data,
+            stlr_cut_frac::Float64=0.1, stlr_ratio::Float32=32, stlr_η_max::Float64=4e-3;
+            epochs::Integer=1, checkpoint_itvl::Integer=5000)
 
 This function contains main training loops for fine-tuning the language model.
 To use this funciton, an instance of LanguageModel and a data loader is needed.
@@ -85,7 +87,7 @@ function fine_tune_lm!(lm::LanguageModel, data_loader::Channel=imdb_fine_tune_da
 end
 
 """
-get_vocab(corpus::TokenDocument, lm::LanguageModel)
+    get_vocab(corpus::TokenDocument, lm::LanguageModel)
 
 Returns vocabulary of the given tokenized corpus based on the given language model vocabulary.
 """
@@ -97,7 +99,7 @@ end
 
 
 """
-set_vocab!(lm::LanguageModel, vocab::Vector)
+    set_vocab!(lm::LanguageModel, vocab::Vector)
 
 Sets new vocabulary to the LanguageModel in `vocab` field.
 With keeping the same embeddings of previous vocabulary.
@@ -108,6 +110,16 @@ Example:
 julia> new_vocab = get_vocab(corpus, lm);
 
 julia> set_vocab!(lm, new_vocab)
+
+Inaddtion to this also incorporate special tokens for UNKNOWN (e.g. "_unk_"), PADDING (e.g. "_pad_") etc.
+To add these use `insert!` function after getting vocabulary from `get_vocab` function.
+To use `set_vocab!` it is important that the tokens added are same as in the previous vocabulary of Language model,
+so that the embeddings for these tokens can be extracted for the previous embeddings of Language model.
+
+# Example:
+
+julia> insert!(vocab, 1, "_unk_")
+julia> insert!(vocab, 2, "_pad_")
 """
 function set_vocab!(lm::LanguageModel, vocab::Vector)
     idxs = indices(vocab, lm.vocab)

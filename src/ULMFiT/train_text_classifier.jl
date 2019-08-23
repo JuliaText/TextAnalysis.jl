@@ -52,28 +52,26 @@ function validate(tc::TextClassifier, gen::Channel, num_of_batches::Union{Colon,
     loss = 0
     iters = take!(gen)
     (num_of_batches != : & num_of_batches < iters) && (iters = num_of_batches)
-    len = size(tc.linear_layers[end-2].b, 1)
-    TP, FP, FN, TN = zeros(len, 1), zeros(len, 1), zeros(len, 1), zeros(len, 1)
-    for i=1:iters
-        X = map(x -> indices(x, classifier.vocab, "_unk_"), take!(gen))
+    TP, TN, FP, FN = gpu(zeros(Float32, 2, 1)), gpu(zeros(Float32, 2, 1)), gpu(zeros(Float32, 2, 1)), gpu(zeros(Float32, 2, 1))
+    for i=1:num_of_batches
+        X = take!(gen)
+        Y = gpu(take!(gen))
+        X = map(x -> indices(x, classifier.vocab, "_unk_"), X)
         H = classifier.rnn_layers.(X)
         H = classifier.linear_layers(H)
-        Y = gpu(take!(gen))
         l = crossentropy(H, Y)
         Flux.reset!(classifier.rnn_layers)
-        tp, tn, fp, fn = confusion_matrix([H], [Y])
-        TP .+= tp
-        TN .+= tn
-        FP .+= fp
-        FN .+= fn
+        TP .+= sum(H .* Y, dims=2)
+        FN .+= sum(((-1 .* H) .+ 1) .* Y, dims=2)
+        FP .+= sum(H .* ((-1 .* Y) .+ 1), dims=2)
+        TN .+= sum(((-1 .* H) .+ 1) .* ((-1 .* Y) .+ 1), dims=2)
         loss += l
     end
-    precisions = TP./(TP .+ FP)
-    recalls = TP./(TP .+ FN)
-    F1_scores = (2 .* (precisions .* recalls))./(precisions .+ recalls)
-    accuracies = (TP .+ TN)./(TP .+ TN .+ FP .+ FN)
-    loss /= num_of_batches
-    return loss, accuracies, precisions, recalls, F1_scores
+    precisions = TP ./ (TP .+ FP)
+    recalls = TP ./ (TP .+ FN)
+    F1 = (2 .* (precisions .* recalls)) ./ (precisions .+ recalls)
+    accuracy = (TP[1] + TN[1])/(TP[1] + TN[1] + FP[1] + FN[1])
+    return (loss, accuracy, precisions, recalls, F1)
 end
 
 """
@@ -113,6 +111,8 @@ function forward(tc::TextClassifier, gen::Channel, tracked_steps::Integer=32)
 end
 
 """
+    loss(classifier::TextClassifier, gen::Channel, tracked_steps::Integer=32)
+
 LOSS function
 
 It takes the output of the forward funciton and returns crossentropy loss.
@@ -132,13 +132,18 @@ function loss(classifier::TextClassifier, gen::Channel, tracked_steps::Integer=3
 end
 
 """
-train_classifier!
+    train_classifier!(classifier::TextClassifier=TextClassifier(), classes::Integer=1,
+            data_loader::Channel=imdb_classifier_data, hidden_layer_size::Integer=50;kw...)
 
 It contains main training loops for training a defined classifer for specified classes and data.
 Usage is discussed in the docs.
 """
-function train_classifier!(classifier::TextClassifier=TextClassifier(), classes::Integer=1, data_loader::Channel=imdb_classifier_data, hidden_layer_size::Integer=50;
-    stlr_cut_frac::Float64=0.1, stlr_ratio::Number=32, stlr_η_max::Float64=0.01, val_loader::Channel=nothing, cross_val_batches::Union{Colon, Integer}=:, epochs::Integer=1, checkpoint_itvl=5000)
+function train_classifier!(classifier::TextClassifier=TextClassifier(), classes::Integer=1,
+    data_loader::Channel=imdb_classifier_data, hidden_layer_size::Integer=50;
+    stlr_cut_frac::Float64=0.1, stlr_ratio::Number=32, stlr_η_max::Float64=0.01,
+    val_loader::Channel=nothing, cross_val_batches::Union{Colon, Integer}=:,
+    epochs::Integer=1, checkpoint_itvl=5000)
+
     trainable = []
     append!(trainable, [classifier.rnn_layers[[1, 3, 5, 7]]...])
     push!(trainable, [classifier.linear_layers[1:2]...])
@@ -166,24 +171,30 @@ function train_classifier!(classifier::TextClassifier=TextClassifier(), classes:
             reset_masks!.(classifier.rnn_layers)    # reset all dropout masks
         end
         println("Train set accuracy: $trn_accu , Training loss: $trn_loss")
-        !(val_loader isa nothing) && (val_loss, val_acc = validate(classifer, val_loader))
-        println("Cross validation accuracy: $val_accu , Cross validation loss: $val_loss\n")
+        !(val_loader isa nothing) ? (val_loss, val_acc, val_precisions, val_reacalls, val_F1_scores = validate(classifer, val_loader)) : continue
+        println("Cross validation loss: $val_loss")
+        println("Cross validation accuracy:\n $val_acc")
+        println("Cross validation class wise Precisions:\n $val_precisions")
+        println("Cross validation class wise Recalls:\n $val_recalls")
+        println("Cross validation class wise F1 scores:\n $val_F1_scores")
     end
 end
 
 """
-predict
+    predict(tc::TextClassifier, text_sents::Corpus)
 
 This function can be used to test the model after training.
-It returns the predictions done by the model for given text sentences
+It returns the predictions done by the model for given `Corpus` of `Documents`
+All the preprocessing related to the used vocabulary should be done before using this function.
+Use `prepare!` function to do preprocessing
 """
-function predict(tc::TextClassifier, text_sents::Vector{String})
+function predict(tc::TextClassifier, text_sents::Corpus)
     classifier = mapleaves(Tracker.data, tc)
     Flux.testmode!(classifier)
     predictions = []
     expr(x) = indices(x, classifier.vocab, "_unk_")
     for text in text_sents
-        tokens = tokenize(text)
+        tokens = tokens(text)
         h = classifier.rnn_layers.(expr.(tokens))
         probability_dist = classifier.linear_layers(h)
         class = argmax(probaility_dist)

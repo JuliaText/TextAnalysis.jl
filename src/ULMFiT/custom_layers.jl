@@ -16,6 +16,8 @@ reset_masks!(entity) = nothing
 reset_probability!(entity) = nothing
 
 """
+    drop_mask(x, p)
+
 Drop mask generator
 
 This function generates dropout mask for given 'x' with p probability
@@ -93,6 +95,8 @@ Flux.@treelike WeightDroppedLSTMCell
 _testmode!(m::WeightDroppedLSTMCell, test) = (m.active = !test)
 
 """
+    WeightDroppedLSTM(in::Integer, out::Integer, p::Float64=0.0)
+
 WeightDroppedLSTM layer
 
 This makes the WeightDroppedLSTMCell stateful, by wrapping the layer in a Recur field.
@@ -108,7 +112,7 @@ function WeightDroppedLSTM(a...; kw...)
 end
 
 """
-reset_masks!(m)
+    reset_masks!(layer)
 
 This is an important funciton since it used to reset the masks
 which are saved in WeightDroppedLSTMCell after every pass.
@@ -126,6 +130,8 @@ end
 
 ################## ASGD Weight-Dropped LSTM Layer ##################
 """
+    AWD_LSTM(in::Integer, out::Integer, p::Float64=0.0)
+
 Average SGD Weight-Dropped LSTM
 
 This custom layer is used for training the Language model,
@@ -163,6 +169,8 @@ set_trigger!(trigger_point::Integer, m::AWD_LSTM) = m.T = trigger_point;
 reset_masks!(awd::AWD_LSTM) = reset_masks!(awd.layer)
 
 """
+    asgd_step!(i::Integer, layer::AWD_LSTM)
+
 Averaged Stochastic Gradient Descent Step
 
 This funciton performs the Averaging step to the given AWD_LSTM layer,
@@ -192,7 +200,9 @@ end
 
 ########################## Varitional DropOut ######################
 """
-Variational Dropout
+    VarDrop(p::Float64=0.0)
+
+Variational Dropout layer
 
 Unlike standard dropout layer, which applies new dropout mask to every Array ot Matrix passed to it,
 this layer saves the mask applied till it is explicitly set to reset mode using 'reset_masks!'.
@@ -231,6 +241,8 @@ reset_masks!(vd::VarDrop) = (vd.reset = true)
 
 ################# Varitional Dropped Embeddings ######################
 """
+    DroppedEmbeddings(in::Integer, embed_size::Integer, p::Float64=0.0)
+
 Embeddings with varitional dropout
 
 This struct defines an embedding layer with Varitional Embedding dropout functionality.
@@ -285,6 +297,8 @@ end
 
 ################# Concat Pooling Dense layer #######################
 """
+    PooledDense(hidden_sz::Integer, out::Integer, σ = identity)
+
 Concat-Pooled Dense layer
 
 This is basically a modified version of the `Dense` layer.
