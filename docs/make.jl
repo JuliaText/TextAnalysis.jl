@@ -7,7 +7,7 @@ makedocs(
         canonical = "https://juliatext.github.io/TextAnalysis.jl/stable/",
         #prettyurls = false,
     ),
-    assets = ["assets/custom.css", "assets/custom.js"],
+    assets = ["assets/custom.css", "assets/custom.js", "assets/favicon.ico"],
     pages = [
         "Home" => "index.md",
         "Documents" => "documents.md",
