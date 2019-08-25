@@ -10,8 +10,6 @@ This file contains the custom layers defined for this model:
 
 import Flux: gate, _testmode!, _dropout_kernel
 
-# gpu!(entity) = nothing
-# cpu!(entity) = nothing
 reset_masks!(entity) = nothing
 reset_probability!(entity) = nothing
 
@@ -20,7 +18,7 @@ reset_probability!(entity) = nothing
 
 Drop mask generator
 
-This function generates dropout mask for given 'x' with p probability
+This function generates dropout mask for given 'x' with `p` probability
     or
 It can be used to generate the mask by giving the shape of the desired mask and probaility
 """

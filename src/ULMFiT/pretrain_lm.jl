@@ -28,7 +28,7 @@ end
 
 function LanguageModel(load_pretrained::Bool=false, vocabpath::String="vocabs/lm_vocab.csv";embedding_size::Integer=400, hid_lstm_sz::Integer=1150, out_lstm_sz::Integer=embedding_size,
     embed_drop_prob::Float64 = 0.05, in_drop_prob::Float64 = 0.4, hid_drop_prob::Float64 = 0.5, layer_drop_prob::Float64 = 0.3, final_drop_prob::Float64 = 0.3)
-    vocab = string.(readdlm(vocabpath, ','))
+    vocab = (string.(readdlm(vocabpath, ',')))[:, 1]
     de = gpu(DroppedEmbeddings(length(vocab), embedding_size, embed_drop_prob; init = (dims...) -> init_weights(0.1, dims...)))
     lm = LanguageModel(
         vocab,
@@ -45,7 +45,7 @@ function LanguageModel(load_pretrained::Bool=false, vocabpath::String="vocabs/lm
             softmax
         )
     )
-    load_pretrained && load_model!(lm, datadep"Pretrained ULMFiT Language Model")
+    # load_pretrained && load_model!(lm, datadep"Pretrained ULMFiT Language Model")
     return lm
 end
 
@@ -159,12 +159,12 @@ end
 # To save model
 function save_model!(m::LanguageModel, filepath::String)
     weights = cpu.(Tracker.data.(params(m)))
-    @save filepath weights
+    BSON.@save filepath weights
 end
 
 # To load model
 function load_model!(lm::LanguageModel, filepath::String)
-    @load filepath weights
+    BSON.@load filepath weights
     Flux.loadparams!(lm, weights)
 end
 
@@ -197,11 +197,3 @@ function sample(starting_text::AbstractDocument, lm::LanguageModel)
         prediction == "_pad_" && break
     end
 end
-
-
-# using WordTokenizers   # For accesories
-# using InternedStrings   # For using Interned strings
-# using Flux  # For building models
-# using Flux: Tracker, crossentropy, chunk
-# using BSON: @save, @load  # For saving model weights
-# using CuArrays  # For GPU support
