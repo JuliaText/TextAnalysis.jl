@@ -1,7 +1,9 @@
+using DelimitedFiles
+
 """
 ULMFiT - LANGUAGE MODEL
 
-    LanguageModel(vocab::AbstractDocument=FileDocument(), load_pretrained::Bool=false;kw...)
+    LanguageModel(load_pretrained::Bool=false, vocabpath::String="vocabs/lm_vocab.csv";kw...)
 
 The Language model structure for ULMFit is defined by 'LanguageModel' struct.
 It contains has two fields:
@@ -24,9 +26,9 @@ mutable struct LanguageModel
     layers :: Flux.Chain
 end
 
-function LanguageModel(vocab::AbstractDocument=FileDocument("vocabs/lm_vocab.txt"), load_pretrained::Bool=false;embedding_size::Integer=400, hid_lstm_sz::Integer=1150, out_lstm_sz::Integer=embedding_size,
+function LanguageModel(load_pretrained::Bool=false, vocabpath::String="vocabs/lm_vocab.csv";embedding_size::Integer=400, hid_lstm_sz::Integer=1150, out_lstm_sz::Integer=embedding_size,
     embed_drop_prob::Float64 = 0.05, in_drop_prob::Float64 = 0.4, hid_drop_prob::Float64 = 0.5, layer_drop_prob::Float64 = 0.3, final_drop_prob::Float64 = 0.3)
-    vocab = intern.(tokens(vocab))
+    vocab = string.(readdlm(vocabpath, ','))
     de = gpu(DroppedEmbeddings(length(vocab), embedding_size, embed_drop_prob; init = (dims...) -> init_weights(0.1, dims...)))
     lm = LanguageModel(
         vocab,
@@ -49,18 +51,28 @@ end
 
 Flux.@treelike LanguageModel
 
-# Tests the language model
+"""
+    test_lm(lm::LanguageModel, data_gen, num_of_iters::Integer; unknown_token::String="_unk_")
+
+This function is used to test the `LanguageModel` on the given data given by data_gen.
+`num_of_iters` refers to number of batches for which the model has to be tested.
+It returns loss, accuracy, precsion, recall and F1 score.
+
+# Example:
+
+julia> test_lm(lm, data_gen, 200, "<unk")
+"""
 function test_lm(lm::LanguageModel, data_gen, num_of_iters::Integer; unknown_token::String="_unk_")
     model_layers = mapleaves(Tracker.data, lm.layers)
     testmode!(model_layers)
-    l_vect = []
+    loss = 0
     len = length(vocab)
     TP, FP, FN, TN = zeros(len, 1), zeros(len, 1), zeros(len, 1), zeros(len, 1)
     for iter=1:num_of_iters
         X, Y = take!(gen), take!(gen)
         H = broadcast(w -> indices(w, lm.vocab, unknown_token), X)
         H = model_layers.(H)
-        Y = broadcast(x -> gpu(Flux.onehotbatch(x, lm.vocab, "_unk_")), Y)
+        Y = broadcast(x -> gpu(Flux.onehotbatch(x, lm.vocab, unknown_token)), Y)
         l = sum(crossentropy.(H, Y))
         Flux.reset!(model_layers)
         for (h, y) in zip(H, Y)
@@ -69,13 +81,13 @@ function test_lm(lm::LanguageModel, data_gen, num_of_iters::Integer; unknown_tok
             FP .+= sum(h .* ((-1 .* y) .+ 1), dims=2)
             TN .+= sum(((-1 .* h) .+ 1) .* ((-1 .* y) .+ 1), dims=2)
         end
-        push!(l_vect, l)
+        loss += l/length(X[1])
     end
-    precisions = TP./(TP .+ FP)
-    recalls = TP./(TP .+ FN)
-    F1 = (2 .* (precisions .* recalls))./(precisions .+ recalls)
+    precision = *((TP./(TP .+ FP))...)
+    recall = *((TP./(TP .+ FN))...)
+    F1 = (2*precision*recall)/(precision+recall)
     accuracy = (TP[1] + TN[1])/(TP[1] + TN[1] + FP[1] + FN[1])
-    return l_vect, accuarcy, precisions, recalls, F1
+    return (loss/num_of_iters), accuarcy, precision, recall, F1
 end
 
 # computes the forward pass while training

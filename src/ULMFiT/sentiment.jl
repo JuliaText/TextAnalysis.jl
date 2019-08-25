@@ -24,13 +24,13 @@ struct SentimentClassifier <: TextClassifier
 end
 
 function SentimentClassifier()
-    @load datadep"ULMFiT Sentiment Classifier" weights
+    BSON.@load datadep"ULMFiT Sentiment Classifier" weights
     in_lstm = size(weights[2], 2)
     hid_lstm = size(weights[7], 2)
     out_lstm = size(weights[12], 1)/4
     clsfr_hidden_sz = size(weights[end-1], 2)/3
     clsfr_out_sz = size(weights[end-1], 1)
-    vocab = intern.(tokens(FileDocument("vocabs/sentiment_vocab.txt")))
+    vocab = string.(readdlm("vocabs/sc_vocab.csv", ','))
     sc = SentimentClassifier(
         vocab,
         Chain(
@@ -54,7 +54,8 @@ function SentimentClassifier()
 end
 
 function (sc::SentimentClassifier)(x::TokenDocument)
-    idxs = map(w -> indices([w], sc.vocab, "_unk_"), lowercase.(tokens(x))))
+    remove_case!(x)
+    idxs = map(w -> indices([w], sc.vocab, "_unk_"), tokens(x))
     h = sc.rnn_layers[idxs].(idxs)
     h = sc.linear_layers(h)
     Flux.reset!(sc.rnn_layers)

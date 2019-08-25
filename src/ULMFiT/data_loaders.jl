@@ -1,11 +1,11 @@
+using Random: shuffle!
+
 """
 Default Data Loaders for ULMFiT training for Sentiment Analysis
  - WikiText-103 corpus is to pre-train the Language model
  - IMDB movie review dataset - unsup data is used for fine-tuning Language Mode for Sentiment Analysis
  - IMDB movie review dataset - labelled data is used for training classifier for Sentiment Analysis
 """
-# using CorpusLoaders
-using Random
 
 # WikiText-103 corpus loader
 cd(@__DIR__)
@@ -54,7 +54,7 @@ end
 function load_wikitext_103(batchsize::Integer, bptt::Integer; type = "train")
     corpuspath = joinpath(datadep"WikiText-103", "wiki.$(type).tokens")
     corpus = read(open(corpuspath, "r"), String)
-    corpus = intern.(tokenize(corpus))
+    corpus = tokenize(corpus)
     return Channel(x -> generator(x, corpus; batchsize = batchsize, bptt = bptt));
 end
 
@@ -96,4 +96,28 @@ function imdb_classifier_data(batchsize::Integer)
             put!(docs, cat(Y..., dims=2))
         end #for
     end #channel
+end
+
+"""
+    get_buckets(c::Corpus, bucketsize::Integer)
+
+Simple Sequence-Bucketing
+
+This function will return the group of `Document`s with close sequence lengths from the given `Corpus`
+
+# Example:
+
+julia> get_buckets(corpus, 32)
+
+"""
+function get_buckets(c::Corpus, bucketsize::Integer)
+    lengths = length.(tokens.(documents(c)))
+    sorted_lens = sortperm(lengths)
+    c = c[sorted_lens]
+    buckets = []
+    for i=1:bucketsize:length(c)
+        (length(c) - i) < (bucketsize-1) && (push!(buckets, c[i:end]);continue)
+        push!(buckets, c[i:bucketsize-1])
+    end
+    return buckets
 end
