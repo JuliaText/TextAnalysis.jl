@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Features · TextAnalysis</title><link rel="canonical" href="https://juliatext.github.io/TextAnalysis.jl/stable/features/index.html"/><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/><script src="../assets/custom.js"></script></head><body><nav class="toc"><h1>TextAnalysis</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../documents/">Documents</a></li><li><a class="toctext" href="../corpus/">Corpus</a></li><li class="current"><a class="toctext" href>Features</a><ul class="internal"><li><a class="toctext" href="#Creating-a-Document-Term-Matrix-1">Creating a Document Term Matrix</a></li><li><a class="toctext" href="#Creating-Individual-Rows-of-a-Document-Term-Matrix-1">Creating Individual Rows of a Document Term Matrix</a></li><li><a class="toctext" href="#The-Hash-Trick-1">The Hash Trick</a></li><li><a class="toctext" href="#TF-(Term-Frequency)-1">TF (Term Frequency)</a></li><li><a class="toctext" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)-1">TF-IDF (Term Frequency - Inverse Document Frequency)</a></li><li><a class="toctext" href="#Okapi-BM-25-1">Okapi BM-25</a></li><li><a class="toctext" href="#Co-occurrence-matrix-(COOM)-1">Co occurrence matrix (COOM)</a></li><li><a class="toctext" href="#Sentiment-Analyzer-1">Sentiment Analyzer</a></li><li><a class="toctext" href="#Summarizer-1">Summarizer</a></li><li><a class="toctext" href="#Tagging_schemes-1">Tagging_schemes</a></li><li><a class="toctext" href="#Parts-of-Speech-Tagger-1">Parts of Speech Tagger</a></li></ul></li><li><a class="toctext" href="../semantic/">Semantic Analysis</a></li><li><a class="toctext" href="../classify/">Classifier</a></li><li><a class="toctext" href="../example/">Extended Example</a></li><li><a class="toctext" href="../evaluation_metrics/">Evaluation Metrics</a></li><li><a class="toctext" href="../crf/">Conditional Random Fields</a></li><li><a class="toctext" href="../ner/">Named Entity Recognition</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Features</a></li></ul><a class="edit-page" href="https://github.com/JuliaText/TextAnalysis.jl/blob/master/docs/src/features.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Features</span><a class="fa fa-bars" href="#"></a></div></header><h2><a class="nav-anchor" id="Creating-a-Document-Term-Matrix-1" href="#Creating-a-Document-Term-Matrix-1">Creating a Document Term Matrix</a></h2><p>Often we want to represent documents as a matrix of word counts so that we can apply linear algebra operations and statistical techniques. Before we do this, we need to update the lexicon:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Features · TextAnalysis</title><link rel="canonical" href="https://juliatext.github.io/TextAnalysis.jl/stable/features/index.html"/><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/><link href="../assets/custom.css" rel="stylesheet" type="text/css"/><script src="../assets/custom.js"></script><link href="../assets/favicon.ico" rel="icon" type="image/x-icon"/></head><body><nav class="toc"><h1>TextAnalysis</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../documents/">Documents</a></li><li><a class="toctext" href="../corpus/">Corpus</a></li><li class="current"><a class="toctext" href>Features</a><ul class="internal"><li><a class="toctext" href="#Creating-a-Document-Term-Matrix-1">Creating a Document Term Matrix</a></li><li><a class="toctext" href="#Creating-Individual-Rows-of-a-Document-Term-Matrix-1">Creating Individual Rows of a Document Term Matrix</a></li><li><a class="toctext" href="#The-Hash-Trick-1">The Hash Trick</a></li><li><a class="toctext" href="#TF-(Term-Frequency)-1">TF (Term Frequency)</a></li><li><a class="toctext" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)-1">TF-IDF (Term Frequency - Inverse Document Frequency)</a></li><li><a class="toctext" href="#Okapi-BM-25-1">Okapi BM-25</a></li><li><a class="toctext" href="#Co-occurrence-matrix-(COOM)-1">Co occurrence matrix (COOM)</a></li><li><a class="toctext" href="#Sentiment-Analyzer-1">Sentiment Analyzer</a></li><li><a class="toctext" href="#Summarizer-1">Summarizer</a></li><li><a class="toctext" href="#Tagging_schemes-1">Tagging_schemes</a></li><li><a class="toctext" href="#Parts-of-Speech-Tagging-1">Parts of Speech Tagging</a></li><li><a class="toctext" href="#Average-Perceptron-Part-of-Speech-Tagger-1">Average Perceptron Part of Speech Tagger</a></li><li><a class="toctext" href="#Neural-Model-for-Part-of-Speech-tagging-using-LSTMs,-CNN-and-CRF-1">Neural Model for Part of Speech tagging using LSTMs, CNN and CRF</a></li></ul></li><li><a class="toctext" href="../semantic/">Semantic Analysis</a></li><li><a class="toctext" href="../classify/">Classifier</a></li><li><a class="toctext" href="../example/">Extended Example</a></li><li><a class="toctext" href="../evaluation_metrics/">Evaluation Metrics</a></li><li><a class="toctext" href="../crf/">Conditional Random Fields</a></li><li><a class="toctext" href="../ner/">Named Entity Recognition</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Features</a></li></ul><a class="edit-page" href="https://github.com/JuliaText/TextAnalysis.jl/blob/master/docs/src/features.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Features</span><a class="fa fa-bars" href="#"></a></div></header><h2><a class="nav-anchor" id="Creating-a-Document-Term-Matrix-1" href="#Creating-a-Document-Term-Matrix-1">Creating a Document Term Matrix</a></h2><p>Often we want to represent documents as a matrix of word counts so that we can apply linear algebra operations and statistical techniques. Before we do this, we need to update the lexicon:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
                              StringDocument(&quot;To become or not to become&quot;)])
 
 julia&gt; update_lexicon!(crps)
@@ -171,7 +171,7 @@ julia&gt; tags
  &quot;E-MISC&quot;
  &quot;B-PER&quot;
  &quot;I-PER&quot;
- &quot;E-PER&quot;</code></pre><h2><a class="nav-anchor" id="Parts-of-Speech-Tagger-1" href="#Parts-of-Speech-Tagger-1">Parts of Speech Tagger</a></h2><p>This tagger can be used to find the POS tag of a word or token in a given sentence. It is a based on <code>Average Perceptron Algorithm</code>. The model can be trained from scratch and weights are saved in specified location. The pretrained model can also be loaded and can be used directly to predict tags.</p><h3><a class="nav-anchor" id="To-train-model:-1" href="#To-train-model:-1">To train model:</a></h3><pre><code class="language-julia">julia&gt; tagger = PerceptronTagger(false) #we can use tagger = PerceptronTagger()
+ &quot;E-PER&quot;</code></pre><h2><a class="nav-anchor" id="Parts-of-Speech-Tagging-1" href="#Parts-of-Speech-Tagging-1">Parts of Speech Tagging</a></h2><p>This package provides with two different Part of Speech Tagger.</p><h2><a class="nav-anchor" id="Average-Perceptron-Part-of-Speech-Tagger-1" href="#Average-Perceptron-Part-of-Speech-Tagger-1">Average Perceptron Part of Speech Tagger</a></h2><p>This tagger can be used to find the POS tag of a word or token in a given sentence. It is a based on <code>Average Perceptron Algorithm</code>. The model can be trained from scratch and weights are saved in specified location. The pretrained model can also be loaded and can be used directly to predict tags.</p><h3><a class="nav-anchor" id="To-train-model:-1" href="#To-train-model:-1">To train model:</a></h3><pre><code class="language-julia">julia&gt; tagger = PerceptronTagger(false) #we can use tagger = PerceptronTagger()
 julia&gt; fit!(tagger, [[(&quot;today&quot;,&quot;NN&quot;),(&quot;is&quot;,&quot;VBZ&quot;),(&quot;good&quot;,&quot;JJ&quot;),(&quot;day&quot;,&quot;NN&quot;)]])
 iteration : 1
 iteration : 2
@@ -191,4 +191,100 @@ predict(tagger, td::TokenDocument)</code></pre><p>This can also be done by -    
 julia&gt; tagger([&quot;today&quot;, &quot;is&quot;])
 2-element Array{Any,1}:
  (&quot;today&quot;, &quot;NN&quot;)
- (&quot;is&quot;, &quot;VBZ&quot;)</code></pre><p><code>PerceptronTagger(load::Bool)</code></p><ul><li>load      = Boolean argument if <code>true</code> then pretrained model is loaded</li></ul><p><code>fit!(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)</code></p><ul><li>self      = <code>PerceptronTagger</code> object</li><li>sentences = <code>Vector</code> of <code>Vector</code> of <code>Tuple</code> of pair of word or token and its POS tag [see above example]</li><li>save_loc  = location of file to save the trained weights</li><li>nr_iter   = Number of iterations to pass the <code>sentences</code> to train the model ( default 5)</li></ul><p><code>predict(self::PerceptronTagger, tokens)</code></p><ul><li>self      = PerceptronTagger</li><li>tokens    = <code>Vector</code> of words or tokens for which to predict tags</li></ul><footer><hr/><a class="previous" href="../corpus/"><span class="direction">Previous</span><span class="title">Corpus</span></a><a class="next" href="../semantic/"><span class="direction">Next</span><span class="title">Semantic Analysis</span></a></footer></article></body></html>
+ (&quot;is&quot;, &quot;VBZ&quot;)</code></pre><p><code>PerceptronTagger(load::Bool)</code></p><ul><li>load      = Boolean argument if <code>true</code> then pretrained model is loaded</li></ul><p><code>fit!(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)</code></p><ul><li>self      = <code>PerceptronTagger</code> object</li><li>sentences = <code>Vector</code> of <code>Vector</code> of <code>Tuple</code> of pair of word or token and its POS tag [see above example]</li><li>save_loc  = location of file to save the trained weights</li><li>nr_iter   = Number of iterations to pass the <code>sentences</code> to train the model ( default 5)</li></ul><p><code>predict(self::PerceptronTagger, tokens)</code></p><ul><li>self      = PerceptronTagger</li><li>tokens    = <code>Vector</code> of words or tokens for which to predict tags</li></ul><h2><a class="nav-anchor" id="Neural-Model-for-Part-of-Speech-tagging-using-LSTMs,-CNN-and-CRF-1" href="#Neural-Model-for-Part-of-Speech-tagging-using-LSTMs,-CNN-and-CRF-1">Neural Model for Part of Speech tagging using LSTMs, CNN and CRF</a></h2><p>The API provided is a pretrained model for tagging Part of Speech. The current model tags all the POS Tagging is done based on <a href="https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html">convention used in Penn Treebank</a>, with 36 different Part of Speech tags excludes punctuation.</p><p>To use the API, we first load the model weights into an instance of tagger. The function also accepts the path of model<em>weights and model</em>dicts (for character and word embeddings)</p><pre><code class="language-none">PoSTagger()
+PoSTagger(dicts_path, weights_path)</code></pre><pre><code class="language-julia">julia&gt; pos = PoSTagger()
+</code></pre><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>When you call <code>PoSTagger()</code> for the first time, the package will request permission for download the <code>Model_dicts</code> and <code>Model_weights</code>. Upon downloading, these are store locally and managed by <code>DataDeps</code>. So, on subsequent uses the weights will not need to be downloaded again.</p></div></div><p>Once we create an instance, we can call it to tag a String (sentence), sequence of tokens, <code>AbstractDocument</code> or <code>Corpus</code>.</p><pre><code class="language-none">(pos::PoSTagger)(sentence::String)
+(pos::PoSTagger)(tokens::Array{String, 1})
+(pos::PoSTagger)(sd::StringDocument)
+(pos::PoSTagger)(fd::FileDocument)
+(pos::PoSTagger)(td::TokenDocument)
+(pos::PoSTagger)(crps::Corpus)</code></pre><pre><code class="language-julia">
+julia&gt; sentence = &quot;This package is maintained by John Doe.&quot;
+&quot;This package is maintained by John Doe.&quot;
+
+julia&gt; tags = pos(sentence)
+8-element Array{String,1}:
+ &quot;DT&quot;
+ &quot;NN&quot;
+ &quot;VBZ&quot;
+ &quot;VBN&quot;
+ &quot;IN&quot;
+ &quot;NNP&quot;
+ &quot;NNP&quot;
+ &quot;.&quot;
+</code></pre><p>The API tokenizes the input sentences via the default tokenizer provided by <code>WordTokenizers</code>, this currently being set to the multilingual <code>TokTok Tokenizer.</code></p><pre><code class="language-none">
+julia&gt; using WordTokenizers
+
+julia&gt; collect(zip(WordTokenizers.tokenize(sentence), tags))
+8-element Array{Tuple{String,String},1}:
+ (&quot;This&quot;, &quot;DT&quot;)
+ (&quot;package&quot;, &quot;NN&quot;)
+ (&quot;is&quot;, &quot;VBZ&quot;)
+ (&quot;maintained&quot;, &quot;VBN&quot;)
+ (&quot;by&quot;, &quot;IN&quot;)
+ (&quot;John&quot;, &quot;NNP&quot;)
+ (&quot;Doe&quot;, &quot;NNP&quot;)
+ (&quot;.&quot;, &quot;.&quot;)
+</code></pre><p>For tagging a multisentence text or document, once can use <code>split_sentences</code> from <code>WordTokenizers.jl</code> package and run the pos model on each.</p><pre><code class="language-julia">julia&gt; sentences = &quot;Rabinov is winding up his term as ambassador. He will be replaced by Eliahu Ben-Elissar, a former Israeli envoy to Egypt and right-wing Likud party politiian.&quot; # Sentence taken from CoNLL 2003 Dataset
+
+julia&gt; splitted_sents = WordTokenizers.split_sentences(sentences)
+
+julia&gt; tag_sequences = pos.(splitted_sents)
+2-element Array{Array{String,1},1}:
+ [&quot;NNP&quot;, &quot;VBZ&quot;, &quot;VBG&quot;, &quot;RP&quot;, &quot;PRP\$&quot;, &quot;NN&quot;, &quot;IN&quot;, &quot;NN&quot;, &quot;.&quot;]
+ [&quot;PRP&quot;, &quot;MD&quot;, &quot;VB&quot;, &quot;VBN&quot;, &quot;IN&quot;, &quot;NNP&quot;, &quot;NNP&quot;, &quot;,&quot;, &quot;DT&quot;, &quot;JJ&quot;, &quot;JJ&quot;, &quot;NN&quot;, &quot;TO&quot;, &quot;NNP&quot;, &quot;CC&quot;, &quot;JJ&quot;, &quot;NNP&quot;, &quot;NNP&quot;, &quot;NNP&quot;, &quot;.&quot;]
+
+julia&gt; zipped = [collect(zip(tag_sequences[i], WordTokenizers.tokenize(splitted_sents[i]))) for i in eachindex(splitted_sents)]
+
+julia&gt; zipped[1]
+9-element Array{Tuple{String,String},1}:
+ (&quot;NNP&quot;, &quot;Rabinov&quot;)
+ (&quot;VBZ&quot;, &quot;is&quot;)
+ (&quot;VBG&quot;, &quot;winding&quot;)
+ (&quot;RP&quot;, &quot;up&quot;)
+ (&quot;PRP\$&quot;, &quot;his&quot;)
+ (&quot;NN&quot;, &quot;term&quot;)
+ (&quot;IN&quot;, &quot;as&quot;)
+ (&quot;NN&quot;, &quot;ambassador&quot;)
+ (&quot;.&quot;, &quot;.&quot;)
+
+julia&gt; zipped[2]
+20-element Array{Tuple{String,String},1}:
+ (&quot;PRP&quot;, &quot;He&quot;)
+ (&quot;MD&quot;, &quot;will&quot;)
+ (&quot;VB&quot;, &quot;be&quot;)
+ (&quot;VBN&quot;, &quot;replaced&quot;)
+ (&quot;IN&quot;, &quot;by&quot;)
+ (&quot;NNP&quot;, &quot;Eliahu&quot;)
+ (&quot;NNP&quot;, &quot;Ben-Elissar&quot;)
+ (&quot;,&quot;, &quot;,&quot;)
+ (&quot;DT&quot;, &quot;a&quot;)
+ (&quot;JJ&quot;, &quot;former&quot;)
+ (&quot;JJ&quot;, &quot;Israeli&quot;)
+ (&quot;NN&quot;, &quot;envoy&quot;)
+ (&quot;TO&quot;, &quot;to&quot;)
+ (&quot;NNP&quot;, &quot;Egypt&quot;)
+ (&quot;CC&quot;, &quot;and&quot;)
+ (&quot;JJ&quot;, &quot;right-wing&quot;)
+ (&quot;NNP&quot;, &quot;Likud&quot;)
+ (&quot;NNP&quot;, &quot;party&quot;)
+ (&quot;NNP&quot;, &quot;politiian&quot;)
+ (&quot;.&quot;, &quot;.&quot;)
+</code></pre><p>Since the tagging the Part of Speech is done on sentence level, the text of <code>AbstractDocument</code> is sentence_tokenized and then labelled for over sentence. However is not possible for <code>NGramDocument</code> as text cannot be recreated. For <code>TokenDocument</code>, text is approximated for splitting into sentences, hence the following throws a warning when tagging the <code>Corpus</code>.</p><pre><code class="language-julia">
+julia&gt; crps = Corpus([StringDocument(&quot;We aRE vErY ClOSE tO ThE HEaDQuarTeRS.&quot;), TokenDocument(&quot;this is Bangalore.&quot;)])
+A Corpus with 2 documents:
+ * 1 StringDocument&#39;s
+ * 0 FileDocument&#39;s
+ * 1 TokenDocument&#39;s
+ * 0 NGramDocument&#39;s
+
+Corpus&#39;s lexicon contains 0 tokens
+Corpus&#39;s index contains 0 tokens
+
+julia&gt; pos(crps)
+┌ Warning: TokenDocument&#39;s can only approximate the original text
+└ @ TextAnalysis ~/.julia/dev/TextAnalysis/src/document.jl:220
+2-element Array{Array{Array{String,1},1},1}:
+ [[&quot;PRP&quot;, &quot;VBP&quot;, &quot;RB&quot;, &quot;JJ&quot;, &quot;TO&quot;, &quot;DT&quot;, &quot;NN&quot;, &quot;.&quot;]]
+ [[&quot;DT&quot;, &quot;VBZ&quot;, &quot;NNP&quot;, &quot;.&quot;]]
+</code></pre><footer><hr/><a class="previous" href="../corpus/"><span class="direction">Previous</span><span class="title">Corpus</span></a><a class="next" href="../semantic/"><span class="direction">Next</span><span class="title">Semantic Analysis</span></a></footer></article></body></html>

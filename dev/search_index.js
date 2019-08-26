@@ -217,9 +217,17 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "features/#Parts-of-Speech-Tagger-1",
+    "location": "features/#Parts-of-Speech-Tagging-1",
     "page": "Features",
-    "title": "Parts of Speech Tagger",
+    "title": "Parts of Speech Tagging",
+    "category": "section",
+    "text": "This package provides with two different Part of Speech Tagger."
+},
+
+{
+    "location": "features/#Average-Perceptron-Part-of-Speech-Tagger-1",
+    "page": "Features",
+    "title": "Average Perceptron Part of Speech Tagger",
     "category": "section",
     "text": "This tagger can be used to find the POS tag of a word or token in a given sentence. It is a based on Average Perceptron Algorithm. The model can be trained from scratch and weights are saved in specified location. The pretrained model can also be loaded and can be used directly to predict tags."
 },
@@ -246,6 +254,14 @@ var documenterSearchIndex = {"docs": [
     "title": "To predict tags:",
     "category": "section",
     "text": "The perceptron tagger can predict tags over various document types-predict(tagger, sentence::String)\npredict(tagger, Tokens::Array{String, 1})\npredict(tagger, sd::StringDocument)\npredict(tagger, fd::FileDocument)\npredict(tagger, td::TokenDocument)This can also be done by -     tagger(input)julia> predict(tagger, [\"today\", \"is\"])\n2-element Array{Any,1}:\n (\"today\", \"NN\")\n (\"is\", \"VBZ\")\n\njulia> tagger([\"today\", \"is\"])\n2-element Array{Any,1}:\n (\"today\", \"NN\")\n (\"is\", \"VBZ\")PerceptronTagger(load::Bool)load      = Boolean argument if true then pretrained model is loadedfit!(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)self      = PerceptronTagger object\nsentences = Vector of Vector of Tuple of pair of word or token and its POS tag [see above example]\nsave_loc  = location of file to save the trained weights\nnr_iter   = Number of iterations to pass the sentences to train the model ( default 5)predict(self::PerceptronTagger, tokens)self      = PerceptronTagger\ntokens    = Vector of words or tokens for which to predict tags"
+},
+
+{
+    "location": "features/#Neural-Model-for-Part-of-Speech-tagging-using-LSTMs,-CNN-and-CRF-1",
+    "page": "Features",
+    "title": "Neural Model for Part of Speech tagging using LSTMs, CNN and CRF",
+    "category": "section",
+    "text": "The API provided is a pretrained model for tagging Part of Speech. The current model tags all the POS Tagging is done based on convention used in Penn Treebank, with 36 different Part of Speech tags excludes punctuation.To use the API, we first load the model weights into an instance of tagger. The function also accepts the path of modelweights and modeldicts (for character and word embeddings)PoSTagger()\nPoSTagger(dicts_path, weights_path)julia> pos = PoSTagger()\nnote: Note\nWhen you call PoSTagger() for the first time, the package will request permission for download the Model_dicts and Model_weights. Upon downloading, these are store locally and managed by DataDeps. So, on subsequent uses the weights will not need to be downloaded again.Once we create an instance, we can call it to tag a String (sentence), sequence of tokens, AbstractDocument or Corpus.(pos::PoSTagger)(sentence::String)\n(pos::PoSTagger)(tokens::Array{String, 1})\n(pos::PoSTagger)(sd::StringDocument)\n(pos::PoSTagger)(fd::FileDocument)\n(pos::PoSTagger)(td::TokenDocument)\n(pos::PoSTagger)(crps::Corpus)\njulia> sentence = \"This package is maintained by John Doe.\"\n\"This package is maintained by John Doe.\"\n\njulia> tags = pos(sentence)\n8-element Array{String,1}:\n \"DT\"\n \"NN\"\n \"VBZ\"\n \"VBN\"\n \"IN\"\n \"NNP\"\n \"NNP\"\n \".\"\nThe API tokenizes the input sentences via the default tokenizer provided by WordTokenizers, this currently being set to the multilingual TokTok Tokenizer.\njulia> using WordTokenizers\n\njulia> collect(zip(WordTokenizers.tokenize(sentence), tags))\n8-element Array{Tuple{String,String},1}:\n (\"This\", \"DT\")\n (\"package\", \"NN\")\n (\"is\", \"VBZ\")\n (\"maintained\", \"VBN\")\n (\"by\", \"IN\")\n (\"John\", \"NNP\")\n (\"Doe\", \"NNP\")\n (\".\", \".\")\nFor tagging a multisentence text or document, once can use split_sentences from WordTokenizers.jl package and run the pos model on each.julia> sentences = \"Rabinov is winding up his term as ambassador. He will be replaced by Eliahu Ben-Elissar, a former Israeli envoy to Egypt and right-wing Likud party politiian.\" # Sentence taken from CoNLL 2003 Dataset\n\njulia> splitted_sents = WordTokenizers.split_sentences(sentences)\n\njulia> tag_sequences = pos.(splitted_sents)\n2-element Array{Array{String,1},1}:\n [\"NNP\", \"VBZ\", \"VBG\", \"RP\", \"PRP\\$\", \"NN\", \"IN\", \"NN\", \".\"]\n [\"PRP\", \"MD\", \"VB\", \"VBN\", \"IN\", \"NNP\", \"NNP\", \",\", \"DT\", \"JJ\", \"JJ\", \"NN\", \"TO\", \"NNP\", \"CC\", \"JJ\", \"NNP\", \"NNP\", \"NNP\", \".\"]\n\njulia> zipped = [collect(zip(tag_sequences[i], WordTokenizers.tokenize(splitted_sents[i]))) for i in eachindex(splitted_sents)]\n\njulia> zipped[1]\n9-element Array{Tuple{String,String},1}:\n (\"NNP\", \"Rabinov\")\n (\"VBZ\", \"is\")\n (\"VBG\", \"winding\")\n (\"RP\", \"up\")\n (\"PRP\\$\", \"his\")\n (\"NN\", \"term\")\n (\"IN\", \"as\")\n (\"NN\", \"ambassador\")\n (\".\", \".\")\n\njulia> zipped[2]\n20-element Array{Tuple{String,String},1}:\n (\"PRP\", \"He\")\n (\"MD\", \"will\")\n (\"VB\", \"be\")\n (\"VBN\", \"replaced\")\n (\"IN\", \"by\")\n (\"NNP\", \"Eliahu\")\n (\"NNP\", \"Ben-Elissar\")\n (\",\", \",\")\n (\"DT\", \"a\")\n (\"JJ\", \"former\")\n (\"JJ\", \"Israeli\")\n (\"NN\", \"envoy\")\n (\"TO\", \"to\")\n (\"NNP\", \"Egypt\")\n (\"CC\", \"and\")\n (\"JJ\", \"right-wing\")\n (\"NNP\", \"Likud\")\n (\"NNP\", \"party\")\n (\"NNP\", \"politiian\")\n (\".\", \".\")\nSince the tagging the Part of Speech is done on sentence level, the text of AbstractDocument is sentence_tokenized and then labelled for over sentence. However is not possible for NGramDocument as text cannot be recreated. For TokenDocument, text is approximated for splitting into sentences, hence the following throws a warning when tagging the Corpus.\njulia> crps = Corpus([StringDocument(\"We aRE vErY ClOSE tO ThE HEaDQuarTeRS.\"), TokenDocument(\"this is Bangalore.\")])\nA Corpus with 2 documents:\n * 1 StringDocument\'s\n * 0 FileDocument\'s\n * 1 TokenDocument\'s\n * 0 NGramDocument\'s\n\nCorpus\'s lexicon contains 0 tokens\nCorpus\'s index contains 0 tokens\n\njulia> pos(crps)\n┌ Warning: TokenDocument\'s can only approximate the original text\n└ @ TextAnalysis ~/.julia/dev/TextAnalysis/src/document.jl:220\n2-element Array{Array{Array{String,1},1},1}:\n [[\"PRP\", \"VBP\", \"RB\", \"JJ\", \"TO\", \"DT\", \"NN\", \".\"]]\n [[\"DT\", \"VBZ\", \"NNP\", \".\"]]\n"
 },
 
 {
