@@ -1,14 +1,14 @@
 """
-ULMFiT - Sentiment Analyzer
+ULMFiT - Binary Sentiment Analyzer
 
-    SentimentClassifier()
+    BinSentimentClassifier()
 
 This is a binary sentiment classifier developed after
 fine-tuning the ULMFiT language model on IMDB movie reviews dataset.
 
 # Usage:
 
-julia> sc = SentimentClassifier()
+julia> sc = BinSentimentClassifier()
 
 julia> doc = StringDocument("this classifier is great")
 
@@ -17,14 +17,14 @@ julia> sc(doc)
 
 """
 
-struct SentimentClassifier
+struct BinSentimentClassifier
     vocab::Vector
     rnn_layers::Flux.Chain
     linear_layers::Flux.Chain
 end
 
-function SentimentClassifier(weights)
-    # BSON.@load datadep"ULMFiT Sentiment Classifier" weights
+function BinSentimentClassifier(weights)
+    BSON.@load datadep"ULMFiT Sentiment Classifier" weights
     vocab_sz, em_sz = size(weights[1])
     hid_lstm_sz = 1150
     out_lstm_sz = em_sz
@@ -53,9 +53,9 @@ function SentimentClassifier(weights)
     return sc
 end
 
-Flux.@treelike SentimentClassifier
+Flux.@treelike BinSentimentClassifier
 
-function (sc::SentimentClassifier)(x::TokenDocument)
+function (sc::BinSentimentClassifier)(x::TokenDocument)
     remove_case!(x)
     idxs = map(w -> indices([w], sc.vocab, "_unk_"), tokens(x))
     h = sc.rnn_layers.(idxs)

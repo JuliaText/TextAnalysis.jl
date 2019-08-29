@@ -97,27 +97,3 @@ function imdb_classifier_data(batchsize::Integer)
         end #for
     end #channel
 end
-
-"""
-    get_buckets(c::Corpus, bucketsize::Integer)
-
-Simple Sequence-Bucketing
-
-This function will return the group of `Document`s with close sequence lengths from the given `Corpus`
-
-# Example:
-
-julia> get_buckets(corpus, 32)
-
-"""
-function get_buckets(c::Corpus, bucketsize::Integer)
-    lengths = length.(tokens.(documents(c)))
-    sorted_lens = sortperm(lengths)
-    c = c[sorted_lens]
-    buckets = []
-    for i=1:bucketsize:length(c)
-        (length(c) - i) < (bucketsize-1) && (push!(buckets, c[i:end]);continue)
-        push!(buckets, c[i:bucketsize-1])
-    end
-    return buckets
-end

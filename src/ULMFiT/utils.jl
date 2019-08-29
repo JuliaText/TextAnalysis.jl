@@ -38,3 +38,42 @@ function generator(c::Channel, corpus::AbstractDocument; batchsize::Integer=64, 
         put!(c, batch[2:end])
     end
 end
+
+"""
+    get_buckets(c::Corpus, bucketsize::Integer)
+
+Simple Sequence-Bucketing
+
+This function will return the groups of `Document`s with close sequence lengths from the given `Corpus`
+
+# Example:
+
+julia> corpus = get_buckets(corpus, 32)
+
+"""
+function get_buckets(c::Corpus, labels::Vector, bucketsize::Integer, return_channel::Bool)
+    lengths = length.(tokens.(documents(c)))
+    sorted_lens = sortperm(lengths)
+    c, labels = c[sorted_lens], labels[sorted_lens]
+    buckets = []
+    return_channel &&
+    for i=1:bucketsize:length(c)
+        (length(c) - i) < (bucketsize-1) && (push!(buckets, c[i:end]);continue)
+        push!(buckets, c[i:bucketsize-1])
+    end
+    return buckets
+end
+
+# Data loader
+function data_loader(dataset::Corpus, labels::Vector, classes::Vector, batchsize::Integer, sorted::Bool)
+    iters = Int(floor(length(dataset)/batchsize))
+    Channel(csize=1) do loader
+        for i=1:iters
+            X = tokens.(dataset[(i-1)*batchsize+1:i*batchsize])
+            Y = Flux.onehotbatch(labels[(i-1)*batchsize+1:i*batchsize], classes)
+            X = pre_pad_sequences(X, "_pad_")
+            put!(docs, [Flux.batch(X[k][j] for k=1:batchsize) for j=1:length(X[1])])
+            put!(docs, Y)
+        end
+    end
+end

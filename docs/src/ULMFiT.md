@@ -18,8 +18,37 @@ Default data loaders are provided in the `data_loaders.jl`:
 
 In this step, Language Model will learn the general properties of the Language. To train the model we need a general domain corpus like WikiText-103. For training, a `generator` function is provided to create a `Channel` which will give mini-batch in every call. After pre-processing the corpus, the tokenized corpus is given as input to the generator function and the Channel can be created like so:
 ```julia
-julia> loader = Channel(x -> generator(x, corpus; batchsize=64, bptt=70))
+julia> loader = Channel(x -> generator(x, corpus; batchsize=4, bptt=10))
 Channel{Any}(sz_max:0,sz_curr:1)
+
+julia> max_batches = take!(loader) # this is the first call to the loader
+
+# These are the subsequent calls in pairs for X and Y
+julia> X = take!(Loaders)
+ 10-element Array{Array{Any,1},1}:
+ ["senjō", ",", "indicated", "after"]   
+ ["no", "he", ",", "two"]               
+ ["valkyria", "sent", "\"", "games"]    
+ ["3", "a", "i", ","]                   
+ [":", "formal", "am", "making"]        
+ ["<unk>", "demand", "to", "a"]         
+ ["chronicles", "for", "some", "start"]
+ ["(", "surrender", "extent", "against"]
+ ["japanese", "of", "influenced", "the"]
+ [":", "the", "by", "vancouver"]
+
+julia> Y = take!(gen)
+10-element Array{Array{Any,1},1}:
+["no", "he", ",", "two"]                    
+["valkyria", "sent", "\"", "games"]         
+["3", "a", "i", ","]                        
+[":", "formal", "am", "making"]             
+["<unk>", "demand", "to", "a"]              
+["chronicles", "for", "some", "start"]      
+["(", "surrender", "extent", "against"]     
+["japanese", "of", "influenced", "the"]     
+[":", "the", "by", "vancouver"]             
+["戦場のヴァルキュリア", "arsenal", "them", "canucks"]
 ```
 Note that at the first call to this `Channel` the output will be maximum number of batches which it can give. Two calls to this `Channel` completed one batch, that is, it doesnot give `X` and `Y` both together in one call, two calls are needed, one first `X` is given out and in second `Y`. Also, to understand what are `batchsize` and `bptt`, refer this [blog](https://nextjournal.com/ComputerMaestro/jsoc19-practical-implementation-of-ulmfit-in-julia-2).
 
@@ -45,11 +74,11 @@ It has several arguments to defined the internal structure of the `LanguageModel
 
 
 ```julia
-        pretrain_lm!(lm::LanguageModel=LanguageModel(),
-                    data_loader::Channel=load_wikitext_103;
-                    base_lr=0.004,
-                    epochs::Integer=1,
-                    checkpoint_itvl::Integer=5000)
+pretrain_lm!(lm::LanguageModel=LanguageModel(),
+            data_loader::Channel=load_wikitext_103;
+            base_lr=0.004,
+            epochs::Integer=1,
+            checkpoint_itvl::Integer=5000)
 ```
 
 Positional Arguments:
@@ -76,14 +105,14 @@ In this step, the Language Model pretrained in the last step, will be fine-tuned
 `fine_tune_lm!` function is used to fine-tune a Language Model:
 
 ```julia
-        fine_tune_lm!(lm::LanguageModel=load_lm(),
-                data_loader::Channel=imdb_fine_tune_data,
-                stlr_cut_frac::Float64=0.1,
-                stlr_ratio::Float32=32,
-                stlr_η_max::Float64=0.01;
-                epochs::Integer=1,
-                checkpoint_itvl::Integer=5000
-        )
+fine_tune_lm!(lm::LanguageModel=load_lm(),
+        data_loader::Channel=imdb_fine_tune_data,
+        stlr_cut_frac::Float64=0.1,
+        stlr_ratio::Float32=32,
+        stlr_η_max::Float64=0.01;
+        epochs::Integer=1,
+        checkpoint_itvl::Integer=5000
+)
 ```
 
 Positional Arguments:
