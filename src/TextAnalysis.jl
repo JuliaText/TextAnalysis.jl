@@ -68,8 +68,6 @@ module TextAnalysis
 
     export NERTagger, PoSTagger, Tracker, Flux
 
-    export LanguageModel, TextClassifier
-
     include("tokenizer.jl")
     include("ngramizer.jl")
     include("document.jl")
@@ -128,6 +126,5 @@ module TextAnalysis
         pos_tagger_datadep_register()
         ner_datadep_register()
         pos_datadep_register()
-        ulmfit_datadep_registers()
     end
 end
