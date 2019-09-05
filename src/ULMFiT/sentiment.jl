@@ -23,7 +23,7 @@ struct BinSentimentClassifier
     linear_layers::Flux.Chain
 end
 
-function BinSentimentClassifier(weights)
+function BinSentimentClassifier()
     BSON.@load datadep"ULMFiT Sentiment Classifier" weights
     vocab_sz, em_sz = size(weights[1])
     hid_lstm_sz = 1150

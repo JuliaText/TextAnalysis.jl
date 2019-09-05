@@ -77,9 +77,6 @@ function fine_tune_lm!(lm::LanguageModel, data_loader::Channel=imdb_fine_tune_da
             # Backprop with discriminative fine-tuning step
             discriminative_step!(lm.layers[[1, 3, 5, 7]], ηL, l, opts)
 
-            # ASGD Step, after Triggering
-            asgd_step!.(i, lm.layers)
-
             # Resets dropout masks for all the layers with DropOut or DropConnect
             reset_masks!.(lm.layers)
         end
