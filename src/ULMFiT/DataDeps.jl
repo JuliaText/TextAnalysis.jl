@@ -31,6 +31,9 @@ function ulmfit_datadep_registers()
     #     """
     #     The pretrained Language Model weights trained on WikiText-103 corpus will be downloaded.
     #     These weights can be used to fine-tuning steps in ULMFiT classifier.
+    #     This lanaguage model is originally trained by authors of ULMFiT paper Jeremy Howard and Sebastian Ruder.
+    #     http://files.fast.ai/models/wt103/
+    #     This contains the weights links for all original models by authors.
     #     """,
     #     "",
     #     post_fetch_method =
