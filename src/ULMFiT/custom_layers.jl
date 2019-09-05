@@ -288,7 +288,7 @@ Flux.@treelike DroppedEmbeddings
 _testmode!(de::DroppedEmbeddings, test) = (de.active = !test)
 
 function reset_masks!(de::DroppedEmbeddings)
-    de.mask = drop_mask(de.emb, de.p)
+    de.mask = drop_mask(de.mask, de.p)
     return
 end
 ####################################################################

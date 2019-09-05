@@ -111,7 +111,7 @@ julia> new_vocab = get_vocab(corpus, lm);
 
 julia> set_vocab!(lm, new_vocab)
 
-Inaddtion to this also incorporate special tokens for UNKNOWN (e.g. "_unk_"), PADDING (e.g. "_pad_") etc.
+In addtion to this also incorporate special tokens for UNKNOWN (e.g. "_unk_"), PADDING (e.g. "_pad_") etc.
 To add these use `insert!` function after getting vocabulary from `get_vocab` function.
 To use `set_vocab!` it is important that the tokens added are same as in the previous vocabulary of Language model,
 so that the embeddings for these tokens can be extracted for the previous embeddings of Language model.

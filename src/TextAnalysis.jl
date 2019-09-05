@@ -126,5 +126,6 @@ module TextAnalysis
         pos_tagger_datadep_register()
         ner_datadep_register()
         pos_datadep_register()
+        ulmfit_datadep_registers()
     end
 end

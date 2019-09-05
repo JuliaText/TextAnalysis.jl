@@ -51,15 +51,14 @@ This function will return the groups of `Document`s with close sequence lengths 
 julia> corpus = get_buckets(corpus, 32)
 
 """
-function get_buckets(c::Corpus, labels::Vector, bucketsize::Integer, return_channel::Bool)
+function get_buckets(c::Corpus, labels::Vector, bucketsize::Integer)
     lengths = length.(tokens.(documents(c)))
     sorted_lens = sortperm(lengths)
     c, labels = c[sorted_lens], labels[sorted_lens]
     buckets = []
-    return_channel &&
     for i=1:bucketsize:length(c)
-        (length(c) - i) < (bucketsize-1) && (push!(buckets, c[i:end]);continue)
-        push!(buckets, c[i:bucketsize-1])
+        (length(c)-i) < (bucketsize-1) && (push!(buckets, zip(c[i:end], labels[i:end]));continue)
+        push!(buckets, zip(c[i:i+bucketsize-1], labels[i:i+bucketsize-1]))
     end
     return buckets
 end

@@ -20,7 +20,7 @@ function TextClassifier(lm::LanguageModel=LanguageModel(), clsfr_out_sz::Integer
         lm.vocab,
         lm.layers[1:8],
         Chain(
-            gpu(PooledDense(length(lm.layers[7].layer.cell.h), clsfr_hidden_sz, relu)),
+            gpu(PooledDense(length(lm.layers[7].layer.cell.h), clsfr_hidden_sz)),
             gpu(BatchNorm(clsfr_hidden_sz, relu)),
             Dropout(clsfr_hidden_drop),
             gpu(Dense(clsfr_hidden_sz, clsfr_out_sz)),
