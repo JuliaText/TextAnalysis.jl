@@ -40,20 +40,23 @@ function generator(c::Channel, corpus::AbstractDocument; batchsize::Integer=64, 
 end
 
 """
-    get_buckets(c::Corpus, bucketsize::Integer)
+    get_buckets(c::Corpus, bucketsize::Integer; order::Bool=true)
 
 Simple Sequence-Bucketing
 
-This function will return the groups of `Document`s with close sequence lengths from the given `Corpus`
+This function will return the groups of `Document`s with close sequence lengths from the given `Corpus`.
+Use this function with `data_loader` function to get a `Channel`. Also, the order of sequences lengths
+can be set using keyword argument `order`, which is, `true` for ascending order (default) and `false` for
+descending order of lengths of sequences.
 
 # Example:
 
-julia> corpus = get_buckets(corpus, 32)
+julia> buckets = get_buckets(corpus, 32);
 
 """
-function get_buckets(c::Corpus, labels::Vector, bucketsize::Integer)
+function get_buckets(c::Corpus, labels::Vector, bucketsize::Integer; order::Bool=true)
     lengths = length.(tokens.(documents(c)))
-    sorted_lens = sortperm(lengths)
+    sorted_lens = order ? sortperm(lengths) ? reverse(sortperm(lengths))
     c, labels = c[sorted_lens], labels[sorted_lens]
     buckets = []
     for i=1:bucketsize:length(c)
@@ -63,14 +66,74 @@ function get_buckets(c::Corpus, labels::Vector, bucketsize::Integer)
     return buckets
 end
 
-# Data loader
-function data_loader(dataset::Corpus, labels::Vector, classes::Vector, batchsize::Integer, sorted::Bool)
-    iters = Int(floor(length(dataset)/batchsize))
+"""
+    data_loader(buckets::AbstractArray, classes::Vector; pad_func::Function=pre_pad_sequences)
+    data_loader(dataset::Corpus, labels::Vector, batchsize::Integer; pad_func::Function=pre_pad_sequences)
+
+This funciton can be use to make `Channel` to load data for the training of `TextClassifier`.
+Do preprocessing of the text before using this function. And get all the examples into a `Corpus` type
+and all the corresponding labels into a `Vector`.
+
+NOTE: Remember that the first call to the `Channel` will output an integer which specifies the number of batches the `Channel` can give.
+
+It can be used in two ways:
+ - With sequence bucketing: use `get_buckets` function first on the prepared dataset to get buckets
+   and pass those buckets to this function. Now, make a Vector of all possible classes and pass this to the `data_loader`
+   and keep this classes variable safe since the output units of the classifier will be corresponding to this `Vector`.
+   If already a list of all the classes is available that can also be passed to this function.
+
+   Remember, the output buckets from the `get_buckets` the length of the last bucket may not be equal to the batchsize specified,
+   since the number of examples couldn't be division by batchsize specified. That can be passed to data_loader
+   but it might cause problems later while training, so that batch can be removed if it is not a big loss of training data.
+   Or pass number of examples that can be divided into batches of specified batchsize.
+
+julia> classes = unique(labels)     # labels contains the labels for the examples
+julia> buckets = get_buckets(data, labels, 32);
+
+# To check whether the buckets are all of same size:
+julia> print(length(buckets[end]))
+
+julia> loader = data_loader(buckets, classes)
+
+ - Without sequence bucketing: pass the `Corpus` and labels direclty to this funciton and specify batchsize.
+   This will return a Channel, which will give a batch at every call with labels.
+
+julia> loader = data_loader(data, labels, 32)
+
+The padding can be controlled by setting the `pad_func` keyword argument to
+either `pre_pad_sequences` or `post_pad_sequence`, former is for pre padding the sequence
+and that latter is for post padding the sequences.
+"""
+function data_loader(buckets::AbstractArray, classes::Vector; pad_func::Function=pre_pad_sequences)
+    shuffle!(buckets)
+    Channel(csize=1) do docs
+        n_batches = length(buckets)
+        put!(docs, n_batches)
+        for b in buckets
+            shuffle!(b)
+            X, Y = [], []
+            for (cur_text, label) in b
+                toks = tokens(cur_text)
+                push!(X, toks)
+                y = Flux.onehotbatch(p, classes)
+                push!(Y, y)
+            end#for
+            X = pad_func(X, "_pad_")
+            batchsize = length(X)
+            put!(docs, [Flux.batch(X[k][j] for k=1:batchsize) for j=1:length(X[1])])
+            put!(docs, cat(Y..., dims=2))
+        end #for
+    end #channel
+end
+
+function data_loader(dataset::Corpus, labels::Vector, batchsize::Integer; pad_func::Function=pre_pad_sequences)
+    n_batches = Int(floor(length(dataset)/batchsize))
     Channel(csize=1) do loader
-        for i=1:iters
+        put!(docs, n_batches)
+        for i=1:n_batches
             X = tokens.(dataset[(i-1)*batchsize+1:i*batchsize])
             Y = Flux.onehotbatch(labels[(i-1)*batchsize+1:i*batchsize], classes)
-            X = pre_pad_sequences(X, "_pad_")
+            X = pad_func(X, "_pad_")
             put!(docs, [Flux.batch(X[k][j] for k=1:batchsize) for j=1:length(X[1])])
             put!(docs, Y)
         end
