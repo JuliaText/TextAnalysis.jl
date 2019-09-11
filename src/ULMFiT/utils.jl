@@ -113,9 +113,9 @@ function data_loader(buckets::AbstractArray, classes::Vector; pad_func::Function
             shuffle!(b)
             X, Y = [], []
             for (cur_text, label) in b
-                toks = tokens(cur_text)
+                toks = tokenize(cur_text)
                 push!(X, toks)
-                y = Flux.onehotbatch(p, classes)
+                y = Flux.onehotbatch([label], classes)
                 push!(Y, y)
             end#for
             X = pad_func(X, "_pad_")
@@ -127,15 +127,16 @@ function data_loader(buckets::AbstractArray, classes::Vector; pad_func::Function
 end
 
 function data_loader(dataset::Corpus, labels::Vector, batchsize::Integer; pad_func::Function=pre_pad_sequences)
+    classes = unique(labels)
     n_batches = Int(floor(length(dataset)/batchsize))
     Channel(csize=1) do loader
-        put!(docs, n_batches)
+        put!(loader, n_batches)
         for i=1:n_batches
             X = tokens.(dataset[(i-1)*batchsize+1:i*batchsize])
             Y = Flux.onehotbatch(labels[(i-1)*batchsize+1:i*batchsize], classes)
             X = pad_func(X, "_pad_")
-            put!(docs, [Flux.batch(X[k][j] for k=1:batchsize) for j=1:length(X[1])])
-            put!(docs, Y)
+            put!(loader, [Flux.batch(X[k][j] for k=1:batchsize) for j=1:length(X[1])])
+            put!(loader, Y)
         end
     end
 end

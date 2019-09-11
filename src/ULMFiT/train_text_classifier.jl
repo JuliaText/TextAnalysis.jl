@@ -47,12 +47,14 @@ If num_of_batches is not specified then all the batches which can be given by th
 gen will be used for validation
 """
 function validate(tc::TextClassifier, gen::Channel, num_of_batches::Union{Colon, Integer})
+    n_classes = size(tc.linear_layers[end-2].W, 1)
     classifier = mapleaves(Tracker.data, tc)
     Flux.testmode!(classifier)
     loss = 0
     iters = take!(gen)
     (num_of_batches != : & num_of_batches < iters) && (iters = num_of_batches)
-    TP, TN, FP, FN = gpu(zeros(Float32, 2, 1)), gpu(zeros(Float32, 2, 1)), gpu(zeros(Float32, 2, 1)), gpu(zeros(Float32, 2, 1))
+    TP, TN = gpu(zeros(Float32, n_classes, 1)), gpu(zeros(Float32, n_classes, 1))
+    FP, FN = gpu(zeros(Float32, n_classes, 1)), gpu(zeros(Float32, n_classes, 1))
     for i=1:num_of_batches
         X = take!(gen)
         Y = gpu(take!(gen))
@@ -100,8 +102,15 @@ function forward(tc::TextClassifier, gen::Channel, tracked_steps::Integer=32)
         X = X[last_idx+1:end]
     end
     # set the lated hidden states to original model
-    for (t_layer, unt_layer) in zip(tc.rnn_layers[[3, 5, 7]], classifier.rnn_layers[[3, 5, 7]])
-        t_layer.layer.state = unt_layer.layer.state
+    for (t_layer, unt_layer) in zip(tc.rnn_layers[2:end], classifier.rnn_layers[2:end])
+        if t_layer isa AWD_LSTM
+            t_layer.layer.state = unt_layer.layer.state
+            continue
+        end
+        if !unt_layer.reset
+            t_layer.mask = unt_layer.mask
+            t_layer.reset = false
+        end
     end
     # last part of the sequecnes in X - Tracking is swiched on
     H = broadcast(x -> tc.rnn_layers[1](indices(x, classifier.vocab, "_unk_")), X)
