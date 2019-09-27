@@ -56,7 +56,7 @@ julia> buckets = get_buckets(corpus, 32);
 """
 function get_buckets(c::Corpus, labels::Vector, bucketsize::Integer; order::Bool=true)
     lengths = length.(tokens.(documents(c)))
-    sorted_lens = order ? sortperm(lengths) ? reverse(sortperm(lengths))
+    sorted_lens = order ? sortperm(lengths) : reverse(sortperm(lengths))
     c, labels = c[sorted_lens], labels[sorted_lens]
     buckets = []
     for i=1:bucketsize:length(c)
