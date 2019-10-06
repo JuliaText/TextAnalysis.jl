@@ -11,7 +11,6 @@ module TextAnalysis
     using DataStructures
     using Statistics
 
-    using DataDeps
     using Flux, Tracker
     using Flux: identity, onehot, onecold, @treelike, onehotbatch
 
