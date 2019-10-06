@@ -414,7 +414,7 @@ function prepare!(crps::Corpus, flags::UInt32; skip_patterns = Set{AbstractStrin
     r = _build_regex(lang, flags, skip_patterns, skip_words)
     !isempty(r.pattern) && remove_patterns!(crps, r)
 
-    ((flags & strip_whitespace) > 0) && remove_whitespace!(d)
+    ((flags & strip_whitespace) > 0) && remove_whitespace!(crps)
 
     ((flags & stem_words) > 0) && stem!(crps)
     ((flags & tag_part_of_speech) > 0) && tag_pos!(crps)
