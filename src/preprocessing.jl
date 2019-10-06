@@ -435,7 +435,6 @@ function prepare!(d::AbstractDocument, flags::UInt32; skip_patterns = Set{Abstra
     nothing
 end
 
-
 """
     remove_whitespace(str)
 Squash multiple whitespaces to a single one.
