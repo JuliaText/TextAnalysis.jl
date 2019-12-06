@@ -27,7 +27,7 @@ pkg> add TextAnalysis#master
 
 ## Features
 
-
+Refer to NEWS.md for the latest features.
 
 ## License
 
