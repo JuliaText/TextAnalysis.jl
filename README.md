@@ -1,5 +1,4 @@
 # TextAnalysis
-============
 
 A Julia package for working with text.
 
@@ -20,7 +19,8 @@ Please see the detailed `manual` and `API Documentation` for the linked above. T
 pkg> add TextAnalysis
 ```
 
-You may want to work on the master branch for the latest features of CRF, Naive Bayes, NER and POS Tagging, etc.
+You may want to work on the master branch for the latest features (as mentioned in NEWS.md).
+
 ```julia
 pkg> add TextAnalysis#master
 ```
@@ -41,5 +41,5 @@ Contributions, in the form of bug-reports, pull requests, additional documentati
 
 ## Support
 
-Feel free to ask for help on the [Julia Discourse forum](https://discourse.julialang.org/), or in the `#natural-language channel` on [julia-slack](https://julialang.slack.com). (Which you can [join here](https://slackinvite.julialang.org/)). You can also raise issues in this repository to request new features and/or improvements to the documentation.
+Feel free to ask for help on the [Julia Discourse forum](https://discourse.julialang.org/), or in the `#natural-language` channel on [julia-slack](https://julialang.slack.com). (Which you can [join here](https://slackinvite.julialang.org/)). You can also raise issues in this repository to request new features and/or improvements to the documentation and codebase.
 
