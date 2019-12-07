@@ -12,6 +12,10 @@ Please see the detailed `manual` and `API Documentation` for the linked above. T
 
 ## Introduction
 
+TextAnalysis provides support for standard tools and models for working with textual data and natural languages in the Julia langauges. Please see the [documentation](https://juliatext.github.io/TextAnalysis.jl/latest) for more.
+
+- **Features** : Refer to NEWS.md for the latest features.
+- **License** : [MIT License](https://github.com/JuliaText/TextAnalysis.jl/blob/master/LICENSE.md)
 
 ## Installation
 
@@ -24,14 +28,6 @@ You may want to work on the master branch for the latest features (as mentioned 
 ```julia
 pkg> add TextAnalysis#master
 ```
-
-## Features
-
-Refer to NEWS.md for the latest features.
-
-## License
-
-[MIT License](https://github.com/JuliaText/TextAnalysis.jl/blob/master/LICENSE.md)
 
 ## Contributing and Reporting Bugs
 
