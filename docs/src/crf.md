@@ -10,11 +10,11 @@ Let us first load the dependencies-
 
 Conditional Random Field layer is essentially like a softmax that operates on the top most layer.
 
-Let us suppose the following input seqeunce to the CRF with `NUM_LABELS = 2`
+Let us suppose the following input sequence to the CRF with `NUM_LABELS = 2`
 
 ```julia
 julia> SEQUENCE_LENGTH = 2 # CRFs can handle variable length inputs sequences
-julia> input_seq = [rand(NUM_LABELS + 2) for i in 1:SEQUENCE_LENGTH] # NUM_LABELS + 2, where two exra features correspond to the :START and :END label.
+julia> input_seq = [rand(NUM_LABELS + 2) for i in 1:SEQUENCE_LENGTH] # NUM_LABELS + 2, where two extra features correspond to the :START and :END label.
 2-element Array{Array{Float64,1},1}:
  [0.523462, 0.455434, 0.274347, 0.755279]
  [0.610991, 0.315381, 0.0863632, 0.693031]

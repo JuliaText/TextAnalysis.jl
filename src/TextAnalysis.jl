@@ -112,9 +112,19 @@ module TextAnalysis
     include("sequence/pos.jl")
     include("sequence/sequence_models.jl")
 
+    # ULMFiT
+    include("ULMFiT/utils.jl")
+    include("ULMFiT/WikiText103_DataDeps.jl.jl")
+    include("ULMFiT/data_loaders.jl")
+    include("ULMFiT/custom_layers.jl")
+    include("ULMFiT/pretrain_lm.jl")
+    include("ULMFiT/fine_tune_lm.jl")
+    include("ULMFiT/train_text_classifier.jl")
+
     function __init__()
         pos_tagger_datadep_register()
         ner_datadep_register()
         pos_datadep_register()
+        ulmfit_datadep_registers()
     end
 end
