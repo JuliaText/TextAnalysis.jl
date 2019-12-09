@@ -35,7 +35,7 @@
         @test length(params(awd)) == 5
     end
 
-    @test "VarDrop" begin
+    @testset "VarDrop" begin
         vd = VarDrop(0.3)
         @test vd.active
         @test vd.reset

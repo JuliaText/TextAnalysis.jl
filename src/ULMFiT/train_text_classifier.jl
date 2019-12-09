@@ -52,7 +52,7 @@ function validate(tc::TextClassifier, gen::Channel, num_of_batches::Union{Colon,
     Flux.testmode!(classifier)
     loss = 0
     iters = take!(gen)
-    (num_of_batches != : & num_of_batches < iters) && (iters = num_of_batches)
+    ((num_of_batches != :) & (num_of_batches < iters)) && (iters = num_of_batches)
     TP, TN = gpu(zeros(Float32, n_classes, 1)), gpu(zeros(Float32, n_classes, 1))
     FP, FN = gpu(zeros(Float32, n_classes, 1)), gpu(zeros(Float32, n_classes, 1))
     for i=1:num_of_batches

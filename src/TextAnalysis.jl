@@ -114,7 +114,7 @@ module TextAnalysis
 
     # ULMFiT
     include("ULMFiT/utils.jl")
-    include("ULMFiT/WikiText103_DataDeps.jl.jl")
+    include("ULMFiT/DataDeps.jl")
     include("ULMFiT/data_loaders.jl")
     include("ULMFiT/custom_layers.jl")
     include("ULMFiT/pretrain_lm.jl")
