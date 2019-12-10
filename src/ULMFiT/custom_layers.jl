@@ -8,7 +8,11 @@ This file contains the custom layers defined for this model:
     PooledDense
 """
 
-import Flux: gate, _testmode!, _dropout_kernel
+using Flux: istraining
+
+gate(h, n) = (1:h) .+ h*(n-1)
+gate(x::AbstractVector, h, n) = @view x[gate(h,n)]
+gate(x::AbstractMatrix, h, n) = x[gate(h,n),:]
 
 reset_masks!(entity) = nothing
 reset_probability!(entity) = nothing
@@ -22,10 +26,12 @@ This function generates dropout mask for given 'x' with `p` probability
     or
 It can be used to generate the mask by giving the shape of the desired mask and probaility
 """
+_dropout_kernel(y::T, p, q) where {T} = y > p ? T(1 / q) : T(0)
+
 function drop_mask(x, p)
     y = similar(x, size(x))
     Flux.rand!(y)
-    y .= Flux._dropout_kernel.(y, p, 1 - p)
+    y .= _dropout_kernel.(y, p, 1 - p)
     return y
 end
 
@@ -53,7 +59,6 @@ mutable struct WeightDroppedLSTMCell{A, V, M}
     p::Float64
     maskWi::M
     maskWh::M
-    active::Bool
 end
 
 function WeightDroppedLSTMCell(in::Integer, out::Integer, p::Float64=0.0;
@@ -76,8 +81,8 @@ end
 
 function (m::WeightDroppedLSTMCell)((h, c), x)
     b, o = m.b, size(h, 1)
-    Wi = m.active ? m.Wi .* m.maskWi : m.Wi
-    Wh = m.active ? m.Wh .* m.maskWh : m.Wh
+    Wi = istraining() ? m.Wi .* m.maskWi : m.Wi
+    Wh = istraining() ? m.Wh .* m.maskWh : m.Wh
     g = Wi*x .+ Wh*h .+ b
     input = σ.(gate(g, o, 1))
     forget = σ.(gate(g, o, 2))
@@ -89,8 +94,6 @@ function (m::WeightDroppedLSTMCell)((h, c), x)
 end
 
 Flux.@treelike WeightDroppedLSTMCell
-
-_testmode!(m::WeightDroppedLSTMCell, test) = (m.active = !test)
 
 """
     WeightDroppedLSTM(in::Integer, out::Integer, p::Float64=0.0)
@@ -216,21 +219,18 @@ mutable struct VarDrop{F}
     p::F
     mask
     reset::Bool
-    active::Bool
 end
 
 VarDrop(p::Float64=0.0) = VarDrop(p, Array{Float32, 2}(UndefInitializer(), 0, 0), true, true)
 
 function (vd::VarDrop)(x)
-    vd.active || return x
+    istraining() || return x
     if vd.reset
         vd.mask = drop_mask(x, vd.p)
         vd.reset = false
     end
     return (x .* vd.mask)
 end
-
-_testmode!(vd::VarDrop, test) = (vd.active = !test)
 
 # method for reseting mask of VarDrop
 reset_masks!(vd::VarDrop) = (vd.reset = true)
@@ -264,7 +264,6 @@ mutable struct DroppedEmbeddings{A, F}
     emb::A
     p::F
     mask
-    active::Bool
 end
 
 function DroppedEmbeddings(in::Integer, embed_size::Integer, p::Float64=0.0;
@@ -279,13 +278,13 @@ function DroppedEmbeddings(in::Integer, embed_size::Integer, p::Float64=0.0;
 end
 
 function (de::DroppedEmbeddings)(x::AbstractArray, tying::Bool=false)
-    dropped = de.active ? de.emb .* de.mask : de.emb
+    dropped = istraining() ? de.emb .* de.mask : de.emb
     return tying ? dropped * x : transpose(dropped[x, :])
 end
 
 Flux.@treelike DroppedEmbeddings
 
-_testmode!(de::DroppedEmbeddings, test) = (de.active = !test)
+_testmode!(de::DroppedEmbeddings, test) = (istraining() = !test)
 
 function reset_masks!(de::DroppedEmbeddings)
     de.mask = drop_mask(de.mask, de.p)
