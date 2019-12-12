@@ -113,18 +113,26 @@ module TextAnalysis
     include("sequence/sequence_models.jl")
 
     # ULMFiT
-    include("ULMFiT/utils.jl")
-    include("ULMFiT/DataDeps.jl")
-    include("ULMFiT/data_loaders.jl")
-    include("ULMFiT/custom_layers.jl")
-    include("ULMFiT/pretrain_lm.jl")
-    include("ULMFiT/fine_tune_lm.jl")
-    include("ULMFiT/train_text_classifier.jl")
+    module ULMFiT
+        using ..TextAnalysis
+        using DataDeps
+        using Flux
+        using Tracker
+        using BSON
+        include("ULMFiT/utils.jl")
+        include("ULMFiT/datadeps.jl")
+        include("ULMFiT/data_loaders.jl")
+        include("ULMFiT/custom_layers.jl")
+        include("ULMFiT/pretrain_lm.jl")
+        include("ULMFiT/fine_tune_lm.jl")
+        include("ULMFiT/train_text_classifier.jl")
+    end
+    export ULMFiT
 
     function __init__()
         pos_tagger_datadep_register()
         ner_datadep_register()
         pos_datadep_register()
-        ulmfit_datadep_registers()
+        ULMFiT.ulmfit_datadep_register()
     end
 end

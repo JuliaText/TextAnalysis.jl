@@ -24,7 +24,7 @@ struct BinSentimentClassifier
 end
 
 function BinSentimentClassifier()
-    BSON.@load datadep"ULMFiT Sentiment Classifier" weights
+    BSON.@load datadep"ULMFiT Sentiment Classifier/umlfit_sentiment_en.bson" weights
     vocab_sz, em_sz = size(weights[1])
     hid_lstm_sz = 1150
     out_lstm_sz = em_sz

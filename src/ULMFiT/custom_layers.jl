@@ -180,7 +180,7 @@ Arguments:
 asgd_step!(i, l) = nothing
 
 function asgd_step!(iter::Integer, layer::AWD_LSTM)
-    if (iter >= layer.T) & (T > 0)
+    if (iter >= layer.T) & (layer.T > 0)
         p = get_trainable_params([layer])
         avg_fact = 1/max(iter - layer.T + 1, 1)
         if avg_fact != 1

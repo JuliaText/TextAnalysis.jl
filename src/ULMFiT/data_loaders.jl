@@ -7,9 +7,7 @@ Default Data Loaders for ULMFiT training for Sentiment Analysis
  - IMDB movie review dataset - labelled data is used for training classifier for Sentiment Analysis
 """
 
-# WikiText-103 corpus loader
-cd(@__DIR__)
-include("WikiText-103")
+# WikiText-103 corpus loade
 
 # This funciton given as an example of doing preprocessing for such corpus.
 # In this IMDB corpus, it was noticed that after tokenization some tokens were mixture of
@@ -74,7 +72,7 @@ end
 
 # IMDB data loader for training classifier
 function imdb_classifier_data(batchsize::Integer)
-    filepaths = IMDB("train_neg").filepaths)
+    filepaths = IMDB("train_neg").filepaths
     append!(filepaths, IMDB("train_pos").filepaths)
     [shuffle!(filepaths) for _=1:10]
     corpus = Corpus(FileDocument.(filepaths))

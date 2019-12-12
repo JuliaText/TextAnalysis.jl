@@ -26,7 +26,7 @@ mutable struct LanguageModel
     layers :: Flux.Chain
 end
 
-function LanguageModel(load_pretrained::Bool=false, vocabpath::String="vocabs/lm_vocab.csv";embedding_size::Integer=400, hid_lstm_sz::Integer=1150, out_lstm_sz::Integer=embedding_size,
+function LanguageModel(load_pretrained::Bool=false, vocabpath::String=joinpath(@__DIR__,"vocabs/lm_vocab.csv");embedding_size::Integer=400, hid_lstm_sz::Integer=1150, out_lstm_sz::Integer=embedding_size,
     embed_drop_prob::Float64 = 0.05, in_drop_prob::Float64 = 0.4, hid_drop_prob::Float64 = 0.5, layer_drop_prob::Float64 = 0.3, final_drop_prob::Float64 = 0.3)
     vocab = (string.(readdlm(vocabpath, ',')))[:, 1]
     de = gpu(DroppedEmbeddings(length(vocab), embedding_size, embed_drop_prob; init = (dims...) -> init_weights(0.1, dims...)))
@@ -45,7 +45,7 @@ function LanguageModel(load_pretrained::Bool=false, vocabpath::String="vocabs/lm
             softmax
         )
     )
-    # load_pretrained && load_model!(lm, datadep"Pretrained ULMFiT Language Model")
+    load_pretrained && load_model!(lm, datadep"Pretrained ULMFiT Language Model/ulmfit_lm_en.bson")
     return lm
 end
 

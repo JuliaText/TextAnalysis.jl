@@ -180,7 +180,12 @@ function train_classifier!(classifier::TextClassifier=TextClassifier(), classes:
             reset_masks!.(classifier.rnn_layers)    # reset all dropout masks
         end
         println("Train set accuracy: $trn_accu , Training loss: $trn_loss")
-        !(val_loader isa nothing) ? (val_loss, val_acc, val_precisions, val_reacalls, val_F1_scores = validate(classifer, val_loader)) : continue
+        if val_loader != nothing
+            val_loss, val_acc, val_precisions, val_reacalls, val_F1_scores = validate(classifer, val_loader)
+        else
+            continue
+        end
+        #!(val_loader isa nothing) ? (val_loss, val_acc, val_precisions, val_reacalls, val_F1_scores = validate(classifer, val_loader)) : continue
         println("Cross validation loss: $val_loss")
         println("Cross validation accuracy:\n $val_acc")
         println("Cross validation class wise Precisions:\n $val_precisions")
