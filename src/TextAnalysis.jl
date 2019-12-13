@@ -65,7 +65,7 @@ module TextAnalysis
 
     export CRF, viterbi_decode, crf_loss
 
-    export NERTagger, PoSTagger, Tracker, Flux
+    export NERTagger, PoSTagger
 
     include("tokenizer.jl")
     include("ngramizer.jl")

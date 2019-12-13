@@ -3,7 +3,7 @@ function ner_datadep_register()
         """
         The weights for NER Sequence Labelling Model.
         """,
-        "https://github.com/JuliaText/TextAnalysis.jl/releases/download/v0.6.0/ner_weights.tar.xz",
+        "https://github.com/Ayushk4/NER.jl/releases/download/0.0.0.1/ner_weights.tar.xz",
         "6290353b66c9bdbb794ddcb6063ab52c30145d3918f2f115f19e21fa994282e6",
         post_fetch_method = function(fn)
             unpack(fn)
