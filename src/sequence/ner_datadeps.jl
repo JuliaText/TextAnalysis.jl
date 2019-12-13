@@ -4,7 +4,7 @@ function ner_datadep_register()
         The weights for NER Sequence Labelling Model.
         """,
         "https://github.com/Ayushk4/NER.jl/releases/download/0.0.0.1/ner_weights.tar.xz",
-        "6290353b66c9bdbb794ddcb6063ab52c30145d3918f2f115f19e21fa994282e6",
+        "6eda5cd778af99f57a0a0b7eb4d5bc46a5a61c214e3e515e620b7db6b76ce3aa",
         post_fetch_method = function(fn)
             unpack(fn)
             dir = "weights"
