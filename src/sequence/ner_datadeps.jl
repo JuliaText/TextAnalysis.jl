@@ -7,7 +7,7 @@ function ner_datadep_register()
         "6eda5cd778af99f57a0a0b7eb4d5bc46a5a61c214e3e515e620b7db6b76ce3aa",
         post_fetch_method = function(fn)
             unpack(fn)
-            dir = "weights"
+            dir = "ner_weights"
             innerfiles = readdir(dir)
             mv.(joinpath.(dir, innerfiles), innerfiles)
             rm(dir)
