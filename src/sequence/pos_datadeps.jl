@@ -4,7 +4,7 @@ function pos_datadep_register()
         The weights for POS Sequence Labelling Model.
         """,
         "https://github.com/Ayushk4/POS.jl/releases/download/v0.0.1/pos_weights.tar.xz",
-        "76d97fbda8cb0cc363bc9217647fefec9e57d28cfcb41f3764e3cfa60289165f";
+        "0780b41f7dae62ba80c7362facd5961a5cd2d7bf98e2f798f6e852e77518f5cb";
         post_fetch_method = function(fn)
             unpack(fn)
             dir = "pos_weights"
