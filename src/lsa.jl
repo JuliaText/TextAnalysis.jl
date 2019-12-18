@@ -1,8 +1,12 @@
-##############################################################################
-#
-# LSA
-#
-##############################################################################
+"""
+	lsa(dtm::DocumentTermMatrix)
+	lsa(crps::Corpus)
 
-lsa(dtm::DocumentTermMatrix) = svd(tf_idf(dtm))
-lsa(crps::Corpus) = svd(tf_idf(DocumentTermMatrix(crps)))
+Performs Latent Semantic Analysis or LSA on a corpus.
+
+"""
+lsa(dtm::DocumentTermMatrix) = svd(Matrix(tf_idf(dtm)))
+function lsa(crps::Corpus)
+	update_lexicon!(crps)
+	svd(Matrix(tf_idf(DocumentTermMatrix(crps))))
+end

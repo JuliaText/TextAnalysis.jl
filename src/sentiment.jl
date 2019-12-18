@@ -1,8 +1,6 @@
 using JSON
 using BSON
 
-Flux = nothing # Will be filled once we actually use sentiment analysis
-
 function pad_sequences(l, maxlen=500)
     if length(l) <= maxlen
         res = zeros(maxlen - length(l))
@@ -64,10 +62,6 @@ struct SentimentModel
     words
 
     function SentimentModel()
-        # Only load Flux once it is actually needed
-        global Flux
-        Flux = Base.require(TextAnalysis, :Flux)
-
         new(read_weights(), read_word_ids())
     end
 end
@@ -98,7 +92,6 @@ Predict sentiment of the input doc in range 0 to 1, 0 being least sentiment scor
 -  doc              = Input Document for calculating document (`AbstractDocument` type)
 -  handle_unknown   = A function for handling unknown words. Should return an array (default x->tuple())
 """
-
 function(m::SentimentAnalyzer)(d::AbstractDocument, handle_unknown = x->tuple())
     m.model(handle_unknown, tokens(d))
 end

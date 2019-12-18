@@ -1,4 +1,5 @@
 environment:
+  DATADEPS_ALWAYS_ACCEPT: True
   matrix:
   - julia_version: 1.0
   - julia_version: 1.3

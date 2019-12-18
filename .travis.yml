@@ -1,6 +1,8 @@
 language: julia
 os:
   - linux
+env:
+  - DATADEPS_ALWAYS_ACCEPT=true
 julia:
   - 1.0
   - 1.3
@@ -19,4 +21,4 @@ jobs:
         - julia --project=docs/ docs/make.jl
       after_success: skip
 after_success:
-  - julia -e 'cd(Pkg.dir("TextAnalysis")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';
+- julia -e 'cd(Pkg.dir("TextAnalysis")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';

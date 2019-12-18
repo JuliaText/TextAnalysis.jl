@@ -7,7 +7,7 @@ makedocs(
         canonical = "https://juliatext.github.io/TextAnalysis.jl/stable/",
         #prettyurls = false,
     ),
-    assets = ["assets/custom.css", "assets/custom.js"],
+    assets = ["assets/custom.css", "assets/custom.js", "assets/favicon.ico"],
     pages = [
         "Home" => "index.md",
         "Documents" => "documents.md",
@@ -15,7 +15,11 @@ makedocs(
         "Features" => "features.md",
         "Semantic Analysis" => "semantic.md",
         "Classifier" => "classify.md",
-        "Extended Example" => "example.md"
+        "Extended Example" => "example.md",
+        "Evaluation Metrics" => "evaluation_metrics.md",
+        "Conditional Random Fields" => "crf.md",
+        "Named Entity Recognition" => "ner.md",
+        "API References" => "APIReference.md"
     ],
 )
 

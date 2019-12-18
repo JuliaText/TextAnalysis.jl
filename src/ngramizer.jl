@@ -29,6 +29,8 @@ function ngramize(lang::S, words::Vector{T}, nlist::Integer...) where {S <: Lang
     return tokens
 end
 
+ngramize(lang::Language, str::AbstractString, n::Integer) = ngramize(lang, tokenize(lang, str), n)
+
 """
     onegramize(lang, tokens)
 
