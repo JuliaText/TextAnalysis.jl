@@ -1,8 +1,8 @@
 using BSON, Tracker
 mutable struct BiLSTM_CNN_CRF_Model{C, W, L, D, O, A}
     labels::Array{String, 1} # List of Labels
-    chars_idx::Dict{Char, Int64} # Dict that maps chars to indices in W_Char_Embed
-    words_idx::Dict{String, Int64} # Dict that maps words to indices in W_word_Embed
+    chars_idx#::Dict{Char, Integer} # Dict that maps chars to indices in W_Char_Embed
+    words_idx#::Dict{String, Integer} # Dict that maps words to indices in W_word_Embed
     conv1::C # Convolution Layer over W_Char_Embed to give character representation
     W_Char_Embed::W # Weights for character embeddings
     W_word_Embed::W # Further trained GloVe Embeddings
