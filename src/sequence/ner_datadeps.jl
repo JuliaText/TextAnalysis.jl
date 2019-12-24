@@ -19,7 +19,7 @@ function ner_datadep_register()
         The character and words dict for NER Sequence Labelling Model.
         """,
         "https://github.com/Ayushk4/NER.jl/releases/download/0.0.0.1/ner_dicts.tar.xz",
-        "190d8ed245f2e233d97c23c015ae1b3c11878974188d30c2fabceb281b7cbbda",
+        "49619d793a5974dd41859e68d73eae68e58f8b264d49ba98489ab6ed74bf5f86",
         post_fetch_method = function(fn)
             unpack(fn)
             dir = "model_dicts"

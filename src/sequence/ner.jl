@@ -19,7 +19,10 @@ function load_model_dicts(filepath, remove_tag_prefix)
     # Since String can't be directly converted into Char. But these Strings only of length 1.
     chars_idx = Dict(key[1] => chars_idx_json[key] for key in keys(chars_idx_json)) # This is Dict{Char,Int32}
 
-    words_idx = BSON.load(joinpath(filepath, "word_to_embed_idx.bson"))[:get_word_index]
+    words_idx = JSON.parsefile(joinpath(filepath, "word_to_embed_idx.json"),
+                               dicttype = Dict{String, Int32},
+                               inttype = Int32
+                              )
 
     remove_tag_prefix || return [labels...], chars_idx, words_idx
 
