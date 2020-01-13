@@ -340,8 +340,9 @@ ERROR: The tokens of an NGramDocument cannot be reconstructed
 It can be used to find the sentiment score (between 0 and 1) of a word, sentence or a Document.
 A trained model (using Flux) on IMDB word corpus with weights saved are used to calculate the sentiments.
 
-    model = SentimentAnalyzer(doc)
-    model = SentimentAnalyzer(doc, handle_unknown)
+    model = SentimentAnalyzer()
+    model(doc)
+    model(doc, handle_unknown)
 
 *  doc              = Input Document for calculating document (AbstractDocument type)
 *  handle_unknown   = A function for handling unknown words. Should return an array (default (x)->[])
