@@ -2,6 +2,7 @@ name = "TextAnalysis"
 uuid = "a2db99b7-8b79-58f8-94bf-bbc811eef33d"
 license = "MIT"
 desc = "Julia package for text analysis"
+version = "0.7.0"
 
 [deps]
 BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
