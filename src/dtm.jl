@@ -1,7 +1,7 @@
-mutable struct DocumentTermMatrix
+mutable struct DocumentTermMatrix{T}
     dtm::SparseMatrixCSC{Int, Int}
-    terms::Vector{String}
-    column_indices::Dict{String, Int}
+    terms::Vector{T}
+    column_indices::Dict{T, Int}
 end
 
 
@@ -10,8 +10,8 @@ end
 
 Creates a column index lookup dictionary from a vector of terms.
 """
-function columnindices(terms::Vector{String})
-    column_indices = Dict{String, Int}()
+function columnindices(terms::Vector{T}) where T
+    column_indices = Dict{T, Int}()
     for i in 1:length(terms)
         term = terms[i]
         column_indices[term] = i
@@ -54,7 +54,7 @@ julia> m.dtm
   [2, 6]  =  1
 ```
 """
-function DocumentTermMatrix(crps::Corpus, terms::Vector{String})
+function DocumentTermMatrix(crps::Corpus, terms::Vector{T}) where T
     column_indices = columnindices(terms)
 
     m = length(crps)
@@ -87,7 +87,7 @@ DocumentTermMatrix(crps::Corpus) = DocumentTermMatrix(crps, lexicon(crps))
 
 DocumentTermMatrix(crps::Corpus, lex::AbstractDict) = DocumentTermMatrix(crps, sort(collect(keys(lex))))
 
-DocumentTermMatrix(dtm::SparseMatrixCSC{Int, Int},terms::Vector{String}) = DocumentTermMatrix(dtm, terms, columnindices(terms))
+DocumentTermMatrix(dtm::SparseMatrixCSC{Int, Int},terms::Vector{T}) where T = DocumentTermMatrix{T}(dtm, terms, columnindices(terms))
 
 """
     dtm(crps::Corpus)
@@ -152,7 +152,7 @@ tdm(crps::Corpus) = dtm(crps)' #'
 #
 ##############################################################################
 
-function dtm_entries(d::AbstractDocument, lex::Dict{String, Int})
+function dtm_entries(d::AbstractDocument, lex::Dict{T, Int}) where T
     ngs = ngrams(d)
     indices = Array{Int}(undef, 0)
     values = Array{Int}(undef, 0)
@@ -183,7 +183,7 @@ julia> dtv(crps[1], lexicon(crps))
  1  2  0  1  1  1
 ```
 """
-function dtv(d::AbstractDocument, lex::Dict{String, Int})
+function dtv(d::AbstractDocument, lex::Dict{T, Int}) where T
     p = length(keys(lex))
     row = zeros(Int, 1, p)
     indices, values = dtm_entries(d, lex)
