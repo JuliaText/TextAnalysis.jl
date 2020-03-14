@@ -473,7 +473,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "APIReference/#TextAnalysis.dtv-Tuple{AbstractDocument,Dict{String,Int64}}",
+    "location": "APIReference/#TextAnalysis.dtv-Union{Tuple{T}, Tuple{AbstractDocument,Dict{T,Int64}}} where T",
     "page": "API References",
     "title": "TextAnalysis.dtv",
     "category": "method",
@@ -1001,7 +1001,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "APIReference/#TextAnalysis.DocumentTermMatrix-Tuple{Corpus,Array{String,1}}",
+    "location": "APIReference/#TextAnalysis.DocumentTermMatrix-Union{Tuple{T}, Tuple{Corpus,Array{T,1}}} where T",
     "page": "API References",
     "title": "TextAnalysis.DocumentTermMatrix",
     "category": "method",
@@ -1089,7 +1089,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "APIReference/#TextAnalysis.columnindices-Tuple{Array{String,1}}",
+    "location": "APIReference/#TextAnalysis.columnindices-Union{Tuple{Array{T,1}}, Tuple{T}} where T",
     "page": "API References",
     "title": "TextAnalysis.columnindices",
     "category": "method",
