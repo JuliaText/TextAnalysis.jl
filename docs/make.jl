@@ -19,6 +19,7 @@ makedocs(
         "Evaluation Metrics" => "evaluation_metrics.md",
         "Conditional Random Fields" => "crf.md",
         "Named Entity Recognition" => "ner.md",
+        "ULMFiT" => "ULMFiT.md",
         "API References" => "APIReference.md"
     ],
 )
