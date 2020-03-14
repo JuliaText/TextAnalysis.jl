@@ -401,6 +401,126 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "ULMFiT/#",
+    "page": "ULMFiT",
+    "title": "ULMFiT",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "ULMFiT/#ULMFiT-1",
+    "page": "ULMFiT",
+    "title": "ULMFiT",
+    "category": "section",
+    "text": "This is the implementation of Universal Language Model Fine-tuning for Text Classification paper released by the Jeremy Howard and Sebastian Ruder. The model can be used for several classification tasks in Natural Language Processing domain. The model follows the concept of Transfer learning. Here, the model was trained to perform Sentiment Analysis task. The weights for that is also provided and also the weights for the Language model part of the ULMFiT is provided so that it can be used to fine-tune the model for different tasks."
+},
+
+{
+    "location": "ULMFiT/#Data-Loading-and-Preprocessing-1",
+    "page": "ULMFiT",
+    "title": "Data Loading and Preprocessing",
+    "category": "section",
+    "text": "Proper preprocessing is essential before start training ULMFiT. For pretraining step for Language model, a general-purpose corpus is needed, which here is WikiText-103 by default. Similarly, for fine-tuning Language Model and fine-tuning classifier we need a dataset for the specific task (example IMDB for Sentiment Analysis, large scale AG news and DBpedia ontology datasets for Topic classification etc). To load data for these steps, data loaders are needed to be defined. Since the data used to train for such a large model is large, so it is not recommended to load all the data at once, instead the data should be loaded in batches through concept of tasks (or coroutines) in Julia (Refer this documentation for understanding tasks in Julia) using Channels. Basically, we need to create Channel which supply a mini-batch at every call. As example the functions used for preprocessing of the IMDB dataset used is given in the data_loaders.jl in ULMFiT directory. Also, for loading WikiText-103 dataset and IMDB dataset default functions are provided in same file.Default data loaders are provided in the data_loaders.jl:load_wikitext_103    : returns Channel which gives batches from WikiText-103 dataset\nimdb_fine_tune_data  : returns Channel for loading fine-tuning data from IMDb movie review dataset\nimdb_classifier_data : returns Channel for loading classification data from IMDB movie review dataset for binary sentiment analysisTo make custom loaders, have a look into these functions. These will give clear idea of preparation of batches inside data loaders."
+},
+
+{
+    "location": "ULMFiT/#Step-1-Pre-training-Language-Model-1",
+    "page": "ULMFiT",
+    "title": "Step 1 - Pre-training Language Model",
+    "category": "section",
+    "text": "In this step, Language Model will learn the general properties of the Language. To train the model we need a general domain corpus like WikiText-103. For training, a generator function is provided to create a Channel which will give mini-batch in every call. After pre-processing the corpus, the tokenized corpus is given as input to the generator function and the Channel can be created like so:julia> loader = Channel(x -> generator(x, corpus; batchsize=4, bptt=10))\nChannel{Any}(sz_max:0,sz_curr:1)\n\njulia> max_batches = take!(loader) # this is the first call to the loader\n\n# These are the subsequent calls in pairs for X and Y\njulia> X = take!(Loaders)\n 10-element Array{Array{Any,1},1}:\n [\"senjō\", \",\", \"indicated\", \"after\"]   \n [\"no\", \"he\", \",\", \"two\"]               \n [\"valkyria\", \"sent\", \"\\\"\", \"games\"]    \n [\"3\", \"a\", \"i\", \",\"]                   \n [\":\", \"formal\", \"am\", \"making\"]        \n [\"<unk>\", \"demand\", \"to\", \"a\"]         \n [\"chronicles\", \"for\", \"some\", \"start\"]\n [\"(\", \"surrender\", \"extent\", \"against\"]\n [\"japanese\", \"of\", \"influenced\", \"the\"]\n [\":\", \"the\", \"by\", \"vancouver\"]\n\njulia> Y = take!(gen)\n10-element Array{Array{Any,1},1}:\n[\"no\", \"he\", \",\", \"two\"]                    \n[\"valkyria\", \"sent\", \"\\\"\", \"games\"]         \n[\"3\", \"a\", \"i\", \",\"]                        \n[\":\", \"formal\", \"am\", \"making\"]             \n[\"<unk>\", \"demand\", \"to\", \"a\"]              \n[\"chronicles\", \"for\", \"some\", \"start\"]      \n[\"(\", \"surrender\", \"extent\", \"against\"]     \n[\"japanese\", \"of\", \"influenced\", \"the\"]     \n[\":\", \"the\", \"by\", \"vancouver\"]             \n[\"戦場のヴァルキュリア\", \"arsenal\", \"them\", \"canucks\"]Note that at the first call to this Channel the output will be maximum number of batches which it can give. Two calls to this Channel completed one batch, that is, it doesnot give X and Y both together in one call, two calls are needed, one first X is given out and in second Y. Also, to understand what are batchsize and bptt, refer this blog."
+},
+
+{
+    "location": "ULMFiT/#Training-Language-Model:-1",
+    "page": "ULMFiT",
+    "title": "Training Language Model:",
+    "category": "section",
+    "text": "File pretrain_lm.jl contains the whole implementation of the LanguageModel. To start training, first, create an instance of LanguageModel type, then use the below specified function with appropriate arguments.julia> lm = LanguageModel()It has several arguments to defined the internal structure of the LanguageModel instance: [All are keyword arguments and optional]embedding_size      : defines size of embeddings for embedding matrix in DroppedEmbeddings layer (default value is 400)\nhid_lstm_sz         : defines size of hidden AWD_LSTM layer (default value is 1150)\nout_lstm_sz         : defines size of output AWD_LSTM layer (default value is equal to embedding_size)\nembed_drop_prob     : embedding dropout probability in DroppedEmbeddings (default value is 0.05)\nword_drop_prob      : dropout probability to the input embeddings to first AWD_LSTM layer (default value is 0.4)\nhid_drop_prob       : DropConnect probability to the hidden matrices of the each AWD_LSTM layer (default value is 0.5)\nlayer_drop_prob     : probability of the dropout layer between the AWD_LSTM layers (default value is 0.3)\nfinal_drop_prob     : probability of the dropout layer after the last AWD_LSTM layer (default value is 0.3)pretrain_lm!(lm::LanguageModel=LanguageModel(),\n            data_loader::Channel=load_wikitext_103;\n            base_lr=0.004,\n            epochs::Integer=1,\n            checkpoint_itvl::Integer=5000)Positional Arguments:lm               : instance of LanguageModel struct\ndata_loader      : this Channel is created to load the data from the general-domain corpusKeyword Arguments:base_lr          : learning rate for ADAM optimizers\nepochs           : number of epochs\ncheckpoint_itvl  : Stands for Checkpoint interval, interval of number of iterations after which the model weights are saved to a specified BSON file[All default values shown above]To know the full implementation of the LanguageModel, AWD_LSTM layer and DroppedEmbeddings layer, refer blog1 and blog2."
+},
+
+{
+    "location": "ULMFiT/#Step-2-Fine-tuning-Language-Model-1",
+    "page": "ULMFiT",
+    "title": "Step 2 - Fine-tuning Language Model",
+    "category": "section",
+    "text": "In this step, the Language Model pretrained in the last step, will be fine-tuned on the target data of the downstream task (e.g. sentiment analysis). Again preprocess the text data from the dataset and create a Channel using the generator function. fine_tune_lm.jl contains all the functions related to fine-tuning of the Language model."
+},
+
+{
+    "location": "ULMFiT/#Fine-tune-Language-model:-1",
+    "page": "ULMFiT",
+    "title": "Fine-tune Language model:",
+    "category": "section",
+    "text": "fine_tune_lm! function is used to fine-tune a Language Model:fine_tune_lm!(lm::LanguageModel=load_lm(),\n        data_loader::Channel=imdb_fine_tune_data,\n        stlr_cut_frac::Float64=0.1,\n        stlr_ratio::Float32=32,\n        stlr_η_max::Float64=0.01;\n        epochs::Integer=1,\n        checkpoint_itvl::Integer=5000\n)Positional Arguments:lm               : Instance of LanguageModel struct\ndata_loader      : Channel created to load mini-batches from target dataKeyword Arguments:stlr_cut_frac    : In STLR, it is the fraction of iterations for which LR is increased\nstlr_ratio       : In STLR, it specifies how much smaller is lowest LR from maximum LR\nstlr_η_max       : In STLR, this is the maximum LR value\nepochs           : It is simply the number of epochs for which the language model is to be fine-tuned\ncheckpoint_itvl  : Stands for Checkpoint interval, interval of number of iterations after which the model weights are saved to a specified BSON file[All default values shown above] By default the fine_tune_lm! function will load a pretrained model if a LanguageModel instance is not provided.In fine-tuning step, some additional techniques are used to for training, namely, Discriminative fine-tuning and Slanted triangular learning rates (STLR). To know there implementation refer this blog."
+},
+
+{
+    "location": "ULMFiT/#Step-3-Fine-tuning-the-classifier-for-downstream-task-1",
+    "page": "ULMFiT",
+    "title": "Step 3 - Fine-tuning the classifier for downstream task",
+    "category": "section",
+    "text": "This is the final step of training ULMFiT model for a specifc task. Here, two linear blocks will be in addition with the Language model layers. These are PooledDense and Dense. To know more about them go through this blog post."
+},
+
+{
+    "location": "ULMFiT/#Fine-tune-text-classifier-1",
+    "page": "ULMFiT",
+    "title": "Fine-tune text classifier",
+    "category": "section",
+    "text": "Before start of training, it is required to make an instance of the TextClassifier type like so:julia> classifier = TextClassifier()Arguments: [All are positional and optional arguments]lm                   : Instance of LanguageModel [by default LanguageModel()]\nclsfr_out_sz         : output Dense layer size of classifier [default value is 2]\nclsfr_hidden_sz      : hidden PooledDense layer size of classifier [default value is 50]\nclsfr_hidden_drop    : dropout probability for the PooledDense layer [hidden layer] of classifier [default value is 0.4]To start training use train_classifier! function:train_classifier!(classifier::TextClassifier=TextClassifier(),\n        classes::Integer=1,\n        data_loader::Channel=imdb_classifier_data,\n        hidden_layer_size::Integer=50;\n        stlr_cut_frac::Float64=0.1,\n        stlr_ratio::Number=32,\n        stlr_η_max::Float64=0.01,\n        val_loader::Channel=nothing,\n        cross_val_batches::Union{Colon, Integer}=:,\n        epochs::Integer=1,\n        checkpoint_itvl=5000\n)Positional Arguments:lm               : Instance of LanguageModel struct\nclasses          : Size of output layer for classifier or number of classes for which the classifier is to be trained\ndata_loader     : Channel created to load mini-batches for classification\nhidden_layer_size: Size of the hidden linear layer added for making classifierKeyword Arguments:stlr_cut_frac    : In STLR, it is the fraction of iterations for which LR is increased\nstlr_ratio       : In STLR, it specifies how much smaller is lowest LR from maximum LR\nstlr_η_max       : In STLR, this is the maximum LR value\nval_loader       : Channel which will load the cross validation set as mini-batches same as data_loader\ncross_val_batches: number of cross validation batches for the accuracy and loss will be printed\nepochs           : It is simply the number of epochs for which the language model is to be fine-tuned\ncheckpoint_itvl  : Stands for Checkpoint interval, interval of number of iterations after which the model weights are saved to a specified BSON file[All defaults values are shown above]"
+},
+
+{
+    "location": "ULMFiT/#Layers-1",
+    "page": "ULMFiT",
+    "title": "Layers",
+    "category": "section",
+    "text": "There are some custom layers added for this model to work properly. All of them are described below, go though all of them to have a better understanding of the model."
+},
+
+{
+    "location": "ULMFiT/#Weight-Dropped-LSTM-(WeightDroppedLSTM)-1",
+    "page": "ULMFiT",
+    "title": "Weight-Dropped LSTM (WeightDroppedLSTM)",
+    "category": "section",
+    "text": "This is basically a modification to the original LSTM layer. The layer uses DropConnect with Variational-dropping concepts. In which, the hidden-to-hidden weights and input-to-hidden weights can be dropped randomly for given probability. That means, the layer uses the same drop mask for all timesteps and to do this, the layer saves the masks. To change the mask reset_masks! function should be used.# maskWi and maskWh are drop masks for Wi and Wh weights\njulia> fieldnames(WeightDroppedLSTMCell)\n(:Wi, :Wh, :b, :h, :c, :p, :maskWi, :maskWh, :active)\n\n# To deine a layer with 4 input size and 5 output size and 0.3 dropping probability\njulia> wd = WeightDroppedLSTM(4, 5, 0.3);\n\n# Pass\njulia> x = rand(4);\njulia> h = wd(x)\nTracked 5-element Array{Float64,1}:\n  0.06149460838123775\n -0.06028818475111407\n  0.07400426274491535\n -0.20671647527394219\n -0.00678279380721769\n\n# To reset_masks!\njulia> reset_masks!(wd)"
+},
+
+{
+    "location": "ULMFiT/#Averaged-SGD-LSTM-(AWD_LSTM)-1",
+    "page": "ULMFiT",
+    "title": "Averaged-SGD LSTM (AWD_LSTM)",
+    "category": "section",
+    "text": "This is a regular LSTM layer with Variational DropConnect and weights averaging functionality (while training). This layer comes out to be efficient for Language modelling tasks (refer this). It used the WeightDroppedLSTM layer discussed above for DropConnect property. It averages the weights on subsequent iteration after trigger iteration. The layer needs a trigger iteration number to use its averaging functionality. To set the trigger set_trigger! function can be used and reset_masks! can be used for resetting drop masks for DropConnect.# `accum` field is used to store the sum of weights for every iteration after trigger\n# to get average of the weights for every subsequent iteration\njulia> fieldnames(AWD_LSTM)\n(:layer, :T, :accum)\n\njulia> awd = AWD_LSTM(3, 4, 0.5)\n\n# Setting trigger iteration\njulia> set_trigger!(1000, awd)\njulia> awd.T\n1000\n\n# Pass\njulia> x = rand(3)\njulia> h = awd(x)\nTracked 4-element Array{Float64,1}:\n -0.0751824486756288\n -0.3061227967356536\n -0.030079860137667995\n -0.09833401074779546\n\n # Resetting drop masks\n julia> awd.layer.cell.maskWi\n 16×3 Array{Float32,2}:\n 0.0  2.0  2.0\n 2.0  2.0  2.0\n 0.0  2.0  0.0\n 0.0  0.0  2.0\n 0.0  0.0  2.0\n 2.0  2.0  2.0\n 2.0  2.0  2.0\n 0.0  2.0  2.0\n 0.0  2.0  0.0\n 2.0  0.0  2.0\n 0.0  0.0  2.0\n 0.0  2.0  2.0\n 2.0  0.0  2.0\n 0.0  2.0  0.0\n 0.0  2.0  0.0\n 2.0  0.0  2.0\n\n julia> reset_masks!(awd)\n julia> awd.layer.cell.maskWi\n 16×3 Array{Float32,2}:\n 0.0  2.0  0.0\n 0.0  0.0  0.0\n 2.0  0.0  0.0\n 0.0  2.0  0.0\n 2.0  2.0  0.0\n 2.0  2.0  2.0\n 2.0  2.0  0.0\n 2.0  2.0  0.0\n 2.0  2.0  2.0\n 0.0  0.0  2.0\n 2.0  0.0  0.0\n 2.0  2.0  2.0\n 2.0  2.0  2.0\n 0.0  0.0  2.0\n 0.0  2.0  0.0\n 0.0  0.0  2.0"
+},
+
+{
+    "location": "ULMFiT/#Variational-DropOut-(VarDrop)-1",
+    "page": "ULMFiT",
+    "title": "Variational-DropOut (VarDrop)",
+    "category": "section",
+    "text": "This layer applis Variational-DropOut, which is, using same dropout mask till it is not specified to change or till a pass is over. This dropout is useful for recurrent layers since these layers perform better if same mask is used for all time-steps (pass) instead of using different for every timestep. [Refer this paper for more details]. This layer saves the masks after generation till it is not specified to change. To change the mask use reset_masks! function.julia> vd = VarDrop(0.5)\nVarDrop{Float64}(0.5, Array{Float32}(0,0), true, true)\n\n# No mask generation will nothing is passed\njulia> vd.mask\n0×0 Array{Float32,2}\n\njulia> x = rand(4,5)\n4×5 Array{Float64,2}:\n 0.480531  0.556341   0.228134  0.439411    0.137296\n 0.541459  0.118603   0.448941  0.568478    0.0440091\n 0.491735  0.55232    0.857768  0.729287    0.842753\n 0.33523   0.0378036  0.491757  0.00710462  0.374096\n\n julia> x = vd(x)\n 4×5 Array{Float64,2}:\n 0.961062  1.11268    0.0       0.0        0.274592\n 1.08292   0.0        0.897881  0.0        0.0880182\n 0.98347   0.0        0.0       1.45857    1.68551\n 0.67046   0.0756071  0.983514  0.0142092  0.0\n\n julia> vd.mask\n 4×5 Array{Float64,2}:\n 2.0  2.0  0.0  0.0  2.0\n 2.0  0.0  2.0  0.0  2.0\n 2.0  0.0  0.0  2.0  2.0\n 2.0  2.0  2.0  2.0  0.0"
+},
+
+{
+    "location": "ULMFiT/#Dropped-Embeddings-(DroppedEmbeddings)-1",
+    "page": "ULMFiT",
+    "title": "Dropped Embeddings (DroppedEmbeddings)",
+    "category": "section",
+    "text": "This layer is an embedding layer which can work in two ways either to give embeddings Vectors for the given indices of words in vocabulary or can be used to get probability distribution for all the words of vocabulary with softmax layer, which is also called as weight-tying. Here, it can be used to tie weights of the embedding layer and the last softmax layer. In addition to this, it also dropped embeddings for words randomly for given probability of dropping, in other words, it puts whole embedding vector of randomly selects to vector of zeros. Here, the mask used for the dropping posses variational property, that is, it cannot be changed till it is not specified to change or generate a new drop mask. reset_masks! should be used to reset the mask.julia> fieldnames(DroppedEmbeddings)\n(:emb, :p, :mask, :active)\n\njulia> de = DroppedEmbeddings(5, 2, 0.3)\n\n# Pass\njulia> x = [4,2,1]\njulia> embeddings = de(x)\nTracked 2×3 LinearAlgebra.Transpose{Float32,Array{Float32,2}}:\n 0.86327    0.537614  -0.0\n 0.152131  -0.541008  -0.0\n\n julia> de.mask\n 5-element Array{Float32,1}:\n 0.0\n 1.4285715\n 1.4285715\n 1.4285715\n 1.4285715\n\n # reset mask\n julia> reset_masks!(de)\n julia> de.mask\n 5-element Array{Float32,1}:\n 0.0\n 1.4285715\n 1.4285715\n 0.0\n 1.4285715"
+},
+
+{
+    "location": "ULMFiT/#Concat-Pooled-Dense-layer-1",
+    "page": "ULMFiT",
+    "title": "Concat-Pooled Dense layer",
+    "category": "section",
+    "text": "This is a simple modification to the original Dense layer for recurrent networks. This layer should come after last RNN layer in the network. It takes the Vector of outputs of the RNN layers at all timesteps and then performs max and mean pooling to those outputs, then concatenates these outputs with the last output of the RNN layers and passes this concatenation result to the a Dense layer within.# The first argument is the length of the output Vector of the preceding RNN layer to this layer. Also, by default if uses identity activation, it can be changed by giving desired activaiton as the third argument\njulia> pd = PooledDense(4, 3)\n\n# Pass\njulia> X = [rand(4), rand(4), rand(4)]\njulia> pd(X)\nTracked 3×1 Array{Float64,2}:\n -2.2106991143006036\n -0.9560163708455404\n -0.4770649645417375"
+},
+
+{
     "location": "APIReference/#",
     "page": "API References",
     "title": "API References",
