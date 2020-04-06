@@ -111,6 +111,7 @@ module TextAnalysis
     include("sequence/pos_datadeps.jl")
     include("sequence/pos.jl")
     include("sequence/sequence_models.jl")
+    
     # ALBERT 
     include("./albert/ALBERT.jl")
  
@@ -135,5 +136,6 @@ module TextAnalysis
         pos_tagger_datadep_register()
         ner_datadep_register()
         pos_datadep_register()
+        ULMFiT.ulmfit_datadep_register()
     end
 end
