@@ -1,4 +1,4 @@
-module TextAnalysis
+module ALBERT
 using Flux
 using Requires
 using Requires: @init
