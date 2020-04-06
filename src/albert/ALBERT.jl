@@ -1,4 +1,4 @@
-module ALBERT
+module TextAnalysis
 using Flux
 using Requires
 using Requires: @init
@@ -17,4 +17,5 @@ include("alberttokenizer.jl")
 include("sentencepiece.jl")
 include("albert.jl")
 
-end # module
+end
+ # module
