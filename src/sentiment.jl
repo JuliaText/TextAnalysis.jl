@@ -43,7 +43,7 @@ function get_sentiment(handle_unknown, ip::Array{T, 1}, weight, rwi) where T <: 
     end
     res = Array{Int, 1}()
     for ele in ip
-	if ele in keys(rwi) && rwi[ele] <= size(weight[:embedding_1]["embedding_1"]["embeddings:0"])[2]   # there are only 5000 unique embeddings
+	if ele in keys(rwi) && rwi[ele] <= ( size(weight[:embedding_1]["embedding_1"]["embeddings:0"])[2] - 1 )  # there are only 5000 unique embeddings (padding corresponds to default index-1)
             push!(res, rwi[ele])
 	else
 	    for words in handle_unknown(ele)
