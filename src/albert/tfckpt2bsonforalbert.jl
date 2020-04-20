@@ -1,4 +1,4 @@
-# turn a tf bert format to bson
+# Codeto turn a tf bert format to bson
 
 using JSON
 using ZipFile
@@ -16,6 +16,8 @@ using Flux: loadparams!
 
 turn google released albert format into BSON file. Set `raw` to `true` to remain the origin data format in bson.
 """
+#Only 'raw = true' part is working
+#working on parameter loading function 
 function tfckpt2bsonforalbert(path; raw=false, saveto="./", confname = "albert_config.json", ckptname = "model.ckpt-best", vocabname = "30k-clean.vocab")
   if iszip(path)
     data = ZipFile.Reader(path)
@@ -93,9 +95,10 @@ readckpt(path) = error("readckpt require TensorFlow.jl installed. run `Pkg.add(\
      weights["bert/encoder/transformer/group_0/inner_group_0/attention_1/output/dense/bias"]=collect((ckpt.get_tensor("bert/encoder/transformer/group_0/inner_group_0/attention_1/output/dense/bias"))')
 
 return(weights)
-#print((weights["bert/encoder/transformer/group_0/inner_group_0/attention_1/output/dense/bias"]))
   end
 end
+
+
 function readckptfolder(z::ZipFile.Reader; confname = "albert_config.json", ckptname = "model.ckpt-best", vocabname = "30k-clean.vocab")
   (confile = findfile(z, confname)) === nothing && error("config file $confname not found")
   findfile(z, ckptname*".meta") === nothing && error("ckpt file $ckptname not found")
@@ -157,6 +160,7 @@ function get_activation(act_string)
     end
 end
 
+#define in Transformers.jl
 _create_classifier(;args...) = args.data
 
 load_albert_from_tfbson(path::AbstractString) = (@assert istfbson(path); load_bert_from_tfbson(BSON.load(path)))
@@ -247,7 +251,7 @@ function load_bert_from_tfbson(config, weights)
        #for loading weights in albert Transformer
        #Transformer is under development
     end
-
+   #loading parameter for embeddings layer from Bson file
     for k ∈ embeddings_weights
         if occursin("LayerNorm/gamma", k)
             loadparams!(emb_post[1].diag.α, [weights[k]])
@@ -267,7 +271,7 @@ function load_bert_from_tfbson(config, weights)
             @warn "unknown variable: $k"
         end
     end
-
+   #loading parameter for pooler_weights from Bson file
     for k ∈ pooler_weights
         if occursin("dense/kernel", k)
             loadparams!(pooler.W, [weights[k]])
@@ -290,7 +294,7 @@ function load_bert_from_tfbson(config, weights)
     if !isempty(masklm_weights)
         classifier[:masklm] = masklm
     end
-
+   #loading parameter for Sentence of Prediction from Bson file
     for k ∈ nextsent_weights
         if occursin("seq_relationship/output_weights", k)
             loadparams!(nextsentence[1].W, [weights[k]])
@@ -311,7 +315,7 @@ function load_bert_from_tfbson(config, weights)
 
     embed = CompositeEmbedding(;embedding...)
     cls = _create_classifier(; classifier...)
-
+    #possibly update to new transformer structure
     TransformerModel(embed, albert, cls)
 end
 
