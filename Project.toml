@@ -24,7 +24,7 @@ Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
 WordTokenizers = "796a5d58-b03d-544a-977e-18100b691f6e"
 
 [compat]
-Flux = "< 0.10"
+Flux = " 0.10.4"
 julia = "1"
 
 [extras]
