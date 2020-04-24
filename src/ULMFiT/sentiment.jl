@@ -53,7 +53,7 @@ function BinSentimentClassifier()
     return sc
 end
 
-Flux.@treelike BinSentimentClassifier
+Flux.@functor BinSentimentClassifier
 
 function (sc::BinSentimentClassifier)(x::TokenDocument)
     remove_case!(x)
