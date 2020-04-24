@@ -27,7 +27,8 @@ NOTE: length(opts) == length(layers)
 function discriminative_step!(layers, ηL::Float64, l, opts::Vector)
     @assert length(opts) == length(layers)
     # Gradient calculation
-    grads = Tracker.gradient(() -> l, get_trainable_params(layers))
+    par = Flux.params(layers)
+    grads = Flux.gradient(() -> l, par)
 
     # discriminative step
     ηl = ηL/(2.6^(length(layers)-1))

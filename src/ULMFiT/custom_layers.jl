@@ -88,7 +88,7 @@ function (m::WeightDroppedLSTMCell)((h, c), x)
     return (h′, c), h′
 end
 
-Flux.@treelike WeightDroppedLSTMCell
+Flux.@functor WeightDroppedLSTMCell
 
 _testmode!(m::WeightDroppedLSTMCell, test) = (m.active = !test)
 
@@ -155,7 +155,7 @@ end
 
 AWD_LSTM(in::Integer, out::Integer, p::Float64=0.0; kw...) = AWD_LSTM(WeightDroppedLSTM(in, out, p; kw...), -1, [])
 
-Flux.@treelike AWD_LSTM
+Flux.@functor AWD_LSTM
 
 (m::AWD_LSTM)(in) = m.layer(in)
 
@@ -283,7 +283,7 @@ function (de::DroppedEmbeddings)(x::AbstractArray, tying::Bool=false)
     return tying ? dropped * x : transpose(dropped[x, :])
 end
 
-Flux.@treelike DroppedEmbeddings
+Flux.@functor DroppedEmbeddings
 
 _testmode!(de::DroppedEmbeddings, test) = (de.active = !test)
 
@@ -327,7 +327,7 @@ function PooledDense(hidden_sz::Integer, out::Integer, σ = identity;
 return PooledDense(param(initW(out, hidden_sz*3)), param(initb(out)), σ)
 end
 
-Flux.@treelike PooledDense
+Flux.@functor PooledDense
 
 function (a::PooledDense)(x)
     W, b, σ = a.W, a.b, a.σ

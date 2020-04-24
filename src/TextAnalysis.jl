@@ -12,8 +12,9 @@ module TextAnalysis
     using Statistics
 
     using Flux, Tracker
-    using Flux: identity, onehot, onecold, @treelike, onehotbatch
-
+    using Flux: identity, onehot, onecold, @treelike, onehotbatch, @functor ,gradient
+    import Flux.Optimise: update!
+    
     import DataFrames.DataFrame
     import Base.depwarn
 
