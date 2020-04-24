@@ -49,7 +49,7 @@ function LanguageModel(load_pretrained::Bool=false, vocabpath::String=joinpath(@
     return lm
 end
 
-Flux.@treelike LanguageModel
+Flux.@functor LanguageModel
 
 """
     test_lm(lm::LanguageModel, data_gen, num_of_iters::Integer; unknown_token::String="_unk_")
@@ -109,9 +109,9 @@ end
 # Backpropagation step while training
 function backward!(layers, l, opt)
     # Calulating gradients and weights updation
-    p = get_trainable_params(layers)
-    grads = Tracker.gradient(() -> l, p)
-    Tracker.update!(opt, p, grads)
+    p = params(layers)
+    grads = Flux.gradient(() -> l, p)
+    update!(opt, p, grads)
     return
 end
 
