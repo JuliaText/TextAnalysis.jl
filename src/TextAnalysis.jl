@@ -2,7 +2,7 @@ module TextAnalysis
     using SparseArrays
     using Printf
     using LinearAlgebra
-
+    using StatsBase: countmap,addcounts!
     using Languages
     using DataFrames
     using WordTokenizers
@@ -66,7 +66,8 @@ module TextAnalysis
     export CRF, viterbi_decode, crf_loss
 
     export NERTagger, PoSTagger, Tracker, Flux
-
+    
+    export Vocabulary,lookup,update
     include("tokenizer.jl")
     include("ngramizer.jl")
     include("document.jl")
@@ -111,7 +112,10 @@ module TextAnalysis
     include("sequence/pos_datadeps.jl")
     include("sequence/pos.jl")
     include("sequence/sequence_models.jl")
-
+    
+    # Lang_model
+    include("LM/vocab.jl")
+    
     # ULMFiT
     module ULMFiT
         using ..TextAnalysis
