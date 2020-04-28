@@ -68,6 +68,8 @@ module TextAnalysis
     export NERTagger, PoSTagger, Tracker, Flux
     
     export Vocabulary,lookup,update
+    export everygram, padding_ngram
+
     include("tokenizer.jl")
     include("ngramizer.jl")
     include("document.jl")
