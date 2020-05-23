@@ -53,5 +53,38 @@ function padding_ngram(word,n =1 ;pad_left=false,pad_right=false ,left_pad_symbo
     if pad_right == true
         push!(seq, right_pad_symbol)
     end
-   return keys(TextAnalysis.ngramize(TextAnalysis.Languages.English(),seq,n))
+   return  ngramizenew(seq,n)
 end
+"""
+   ngramizenew is used to out putting ngrmas in set
+   
+# Example Usage
+>>>seq=["To","be","or","not","To","not","To","not"]
+      
+>>> ngramizenew(seq ,2)
+7-element Array{Any,1}:
+ "To be" 
+ "be or" 
+ "or not"
+ "not To"
+ "To not"
+ "not To"
+ "To not"
+
+"""
+function ngramizenew( words::Vector{T}, nlist::Integer...) where { T <: AbstractString}
+    #(length(nlist) == 1) && (first(nlist) == 1) && return onegramize(lang, words)
+
+    n_words = length(words)
+
+    tokens = []
+
+    for n in nlist
+        for index in 1:(n_words - n + 1)
+            token = join(words[index:(index + n - 1)], " ")
+            push!(tokens,token)
+        end
+    end
+    return tokens
+end
+
