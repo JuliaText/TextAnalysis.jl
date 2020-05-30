@@ -69,6 +69,8 @@ module TextAnalysis
     
     export Vocabulary,lookup,update
     export everygram, padding_ngram
+    export maskedscore, logscore, entropy, perplexity
+    export MLE, Lidstone, Laplace, WittenBellInterpolated, KneserNeyInterpolated, score
 
     include("tokenizer.jl")
     include("ngramizer.jl")
@@ -116,6 +118,11 @@ module TextAnalysis
     include("sequence/sequence_models.jl")
     
     # Lang_model
+    include("LM/vocab.jl")
+    include("LM/api.jl")
+    include("LM/counter.jl")
+    include("LM/langmodel.jl")
+    include("LM/preprocess.jl")
     include("LM/vocab.jl")
     
     # ULMFiT
