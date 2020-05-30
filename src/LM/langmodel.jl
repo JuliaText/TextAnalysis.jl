@@ -10,7 +10,28 @@ abstract type InterpolatedLanguageModel <: Langmodel end #Interpolated language 
 struct MLE <: Langmodel
     vocab ::Vocabulary
 end
+"""
+    MLE(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
+Return Datatype MLE 
 
+# Example
+
+```julia-repl
+julia> seq = ["To","be","or","not"]
+julia> a = everygram(seq,min_len=1, max_len=-1)
+ 10-element Array{Any,1}:
+  "or"          
+  "not"         
+  "To"          
+  "be"                  
+  "or not" 
+  "be or"       
+  "be or not"   
+  "To be or"    
+  "To be or not"
+```
+   
+"""
 function MLE(word, unk_cutoff=1, unk_label="<unk>")
     MLE(Vocabulary(word, unk_cutoff, unk_label))
 end
