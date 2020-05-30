@@ -8,7 +8,7 @@ import DataStructures.counter
     calculate conditonal frequency distribution
 """
 function counter2(data, min::Integer, max::Integer)
-    data = (everygram(data,min_len = min, max_len =max ))
+    data = everygram(data, min_len=min, max_len=max)
     data = split.(data)
     temp_lm = DefaultDict{SubString{String}, Accumulator{String,Int64}}(counter(SubString{String}))
     for i in 1:length(data)
