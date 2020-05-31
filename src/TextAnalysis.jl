@@ -119,11 +119,10 @@ module TextAnalysis
     
     # Lang_model
     include("LM/vocab.jl")
+    include("LM/langmodel.jl") 
     include("LM/api.jl")
     include("LM/counter.jl")
-    include("LM/langmodel.jl")
-    include("LM/preprocess.jl")
-    include("LM/vocab.jl")
+    include("LM/preprocessing.jl")
     
     # ULMFiT
     module ULMFiT
