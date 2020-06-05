@@ -153,6 +153,28 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
      "4 5"   
      "5 </s>"
    ```
+## Vocabulary 
 
-   ​
+Struct to store Language models vocabulary
+
+checking membership and filters items by comparing their counts to a cutoff value
+
+It also Adds a special "unkown" tokens which unseen words are mapped to
+
+```julia
+julia> words = ["a", "c", "-", "d", "c", "a", "b", "r", "a", "c", "d"]
+julia> vocabulary = Vocabulary(words, 2) 
+  Vocabulary(Dict("<unk>"=>1,"c"=>3,"a"=>3,"d"=>2), 2, "<unk>") 
+
+# lookup a sequence or words in the vocabulary
+julia> word = ["a", "-", "d", "c", "a"]
+
+julia> lookup(vocabulary ,word)
+ 5-element Array{Any,1}:
+  "a"    
+  "<unk>"
+  "d"    
+  "c"    
+  "a"
+```
 
