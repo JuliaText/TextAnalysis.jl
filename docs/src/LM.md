@@ -114,3 +114,45 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
   Calculates the perplexity of the given text.
 
   This is simply 2 ** cross-entropy(`entropy`) for the text, so the arguments are the same as `entropy`.
+
+##  Preprocessing
+
+ For Preprocessing following functions:
+
+1. `everygram`: Return all possible ngrams generated from sequence of items, as an Array{String,1}
+
+   ```julia
+   julia> seq = ["To","be","or","not"]
+   julia> a = everygram(seq,min_len=1, max_len=-1)
+    10-element Array{Any,1}:
+     "or"          
+     "not"         
+     "To"          
+     "be"                  
+     "or not" 
+     "be or"       
+     "be or not"   
+     "To be or"    
+     "To be or not"
+   ```
+
+2. `padding_ngrams`: padding _ngram is used to pad both left and right of sentence and out putting ngrmas of order n
+
+   It also pad the original input Array of string 
+
+   ```julia
+   julia> example = ["1","2","3","4","5"]
+         
+   julia> example = ["1","2","3","4","5"]
+   julia> padding_ngrams(example,2,pad_left=true,pad_right=true)
+    6-element Array{Any,1}:
+     "<s> 1" 
+     "1 2"   
+     "2 3"   
+     "3 4"   
+     "4 5"   
+     "5 </s>"
+   ```
+
+   ​
+
