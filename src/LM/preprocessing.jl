@@ -22,7 +22,6 @@ julia> a = everygram(seq,min_len=1, max_len=-1)
    
 """
 function everygram(seq::Vector{T}; min_len::Int=1, max_len::Int=-1) where { T <: AbstractString}
-
     ngram = []
     if max_len == -1
         max_len = length(seq)
@@ -88,8 +87,6 @@ julia> ngramizenew(seq ,2)
 ```
 """
 function ngramizenew(words::Vector{T}, nlist::Integer...) where { T <: AbstractString}
-    #(length(nlist) == 1) && (first(nlist) == 1) && return onegramize(lang, words)
-
     n_words = length(words)
 
     tokens = []
