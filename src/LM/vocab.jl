@@ -9,7 +9,7 @@ Adds a special "unknown" token which unseen words are mapped to.
 
 # Example
 ```julia-repl
-julia> words = ['a', 'c', '-', 'd', 'c', 'a', 'b', 'r', 'a', 'c', 'd']
+julia> words = ["a", "c", "-", "d", "c", "a", "b", "r", "a", "c", "d"]
 julia> vocabulary = Vocabulary(words, 2) 
   Vocabulary(Dict("<unk>"=>1,"c"=>3,"a"=>3,"d"=>2), 2, "<unk>") 
 
@@ -75,7 +75,7 @@ unk_cutoff::Int
 unk_label::String
 allword::Array{String,1}
 end
-function Vocabulary(word, unk_cutoff=1, unk_label="<unk>") 
+function Vocabulary(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
     if unk_label in word
         error("unk_label is in vocab")
     else
@@ -100,7 +100,7 @@ lookup a sequence or words in the vocabulary
 
 Return an Array of String
 """
-function lookup(voc::Vocabulary,word)
+function lookup(voc::Vocabulary,word::Vector{T}) where { T <: AbstractString}
     look = []
     for w in word
         if w in keys(voc.vocab)
