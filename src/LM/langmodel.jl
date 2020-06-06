@@ -30,18 +30,18 @@ end
 
 struct Lidstone <: gammamodel
     vocab::Vocabulary
-    gamma::Integer
+    gamma::Float64
 end
 
 """
-    Lidstone(word::Vector{T}, gamma:: Integer,unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
+    Lidstone(word::Vector{T}, gamma:: Float64, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
 
 Function to initiate Type(Lidstone) for providing Lidstone-smoothed scores.
 
 In addition to initialization arguments from BaseNgramModel also requires 
 a number by which to increase the counts, gamma.
 """
-function Lidstone(word, gamma,unk_cutoff=1, unk_label="<unk>")
+function Lidstone(word, gamma = 1.0, unk_cutoff=1, unk_label="<unk>")
     Lidstone(Vocabulary(word, unk_cutoff, unk_label), gamma)
 end
 
@@ -60,11 +60,11 @@ a number by which to increase the counts, gamma = 1.
 """
 struct Laplace <: gammamodel
     vocab::Vocabulary
-    gamma::Integer
+    gamma::Float64
 end
 
 function Laplace(word, unk_cutoff=1, unk_label="<unk>")
-    Lidstone(Vocabulary(word, unk_cutoff, unk_label), 1)
+    Laplace(Vocabulary(word, unk_cutoff, unk_label), 1.0)
 end
 
 function (lm::Laplace)(text, min::Integer, max::Integer) 
@@ -81,7 +81,7 @@ score is used to output probablity of word given that context
 Add-one smoothing to Lidstone or Laplace(gammamodel) models
         
 """
-function score(m::gammamodel, temp_lm, word, context) #score for gammamodel output probabl
+function score(m::gammamodel, temp_lm::DefaultDict, word, context) #score for gammamodel output probabl
     accum = temp_lm[context]
     #print(accum)
     s = float(sum(accum)+(m.gamma)*length(m.vocab.vocab)) 
@@ -99,7 +99,7 @@ To get probability of word given that context
 In otherwords, for given context calculate frequency distribution of word
   
 """
-function prob(templ_lm::DefaultDict, word, context=nothing)
+function prob(m::Langmodel, templ_lm::DefaultDict, word, context=nothing)
     if context == nothing || context == ""
         return(1/float(length(templ_lm))) #provide distribution 
     else
@@ -111,6 +111,9 @@ function prob(templ_lm::DefaultDict, word, context=nothing)
             return(float(count) / s)
         end
     end
+    if context in keys(m.vocab.vocab)
+        return(0)
+    end
     return(Inf)
 end
 
@@ -120,8 +123,8 @@ end
 score is used to output probablity of word given that context in MLE
         
 """
-function score(m::MLE, temp_lm, word, context = nothing)
-    prob(temp_lm, word, context)
+function score(m::MLE, temp_lm::DefaultDict, word, context = nothing)
+    prob(m, temp_lm, word, context)
 end
 
 struct WittenBellInterpolated <: InterpolatedLanguageModel 
@@ -129,7 +132,7 @@ struct WittenBellInterpolated <: InterpolatedLanguageModel
 end
 
 """
-    WittenBellInterpolated(word::Vector{T}, gamma:: Integer,unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
+    WittenBellInterpolated(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
 
 Initiate Type for providing Interpolated version of Witten-Bell smoothing.
 
@@ -151,7 +154,7 @@ function alpha_gammma(m::WittenBellInterpolated, templ_lm::DefaultDict, word, co
     local gam
     accum = templ_lm[context]
     s = float(sum(accum)) 
-    for (text, count) in accum
+    for (text,count) in accum
         if text == word
             alpha=(float(count) / s)
             break 
@@ -170,7 +173,7 @@ end
     
 function gamma(accum)
     nplus=count_non_zero_vals(accum)
-    return(nplus/(nplus + float(sum(accum))))
+    return(nplus/(nplus+float(sum(accum))))
 end
 
 """
@@ -182,9 +185,9 @@ Apply Kneserney and WittenBell smoothing
 depending upon the sub-Type
         
 """
-function score(m::InterpolatedLanguageModel,temp_lm::DefaultDict,word,context=nothing)
+function score(m::InterpolatedLanguageModel, temp_lm::DefaultDict, word, context=nothing)
     if context == nothing || context == ""
-        return prob(temp_lm, word, context)
+        return prob(m, temp_lm, word, context)
     end
     if context in keys(temp_lm)
         alpha,gamma = alpha_gammma(m, temp_lm, word, context)
@@ -213,32 +216,31 @@ Initiate Type for providing KneserNey Interpolated language model.
 The idea to abstract this comes from Chen & Goodman 1995.
 
 """
-function KneserNeyInterpolated(word, gamma, unk_cutoff=1 , unk_label="<unk>")
-    KneserNeyInterpolated(Vocabulary(word, unk_cutoff, unk_label), gamma)
+function KneserNeyInterpolated(word, disc = 0.1, unk_cutoff=1, unk_label="<unk>")
+    KneserNeyInterpolated(Vocabulary(word, unk_cutoff, unk_label) ,disc)
 end
 
 function (lm::KneserNeyInterpolated)(text, min::Integer, max::Integer) 
     text = lookup(lm.vocab, text)
-    text = convert(Array{String}, text)
+    text=convert(Array{String}, text)
     return counter2(text, min, max)
 end
 # alpha_gamma function for KneserNeyInterpolated
-function alpha_gammma(m::KneserNeyInterpolated,templ_lm::DefaultDict, word,context)
+function alpha_gammma(m::KneserNeyInterpolated, templ_lm::DefaultDict, word, context)
     local alpha
     local gamma   
     accum = templ_lm[context]
     s = float(sum(accum)) 
    for (text, count) in accum
        if text == word
-           alpha=(max(float(count)-m.discount, 0.0) /s)
+           alpha=(max(float(count)-m.discount, 0.0) / s)
            break 
        else
            alpha = 1/length(m.vocab.vocab)
        end
     end
-    gamma = (m.discount * count_non_zero_vals(accum)/s)
+    gamma = (m.discount * count_non_zero_vals(accum) /s)
     return alpha, gamma
 end
-
 
 
