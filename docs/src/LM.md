@@ -150,8 +150,6 @@ Arguments:
 
  ```julia
    julia> example = ["1","2","3","4","5"]
-         
-   julia> example = ["1","2","3","4","5"]
    julia> padding_ngrams(example,2,pad_left=true,pad_right=true)
     6-element Array{Any,1}:
      "<s> 1" 
