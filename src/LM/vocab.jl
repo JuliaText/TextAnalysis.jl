@@ -75,6 +75,7 @@ unk_cutoff::Int
 unk_label::String
 allword::Array{String, 1}
 end
+
 function Vocabulary(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
     if unk_label in word
         error("unk_label is in vocab")
@@ -111,5 +112,4 @@ function lookup(voc::Vocabulary, word::Vector{T}) where { T <: AbstractString}
     end
     return look
 end
-
 
