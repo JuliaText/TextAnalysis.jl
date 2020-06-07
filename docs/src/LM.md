@@ -76,31 +76,31 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
 
 ## Evaluation Method
 
-- `score` 
+### `score` 
 
-    used to evaluate probablity of word given context (*P(word | context)*)
+    used to evaluate the probability of word given context (*P(word | context)*)
 
-   ```julia
+```julia
 	score(m::gammamodel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)
-   ```
+```
 
 ​	In case of Lidstone and Laplace it apply smoothing and, 
 
 ​	In Interpolated language model, provide Kneserney and WittenBell smoothing  
 
-- `maskedscore` 
+### `maskedscore` 
 
   It is used to evaluate *score* with masks out of vocabulary words
 
   The arguments are the same as for score
 
-- `logscore` 
+### `logscore` 
 
   Evaluate the log score of this word in this context.
 
   The arguments are the same as for score and maskedscore
 
-- `entropy`
+### `entropy`
 	```julia
   entropy(m::Langmodel,lm::DefaultDict,text_ngram::word::Vector{T}) where { T <: AbstractString}
 	```
@@ -109,7 +109,7 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
 
   Input text must be Array of ngram of same lengths
 
-- `perplexity`  
+### `perplexity`  
 
   Calculates the perplexity of the given text.
 
@@ -121,7 +121,7 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
 
 1. `everygram`: Return all possible ngrams generated from sequence of items, as an Array{String,1}
 
-   ```julia
+ ```julia
    julia> seq = ["To","be","or","not"]
    julia> a = everygram(seq,min_len=1, max_len=-1)
     10-element Array{Any,1}:
@@ -134,13 +134,13 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
      "be or not"   
      "To be or"    
      "To be or not"
-   ```
+ ```
 
 2. `padding_ngrams`: padding _ngram is used to pad both left and right of sentence and out putting ngrmas of order n
 
    It also pad the original input Array of string 
 
-   ```julia
+ ```julia
    julia> example = ["1","2","3","4","5"]
          
    julia> example = ["1","2","3","4","5"]
@@ -152,7 +152,7 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
      "3 4"   
      "4 5"   
      "5 </s>"
-   ```
+ ```
 ## Vocabulary 
 
 Struct to store Language models vocabulary
