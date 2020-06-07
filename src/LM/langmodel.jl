@@ -123,7 +123,7 @@ end
 score is used to output probablity of word given that context in MLE
         
 """
-function score(m::MLE, temp_lm::DefaultDict, word, context = nothing)
+function score(m::MLE, temp_lm::DefaultDict, word, context=nothing)
     prob(m, temp_lm, word, context)
 end
 
@@ -231,13 +231,13 @@ function alpha_gammma(m::KneserNeyInterpolated, templ_lm::DefaultDict, word, con
     local gamma   
     accum = templ_lm[context]
     s = float(sum(accum)) 
-   for (text, count) in accum
-       if text == word
-           alpha=(max(float(count)-m.discount, 0.0) / s)
-           break 
-       else
-           alpha = 1/length(m.vocab.vocab)
-       end
+    for (text, count) in accum
+        if text == word
+            alpha=(max(float(count)-m.discount, 0.0) / s)
+            break 
+        else
+            alpha = 1/length(m.vocab.vocab)
+        end
     end
     gamma = (m.discount * count_non_zero_vals(accum) /s)
     return alpha, gamma
