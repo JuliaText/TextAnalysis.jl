@@ -35,7 +35,7 @@ Arguments:
 
  *  `gamma`: smoothing arugment gamma 
 
- * `discount`:  discouting factor for `KneserNeyInterpolated`
+ * `discount`:  discounting factor for `KneserNeyInterpolated`
 
    for more information see docstrings of vocabulary
 
