@@ -3,7 +3,7 @@
 **TextAnalysis** provide following different Language Models 
 
 - **MLE** - Base Ngram model.
-- **Lidstone **- Base Ngram model with Lidstone smoothing.
+- **Lidstone** - Base Ngram model with Lidstone smoothing.
 - **Laplace** - Base Ngram language model with Laplace smoothing.
 - **WittenBellInterpolated** - Interpolated Version of witten-Bell algorithm.
 - **KneserNeyInterpolated** - Interpolated  version of Kneser -Ney smoothing.
@@ -177,4 +177,3 @@ julia> lookup(vocabulary ,word)
   "c"    
   "a"
 ```
-
