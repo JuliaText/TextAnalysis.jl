@@ -1,6 +1,6 @@
 #TO DO 
 # Doc string
-function maskedscore(m::Langmodel,temp_lm::DefaultDict,word,context)
+function maskedscore(m::Langmodel, temp_lm::DefaultDict, word, context)
    score(m, temp_lm, lookup(m.vocab, [word])[1], lookup(m.vocab, [context])[1])
 end
 

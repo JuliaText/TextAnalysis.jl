@@ -67,7 +67,7 @@ module TextAnalysis
 
     export NERTagger, PoSTagger, Tracker, Flux
     
-    export Vocabulary,lookup,update
+    export Vocabulary, lookup, update
     export everygram, padding_ngram
     export maskedscore, logscore, entropy, perplexity
     export MLE, Lidstone, Laplace, WittenBellInterpolated, KneserNeyInterpolated, score
