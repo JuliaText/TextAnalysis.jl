@@ -13,7 +13,7 @@
 To use the API, we first *Instantiate* desired model and then load it with train set
 
 ```julia
-<MLE>(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
+MLE(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
         
 Lidstone(word::Vector{T}, gamma:: Float64, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
         
@@ -70,6 +70,7 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
 #as expected maskedscore is equivalent to unmaskedscore with context replaced with "<unk>"
 
 ```
+
 !!! note
 
     When you call `MLE(voc)` for the first time, It will update your vocabulary set as well. 
@@ -83,6 +84,13 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
 ```julia
 	score(m::gammamodel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)
 ```
+
+Arguments:                                                        
+
+1. `m` : Instance of `Langmodel` struct.
+2. `temp_lm`: output of function call of instance of `Langmodel`.
+3. `word`: string of word 
+4. `context`: context of given word
 
 ​	In case of Lidstone and Laplace it apply smoothing and, 
 
