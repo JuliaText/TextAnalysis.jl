@@ -43,8 +43,7 @@ padding _ngram is used to pad both left and right of sentence and out putting ng
 # Example 
 ```julia-repl
 julia> example = ["1","2","3","4","5"]
-      
-julia> example = ["1","2","3","4","5"]
+
 julia> padding_ngrams(example,2,pad_left=true,pad_right=true)
  6-element Array{Any,1}:
   "<s> 1" 
@@ -55,7 +54,7 @@ julia> padding_ngrams(example,2,pad_left=true,pad_right=true)
   "5 </s>"
 ```
 """
-function padding_ngram(word::Vector{T}, n=1; pad_left=false,pad_right=false ,left_pad_symbol="<s>", right_pad_symbol ="</s>") where { T <: AbstractString}
+function padding_ngram(word::Vector{T}, n=1; pad_left=false, pad_right=false, left_pad_symbol="<s>", right_pad_symbol ="</s>") where { T <: AbstractString}
     local seq
     seq = word
     if pad_left == true
@@ -64,7 +63,7 @@ function padding_ngram(word::Vector{T}, n=1; pad_left=false,pad_right=false ,lef
     if pad_right == true
         push!(seq, right_pad_symbol)
     end
-    return  ngramizenew(seq,n)
+    return  ngramizenew(seq, n)
 end
 
 """
