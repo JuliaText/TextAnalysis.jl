@@ -42,7 +42,7 @@ Arguments:
 ```julia
 julia> voc = ["my","name","is","salman","khan","and","he","is","shahrukh","Khan"]
 
-julia>train = ["khan","is","my","good", "friend","and","He","is","my","brother"]
+julia> train = ["khan","is","my","good", "friend","and","He","is","my","brother"]
 # voc and train are used to train vocabulary and model respectively
 
 julia> model = MLE(voc)
