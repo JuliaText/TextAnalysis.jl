@@ -70,29 +70,29 @@ julia> vocabulary.vocab["b"]
 ```
 """
 mutable struct Vocabulary
-vocab::Dict{String,Int64}
+vocab::Dict{String, Int64}
 unk_cutoff::Int
 unk_label::String
-allword::Array{String,1}
+allword::Array{String, 1}
 end
 function Vocabulary(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
     if unk_label in word
         error("unk_label is in vocab")
     else
-    word= push!(word,unk_label)
+    word= push!(word, unk_label)
     end
     vocab = countmap(word)
     for value in vocab
         if value[2]<unk_cutoff && value[1] != unk_label
-            delete!(vocab,value[1])
+            delete!(vocab, value[1])
         end
     end
-    Vocabulary(vocab,unk_cutoff,unk_label,word)
+    Vocabulary(vocab, unk_cutoff, unk_label, word)
 end
 
 function update(vocab::Vocabulary, words)
-    vocab.allword = append!(vocab.allword,words)
-    vocab.vocab=addcounts!(vocab.vocab,words)
+    vocab.allword = append!(vocab.allword, words)
+    vocab.vocab=addcounts!(vocab.vocab, words)
 end
 
 """
@@ -100,13 +100,13 @@ lookup a sequence or words in the vocabulary
 
 Return an Array of String
 """
-function lookup(voc::Vocabulary,word::Vector{T}) where { T <: AbstractString}
+function lookup(voc::Vocabulary, word::Vector{T}) where { T <: AbstractString}
     look = []
     for w in word
         if w in keys(voc.vocab)
-            push!(look,w) 
+            push!(look, w) 
         else     
-            push!(look,voc.unk_label) 
+            push!(look, voc.unk_label) 
         end
     end
     return look
