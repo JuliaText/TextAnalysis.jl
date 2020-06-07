@@ -471,5 +471,4 @@ git-tree-sha1 = "580ce62b6c14244916cc28ad54f8a2e2886f843d"
 uuid = "a5390f91-8eb1-5f08-bee0-b1d1ffed6cea"
 version = "0.8.3"
 
-[[StatsBase]]
-uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+
