@@ -1,7 +1,4 @@
 using DataStructures
-import DataStructures.Accumulator
-import DataStructures.DefaultDict
-import DataStructures.counter
 
 """
     counter is used to make conditional distribution, which is used by score functions to 
