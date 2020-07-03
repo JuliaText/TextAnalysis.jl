@@ -1,17 +1,21 @@
+using Flux
 using Flux: @functor
+using Transformers.Stacks
 using MacroTools: @forward
 
-using Transformers.Basic
-using Transformers.Basic: AbstractTransformer
-using Transformers.Stacks
+using ..Basic
+using ..Basic: AbstractTransformer
+using ..Stacks
 
-struct albert <: AbstractTransformer
+
+struct ALGroup
   ts::Stack
+  drop::Dropout
 end
 
-@functor albert
+@functor ALGroup
 
-@forward albert.ts Base.getindex, Base.length
+@forward ALGroup.ts Base.getindex, Base.length
 
 """
     albert(size::Int, head::Int, ps::Int, layer::Int;
@@ -27,26 +31,27 @@ the Bidirectional Encoder Representations from Transformer(ALBERT) model.
 eval the albert layer on input `x`. If length `mask` is given (in shape (1, seq_len, batch_size)), mask the attention with `getmask(mask, mask)`. Moreover, set `all` to `true` to get all
 outputs of each transformer layer.
 """
-function albert(size::Int, head::Int, ps::Int, layer::Int;
-              act = gelu, attn_pdrop = 0)
+function ALGroup(size::Int, head::Int, ps::Int, layer::Int,inner_group::Int;
+              act = gelu, pdrop = 0.1, attn_pdrop = 0.1)
   rem(size,  head) != 0 && error("size not divisible by head")
-  albert(size, head, div(size, head), ps, layer; act=act, attn_pdrop=attn_pdrop)
+  ALGroup(size, head, div(size, head), ps, layer, inner_group; act=act, pdrop=pdrop, attn_pdrop=attn_pdrop)
 end
 
-function albert(size::Int, head::Int, hs::Int, ps::Int, layer::Int; act = gelu, attn_pdrop = 0)
-  albert(
+function ALGroup(size::Int, head::Int, hs::Int, ps::Int, layer::Int,inner_group::Int; act = gelu, pdrop = 0.1, attn_pdrop = 0.1)
+  ALGroup(
     Stack(
-      @nntopo_str("((x, m) => x':(x, m)) => $layer"),
+      @nntopo_str("((x, m) => x':(x, m)) => $inner_group"),
       [
         Transformer(size, head, hs, ps; future=true, act=act, pdrop=attn_pdrop)
-        for i = 1:layer
+        for i = 1:12
       ]...
-    )
-         )
+    ),
+    Dropout(pdrop))
 end
 
-function (al::albert)(x::T, mask=nothing; all::Bool=false) where T
+function (al::ALGroup)(x::T, mask=nothing; all::Bool=false) where T
   e = x
+    #print(e)
 
   if mask === nothing
     t, ts = al.ts(e, nothing)
@@ -67,6 +72,8 @@ function (al::albert)(x::T, mask=nothing; all::Bool=false) where T
   end
 end
 
+##TODO 
+#final transformer shared layer
 """
     masklmloss(embed::Embed{T}, transform,
                t::AbstractArray{T, N}, posis::AbstractArray{Tuple{Int,Int}}, labels) where {T,N}
