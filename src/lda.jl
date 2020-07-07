@@ -37,28 +37,29 @@ Perform [Latent Dirichlet allocation](https://en.wikipedia.org/wiki/Latent_Diric
 function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float64, beta::Float64)
 
     number_of_documents, number_of_words = size(dtm.dtm)
-    docs = Vector{Lda.TopicBasedDocument}(undef, number_of_documents)
+    docs = [Lda.TopicBasedDocument(ntopics) for _ in 1:number_of_documents]
     topics = Vector{Lda.Topic}(undef, ntopics)
     for i in 1:ntopics
         topics[i] = Lda.Topic()
     end
 
-    for i in 1:number_of_documents
-        topic_base_document = Lda.TopicBasedDocument(ntopics)
-        for wordid in 1:number_of_words
-            for _ in 1:dtm.dtm[i,wordid]
+    for wordid in 1:number_of_words
+        nzdocs_idxs = nzrange(dtm.dtm, wordid)
+        for docid in dtm.dtm.rowval[nzdocs_idxs]
+            for _ in 1:dtm.dtm[docid, wordid]
                 topicid = rand(1:ntopics)
                 update_target_topic = topics[topicid]
                 update_target_topic.count += 1
                 update_target_topic.wordcount[wordid] = get(update_target_topic.wordcount, wordid, 0) + 1
                 topics[topicid] = update_target_topic
+                topic_base_document = docs[docid]
                 push!(topic_base_document.topic, topicid)
                 push!(topic_base_document.text, wordid)
-                topic_base_document.topicidcount[topicid] =  get(topic_base_document.topicidcount, topicid, 0) + 1
+                topic_base_document.topicidcount[topicid] += 1
             end
         end
-        docs[i] = topic_base_document
     end
+
     probs = Vector{Float64}(undef, ntopics)
     # Gibbs sampling
     for _ in 1:iteration
