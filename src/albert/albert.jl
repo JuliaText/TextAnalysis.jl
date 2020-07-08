@@ -72,8 +72,36 @@ function (al::ALGroup)(x::T, mask=nothing; all::Bool=false) where T
   end
 end
 
+
+struct albert_transformer
+    linear::Dense
+    al::ALGroup
+    no_hid::Int
+    no_inner::Int
+    no_group::Int
+end
+@functor albert_transformer
+
+function albert_transformer(emb::Int,size::Int, head::Int, ps::Int, layer::Int,inner_group::Int,no_hidden_group::Int; act = gelu, pdrop = 0.1, attn_pdrop = 0.1)
+    albert_transformer(
+    Dense(emb,size),
+    ALGroup(size, head, ps,layer,inner_group,act = act ,pdrop= pdrop ,attn_pdrop = attn_pdrop),
+    layer,
+    inner_group,
+    no_hidden_group
+    )
+end
+function (altrans::albert_transformer)(x::T, mask=nothing; all::Bool=false) where T
+   hidden_states = @toNd altrans.linear(x)
+   for i in 1:altrans.no_hid
+        layer_per_group = floor(altrans.no_hid/altrans.no_group)
+        group_idx = floor(i/(altrans.no_hid/altrans.no_group))
+        hidden_states = altrans.al(hidden_states,mask,all = all)
+    end
+    return(hidden_states)
+end
 ##TODO 
-#final transformer shared layer
+#Docstrings
 """
     masklmloss(embed::Embed{T}, transform,
                t::AbstractArray{T, N}, posis::AbstractArray{Tuple{Int,Int}}, labels) where {T,N}
