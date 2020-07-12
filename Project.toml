@@ -26,8 +26,7 @@ NNlib = "872c559c-99b0-510c-b3b7-b6c96a88d5cd"
 
 [compat]
 Flux = "< 0.10"
-NNlib = "< 0.6.1"
-BSON = "> 0.2.5"
+BSON = ">= 0.2.5"
 julia = "1"
 
 [extras]
