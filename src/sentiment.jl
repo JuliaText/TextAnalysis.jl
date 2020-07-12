@@ -43,7 +43,7 @@ function get_sentiment(handle_unknown, ip::Array{T, 1}, weight, rwi) where T <: 
     end
     res = Array{Int, 1}()
     for ele in ip
-	if ele in keys(rwi) && rwi[ele] <= size(weight[:embedding_1]["embedding_1"]["embeddings:0"])[2]   # there are only 5000 unique embeddings
+	if ele in keys(rwi) && rwi[ele] <= ( size(weight[:embedding_1]["embedding_1"]["embeddings:0"])[2] - 1 )  # there are only 5000 unique embeddings (padding corresponds to default index-1)
             push!(res, rwi[ele])
 	else
 	    for words in handle_unknown(ele)
@@ -83,8 +83,9 @@ end
 
 
 """
-    model = SentimentAnalyzer(doc)
-    model = SentimentAnalyzer(doc, handle_unknown)
+    model = SentimentAnalyzer()
+    model(doc)
+    model(doc, handle_unknown)
 
 Predict sentiment of the input doc in range 0 to 1, 0 being least sentiment score and 1 being the highest.
 
