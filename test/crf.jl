@@ -1,5 +1,5 @@
 using Flux
-using Flux: gradient, LSTM, Dense, reset!, onehot
+using Flux: gradient, LSTM, Dense, reset!, onehot, RNN
 using TextAnalysis: score_sequence, forward_score
 
 @testset "crf" begin
@@ -101,7 +101,7 @@ using TextAnalysis: score_sequence, forward_score
 
         LSTM_STATE_SIZE = 5
         d_out = Dense(LSTM_STATE_SIZE, num_labels + 2)
-        lstm = LSTM(num_features, LSTM_STATE_SIZE)
+        lstm = RNN(num_features, LSTM_STATE_SIZE)
         m(x) = d_out.(lstm.(x))
 
         c = CRF(num_labels)
@@ -127,8 +127,8 @@ using TextAnalysis: score_sequence, forward_score
             reset!(lstm)
             loss(d[1], d[2])
         end
-
-        l1 = sum([find_loss(d) for d in data])
+        to_sum = [find_loss(d) for d in data]
+        l1 = sum(to_sum)
         dense_param_1 = deepcopy(Tracker.data(d_out.W))
         lstm_param_1 = deepcopy(Tracker.data(lstm.cell.Wh))
         crf_param_1 = deepcopy(Tracker.data(c.W))
