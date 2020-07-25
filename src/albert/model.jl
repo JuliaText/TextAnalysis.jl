@@ -1,3 +1,4 @@
+## basic model random initialisation
 const config = Dict(
   "initializer_range"            => 0.02,
   "hidden_act"                   => gelu,
@@ -18,7 +19,7 @@ const config = Dict(
 #Tentative albert model confi
 function create_albert()
   global config
-  albert = albert(
+  albert = TextAnalysis.ALBERT.load_pretrainedalbert(
     config["hidden_size"],
     config["num_attention_heads"],
     config["intermediate_size"],
