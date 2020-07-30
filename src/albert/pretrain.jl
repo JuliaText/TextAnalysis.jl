@@ -1,10 +1,20 @@
 using Transformers.Basic
 using Flux
 using Flux: loadparams!
-
+using DataDeps
+using TextAnalysis.ALBERT
 using BSON: @save, @load
 
-#@load "/home/iamtejas/Downloads/albert_base_v1.bson.tfbson" config weights vocab
+function from_pretrained(ty::Type{T}, filenum::Int=1) where T<:PretrainedTransformer
+    filepath = @datadep_str model_version(ty)[filenum]
+    print(filepath)
+    name = model_version(ty)[filenum]
+    filepath = "$filepath/$name"*".bson"
+    @load filepath config weights vocab
+    transformer = load_pretrainedalbert(config, weights)
+    return transformer
+end
+
 function get_activation(act_string)
     if act_string == "gelu"
         gelu
@@ -248,7 +258,8 @@ end
     end
     embed = CompositeEmbedding(;embedding...)
     cls = _create_classifier(; classifier...)
-    #possibly update to new transformer structure
+    #TODO
+    ## update to new transformer structure
     return TransformerModel(embed, albert, cls)
 
 end
