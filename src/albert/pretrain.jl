@@ -10,7 +10,7 @@ using BSON: @save, @load
 Intialised and load pretrained weights on top of deps from all the avaliable model in ALBERT
 
 Example:
-julia> transformer = froem_pretrained(albert_base_v1)
+julia> transformer = from_pretrained(albert_base_v1)
   
 TransformerModel{TextAnalysis.ALBERT.albert_transformer}(
   embed = CompositeEmbedding(tok = Embed(128), segment = Embed(128), pe = PositionEmbedding(128, max_len=512), postprocessor = Positionwise(LayerNorm(128), Dropout(0.1))),
@@ -191,37 +191,37 @@ function load_pretrainedalbert(config, weights)
             for k ∈ inner_weigths
                 if occursin("inner_group_$(i-1)/attention_1", k)
                     if occursin("self/key/kernel", k)
-                        loadparams!(albert.al[i].mh.ikproj.W, [weights[k]])
+                        loadparams!(albert.al[j][i].mh.ikproj.W, [weights[k]])
                     elseif occursin("self/key/bias", k)
-                        loadparams!(albert.al[i].mh.ikproj.b', [weights[k]])
+                        loadparams!(albert.al[j][i].mh.ikproj.b', [weights[k]])
                     elseif occursin("self/query/kernel", k)
-                        loadparams!(albert.al[i].mh.iqproj.W, [weights[k]])
+                        loadparams!(albert.al[j][i].mh.iqproj.W, [weights[k]])
                     elseif occursin("self/query/bias", k)
-                        loadparams!(albert.al[i].mh.iqproj.b', [weights[k]])
+                        loadparams!(albert.al[j][i].mh.iqproj.b', [weights[k]])
                     elseif occursin("self/value/kernel", k)
-                        loadparams!(albert.al[i].mh.ivproj.W, [weights[k]])
+                        loadparams!(albert.al[j][i].mh.ivproj.W, [weights[k]])
                     elseif occursin("self/value/bias", k)
-                        loadparams!(albert.al[i].mh.ivproj.b', [weights[k]])
+                        loadparams!(albert.al[j][i].mh.ivproj.b', [weights[k]])
                     elseif occursin("output/dense/kernel", k)
-                        loadparams!(albert.al[i].mh.oproj.W, [weights[k]])
+                        loadparams!(albert.al[j][i].mh.oproj.W, [weights[k]])
                     elseif occursin("output/dense/bias", k)
-                        loadparams!(albert.al[i].mh.oproj.b', [weights[k]])
+                        loadparams!(albert.al[j][i].mh.oproj.b', [weights[k]])
                     else
                        # @warn "unknown variable: $k"
                     end
                 elseif occursin("inner_group_$(1-1)/ffn_1/intermediate/dense", k)
                     if occursin("kernel", k)
-                        loadparams!(albert.al[i].pw.din.W, [weights[k]])
+                        loadparams!(albert.al[j][i].pw.din.W, [weights[k]])
                     elseif occursin("bias", k)
-                        loadparams!(albert.al[i].pw.din.b', [weights[k]])
+                        loadparams!(albert.al[j][i].pw.din.b', [weights[k]])
                     else
                      #  @warn "unknown variable: $k"
                     end
                 elseif occursin("inner_group_$(1-1)/ffn_1/intermediate/output", k)
                     if occursin("output/dense/kernel", k)
-                        loadparams!(albert.al[i].pw.dout.W, [weights[k]])
+                        loadparams!(albert.al[j][i].pw.dout.W, [weights[k]])
                     elseif occursin("output/dense/bias", k)
-                        loadparams!(albert.al[i].pw.dout.b', [weights[k]])
+                        loadparams!(albert.al[j][i].pw.dout.b', [weights[k]])
                     else
                  #   @warn "unknown variable: $k"
                     end
@@ -229,23 +229,24 @@ function load_pretrainedalbert(config, weights)
                 #@warn "unknown variable: $k"
                 end
             end
-        end
-        layer_weigths = filter(name->occursin("group_$(j-1)/LayerNorm", name), albert_weights)
+        
+            layer_weigths = filter(name->occursin("group_$(j-1)/LayerNorm", name), albert_weights)
 
-        for t ∈ layer_weigths
-            if occursin("group_$(j-1)/inner_group_0/LayerNorm_1",t)
-                if occursin("LayerNorm_1/gamma", t)
-                    loadparams!(albert.al[j].pwn.diag.α', [weights[t]])
-                else occursin("LayerNorm_1/beta", t)
-                    loadparams!(albert.al[j].pwn.diag.β', [weights[t]])
-                end
-            elseif occursin("group_$(j-1)/inner_group_0/LayerNorm",t)
-                if occursin("LayerNorm/gamma", t)
-                    loadparams!(albert.al[j].mhn.diag.α', [weights[t]])
-                else occursin("LayerNorm/beta",t)
-                    loadparams!(albert.al[j].mhn.diag.β', [weights[t]])
-                end
-            end    
+            for t ∈ layer_weigths
+                if occursin("group_$(j-1)/inner_group_0/LayerNorm_1",t)
+                    if occursin("LayerNorm_1/gamma", t)
+                        loadparams!(albert.al[j][i].pwn.diag.α', [weights[t]])
+                    else occursin("LayerNorm_1/beta", t)
+                        loadparams!(albert.al[j][i].pwn.diag.β', [weights[t]])
+                    end
+                elseif occursin("group_$(j-1)/inner_group_0/LayerNorm",t)
+                    if occursin("LayerNorm/gamma", t)
+                        loadparams!(albert.al[j][i].mhn.diag.α', [weights[t]])
+                    else occursin("LayerNorm/beta",t)
+                        loadparams!(albert.al[j][i].mhn.diag.β', [weights[t]])
+                    end
+                end    
+            end
         end
     end
     mapping_weight = filter(name->occursin("embedding_hidden_mapping_in",name),vnames)
