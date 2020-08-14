@@ -69,7 +69,7 @@ function create_albert(emb=config["embedding"], size=config["hidden_size"], head
       Dense(
         emb,
         size,
-        act)
+        act
       ),
       LayerNorm(
         emb
@@ -83,7 +83,7 @@ function create_albert(emb=config["embedding"], size=config["hidden_size"], head
 
   nextsentence = Chain(
     Dense(
-      size
+      size,
       2
     ),
     logsoftmax
