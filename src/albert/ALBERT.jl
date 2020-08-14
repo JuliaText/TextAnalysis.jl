@@ -8,8 +8,8 @@ using Transformers.Basic
 using Transformers.Pretrain: isbson, iszip, istfbson, zipname, zipfile, findfile
 
 export ALBERT
-export load_albert_pretrain, albert_pretrain_task, masklmloss,WordPiece,tokenise
-export tfckpt2bsonforalbert, ALBERT_V1, ALBERT_V2, model_version
+export masklmloss, preprocess_albert, from_pretrained
+export model_version
 
 abstract type PretrainedTransformer end
 abstract type ALBERT_V1 <: PretrainedTransformer end
@@ -23,7 +23,7 @@ function model_version(::Type{T}) where T<:PretrainedTransformer
     end
 end
 
-
+include("utils.jl")
 include("model.jl")
 include("albert.jl")
 include("pretrain.jl")
