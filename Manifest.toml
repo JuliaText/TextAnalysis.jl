@@ -173,7 +173,7 @@ uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
 version = "0.6.1"
 
 [[Flux]]
-deps = ["AbstractTrees", "Adapt", "CUDAapi", "CodecZlib", "Colors", "CuArrays", "DelimitedFiles", "Juno", "LinearAlgebra", "MacroTools", "NNlib", "Pkg", "Printf", "Random", "Reexport", "SHA", "Statistics", "StatsBase", "Tracker", "ZipFile"]
+deps = ["AbstractTrees", "Adapt", "CUDA", "CodecZlib", "Colors", "CuArrays", "DelimitedFiles", "Juno", "Functors", "LinearAlgebra", "MacroTools", "NNlib", "Pkg", "Printf", "Random", "Reexport", "SHA", "Statistics", "StatsBase", "Tracker", "ZipFile", "Zygote"]
 uuid = "587475ba-b771-5e3f-ad9e-33799f191a9c"
 version = "0.11.1"
 
