@@ -23,8 +23,8 @@ function model_version(::Type{T}) where T<:PretrainedTransformer
     end
 end
 
-include("alberttokenizer.jl")
-include("sentencepiece.jl")
+
+include("model.jl")
 include("albert.jl")
 include("pretrain.jl")
 include("datadeps.jl")
