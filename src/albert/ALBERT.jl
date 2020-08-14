@@ -9,13 +9,24 @@ using Transformers.Pretrain: isbson, iszip, istfbson, zipname, zipfile, findfile
 
 export ALBERT
 export load_albert_pretrain, albert_pretrain_task, masklmloss,WordPiece,tokenise
+export tfckpt2bsonforalbert, ALBERT_V1, ALBERT_V2, model_version
 
-#implement batchmul, batchtril for flux
+abstract type PretrainedTransformer end
+abstract type ALBERT_V1 <: PretrainedTransformer end
+abstract type ALBERT_V2 <: PretrainedTransformer end
 
-include("tfckpt2bsonforalbert.jl")
+const pretrained = Dict{DataType, Vector{String}}()
+
+function model_version(::Type{T}) where T<:PretrainedTransformer
+    get!(pretrained,T) do
+        String[]
+    end
+end
+
 include("alberttokenizer.jl")
 include("sentencepiece.jl")
 include("albert.jl")
-
+include("pretrain.jl")
+include("datadeps.jl")
 end
  # module

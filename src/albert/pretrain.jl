@@ -1,3 +1,4 @@
+# loading pretraining weigths from bson file
 using Transformers.Basic
 using Flux
 using Flux: loadparams!
