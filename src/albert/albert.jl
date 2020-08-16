@@ -39,7 +39,7 @@ function ALGroup(size::Int, head::Int, hs::Int, ps::Int, layer::Int,inner_group:
     Stack(
       @nntopo_str("((x, m) => x':(x, m)) => $inner_group"),
       [
-        Transformer(size, head, hs, ps; future=true, act=act, pdrop=attn_pdrop)
+        Transformer(size, head, hs, ps; future=true, act=act, pdrop=attn_pdrop) # Transformer Encoder from "Attention is all you need" 
         for i = 1:inner_group
       ]...
     ),
@@ -48,8 +48,6 @@ end
 
 function (al::ALGroup)(x::T, mask=nothing; all::Bool=false) where T
   e = x
-    #print(e)
-
   if mask === nothing
     t, ts = al.ts(e, nothing)
   else
