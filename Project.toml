@@ -25,7 +25,7 @@ Transformers = "21ca0261-441d-5938-ace7-c90938fde4d4"
 WordTokenizers = "796a5d58-b03d-544a-977e-18100b691f6e"
 
 [compat]
-Flux = "0.11"
+Flux = "0.10.4"
 julia = "1"
 
 [extras]
