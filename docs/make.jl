@@ -20,6 +20,9 @@ makedocs(
         "Conditional Random Fields" => "crf.md",
         "Named Entity Recognition" => "ner.md",
         "ULMFiT" => "ULMFiT.md",
+	"ALBERT" => "ALBERT.md"
+        "Pretraining Tutorial (ALBERT)" => "Pretraining_Tutorial(ALBERT).md",
+        "Finetuning Tutorial (ALBERT)" => "Training_tutorial.md"
         "API References" => "APIReference.md"
     ],
 )
