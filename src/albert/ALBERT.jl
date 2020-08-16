@@ -9,7 +9,7 @@ using Transformers.Pretrain: isbson, iszip, istfbson, zipname, zipfile, findfile
 
 export ALBERT
 export masklmloss, preprocess_albert, from_pretrained
-export model_version
+export model_version, preprocess_albert, create_albert
 
 abstract type PretrainedTransformer end
 abstract type ALBERT_V1 <: PretrainedTransformer end
