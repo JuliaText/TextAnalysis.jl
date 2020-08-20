@@ -58,6 +58,7 @@ module TextAnalysis
     export strip_numbers, strip_non_letters, strip_indefinite_articles, strip_definite_articles, strip_articles
     export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
 
+    export NaiveBayesClassifier
     export SentimentAnalyzer
     export tag_scheme!
     export rouge_l_summary, rouge_l_sentence, rouge_n
