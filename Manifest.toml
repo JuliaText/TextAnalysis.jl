@@ -32,6 +32,12 @@ git-tree-sha1 = "5b08ed6036d9d3f0ee6369410b830f8873d4024c"
 uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
 version = "0.5.8"
 
+[[BytePairEncoding]]
+deps = ["DelimitedFiles", "InternedStrings", "Test", "WordTokenizers"]
+git-tree-sha1 = "25c3f66339f307c36af4b63c4dc36809cc6d1ad5"
+uuid = "a4280ba5-8788-555a-8ca8-4a8c3d966a71"
+version = "0.1.1"
+
 [[CEnum]]
 git-tree-sha1 = "62847acab40e6855a9b5905ccb99c2b5cf6b3ebb"
 uuid = "fa961155-64e5-5f13-b03f-caf6b980ea82"
