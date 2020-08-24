@@ -113,7 +113,7 @@ using TextAnalysis: score_sequence, forward_score
         opt = Descent(0.01)
         data = zip(X, Y)
 
-        ps = params(params(lstm)..., params(d_out)..., params(c)...)
+        ps = Flux.params(Flux.params(lstm)..., Flux.params(d_out)..., Flux.params(c)...)
 
         function train()
             for d in data
