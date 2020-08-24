@@ -200,6 +200,10 @@ version = "0.10.7"
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
+[[GoogleDrive]]
+deps = ["Dates", "HTTP", "Random", "DataDeps"]
+uuid = "91feb7a0-3508-11ea-1e8e-afea2c1c9a19"
+
 [[GPUArrays]]
 deps = ["Adapt", "FFTW", "FillArrays", "LinearAlgebra", "Printf", "Random", "Serialization", "Test"]
 git-tree-sha1 = "8d74ced24448c52b539a23d107bd2424ee139c0f"
