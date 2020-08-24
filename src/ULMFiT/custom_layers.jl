@@ -1,3 +1,4 @@
+u
 """
 ULMFiT - Custom layers
 
@@ -60,11 +61,11 @@ function WeightDroppedLSTMCell(in::Integer, out::Integer, p::Float64=0.0;
     init = Flux.glorot_uniform)
     @assert 0 ≤ p ≤ 1
     cell = WeightDroppedLSTMCell(
-        param(init(out*4, in)),
-        param(init(out*4, out)),
-        param(init(out*4)),
-        param(zeros(Float32, out)),
-        param(zeros(Float32, out)),
+        Tracker.param(init(out*4, in)),
+        Tracker.param(init(out*4, out)),
+        Tracker.param(init(out*4)),
+        Tracker.param(zeros(Float32, out)),
+        Tracker.param(zeros(Float32, out)),
         p,
         drop_mask((out*4, in), p),
         drop_mask((out*4, out), p),
@@ -270,7 +271,7 @@ end
 function DroppedEmbeddings(in::Integer, embed_size::Integer, p::Float64=0.0;
     init = Flux.glorot_uniform)
         de = DroppedEmbeddings{AbstractArray, typeof(p)}(
-            param(init(in, embed_size)),
+            Tracker.param(init(in, embed_size)),
             p,
             drop_mask((in,), p),
             true
@@ -324,7 +325,7 @@ PooledDense(W, b) = PooledDense(W, b, identity)
 
 function PooledDense(hidden_sz::Integer, out::Integer, σ = identity;
              initW = Flux.glorot_uniform, initb = (dims...) -> zeros(Float32, dims...))
-return PooledDense(param(initW(out, hidden_sz*3)), param(initb(out)), σ)
+return PooledDense(Tracker.param(initW(out, hidden_sz*3)), Tracker.param(initb(out)), σ)
 end
 
 Flux.@treelike PooledDense
@@ -380,5 +381,5 @@ function get_trainable_params(layers)
             push!(p, l)
         end
     end
-    return params(p...)
+    return Tracker.params(p...)
 end
