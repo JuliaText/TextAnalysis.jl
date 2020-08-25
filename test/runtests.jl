@@ -6,6 +6,7 @@ using WordTokenizers
 
 println("Running tests:")
 
+include("albert.jl")
 include("pos.jl")
 include("ner.jl")
 include("coom.jl")
@@ -28,4 +29,4 @@ include("taggingschemes.jl")
 include("averagePerceptronTagger.jl")
 include("evaluation_metrics.jl")
 include("ulmfit.jl")
-include("albert.jl")
+
