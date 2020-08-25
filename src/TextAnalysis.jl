@@ -112,22 +112,28 @@ module TextAnalysis
     include("sequence/pos_datadeps.jl")
     include("sequence/pos.jl")
     include("sequence/sequence_models.jl")
-
+    
+    # ALBERT
+    function __init__()
+        include(joinpath(@__DIR__, "./albert/datadeps.jl"))
+    end 
+    include("./albert/ALBERT.jl")
+ 
     # ULMFiT
-    module ULMFiT
-        using ..TextAnalysis
-        using DataDeps
-        using Flux
-        using Tracker
-        using BSON
-        include("ULMFiT/utils.jl")
-        include("ULMFiT/datadeps.jl")
-        include("ULMFiT/data_loaders.jl")
-        include("ULMFiT/custom_layers.jl")
-        include("ULMFiT/pretrain_lm.jl")
-        include("ULMFiT/fine_tune_lm.jl")
-        include("ULMFiT/train_text_classifier.jl")
-    end
+    module ULMFiT	
+        using ..TextAnalysis	
+        using DataDeps	
+        using Flux	
+        using Tracker	
+        using BSON	
+        include("ULMFiT/utils.jl")	
+        include("ULMFiT/datadeps.jl")	
+        include("ULMFiT/data_loaders.jl")	
+        include("ULMFiT/custom_layers.jl")	
+        include("ULMFiT/pretrain_lm.jl")	
+        include("ULMFiT/fine_tune_lm.jl")	
+        include("ULMFiT/train_text_classifier.jl")	
+    end	
     export ULMFiT
 
     function __init__()

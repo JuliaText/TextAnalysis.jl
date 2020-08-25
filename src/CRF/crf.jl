@@ -22,7 +22,7 @@ function CRF(n::Integer)
     W[:, n + 1] .= -10000
     W[n + 2, :] .= -10000
 
-    return CRF(param(W), n)
+    return CRF(Tracker.param(W), n)
 end
 
 @treelike CRF

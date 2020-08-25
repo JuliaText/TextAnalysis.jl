@@ -121,7 +121,7 @@ julia> insert!(vocab, 2, "_pad_")
 function set_vocab!(lm::LanguageModel, vocab::Vector)
     idxs = indices(vocab, lm.vocab)
     lm.vocab = vocab
-    lm.layers[1].emb = param(Tracker.data(lm.layers[1].emb)[idxs, :])
+    lm.layers[1].emb = Tracker.param(Tracker.data(lm.layers[1].emb)[idxs, :])
     lm.layers[1].mask = gpu(drop_mask((length(vocab),), lm.layers[1].p))
     return
 end
