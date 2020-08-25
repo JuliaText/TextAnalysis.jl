@@ -499,10 +499,12 @@ uuid = "81def892-9a0e-5fdd-b105-ffc91e053289"
 version = "1.1.3"
 
 [[WordTokenizers]]
-deps = ["HTML_Entities", "StrTables", "Unicode"]
-git-tree-sha1 = "983ca717c4ec786d0458ebcbe395a1a50b3a1897"
+deps = ["DataDeps", "HTML_Entities", "StrTables", "Unicode"]
+git-tree-sha1 = "3e0d5e0f750d2ae65ff1dae335f8668bf7e90ebb"
+repo-rev = "master"
+repo-url = "https://github.com/JuliaText/WordTokenizers.jl.git"
 uuid = "796a5d58-b03d-544a-977e-18100b691f6e"
-version = "0.5.3"
+version = "0.5.4"
 
 [[ZipFile]]
 deps = ["BinaryProvider", "Libdl", "Printf"]
