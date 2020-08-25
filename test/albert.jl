@@ -1,7 +1,7 @@
 using BSON
 using WordTokenizers
 
-spm = load(ALBERT_V1)
+spm = WordTokenizers.load(ALBERT_V1)
 tok = ids_from_tokens(spm, spm("i love the julia language"))
 segment = [1,1,1,1,1]
 
