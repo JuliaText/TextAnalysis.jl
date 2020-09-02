@@ -20,6 +20,7 @@ makedocs(
         "Conditional Random Fields" => "crf.md",
         "Named Entity Recognition" => "ner.md",
         "ULMFiT" => "ULMFiT.md",
+        "Statistical Language Model" => "LM.md",
         "API References" => "APIReference.md"
     ],
 )
