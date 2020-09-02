@@ -685,7 +685,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API References",
     "title": "TextAnalysis.fit!",
     "category": "method",
-    "text": "fit!(model::NaiveBayesClassifier, str, class)\nfit!(model::NaiveBayesClassifier, ::Features, class)\n\nFit the weights for the model on the input data.\n\n\n\n\n\n"
+    "text": "fit!(model::NaiveBayesClassifier, str, class)\nfit!(model::NaiveBayesClassifier, ::Features, class)\nfit!(model::NaiveBayesClassifier, ::StringDocument, class)\n\nFit the weights for the model on the input data.\n\n\n\n\n\n"
 },
 
 {
@@ -837,7 +837,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API References",
     "title": "TextAnalysis.predict",
     "category": "method",
-    "text": "predict(::NaiveBayesClassifier, str)\npredict(::NaiveBayesClassifier, ::Features)\n\nPredict probabilities for each class on the input Features or String.\n\n\n\n\n\n"
+    "text": "predict(::NaiveBayesClassifier, str)\npredict(::NaiveBayesClassifier, ::Features)\npredict(::NaiveBayesClassifier, ::StringDocument)\n\nPredict probabilities for each class on the input Features or String.\n\n\n\n\n\n"
 },
 
 {
@@ -981,7 +981,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API References",
     "title": "TextAnalysis.score",
     "category": "function",
-    "text": "score(m::InterpolatedLanguageModel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in InterpolatedLanguageModel\n\nApply Kneserney and WittenBell smoothing depending upon the sub-Type\n\n\n\n\n\n"
+    "text": "score(m::MLE, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in MLE\n\n\n\n\n\n"
 },
 
 {
@@ -989,7 +989,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API References",
     "title": "TextAnalysis.score",
     "category": "function",
-    "text": "score(m::MLE, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in MLE\n\n\n\n\n\n"
+    "text": "score(m::InterpolatedLanguageModel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in InterpolatedLanguageModel\n\nApply Kneserney and WittenBell smoothing depending upon the sub-Type\n\n\n\n\n\n"
 },
 
 {
