@@ -83,6 +83,7 @@ end
 """
     fit!(model::NaiveBayesClassifier, str, class)
     fit!(model::NaiveBayesClassifier, ::Features, class)
+    fit!(model::NaiveBayesClassifier, ::StringDocument, class)
 
 Fit the weights for the model on the input data.
 """
@@ -92,17 +93,20 @@ function fit!(c::NaiveBayesClassifier, x::Features, class)
     return c
 end
 
-function fit!(c::NaiveBayesClassifier, s::String, class)
-    fs = frequencies(simpleTokenise(s))
+function fit!(c::NaiveBayesClassifier, sd::AbstractDocument, class)
+    fs = frequencies(tokens(sd))
     for k in keys(fs)
         k in c.dict || extend!(c, k)
     end
-    fit!(c, features(s, c.dict), class)
+    fit!(c, features(fs, c.dict), class)
 end
+
+fit!(c::NaiveBayesClassifier, s::String, class) = fit!(c, StringDocument(s), class)
 
 """
     predict(::NaiveBayesClassifier, str)
     predict(::NaiveBayesClassifier, ::Features)
+    predict(::NaiveBayesClassifier, ::StringDocument)
 
 Predict probabilities for each class on the input Features or String.
 """
@@ -114,3 +118,5 @@ end
 
 predict(c::NaiveBayesClassifier, s::String) =
     predict(c, features(s, c.dict))
+
+predict(c::NaiveBayesClassifier, sd::AbstractDocument) = predict(c, features(frequencies(tokens(sd)), c.dict))
