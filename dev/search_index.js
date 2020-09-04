@@ -981,7 +981,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API References",
     "title": "TextAnalysis.score",
     "category": "function",
-    "text": "score(m::MLE, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in MLE\n\n\n\n\n\n"
+    "text": "score(m::InterpolatedLanguageModel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in InterpolatedLanguageModel\n\nApply Kneserney and WittenBell smoothing depending upon the sub-Type\n\n\n\n\n\n"
 },
 
 {
@@ -989,7 +989,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API References",
     "title": "TextAnalysis.score",
     "category": "function",
-    "text": "score(m::InterpolatedLanguageModel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in InterpolatedLanguageModel\n\nApply Kneserney and WittenBell smoothing depending upon the sub-Type\n\n\n\n\n\n"
+    "text": "score(m::MLE, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in MLE\n\n\n\n\n\n"
 },
 
 {
