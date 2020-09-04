@@ -6,10 +6,10 @@ using WordTokenizers
 
 println("Running tests:")
 
-include("pos.jl")
-include("ner.jl")
-include("coom.jl")
 include("crf.jl")
+include("ner.jl")
+include("pos.jl")
+include("coom.jl")
 include("tokenizer.jl")
 include("ngramizer.jl")
 include("document.jl")

@@ -1,4 +1,4 @@
-using BSON, Tracker
+using BSON, JSON
 
 const NER_Char_UNK = '¿'
 const NER_Word_UNK = "<UNK>"
@@ -11,8 +11,18 @@ load_model_dicts(filepath) = load_model_dicts(filepath, true)
 
 function load_model_dicts(filepath, remove_tag_prefix)
     labels = BSON.load(joinpath(filepath, "labels.bson"))[:labels]
-    chars_idx = BSON.load(joinpath(filepath, "char_to_embed_idx.bson"))[:get_char_index]
-    words_idx = BSON.load(joinpath(filepath, "word_to_embed_idx.bson"))[:get_word_index]
+
+    chars_idx_json = JSON.parsefile(joinpath(filepath, "char_to_embed_idx.json"),
+                                    dicttype = Dict{String, Int32},
+                                    inttype = Int32
+                                   )
+    # Since String can't be directly converted into Char. But these Strings only of length 1.
+    chars_idx = Dict(key[1] => chars_idx_json[key] for key in keys(chars_idx_json)) # This is Dict{Char,Int32}
+
+    words_idx = JSON.parsefile(joinpath(filepath, "word_to_embed_idx.json"),
+                               dicttype = Dict{String, Int32},
+                               inttype = Int32
+                              )
 
     remove_tag_prefix || return [labels...], chars_idx, words_idx
 

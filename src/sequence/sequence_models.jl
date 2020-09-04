@@ -1,8 +1,8 @@
 using BSON, Tracker
 mutable struct BiLSTM_CNN_CRF_Model{C, W, L, D, O, A}
     labels::Array{String, 1} # List of Labels
-    chars_idx::Dict{Char, Int64} # Dict that maps chars to indices in W_Char_Embed
-    words_idx::Dict{String, Int64} # Dict that maps words to indices in W_word_Embed
+    chars_idx#::Dict{Char, Integer} # Dict that maps chars to indices in W_Char_Embed
+    words_idx#::Dict{String, Integer} # Dict that maps words to indices in W_word_Embed
     conv1::C # Convolution Layer over W_Char_Embed to give character representation
     W_Char_Embed::W # Weights for character embeddings
     W_word_Embed::W # Further trained GloVe Embeddings
@@ -32,13 +32,54 @@ function BiLSTM_CNN_CRF_Model(labels, chars_idx, words_idx, UNK_char_idx,UNK_Wor
     init_α = fill(-10000, (n + 2, 1))
     init_α[n + 1] = 0
 
-    W_word_Embed = BSON.load(joinpath(weights_path, "W_word_cpu.bson"))[:W_word_cpu].data
-    W_Char_Embed = BSON.load(joinpath(weights_path, "W_char_cpu.bson"))[:W_char_cpu].data
-    forward_lstm = BSON.load(joinpath(weights_path, "forward_lstm.bson"))[:forward_lstm_cpu]
-    backward = BSON.load(joinpath(weights_path, "backward_lstm.bson"))[:backward_lstm_cpu]
-    d_out = BSON.load(joinpath(weights_path, "d_cpu.bson"))[:d_cpu]
-    c = BSON.load(joinpath(weights_path, "crf.bson"))[:crf_cpu]
-    conv1 = BSON.load(joinpath(weights_path, "conv_cpu.bson"))[:conv_cpu]
+    # Word and Character Embeddings.
+    W_word_Embed = BSON.load(joinpath(weights_path, "W_word_cpu.bson"))[:W_word_cpu]
+    W_Char_Embed = BSON.load(joinpath(weights_path, "W_char_cpu.bson"))[:W_char_cpu]
+
+    # Forward_LSTM
+    forward_wts = BSON.load(joinpath(weights_path, "forward_lstm.bson"))
+    forward_lstm = Flux.Recur(Flux.LSTMCell(forward_wts[:lstm_2], # Wi
+                                            forward_wts[:lstm_1], # Wh
+                                            forward_wts[:lstm_3], # b
+                                            forward_wts[:lstm_4], # h
+                                            forward_wts[:lstm_5]  # c
+                                           ),
+                              forward_wts[:lstm_init],
+                              forward_wts[:lstm_state]
+                             )
+
+    # Backward_LSTM
+    backward_wts = BSON.load(joinpath(weights_path, "backward_lstm.bson"))
+    backward = Flux.Recur(Flux.LSTMCell(backward_wts[:lstm_2], # Wi
+                                             backward_wts[:lstm_1], # Wh
+                                             backward_wts[:lstm_3], # b
+                                             backward_wts[:lstm_4], # h
+                                             backward_wts[:lstm_5]  # c
+                                            ),
+                               backward_wts[:lstm_init],
+                               backward_wts[:lstm_state]
+                              )
+
+    # Dense
+    d_weights_bias = BSON.load(joinpath(weights_path, "d_cpu.bson"))
+    d_out = Flux.Dense(d_weights_bias[:d_weight],
+                       d_weights_bias[:d_bias],
+                       Flux.identity
+                      )
+
+    # Load CRF.
+    crf_wt = BSON.load(joinpath(weights_path, "crf_cpu.bson"))[:crf_Weights]
+    c = TextAnalysis.CRF(crf_wt, size(crf_wt)[1] - 2)
+
+    # Load Conv
+    conv_wt_bias = BSON.load(joinpath(weights_path, "conv_cpu.bson"))
+    conv1 = Flux.Conv(Flux.identity, # activation
+                      conv_wt_bias[:conv_weight], # weights
+                      conv_wt_bias[:conv_bias], # bias
+                      (1, 1), # stride
+                      (0, 2), # pad
+                      (1, 1), # dilation
+            )
 
     BiLSTM_CNN_CRF_Model(labels, chars_idx, words_idx, conv1, W_Char_Embed, W_word_Embed,
                 forward_lstm, backward, d_out, c, init_α, UNK_Word_idx, UNK_char_idx)

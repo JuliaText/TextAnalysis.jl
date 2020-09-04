@@ -66,7 +66,7 @@ module TextAnalysis
 
     export CRF, viterbi_decode, crf_loss
 
-    export NERTagger, PoSTagger, Tracker, Flux
+    export NERTagger, PoSTagger
     
     export Vocabulary, lookup, update
     export everygram, padding_ngram

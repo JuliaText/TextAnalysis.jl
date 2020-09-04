@@ -3,11 +3,11 @@ function pos_datadep_register()
         """
         The weights for POS Sequence Labelling Model.
         """,
-        "https://github.com/JuliaText/TextAnalysis.jl/releases/download/v0.6.0/pos_weights.tar.xz",
-        "b02e891ea913be6834ff67d6ecf2ddae6754d55509bb3d9c078dbfc7eed27988";
+        "https://github.com/Ayushk4/POS.jl/releases/download/v0.0.1/pos_weights.tar.xz",
+        "74759f446aeaec3f46ba44de1d82c2324f26c8f1f65790187067973d3aefc054";
         post_fetch_method = function(fn)
             unpack(fn)
-            dir = "weights"
+            dir = "pos_weights"
             innerfiles = readdir(dir)
             mv.(joinpath.(dir, innerfiles), innerfiles)
             rm(dir)
@@ -18,8 +18,8 @@ function pos_datadep_register()
         """
         The character and words dict for POS Sequence Labelling Model.
         """,
-        "https://github.com/JuliaText/TextAnalysis.jl/releases/download/v0.6.0/pos_model_dicts.tar.xz",
-        "4d7fe8238ff0cfb92d195dfa745b4ed08f916d4707e3dbe27a1b3144c9282f41";
+        "https://github.com/Ayushk4/POS.jl/releases/download/v0.0.1/pos_model_dicts.tar.xz",
+        "8c79089a4aecd09444143b833da49e7a4529612f5447e607dc77aa45968b3858";
         post_fetch_method = function(fn)
             unpack(fn)
             dir = "model_dicts"

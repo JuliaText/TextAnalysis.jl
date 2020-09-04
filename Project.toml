@@ -16,6 +16,7 @@ JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 Languages = "8ef0a80b-9436-5d2c-a485-80b904378c43"
 Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+NNlib = "872c559c-99b0-510c-b3b7-b6c96a88d5cd"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
@@ -25,6 +26,7 @@ Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
 WordTokenizers = "796a5d58-b03d-544a-977e-18100b691f6e"
 
 [compat]
+BSON = ">= 0.2.5"
 Flux = "< 0.10"
 julia = "1"
 
