@@ -981,7 +981,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API References",
     "title": "TextAnalysis.score",
     "category": "function",
-    "text": "score(m::InterpolatedLanguageModel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in InterpolatedLanguageModel\n\nApply Kneserney and WittenBell smoothing depending upon the sub-Type\n\n\n\n\n\n"
+    "text": "score(m::MLE, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in MLE\n\n\n\n\n\n"
 },
 
 {
@@ -989,7 +989,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API References",
     "title": "TextAnalysis.score",
     "category": "function",
-    "text": "score(m::MLE, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in MLE\n\n\n\n\n\n"
+    "text": "score(m::InterpolatedLanguageModel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)\n\nscore is used to output probablity of word given that context in InterpolatedLanguageModel\n\nApply Kneserney and WittenBell smoothing depending upon the sub-Type\n\n\n\n\n\n"
 },
 
 {
@@ -1265,11 +1265,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "APIReference/#TextAnalysis.KneserNeyInterpolated",
+    "location": "APIReference/#TextAnalysis.KneserNeyInterpolated-Union{Tuple{Array{T,1}}, Tuple{T}, Tuple{Array{T,1},Any}, Tuple{Array{T,1},Any,Any}, Tuple{Array{T,1},Any,Any,Any}} where T<:AbstractString",
     "page": "API References",
     "title": "TextAnalysis.KneserNeyInterpolated",
-    "category": "type",
-    "text": "KneserNeyInterpolated(word::Vector{T}, discount:: Float64,unk_cutoff=1, unk_label=\"<unk>\") where { T <: AbstractString}\n\nInitiate Type for providing KneserNey Interpolated language model.\n\nThe idea to abstract this comes from Chen & Goodman 1995.\n\n\n\n\n\n"
+    "category": "method",
+    "text": "KneserNeyInterpolated(word::Vector{T}, discount:: Float64,unk_cutoff=1, unk_label=\"<unk>\") where {T <: AbstractString}\n\nInitiate Type for providing KneserNey Interpolated language model.\n\nThe idea to abstract this comes from Chen & Goodman 1995.\n\n\n\n\n\n"
 },
 
 {
@@ -1277,23 +1277,23 @@ var documenterSearchIndex = {"docs": [
     "page": "API References",
     "title": "TextAnalysis.Laplace",
     "category": "type",
-    "text": "Laplace(word::Vector{T}, unk_cutoff=1, unk_label=\"<unk>\") where { T <: AbstractString}\n\nFunction to initiate Type(Laplace) for providing Laplace-smoothed scores.\n\nIn addition to initialization arguments from BaseNgramModel also requires a number by which to increase the counts, gamma = 1.\n\n\n\n\n\n"
+    "text": "Laplace(word::Vector{T}, unk_cutoff=1, unk_label=\"<unk>\") where {T <: AbstractString}\n\nFunction to initiate Type(Laplace) for providing Laplace-smoothed scores.\n\nIn addition to initialization arguments from BaseNgramModel also requires a number by which to increase the counts, gamma = 1.\n\n\n\n\n\n"
 },
 
 {
-    "location": "APIReference/#TextAnalysis.Lidstone",
+    "location": "APIReference/#TextAnalysis.Lidstone-Union{Tuple{Array{T,1}}, Tuple{T}, Tuple{Array{T,1},Any}, Tuple{Array{T,1},Any,Any}, Tuple{Array{T,1},Any,Any,Any}} where T<:AbstractString",
     "page": "API References",
     "title": "TextAnalysis.Lidstone",
-    "category": "type",
-    "text": "Lidstone(word::Vector{T}, gamma:: Float64, unk_cutoff=1, unk_label=\"<unk>\") where { T <: AbstractString}\n\nFunction to initiate Type(Lidstone) for providing Lidstone-smoothed scores.\n\nIn addition to initialization arguments from BaseNgramModel also requires  a number by which to increase the counts, gamma.\n\n\n\n\n\n"
+    "category": "method",
+    "text": "Lidstone(word::Vector{T}, gamma:: Float64, unk_cutoff=1, unk_label=\"<unk>\") where {T <: AbstractString}\n\nFunction to initiate Type(Lidstone) for providing Lidstone-smoothed scores.\n\nIn addition to initialization arguments from BaseNgramModel also requires  a number by which to increase the counts, gamma.\n\n\n\n\n\n"
 },
 
 {
-    "location": "APIReference/#TextAnalysis.MLE",
+    "location": "APIReference/#TextAnalysis.MLE-Union{Tuple{Array{T,1}}, Tuple{T}, Tuple{Array{T,1},Any}, Tuple{Array{T,1},Any,Any}} where T<:AbstractString",
     "page": "API References",
     "title": "TextAnalysis.MLE",
-    "category": "type",
-    "text": "MLE(word::Vector{T}, unk_cutoff=1, unk_label=\"<unk>\") where { T <: AbstractString}\n\nInitiate Type for providing MLE ngram model scores.\n\nImplementation of Base Ngram Model.\n\n\n\n\n\n"
+    "category": "method",
+    "text": "MLE(word::Vector{T}, unk_cutoff=1, unk_label=\"<unk>\") where {T <: AbstractString}\n\nInitiate Type for providing MLE ngram model scores.\n\nImplementation of Base Ngram Model.\n\n\n\n\n\n"
 },
 
 {
@@ -1361,10 +1361,10 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "APIReference/#TextAnalysis.WittenBellInterpolated",
+    "location": "APIReference/#TextAnalysis.WittenBellInterpolated-Union{Tuple{Array{T,1}}, Tuple{T}, Tuple{Array{T,1},Any}, Tuple{Array{T,1},Any,Any}} where T<:AbstractString",
     "page": "API References",
     "title": "TextAnalysis.WittenBellInterpolated",
-    "category": "type",
+    "category": "method",
     "text": "WittenBellInterpolated(word::Vector{T}, unk_cutoff=1, unk_label=\"<unk>\") where { T <: AbstractString}\n\nInitiate Type for providing Interpolated version of Witten-Bell smoothing.\n\nThe idea to abstract this comes from Chen & Goodman 1995.\n\n\n\n\n\n"
 },
 
