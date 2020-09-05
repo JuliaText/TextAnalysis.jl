@@ -11,18 +11,18 @@ struct MLE <: Langmodel
 end
 
 """
-    MLE(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
+    MLE(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where {T <: AbstractString}
 
 Initiate Type for providing MLE ngram model scores.
 
 Implementation of Base Ngram Model.
    
 """
-function MLE(word, unk_cutoff=1, unk_label="<unk>")
+function MLE(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where {T <: AbstractString}
     MLE(Vocabulary(word, unk_cutoff, unk_label))
 end
 
-function (lm::MLE)(text, min::Integer, max::Integer) 
+function (lm::MLE)(text::Vector{AbstractString}, min::Integer, max::Integer) 
     text = lookup(lm.vocab, text)
     text=convert(Array{String}, text)
     return counter2(text, min, max)
@@ -34,25 +34,25 @@ struct Lidstone <: gammamodel
 end
 
 """
-    Lidstone(word::Vector{T}, gamma:: Float64, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
+    Lidstone(word::Vector{T}, gamma:: Float64, unk_cutoff=1, unk_label="<unk>") where {T <: AbstractString}
 
 Function to initiate Type(Lidstone) for providing Lidstone-smoothed scores.
 
 In addition to initialization arguments from BaseNgramModel also requires 
 a number by which to increase the counts, gamma.
 """
-function Lidstone(word, gamma = 1.0, unk_cutoff=1, unk_label="<unk>")
+function Lidstone(word::Vector{T}, gamma = 1.0, unk_cutoff=1, unk_label="<unk>") where {T <: AbstractString}
     Lidstone(Vocabulary(word, unk_cutoff, unk_label), gamma)
 end
 
-function (lm::Lidstone)(text, min::Integer, max::Integer) 
+function (lm::Lidstone)(text::Vector{AbstractString}, min::Integer, max::Integer) 
     text = lookup(lm.vocab, text)
     text=convert(Array{String}, text)
     return counter2(text, min, max)
 end
 
 """
-    Laplace(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
+    Laplace(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where {T <: AbstractString}
 Function to initiate Type(Laplace) for providing Laplace-smoothed scores.
 
 In addition to initialization arguments from BaseNgramModel also requires
@@ -63,11 +63,11 @@ struct Laplace <: gammamodel
     gamma::Float64
 end
 
-function Laplace(word, unk_cutoff=1, unk_label="<unk>")
+function Laplace(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where {T <: AbstractString}
     Laplace(Vocabulary(word, unk_cutoff, unk_label), 1.0)
 end
 
-function (lm::Laplace)(text, min::Integer, max::Integer) 
+function (lm::Laplace)(text::Vector{AbstractString}, min::Integer, max::Integer) 
     text = lookup(lm.vocab, text)
     text = convert(Array{String}, text)
     return counter2(text, min, max)
@@ -139,11 +139,11 @@ Initiate Type for providing Interpolated version of Witten-Bell smoothing.
 The idea to abstract this comes from Chen & Goodman 1995.
 
 """
-function WittenBellInterpolated(word, unk_cutoff=1, unk_label="<unk>")
+function WittenBellInterpolated(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where {T <: AbstractString}
     WittenBellInterpolated(Vocabulary(word, unk_cutoff, unk_label))
 end
 
-function (lm::WittenBellInterpolated)(text, min::Integer, max::Integer) 
+function (lm::WittenBellInterpolated)(text::Vector{AbstractString}, min::Integer, max::Integer) 
     text = lookup(lm.vocab, text)
     text=convert(Array{String}, text)
     return counter2(text, min, max)
@@ -209,18 +209,18 @@ struct KneserNeyInterpolated <: InterpolatedLanguageModel
 end
 
 """
-    KneserNeyInterpolated(word::Vector{T}, discount:: Float64,unk_cutoff=1, unk_label="<unk>") where { T <: AbstractString}
+    KneserNeyInterpolated(word::Vector{T}, discount:: Float64,unk_cutoff=1, unk_label="<unk>") where {T <: AbstractString}
 
 Initiate Type for providing KneserNey Interpolated language model.
 
 The idea to abstract this comes from Chen & Goodman 1995.
 
 """
-function KneserNeyInterpolated(word, disc = 0.1, unk_cutoff=1, unk_label="<unk>")
+function KneserNeyInterpolated(word::Vector{T}, disc = 0.1, unk_cutoff=1, unk_label="<unk>") where {T <: AbstractString}
     KneserNeyInterpolated(Vocabulary(word, unk_cutoff, unk_label) ,disc)
 end
 
-function (lm::KneserNeyInterpolated)(text, min::Integer, max::Integer) 
+function (lm::KneserNeyInterpolated)(text::Vector{AbstractString}, min::Integer, max::Integer) 
     text = lookup(lm.vocab, text)
     text=convert(Array{String}, text)
     return counter2(text, min, max)
