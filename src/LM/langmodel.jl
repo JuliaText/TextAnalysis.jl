@@ -22,7 +22,7 @@ function MLE(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where {T <: Abstr
     MLE(Vocabulary(word, unk_cutoff, unk_label))
 end
 
-function (lm::MLE)(text::Vector{AbstractString}, min::Integer, max::Integer) 
+function (lm::MLE)(text::Vector{T}, min::Integer, max::Integer) where {T <: AbstractString}
     text = lookup(lm.vocab, text)
     text=convert(Array{String}, text)
     return counter2(text, min, max)
@@ -45,7 +45,7 @@ function Lidstone(word::Vector{T}, gamma = 1.0, unk_cutoff=1, unk_label="<unk>")
     Lidstone(Vocabulary(word, unk_cutoff, unk_label), gamma)
 end
 
-function (lm::Lidstone)(text::Vector{AbstractString}, min::Integer, max::Integer) 
+function (lm::Lidstone)(text::Vector{T}, min::Integer, max::Integer) where {T <: AbstractString}
     text = lookup(lm.vocab, text)
     text=convert(Array{String}, text)
     return counter2(text, min, max)
@@ -67,7 +67,7 @@ function Laplace(word::Vector{T}, unk_cutoff=1, unk_label="<unk>") where {T <: A
     Laplace(Vocabulary(word, unk_cutoff, unk_label), 1.0)
 end
 
-function (lm::Laplace)(text::Vector{AbstractString}, min::Integer, max::Integer) 
+function (lm::Laplace)(text, min::Integer, max::Integer) 
     text = lookup(lm.vocab, text)
     text = convert(Array{String}, text)
     return counter2(text, min, max)
@@ -143,7 +143,7 @@ function WittenBellInterpolated(word::Vector{T}, unk_cutoff=1, unk_label="<unk>"
     WittenBellInterpolated(Vocabulary(word, unk_cutoff, unk_label))
 end
 
-function (lm::WittenBellInterpolated)(text::Vector{AbstractString}, min::Integer, max::Integer) 
+function (lm::WittenBellInterpolated)(text::Vector{T}, min::Integer, max::Integer) where {T <: AbstractString}
     text = lookup(lm.vocab, text)
     text=convert(Array{String}, text)
     return counter2(text, min, max)
@@ -220,7 +220,7 @@ function KneserNeyInterpolated(word::Vector{T}, disc = 0.1, unk_cutoff=1, unk_la
     KneserNeyInterpolated(Vocabulary(word, unk_cutoff, unk_label) ,disc)
 end
 
-function (lm::KneserNeyInterpolated)(text::Vector{AbstractString}, min::Integer, max::Integer) 
+function (lm::KneserNeyInterpolated)(text::Vector{T}, min::Integer, max::Integer) where {T <: AbstractString}
     text = lookup(lm.vocab, text)
     text=convert(Array{String}, text)
     return counter2(text, min, max)
