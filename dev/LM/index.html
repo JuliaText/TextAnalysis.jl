@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Statistical Language Model · TextAnalysis</title><link rel="canonical" href="https://juliatext.github.io/TextAnalysis.jl/stable/LM/"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">TextAnalysis</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../documents/">Documents</a></li><li><a class="tocitem" href="../corpus/">Corpus</a></li><li><a class="tocitem" href="../features/">Features</a></li><li><a class="tocitem" href="../semantic/">Semantic Analysis</a></li><li><a class="tocitem" href="../classify/">Classifier</a></li><li><a class="tocitem" href="../example/">Extended Example</a></li><li><a class="tocitem" href="../evaluation_metrics/">Evaluation Metrics</a></li><li><a class="tocitem" href="../crf/">Conditional Random Fields</a></li><li><a class="tocitem" href="../ner/">Named Entity Recognition</a></li><li><a class="tocitem" href="../ULMFiT/">ULMFiT</a></li><li class="is-active"><a class="tocitem" href>Statistical Language Model</a><ul class="internal"><li><a class="tocitem" href="#APIs"><span>APIs</span></a></li><li><a class="tocitem" href="#Evaluation-Method"><span>Evaluation Method</span></a></li><li class="toplevel"><a class="tocitem" href="#lookup-a-sequence-or-words-in-the-vocabulary"><span>lookup a sequence or words in the vocabulary</span></a></li></ul></li><li><a class="tocitem" href="../APIReference/">API References</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Statistical Language Model</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Statistical Language Model</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaText/TextAnalysis.jl/blob/master/docs/src/LM.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Statistical-Language-Model"><a class="docs-heading-anchor" href="#Statistical-Language-Model">Statistical Language Model</a><a id="Statistical-Language-Model-1"></a><a class="docs-heading-anchor-permalink" href="#Statistical-Language-Model" title="Permalink"></a></h1><p><strong>TextAnalysis</strong> provide following different Language Models </p><ul><li><strong>MLE</strong> - Base Ngram model.</li><li><strong>Lidstone</strong> - Base Ngram model with Lidstone smoothing.</li><li><strong>Laplace</strong> - Base Ngram language model with Laplace smoothing.</li><li><strong>WittenBellInterpolated</strong> - Interpolated Version of witten-Bell algorithm.</li><li><strong>KneserNeyInterpolated</strong> - Interpolated  version of Kneser -Ney smoothing.</li></ul><h2 id="APIs"><a class="docs-heading-anchor" href="#APIs">APIs</a><a id="APIs-1"></a><a class="docs-heading-anchor-permalink" href="#APIs" title="Permalink"></a></h2><p>To use the API, we first <em>Instantiate</em> desired model and then load it with train set</p><pre><code class="language-julia">MLE(word::Vector{T}, unk_cutoff=1, unk_label=&quot;&lt;unk&gt;&quot;) where { T &lt;: AbstractString}
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Statistical Language Model · TextAnalysis</title><link rel="canonical" href="https://juliatext.github.io/TextAnalysis.jl/stable/LM/"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">TextAnalysis</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../documents/">Documents</a></li><li><a class="tocitem" href="../corpus/">Corpus</a></li><li><a class="tocitem" href="../features/">Features</a></li><li><a class="tocitem" href="../semantic/">Semantic Analysis</a></li><li><a class="tocitem" href="../classify/">Classifier</a></li><li><a class="tocitem" href="../example/">Extended Example</a></li><li><a class="tocitem" href="../evaluation_metrics/">Evaluation Metrics</a></li><li><a class="tocitem" href="../crf/">Conditional Random Fields</a></li><li><a class="tocitem" href="../ner/">Named Entity Recognition</a></li><li><a class="tocitem" href="../ULMFiT/">ULMFiT</a></li><li class="is-active"><a class="tocitem" href>Statistical Language Model</a><ul class="internal"><li><a class="tocitem" href="#APIs"><span>APIs</span></a></li><li><a class="tocitem" href="#Evaluation-Method"><span>Evaluation Method</span></a></li><li><a class="tocitem" href="#Preprocessing"><span>Preprocessing</span></a></li><li><a class="tocitem" href="#Vocabulary"><span>Vocabulary</span></a></li></ul></li><li><a class="tocitem" href="../APIReference/">API References</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Statistical Language Model</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Statistical Language Model</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaText/TextAnalysis.jl/blob/master/docs/src/LM.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Statistical-Language-Model"><a class="docs-heading-anchor" href="#Statistical-Language-Model">Statistical Language Model</a><a id="Statistical-Language-Model-1"></a><a class="docs-heading-anchor-permalink" href="#Statistical-Language-Model" title="Permalink"></a></h1><p><strong>TextAnalysis</strong> provide following different Language Models </p><ul><li><strong>MLE</strong> - Base Ngram model.</li><li><strong>Lidstone</strong> - Base Ngram model with Lidstone smoothing.</li><li><strong>Laplace</strong> - Base Ngram language model with Laplace smoothing.</li><li><strong>WittenBellInterpolated</strong> - Interpolated Version of witten-Bell algorithm.</li><li><strong>KneserNeyInterpolated</strong> - Interpolated  version of Kneser -Ney smoothing.</li></ul><h2 id="APIs"><a class="docs-heading-anchor" href="#APIs">APIs</a><a id="APIs-1"></a><a class="docs-heading-anchor-permalink" href="#APIs" title="Permalink"></a></h2><p>To use the API, we first <em>Instantiate</em> desired model and then load it with train set</p><pre><code class="language-julia">MLE(word::Vector{T}, unk_cutoff=1, unk_label=&quot;&lt;unk&gt;&quot;) where { T &lt;: AbstractString}
         
 Lidstone(word::Vector{T}, gamma:: Float64, unk_cutoff=1, unk_label=&quot;&lt;unk&gt;&quot;) where { T &lt;: AbstractString}
         
@@ -15,82 +15,62 @@ julia&gt; train = [&quot;khan&quot;,&quot;is&quot;,&quot;my&quot;,&quot;good&quo
 # voc and train are used to train vocabulary and model respectively
 
 julia&gt; model = MLE(voc)
-MLE(Vocabulary(Dict(&quot;khan&quot;=&gt;1,&quot;name&quot;=&gt;1,&quot;&lt;unk&gt;&quot;=&gt;1,&quot;salman&quot;=&gt;1,&quot;is&quot;=&gt;2,&quot;Khan&quot;=&gt;1,&quot;my&quot;=&gt;1,&quot;he&quot;=&gt;1,&quot;shahrukh&quot;=&gt;1,&quot;and&quot;=&gt;1…), 1, &quot;&lt;unk
-        &gt;&quot;, [&quot;my&quot;, &quot;name&quot;, &quot;is&quot;, &quot;salman&quot;, &quot;khan&quot;, &quot;and&quot;, &quot;he&quot;, &quot;is&quot;, &quot;shahrukh&quot;, &quot;Khan&quot;, &quot;&lt;unk&gt;&quot;]))
+MLE(Vocabulary(Dict(&quot;khan&quot;=&gt;1,&quot;name&quot;=&gt;1,&quot;&lt;unk&gt;&quot;=&gt;1,&quot;salman&quot;=&gt;1,&quot;is&quot;=&gt;2,&quot;Khan&quot;=&gt;1,&quot;my&quot;=&gt;1,&quot;he&quot;=&gt;1,&quot;shahrukh&quot;=&gt;1,&quot;and&quot;=&gt;1…), 1, &quot;&lt;unk&gt;&quot;, [&quot;my&quot;, &quot;name&quot;, &quot;is&quot;, &quot;salman&quot;, &quot;khan&quot;, &quot;and&quot;, &quot;he&quot;, &quot;is&quot;, &quot;shahrukh&quot;, &quot;Khan&quot;, &quot;&lt;unk&gt;&quot;]))
+
 julia&gt; print(voc)
 11-element Array{String,1}:
- &quot;my&quot;      
- &quot;name&quot;    
- &quot;is&quot;      
- &quot;salman&quot;  
- &quot;khan&quot;    
- &quot;and&quot;     
- &quot;he&quot;      
- &quot;is&quot;      
+ &quot;my&quot;
+ &quot;name&quot;
+ &quot;is&quot;
+ &quot;salman&quot;
+ &quot;khan&quot; 
+ &quot;and&quot; 
+ &quot;he&quot; 
+ &quot;is&quot;
  &quot;shahrukh&quot;
- &quot;Khan&quot;    
- &quot;&lt;unk&gt;&quot;   
+ &quot;Khan&quot;
+ &quot;&lt;unk&gt;&quot;
+
 # you can see &quot;&lt;unk&gt;&quot; token is added to voc 
 julia&gt; fit = model(train,2,2) #considering only bigrams
+
 julia&gt; unmaskedscore = score(model, fit, &quot;is&quot; ,&quot;&lt;unk&gt;&quot;) #score output P(word | context) without replacing context word with &quot;&lt;unk&gt;&quot;
 0.3333333333333333
+
 julia&gt; masked_score = maskedscore(model,fit,&quot;is&quot;,&quot;alien&quot;)
 0.3333333333333333
 #as expected maskedscore is equivalent to unmaskedscore with context replaced with &quot;&lt;unk&gt;&quot;
-</code></pre><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>When you call <code>MLE(voc)</code> for the first time, It will update your vocabulary set as well. </p></div></div><h2 id="Evaluation-Method"><a class="docs-heading-anchor" href="#Evaluation-Method">Evaluation Method</a><a id="Evaluation-Method-1"></a><a class="docs-heading-anchor-permalink" href="#Evaluation-Method" title="Permalink"></a></h2><h3 id="score"><a class="docs-heading-anchor" href="#score"><code>score</code></a><a id="score-1"></a><a class="docs-heading-anchor-permalink" href="#score" title="Permalink"></a></h3><pre><code class="language-none">used to evaluate the probability of word given context (*P(word | context)*)</code></pre><pre><code class="language-julia">	score(m::gammamodel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)</code></pre><p>Arguments:                                                        </p><ol><li><code>m</code> : Instance of <code>Langmodel</code> struct.</li><li><code>temp_lm</code>: output of function call of instance of <code>Langmodel</code>.</li><li><code>word</code>: string of word </li><li><code>context</code>: context of given word</li></ol><p>​	In case of Lidstone and Laplace it apply smoothing and, </p><p>​	In Interpolated language model, provide Kneserney and WittenBell smoothing  </p><h3 id="maskedscore"><a class="docs-heading-anchor" href="#maskedscore"><code>maskedscore</code></a><a id="maskedscore-1"></a><a class="docs-heading-anchor-permalink" href="#maskedscore" title="Permalink"></a></h3><p>It is used to evaluate <em>score</em> with masks out of vocabulary words</p><p>The arguments are the same as for score</p><h3 id="logscore"><a class="docs-heading-anchor" href="#logscore"><code>logscore</code></a><a id="logscore-1"></a><a class="docs-heading-anchor-permalink" href="#logscore" title="Permalink"></a></h3><p>Evaluate the log score of this word in this context.</p><p>The arguments are the same as for score and maskedscore</p><h3 id="entropy"><a class="docs-heading-anchor" href="#entropy"><code>entropy</code></a><a id="entropy-1"></a><a class="docs-heading-anchor-permalink" href="#entropy" title="Permalink"></a></h3><pre><code class="language-julia">  entropy(m::Langmodel,lm::DefaultDict,text_ngram::word::Vector{T}) where { T &lt;: AbstractString}
-	```
+</code></pre><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>When you call <code>MLE(voc)</code> for the first time, It will update your vocabulary set as well. </p></div></div><h2 id="Evaluation-Method"><a class="docs-heading-anchor" href="#Evaluation-Method">Evaluation Method</a><a id="Evaluation-Method-1"></a><a class="docs-heading-anchor-permalink" href="#Evaluation-Method" title="Permalink"></a></h2><h3 id="score"><a class="docs-heading-anchor" href="#score"><code>score</code></a><a id="score-1"></a><a class="docs-heading-anchor-permalink" href="#score" title="Permalink"></a></h3><p>used to evaluate the probability of word given context (<em>P(word | context)</em>)</p><pre><code class="language-julia">score(m::gammamodel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)</code></pre><p>Arguments:</p><ol><li><code>m</code> : Instance of <code>Langmodel</code> struct.</li><li><code>temp_lm</code>: output of function call of instance of <code>Langmodel</code>.</li><li><code>word</code>: string of word </li><li><code>context</code>: context of given word</li></ol><ul><li><p>In case of <code>Lidstone</code> and <code>Laplace</code> it apply smoothing and, </p></li><li><p>In Interpolated language model, provide <code>Kneserney</code> and <code>WittenBell</code> smoothing </p></li></ul><h3 id="maskedscore"><a class="docs-heading-anchor" href="#maskedscore"><code>maskedscore</code></a><a id="maskedscore-1"></a><a class="docs-heading-anchor-permalink" href="#maskedscore" title="Permalink"></a></h3><ul><li><p>It is used to evaluate <em>score</em> with masks out of vocabulary words</p></li><li><p>The arguments are the same as for <code>score</code></p></li></ul><h3 id="logscore"><a class="docs-heading-anchor" href="#logscore"><code>logscore</code></a><a id="logscore-1"></a><a class="docs-heading-anchor-permalink" href="#logscore" title="Permalink"></a></h3><ul><li><p>Evaluate the log score of this word in this context.</p></li><li><p>The arguments are the same as for <code>score</code> and <code>maskedscore</code></p></li></ul><h3 id="entropy"><a class="docs-heading-anchor" href="#entropy"><code>entropy</code></a><a id="entropy-1"></a><a class="docs-heading-anchor-permalink" href="#entropy" title="Permalink"></a></h3><pre><code class="language-julia">entropy(m::Langmodel,lm::DefaultDict,text_ngram::word::Vector{T}) where { T &lt;: AbstractString}</code></pre><ul><li><p>Calculate <em>cross-entropy</em> of model for given evaluation text.</p></li><li><p>Input text must be Array of ngram of same lengths</p></li></ul><h3 id="perplexity"><a class="docs-heading-anchor" href="#perplexity"><code>perplexity</code></a><a id="perplexity-1"></a><a class="docs-heading-anchor-permalink" href="#perplexity" title="Permalink"></a></h3><ul><li><p>Calculates the perplexity of the given text.</p></li><li><p>This is simply 2 ** cross-entropy(<code>entropy</code>) for the text, so the arguments are the same as <code>entropy</code>.</p></li></ul><h2 id="Preprocessing"><a class="docs-heading-anchor" href="#Preprocessing">Preprocessing</a><a id="Preprocessing-1"></a><a class="docs-heading-anchor-permalink" href="#Preprocessing" title="Permalink"></a></h2><p>For Preprocessing following functions:</p><ol><li><code>everygram</code>: Return all possible ngrams generated from sequence of items, as an Array{String,1}</li></ol><pre><code class="language-julia">julia&gt; seq = [&quot;To&quot;,&quot;be&quot;,&quot;or&quot;,&quot;not&quot;]
+julia&gt; a = everygram(seq,min_len=1, max_len=-1)
+ 10-element Array{Any,1}:
+  &quot;or&quot;
+  &quot;not&quot;
+  &quot;To&quot;
+  &quot;be&quot;
+  &quot;or not&quot; 
+  &quot;be or&quot;
+  &quot;be or not&quot;
+  &quot;To be or&quot;
+  &quot;To be or not&quot;</code></pre><ol><li><p><code>padding_ngrams</code>: padding _ngram is used to pad both left and right of sentence and out putting ngrmas of order n</p><p>It also pad the original input Array of string </p></li></ol><pre><code class="language-julia">julia&gt; example = [&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,&quot;5&quot;]
+julia&gt; padding_ngrams(example,2,pad_left=true,pad_right=true)
+ 6-element Array{Any,1}:
+  &quot;&lt;s&gt; 1&quot; 
+  &quot;1 2&quot;
+  &quot;2 3&quot;
+  &quot;3 4&quot;
+  &quot;4 5&quot;
+  &quot;5 &lt;/s&gt;&quot;</code></pre><h2 id="Vocabulary"><a class="docs-heading-anchor" href="#Vocabulary">Vocabulary</a><a id="Vocabulary-1"></a><a class="docs-heading-anchor-permalink" href="#Vocabulary" title="Permalink"></a></h2><p>Struct to store Language models vocabulary</p><p>checking membership and filters items by comparing their counts to a cutoff value</p><p>It also Adds a special &quot;unkown&quot; tokens which unseen words are mapped to</p><pre><code class="language-julia">julia&gt; words = [&quot;a&quot;, &quot;c&quot;, &quot;-&quot;, &quot;d&quot;, &quot;c&quot;, &quot;a&quot;, &quot;b&quot;, &quot;r&quot;, &quot;a&quot;, &quot;c&quot;, &quot;d&quot;]
 
-  Calculate cross-entropy of model for given evaluation text.
+julia&gt; vocabulary = Vocabulary(words, 2) 
+ Vocabulary(Dict(&quot;&lt;unk&gt;&quot;=&gt;1,&quot;c&quot;=&gt;3,&quot;a&quot;=&gt;3,&quot;d&quot;=&gt;2), 2, &quot;&lt;unk&gt;&quot;) 
 
-  Input text must be Array of ngram of same lengths
+# lookup a sequence or words in the vocabulary
+julia&gt; word = [&quot;a&quot;, &quot;-&quot;, &quot;d&quot;, &quot;c&quot;, &quot;a&quot;]
 
-### `perplexity`  
-
-  Calculates the perplexity of the given text.
-
-  This is simply 2 ** cross-entropy(`entropy`) for the text, so the arguments are the same as `entropy`.
-
-##  Preprocessing
-
- For Preprocessing following functions:
-
-1. `everygram`: Return all possible ngrams generated from sequence of items, as an Array{String,1}
-
- ```julia
-   julia&gt; seq = [&quot;To&quot;,&quot;be&quot;,&quot;or&quot;,&quot;not&quot;]
-   julia&gt; a = everygram(seq,min_len=1, max_len=-1)
-    10-element Array{Any,1}:
-     &quot;or&quot;          
-     &quot;not&quot;         
-     &quot;To&quot;          
-     &quot;be&quot;                  
-     &quot;or not&quot; 
-     &quot;be or&quot;       
-     &quot;be or not&quot;   
-     &quot;To be or&quot;    
-     &quot;To be or not&quot;
- ```
-
-2. `padding_ngrams`: padding _ngram is used to pad both left and right of sentence and out putting ngrmas of order n
-
-   It also pad the original input Array of string 
-
- ```julia
-   julia&gt; example = [&quot;1&quot;,&quot;2&quot;,&quot;3&quot;,&quot;4&quot;,&quot;5&quot;]
-   julia&gt; padding_ngrams(example,2,pad_left=true,pad_right=true)
-    6-element Array{Any,1}:
-     &quot;&lt;s&gt; 1&quot; 
-     &quot;1 2&quot;   
-     &quot;2 3&quot;   
-     &quot;3 4&quot;   
-     &quot;4 5&quot;   
-     &quot;5 &lt;/s&gt;&quot;
- ```
-## Vocabulary 
-
-Struct to store Language models vocabulary
-
-checking membership and filters items by comparing their counts to a cutoff value
-
-It also Adds a special &quot;unkown&quot; tokens which unseen words are mapped to
-</code></pre><p>julia julia&gt; words = [&quot;a&quot;, &quot;c&quot;, &quot;-&quot;, &quot;d&quot;, &quot;c&quot;, &quot;a&quot;, &quot;b&quot;, &quot;r&quot;, &quot;a&quot;, &quot;c&quot;, &quot;d&quot;] julia&gt; vocabulary = Vocabulary(words, 2)    Vocabulary(Dict(&quot;&lt;unk&gt;&quot;=&gt;1,&quot;c&quot;=&gt;3,&quot;a&quot;=&gt;3,&quot;d&quot;=&gt;2), 2, &quot;&lt;unk&gt;&quot;) </p><h1 id="lookup-a-sequence-or-words-in-the-vocabulary"><a class="docs-heading-anchor" href="#lookup-a-sequence-or-words-in-the-vocabulary">lookup a sequence or words in the vocabulary</a><a id="lookup-a-sequence-or-words-in-the-vocabulary-1"></a><a class="docs-heading-anchor-permalink" href="#lookup-a-sequence-or-words-in-the-vocabulary" title="Permalink"></a></h1><p>julia&gt; word = [&quot;a&quot;, &quot;-&quot;, &quot;d&quot;, &quot;c&quot;, &quot;a&quot;]</p><p>julia&gt; lookup(vocabulary ,word)  5-element Array{Any,1}:   &quot;a&quot;       &quot;&lt;unk&gt;&quot;   &quot;d&quot;       &quot;c&quot;       &quot;a&quot; ```</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../ULMFiT/">« ULMFiT</a><a class="docs-footer-nextpage" href="../APIReference/">API References »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 6 September 2020 10:47">Sunday 6 September 2020</span>. Using Julia version 1.0.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+julia&gt; lookup(vocabulary ,word)
+ 5-element Array{Any,1}:
+  &quot;a&quot;
+  &quot;&lt;unk&gt;&quot;
+  &quot;d&quot;
+  &quot;c&quot;
+  &quot;a&quot;</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../ULMFiT/">« ULMFiT</a><a class="docs-footer-nextpage" href="../APIReference/">API References »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 6 September 2020 16:05">Sunday 6 September 2020</span>. Using Julia version 1.0.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
