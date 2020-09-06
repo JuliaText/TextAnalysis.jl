@@ -95,9 +95,9 @@ Arguments:
 3. `word`: string of word 
 4. `context`: context of given word
 
-​- In case of `Lidstone` and `Laplace` it apply smoothing and, 
+- In case of `Lidstone` and `Laplace` it apply smoothing and, 
 
-​- In Interpolated language model, provide `Kneserney` and `WittenBell` smoothing 
+- In Interpolated language model, provide `Kneserney` and `WittenBell` smoothing 
 
 ### `maskedscore` 
 
