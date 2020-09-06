@@ -46,8 +46,8 @@ julia> train = ["khan","is","my","good", "friend","and","He","is","my","brother"
 # voc and train are used to train vocabulary and model respectively
 
 julia> model = MLE(voc)
-MLE(Vocabulary(Dict("khan"=>1,"name"=>1,"<unk>"=>1,"salman"=>1,"is"=>2,"Khan"=>1,"my"=>1,"he"=>1,"shahrukh"=>1,"and"=>1…), 1, "<unk
-        >", ["my", "name", "is", "salman", "khan", "and", "he", "is", "shahrukh", "Khan", "<unk>"]))
+MLE(Vocabulary(Dict("khan"=>1,"name"=>1,"<unk>"=>1,"salman"=>1,"is"=>2,"Khan"=>1,"my"=>1,"he"=>1,"shahrukh"=>1,"and"=>1…), 1, "<unk>", ["my", "name", "is", "salman", "khan", "and", "he", "is", "shahrukh", "Khan", "<unk>"]))
+
 julia> print(voc)
 11-element Array{String,1}:
  "my"
@@ -61,10 +61,13 @@ julia> print(voc)
  "shahrukh"
  "Khan"
  "<unk>"
+
 # you can see "<unk>" token is added to voc 
 julia> fit = model(train,2,2) #considering only bigrams
+
 julia> unmaskedscore = score(model, fit, "is" ,"<unk>") #score output P(word | context) without replacing context word with "<unk>"
 0.3333333333333333
+
 julia> masked_score = maskedscore(model,fit,"is","alien")
 0.3333333333333333
 #as expected maskedscore is equivalent to unmaskedscore with context replaced with "<unk>"
@@ -79,7 +82,7 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
 
 ### `score` 
 
-    used to evaluate the probability of word given context (*P(word | context)*)
+used to evaluate the probability of word given context (*P(word | context)*)
 
 ```julia
 score(m::gammamodel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)
@@ -111,7 +114,7 @@ Arguments:
 ### `entropy`
 
 ```julia
- entropy(m::Langmodel,lm::DefaultDict,text_ngram::word::Vector{T}) where { T <: AbstractString}
+entropy(m::Langmodel,lm::DefaultDict,text_ngram::word::Vector{T}) where { T <: AbstractString}
 ```
 
 - Calculate *cross-entropy* of model for given evaluation text.
@@ -131,18 +134,18 @@ Arguments:
 1. `everygram`: Return all possible ngrams generated from sequence of items, as an Array{String,1}
 
 ```julia
-   julia> seq = ["To","be","or","not"]
-   julia> a = everygram(seq,min_len=1, max_len=-1)
-    10-element Array{Any,1}:
-     "or"
-     "not"
-     "To"
-     "be"
-     "or not" 
-     "be or"
-     "be or not"
-     "To be or"
-     "To be or not"
+julia> seq = ["To","be","or","not"]
+julia> a = everygram(seq,min_len=1, max_len=-1)
+ 10-element Array{Any,1}:
+  "or"
+  "not"
+  "To"
+  "be"
+  "or not" 
+  "be or"
+  "be or not"
+  "To be or"
+  "To be or not"
 ```
 
 2. `padding_ngrams`: padding _ngram is used to pad both left and right of sentence and out putting ngrmas of order n
@@ -150,15 +153,15 @@ Arguments:
    It also pad the original input Array of string 
 
 ```julia
-   julia> example = ["1","2","3","4","5"]
-   julia> padding_ngrams(example,2,pad_left=true,pad_right=true)
-    6-element Array{Any,1}:
-     "<s> 1" 
-     "1 2"
-     "2 3"
-     "3 4"
-     "4 5"
-     "5 </s>"
+julia> example = ["1","2","3","4","5"]
+julia> padding_ngrams(example,2,pad_left=true,pad_right=true)
+ 6-element Array{Any,1}:
+  "<s> 1" 
+  "1 2"
+  "2 3"
+  "3 4"
+  "4 5"
+  "5 </s>"
 ```
 ## Vocabulary 
 
@@ -170,8 +173,9 @@ It also Adds a special "unkown" tokens which unseen words are mapped to
 
 ```julia
 julia> words = ["a", "c", "-", "d", "c", "a", "b", "r", "a", "c", "d"]
+
 julia> vocabulary = Vocabulary(words, 2) 
-  Vocabulary(Dict("<unk>"=>1,"c"=>3,"a"=>3,"d"=>2), 2, "<unk>") 
+ Vocabulary(Dict("<unk>"=>1,"c"=>3,"a"=>3,"d"=>2), 2, "<unk>") 
 
 # lookup a sequence or words in the vocabulary
 julia> word = ["a", "-", "d", "c", "a"]
