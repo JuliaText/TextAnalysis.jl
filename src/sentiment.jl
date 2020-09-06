@@ -8,7 +8,9 @@ function pad_sequences(l, maxlen=500)
             push!(res, ele)
         end
         return res
-    end
+    else
+        length(1) > maxlen || throw("String length exceeds maximum length")
+        end
 end
 
 function read_weights(filename=sentiment_weights)
