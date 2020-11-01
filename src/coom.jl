@@ -90,7 +90,7 @@ function CooMatrix{T}(crps::Corpus,
                       terms::Vector{String};
                       window::Int=5,
                       normalize::Bool=true) where T<:AbstractFloat
-    column_indices = columnindices(terms)
+    column_indices = OrderedDict(columnindices(terms))
     n = length(terms)
     coom = spzeros(T, n, n)
     for doc in crps
@@ -125,7 +125,7 @@ function CooMatrix{T}(doc::AbstractDocument,
                       window::Int=5,
                       normalize::Bool=true) where T<:AbstractFloat
     # Initializations
-    column_indices = columnindices(terms)
+    column_indices = OrderedDict(columnindices(terms))
     coom = coo_matrix(T, tokens(doc), column_indices, window, normalize)
     return CooMatrix{T}(coom, terms, column_indices)
 end

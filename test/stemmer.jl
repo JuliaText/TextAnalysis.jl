@@ -1,4 +1,4 @@
-
+using Snowball
 @testset "Stemmer" begin
 
     algs = stemmer_types()
@@ -6,7 +6,7 @@
 
     for alg in algs
         stmr = Stemmer(alg)
-        TextAnalysis.release(stmr)
+        Snowball.release(stmr)
     end
 
     test_cases = Dict{String, Any}(

@@ -16,7 +16,7 @@ julia> tokenize(Languages.English(), "Too foo words!")
 
 See also: [`sentence_tokenize`](@ref)
 """
-tokenize(lang::S, s::T) where {S <: Language, T <: AbstractString} = WordTokenizers.tokenize(s)
+WordTokenizers.tokenize(lang::S, s::T) where {S <: Language, T <: AbstractString} = WordTokenizers.tokenize(s)
 
 
 """
