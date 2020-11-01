@@ -4,17 +4,13 @@ module TextAnalysis
     using LinearAlgebra
     using StatsBase: countmap,addcounts!
     using Languages
-    using DataFrames
     using WordTokenizers
-
-    using DataDeps
+    using Snowball 
+    
+    using DataFrames
     using DataStructures
     using Statistics
 
-    using Flux, Tracker
-    using Flux: identity, onehot, onecold, @treelike, onehotbatch
-
-    import DataFrames.DataFrame
     import Base.depwarn
 
     export AbstractDocument, Document
@@ -59,19 +55,16 @@ module TextAnalysis
     export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
 
     export NaiveBayesClassifier
-    export SentimentAnalyzer
     export tag_scheme!
     export rouge_l_summary, rouge_l_sentence, rouge_n
     export PerceptronTagger, fit!, predict
-
-    export CRF, viterbi_decode, crf_loss
-
-    export NERTagger, PoSTagger
     
     export Vocabulary, lookup, update
     export everygram, padding_ngram
     export maskedscore, logscore, entropy, perplexity
     export MLE, Lidstone, Laplace, WittenBellInterpolated, KneserNeyInterpolated, score
+
+    export tokenize #imported from WordTokenizers
 
     include("tokenizer.jl")
     include("ngramizer.jl")
@@ -81,13 +74,6 @@ module TextAnalysis
     include("metadata.jl")
     include("preprocessing.jl")
 
-    # Load libstemmer from our deps.jl
-    const depsjl_path = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
-    if !isfile(depsjl_path)
-        error("Snowball Stemmer not installed properly, run Pkg.build(\"TextAnalysis\"), restart Julia and try again")
-    end
-    include(depsjl_path)
-
     include("stemmer.jl")
     include("dtm.jl")
     include("tf_idf.jl")
@@ -95,28 +81,15 @@ module TextAnalysis
     include("lda.jl")
     include("summarizer.jl")
     include("show.jl")
-    include("sentiment.jl")
     include("bayes.jl")
     include("deprecations.jl")
     include("tagging_schemes.jl")
     include("utils.jl")
-    include("averagePerceptronTagger.jl")
 
     include("evaluation_metrics.jl")
     include("coom.jl")
 
-    # CRF
-    include("CRF/crf.jl")
-    include("CRF/predict.jl")
-    include("CRF/crf_utils.jl")
-    include("CRF/loss.jl")
 
-    # NER and POS
-    include("sequence/ner_datadeps.jl")
-    include("sequence/ner.jl")
-    include("sequence/pos_datadeps.jl")
-    include("sequence/pos.jl")
-    include("sequence/sequence_models.jl")
     
     # Lang_model
     include("LM/vocab.jl")
@@ -125,27 +98,9 @@ module TextAnalysis
     include("LM/counter.jl")
     include("LM/preprocessing.jl")
     
-    # ULMFiT
-    module ULMFiT
-        using ..TextAnalysis
-        using DataDeps
-        using Flux
-        using Tracker
-        using BSON
-        include("ULMFiT/utils.jl")
-        include("ULMFiT/datadeps.jl")
-        include("ULMFiT/data_loaders.jl")
-        include("ULMFiT/custom_layers.jl")
-        include("ULMFiT/pretrain_lm.jl")
-        include("ULMFiT/fine_tune_lm.jl")
-        include("ULMFiT/train_text_classifier.jl")
-    end
-    export ULMFiT
+
 
     function __init__()
-        pos_tagger_datadep_register()
-        ner_datadep_register()
-        pos_datadep_register()
-        ULMFiT.ulmfit_datadep_register()
+
     end
 end

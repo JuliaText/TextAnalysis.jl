@@ -1,7 +1,7 @@
 
 ## Deprecations for Languages
 
-function tokenize(::Type{S}, s::T) where {S <: Language, T <: AbstractString}
+function WordTokenizers.tokenize(::Type{S}, s::T) where {S <: Language, T <: AbstractString}
     depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
     tokenize(S(), s)
 end
@@ -14,11 +14,6 @@ end
 function onegramize(::Type{S}, words::Vector{T}) where {S <: Language, T <: AbstractString}
     depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
     onegramize(S(), words)
-end
-
-function stem_all(stemmer::Stemmer, lang::Type{S}, sentence::AbstractString) where S <: Language
-    depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
-    stem_all(stemmer, S(), sentence)
 end
 
 #pre-processing functions

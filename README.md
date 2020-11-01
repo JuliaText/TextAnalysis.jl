@@ -4,29 +4,38 @@ A Julia package for working with text.
 
 [![Travis](https://travis-ci.org/JuliaText/TextAnalysis.jl.svg?branch=master)](https://travis-ci.org/JuliaText/TextAnalysis.jl)
 [![Appveyor](https://ci.appveyor.com/api/projects/status/aviks/textanalysis-jl?svg=true)](https://ci.appveyor.com/project/aviks/textanalysis-jl)
-<!--[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliatext.github.io/TextAnalysis.jl/stable) -->
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliatext.github.io/TextAnalysis.jl/dev)
-[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://juliatext.github.io/TextAnalysis.jl/latest)
+[![version](https://juliahub.com/docs/TextAnalysis/version.svg)](https://juliahub.com/ui/Packages/TextAnalysis/5Mwet)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliahub.com/docs/TextAnalysis/5Mwet) 
 
-Please see the detailed `manual` and `API Documentation` for the linked above. The package also comes with a set of `docstrings` for offline documentation access.
+
+Please see the detailed `example` and `API Documentation`  linked above. The package also comes with a set of `docstrings` for offline documentation access.
 
 ## Introduction
 
-TextAnalysis provides support for standard tools and models for working with textual data and natural languages in the Julia langauges. Please see the [documentation](https://juliatext.github.io/TextAnalysis.jl/latest) for more.
+TextAnalysis provides support for standard tools and models for working with textual data and natural languages in the Julia langauges. Please see the [documentation](https://juliahub.com/docs/TextAnalysis/5Mwett) for more.
 
-- **Features** : Refer to NEWS.md for the latest features.
 - **License** : [MIT License](https://github.com/JuliaText/TextAnalysis.jl/blob/master/LICENSE.md)
+
+## Features
+
+* Containers for Document and Corpus
+* DocumentTermMatrix and TF/IDF
+* LSA/LDA
+* Vocabulary and Language Model
+* Co-occurance matrix
+* NaiveBayes classifier
+* ROUGE evaluation metrics
+
+This package also incorporates features from the [Languages](https://juliahub.com/ui/Packages/Languages/w1H1r) and [WordTokenizers](https://juliahub.com/ui/Packages/WordTokenizers/wKkKC) packages within the [JuliaText](https://github.com/JuliaText) ecosystem. 
+
+## TextModels
+
+The [TextModels](https://github.com/JuliaText/TextModels.jl) package enhances this library with the additon of practical neural network based models. Some of that code used to live in this package, but was moved to simplify installation and dependencies. 
 
 ## Installation
 
 ```julia
 pkg> add TextAnalysis
-```
-
-You may want to work on the master branch for the latest features (as mentioned in NEWS.md).
-
-```julia
-pkg> add TextAnalysis#master
 ```
 
 ## Contributing and Reporting Bugs
