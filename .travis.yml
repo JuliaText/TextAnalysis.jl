@@ -20,5 +20,9 @@ matrix:
     - os: windows
       julia: nightly
   fast_finish: true
+branches:
+  only:
+    - master
+    - /release-.*/
 notifications:
   email: false

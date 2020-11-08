@@ -3,7 +3,6 @@
 A Julia package for working with text.
 
 [![Travis](https://travis-ci.org/JuliaText/TextAnalysis.jl.svg?branch=master)](https://travis-ci.org/JuliaText/TextAnalysis.jl)
-[![Appveyor](https://ci.appveyor.com/api/projects/status/aviks/textanalysis-jl?svg=true)](https://ci.appveyor.com/project/aviks/textanalysis-jl)
 [![version](https://juliahub.com/docs/TextAnalysis/version.svg)](https://juliahub.com/ui/Packages/TextAnalysis/5Mwet)
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliahub.com/docs/TextAnalysis/5Mwet) 
 
