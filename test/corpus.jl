@@ -41,3 +41,15 @@
 
      @test answer == lexicon(crps)
 end
+
+using DataFrames
+
+@testset "Convert Corpus to DataFrames" begin
+    crps = Corpus([StringDocument("hello world"), StringDocument("goodbye world")])
+    df = convert(DataFrame, crps)
+    @test typeof(df) == DataFrames.DataFrame
+    @test df[1, :Text] == "hello world"
+    @test df[1, :Length] == 11
+    @test df[2, :Text] == "goodbye world"
+    @test df[2, :Length] == 13
+end
