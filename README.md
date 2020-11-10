@@ -2,12 +2,9 @@
 
 A Julia package for working with text.
 
-[![Travis](https://travis-ci.org/JuliaText/TextAnalysis.jl.svg?branch=master)](https://travis-ci.org/JuliaText/TextAnalysis.jl)
+[![CI](https://github.com/juliatext/TextAnalysis/workflows/CI/badge.svg?branch=master)](https://github.com/JuliaText/TextAnalysis.jl/actions?query=workflow%3ACI)
 [![version](https://juliahub.com/docs/TextAnalysis/version.svg)](https://juliahub.com/ui/Packages/TextAnalysis/5Mwet)
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliahub.com/docs/TextAnalysis/5Mwet) 
-
-
-Please see the detailed `example` and `API Documentation`  linked above. The package also comes with a set of `docstrings` for offline documentation access.
 
 ## Introduction
 
@@ -17,10 +14,10 @@ TextAnalysis provides support for standard tools and models for working with tex
 
 ## Features
 
-* Containers for Document and Corpus
+* Container type for *Document* and *Corpus*
 * DocumentTermMatrix and TF/IDF
 * LSA/LDA
-* Vocabulary and Language Model
+* Vocabulary and statistical Language Model
 * Co-occurance matrix
 * NaiveBayes classifier
 * ROUGE evaluation metrics
