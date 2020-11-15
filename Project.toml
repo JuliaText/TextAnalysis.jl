@@ -20,7 +20,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 WordTokenizers = "796a5d58-b03d-544a-977e-18100b691f6e"
 
 [compat]
-DataFrames = "0.21"
+DataFrames = "0.21, 0.22"
 DataStructures = "0.17, 0.18"
 JSON = "0.21"
 Languages = "0.4"
