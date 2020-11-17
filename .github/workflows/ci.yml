@@ -34,6 +34,8 @@ jobs:
           - {os: 'windows-latest', version: '1.3'}
           - {os: 'windows-latest', version: 'nightly'}
           - {os: 'windows-latest', arch: 'x86'}
+          - {arch: 'x86', version: '1.3'}
+          - {arch: 'x86', version: 'nightly'}
     steps:
       - uses: actions/checkout@v1
       - uses: julia-actions/setup-julia@latest
