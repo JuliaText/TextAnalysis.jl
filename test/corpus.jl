@@ -46,7 +46,7 @@ using DataFrames
 
 @testset "Convert Corpus to DataFrames" begin
     crps = Corpus([StringDocument("hello world"), StringDocument("goodbye world")])
-    df = convert(DataFrame, crps)
+    df = DataFrame(crps)
     @test typeof(df) == DataFrames.DataFrame
     @test df[1, :Text] == "hello world"
     @test df[1, :Length] == 11
