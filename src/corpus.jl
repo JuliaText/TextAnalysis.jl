@@ -83,30 +83,17 @@ Base.length(crps::Corpus) = length(crps.documents)
 
 ##############################################################################
 #
-# Convert a Corpus to a DataFrame
+# Treat a corpus as a Table
 #
 ##############################################################################
 
-function Base.convert(::Type{DataFrame}, crps::Corpus)
-    df = DataFrame()
-    n = length(crps)
-    df[!, :Language] = Array{Union{String,Missing}}(undef, n)
-    df[!, :Title] = Array{Union{String,Missing}}(undef, n)
-    df[!, :Author] = Array{Union{String,Missing}}(undef, n)
-    df[!, :TimeStamp] = Array{Union{String,Missing}}(undef, n)
-    df[!, :Length] = Array{Union{Int,Missing}}(undef, n)
-    df[!, :Text] = Array{Union{String,Missing}}(undef, n)
-    for i in 1:n
-        d = crps.documents[i]
-        df[i, :Language] = string(language(d))
-        df[i, :Title] = title(d)
-        df[i, :Author] = author(d)
-        df[i, :TimeStamp] = timestamp(d)
-        df[i, :Length] = length(d)
-        df[i, :Text] = text(d)
-    end
-    return df
-end
+Tables.columnnames(x::AbstractDocument) = (:Language, :Title, :Author, :Timestamp, :Length, :Text)
+Tables.getcolumn(d::AbstractDocument, nm::Symbol) = nm === :Language ? string(language(d)) : nm === :Title ? title(d) : nm === :Author ? author(d) : nm === :Timestamp ? timestamp(d) : nm === :Length ? length(d) : nm === :Text ? text(d) : error("invalid column name for document: $nm")
+Tables.getcolumn(d::AbstractDocument, i::Int) = Tables.getcolumn(d, Tables.columnnames(d)[i])
+
+Tables.isrowtable(x::Corpus) = true
+Tables.rows(x::Corpus) = x
+Tables.schema(x::Corpus) = Tables.Schema((:Language, :Title, :Author, :Timestamp, :Length, :Text), (Union{String, Missing}, Union{String, Missing}, Union{String, Missing}, Union{String, Missing}, Union{Int, Missing}, Union{String, Missing}))
 
 ##############################################################################
 #

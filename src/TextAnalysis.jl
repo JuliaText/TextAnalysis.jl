@@ -5,9 +5,9 @@ module TextAnalysis
     using StatsBase: countmap,addcounts!
     using Languages
     using WordTokenizers
-    using Snowball 
-    
-    using DataFrames
+    using Snowball
+   
+    using Tables
     using DataStructures
     using Statistics
 
