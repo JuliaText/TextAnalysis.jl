@@ -51,4 +51,17 @@
     @test m.column_indices == m2.column_indices
     m2 = DocumentTermMatrix(dtm1sp,terms)
     @test m.column_indices == m2.column_indices
+
+    # test serialization and deserialization
+    mktemp() do path, io
+        serialize(io, m2)
+        close(io)
+        open(path, "r") do rio
+            m3 = deserialize(rio)
+            @test typeof(m2) == typeof(m3)
+            @test m2.terms == m3.terms
+            @test m2.dtm == m3.dtm
+            @test m2.column_indices == m3.column_indices
+        end
+    end
 end

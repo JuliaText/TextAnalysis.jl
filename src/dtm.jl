@@ -4,6 +4,20 @@ mutable struct DocumentTermMatrix{T}
     column_indices::Dict{T, Int}
 end
 
+function serialize(io::AbstractSerializer, dtm::DocumentTermMatrix{T}) where {T}
+    Serialization.writetag(io.io, Serialization.OBJECT_TAG)
+    serialize(io, DocumentTermMatrix{T})
+    serialize(io, dtm.dtm)
+    serialize(io, dtm.terms)
+    nothing
+end
+
+function deserialize(io::AbstractSerializer, ::Type{DocumentTermMatrix{T}}) where {T}
+    dtm = deserialize(io)
+    terms = deserialize(io)
+    column_indices = Dict{T,Int}(term => idx for (idx,term) in enumerate(terms))
+    DocumentTermMatrix{T}(dtm, terms, column_indices)
+end
 
 """
     columnindices(terms::Vector{String})

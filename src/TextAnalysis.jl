@@ -10,8 +10,10 @@ module TextAnalysis
     using Tables
     using DataStructures
     using Statistics
+    using Serialization
 
     import Base.depwarn
+    import Serialization: serialize, deserialize
 
     export AbstractDocument, Document
     export FileDocument, StringDocument, TokenDocument, NGramDocument
