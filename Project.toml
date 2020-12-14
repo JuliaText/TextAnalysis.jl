@@ -26,7 +26,7 @@ DataStructures = "0.17, 0.18"
 JSON = "0.21"
 Languages = "0.4"
 Snowball = "0.1"
-StatsBase = "0.33"
+StatsBase = "0.32,0.33"
 WordTokenizers = "0.5"
 julia = "1.3"
 
