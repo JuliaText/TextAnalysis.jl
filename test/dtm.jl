@@ -51,4 +51,47 @@
     @test m.column_indices == m2.column_indices
     m2 = DocumentTermMatrix(dtm1sp,terms)
     @test m.column_indices == m2.column_indices
+
+    # test serialization and deserialization
+    mktemp() do path, io
+        serialize(io, m2)
+        close(io)
+        open(path, "r") do rio
+            m3 = deserialize(rio)
+            @test typeof(m2) == typeof(m3)
+            @test m2.terms == m3.terms
+            @test m2.dtm == m3.dtm
+            @test m2.column_indices == m3.column_indices
+        end
+    end
+
+    # test prune! and merge!
+    crps1 = Corpus([StringDocument("one two three"), StringDocument("two three four")])
+    crps2 = Corpus([StringDocument("two three four"), StringDocument("three four five")])
+    update_lexicon!(crps1)
+    update_lexicon!(crps2)
+    dtm1 = DocumentTermMatrix(crps1)
+    dtm2 = DocumentTermMatrix(crps2)
+
+    prune!(dtm1, nothing; compact=false)
+    @test length(dtm1.terms) == 4
+    @test size(dtm1.dtm) == (2,4)
+
+    prune!(dtm1, [1]; compact=false)
+    @test length(dtm1.terms) == 4
+    @test size(dtm1.dtm) == (1,4)
+
+    dtm1 = DocumentTermMatrix(crps1)
+    prune!(dtm1, [1]; compact=true)
+    @test length(dtm1.terms) == 3
+    @test size(dtm1.dtm) == (1,4)
+
+    dtm1 = DocumentTermMatrix(crps1)
+    prune!(dtm1, [1]; compact=true, retain_terms=["one"])
+    @test length(dtm1.terms) == 4
+    @test size(dtm1.dtm) == (1,4)
+
+    merge!(dtm1, dtm2)
+    @test size(dtm1.dtm) == (3,5)
+    @test sum(dtm1.dtm, dims=(1,)) == [1 3 2 2 1]
 end

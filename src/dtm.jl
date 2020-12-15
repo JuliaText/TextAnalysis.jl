@@ -4,6 +4,20 @@ mutable struct DocumentTermMatrix{T}
     column_indices::Dict{T, Int}
 end
 
+function serialize(io::AbstractSerializer, dtm::DocumentTermMatrix{T}) where {T}
+    Serialization.writetag(io.io, Serialization.OBJECT_TAG)
+    serialize(io, DocumentTermMatrix{T})
+    serialize(io, dtm.dtm)
+    serialize(io, dtm.terms)
+    nothing
+end
+
+function deserialize(io::AbstractSerializer, ::Type{DocumentTermMatrix{T}}) where {T}
+    dtm = deserialize(io)
+    terms = deserialize(io)
+    column_indices = Dict{T,Int}(term => idx for (idx,term) in enumerate(terms))
+    DocumentTermMatrix{T}(dtm, terms, column_indices)
+end
 
 """
     columnindices(terms::Vector{String})
@@ -300,3 +314,86 @@ each_hash_dtv(crps::Corpus) = EachHashDTV(crps)
 Base.getindex(dtm::DocumentTermMatrix, k::AbstractString) = dtm.dtm[:, dtm.column_indices[k]]
 Base.getindex(dtm::DocumentTermMatrix, i::Any) = dtm.dtm[i]
 Base.getindex(dtm::DocumentTermMatrix, i::Any, j::Any) = dtm.dtm[i, j]
+
+"""
+    prune!(dtm::DocumentTermMatrix{T}, document_positions; compact::Bool=true, retain_terms::Union{Nothing,Vector{T}}=nothing) where {T}
+
+Delete documents specified by `document_positions` from a document term matrix. Optionally compact the matrix by removing unreferenced terms.
+"""
+function prune!(dtm::DocumentTermMatrix{T}, document_positions; compact::Bool=true, retain_terms::Union{Nothing,Vector{T}}=nothing) where {T}
+    if ((document_positions === nothing) || isempty(document_positions))
+        dtm_matrix = dtm.dtm
+    else
+        docrows_to_retain = [!(idx in document_positions) for idx in 1:size(dtm.dtm, 1)]
+        dtm_matrix = dtm.dtm[docrows_to_retain, :]
+    end
+
+    if compact
+        termcols_to_delete = map(x->x==0, sum(dtm_matrix, dims=(1,)))
+        if retain_terms !== nothing
+            for idx in 1:length(termcols_to_delete)
+                (!termcols_to_delete[idx] || !(dtm.terms[idx] in retain_terms)) && continue
+                termcols_to_delete[idx] = false
+            end
+        end
+    else
+        termcols_to_delete = Bool[]
+    end
+
+    if any(termcols_to_delete)
+        dtm.dtm = SparseArrays.fkeep!(dtm_matrix, (i,j,x)->!termcols_to_delete[j])
+        dtm.terms = [dtm.terms[idx] for idx in 1:length(dtm.terms) if !termcols_to_delete[idx]]
+    else
+        dtm.dtm = dtm_matrix
+    end
+
+    dtm
+end
+
+"""
+    merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where {T}
+
+Merge one DocumentTermMatrix instance into another. Documents are appended to the end. Terms are re-sorted.
+"""
+function merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where {T}
+    # add space for new rows columns to dtm1
+    ncombined_docs = size(dtm1.dtm,1) + size(dtm2.dtm,1)
+    termset1 = Set(dtm1.terms)
+    termset2 = Set(dtm2.terms)
+    termset = union(termset1, termset2)
+    if termset1 == termset
+        # no new terms added
+        combined_terms = dtm1.terms
+        ncombined_terms = length(dtm1.terms)
+    else
+        combined_terms = sort!(collect(termset))
+        ncombined_terms = length(combined_terms)
+    end
+
+    function permute_terms!(dtm_to_permute, terms)
+        terms_perm = indexin(terms, combined_terms)
+        append!(terms_perm, setdiff(1:ncombined_terms, terms_perm))
+        permute!(combined_dtm, 1:ncombined_docs, convert(Vector{Int},terms_perm))
+    end
+
+    combined_dtm = spzeros(Int, ncombined_docs, ncombined_terms)
+    dtm1_indices = CartesianIndices((1:size(dtm1.dtm,1),1:size(dtm1.dtm,2)))
+    copyto!(combined_dtm, dtm1_indices, dtm1.dtm, dtm1_indices)
+    (combined_terms !== dtm1.terms) && permute_terms!(combined_dtm, dtm1.terms) # permute only if we need to
+
+    # append entries from dtm2
+    resized_dtm2 = spzeros(Int, size(dtm2.dtm,1), ncombined_terms)
+    dtm2_indices = CartesianIndices((1:size(dtm2.dtm,1), 1:size(dtm2.dtm,2)))
+    copyto!(resized_dtm2, dtm2_indices, dtm2.dtm, dtm2_indices)
+    permute_terms!(resized_dtm2, dtm2.terms)
+    dtm1_indices = CartesianIndices(((size(dtm1.dtm,1)+1):ncombined_docs, 1:ncombined_terms))
+    dtm2_indices = CartesianIndices((1:size(resized_dtm2,1), 1:size(resized_dtm2,2)))
+    copyto!(combined_dtm, dtm1_indices, resized_dtm2, dtm2_indices)
+
+    # set new terms and recompute column_indices
+    dtm1.dtm = combined_dtm
+    dtm1.terms = combined_terms
+    dtm1.column_indices = Dict{T,Int}(term => idx for (idx,term) in enumerate(combined_terms))
+
+    dtm1
+end
