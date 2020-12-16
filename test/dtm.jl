@@ -84,7 +84,7 @@
     dtm1 = DocumentTermMatrix(crps1)
     prune!(dtm1, [1]; compact=true)
     @test length(dtm1.terms) == 3
-    @test size(dtm1.dtm) == (1,4)
+    @test size(dtm1.dtm) == (1,3)
 
     dtm1 = DocumentTermMatrix(crps1)
     prune!(dtm1, [1]; compact=true, retain_terms=["one"])
@@ -93,5 +93,20 @@
 
     merge!(dtm1, dtm2)
     @test size(dtm1.dtm) == (3,5)
-    @test sum(dtm1.dtm, dims=(1,)) == [1 3 2 2 1]
+    @test sum(dtm1.dtm, dims=(1,)) == [1 3 0 3 2]
+    @test dtm1.terms == ["five", "four", "one", "three", "two"]
+
+    dtm2 = DocumentTermMatrix(crps2)
+    dtm1.dtm = similar(dtm1.dtm, 0, dtm1.dtm.n)
+    merge!(dtm1, dtm2)
+    @test dtm1.terms == ["five", "four", "one", "three", "two"]
+    @test size(dtm1.dtm) == (2,5)
+    @test sum(dtm1.dtm, dims=(1,)) == [1 2 0 2 1]
+
+    dtm2 = DocumentTermMatrix(crps2)
+    dtm1.dtm = similar(dtm1.dtm, 0, dtm1.dtm.n)
+    merge!(dtm2, dtm1)
+    @test dtm2.terms == ["five", "four", "three", "two"]
+    @test size(dtm2.dtm) == (2,4)
+    @test sum(dtm2.dtm, dims=(1,)) == [1 2 2 1]
 end
