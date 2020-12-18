@@ -341,8 +341,9 @@ function prune!(dtm::DocumentTermMatrix{T}, document_positions; compact::Bool=tr
     end
 
     if any(termcols_to_delete)
-        dtm.dtm = SparseArrays.fkeep!(dtm_matrix, (i,j,x)->!termcols_to_delete[j])
+        dtm.dtm = dtm_matrix[:,[!termcols_to_delete[idx] for idx in 1:length(termcols_to_delete)]]
         dtm.terms = [dtm.terms[idx] for idx in 1:length(dtm.terms) if !termcols_to_delete[idx]]
+        dtm.column_indices = Dict{T,Int}(term => idx for (idx,term) in enumerate(dtm.terms))
     else
         dtm.dtm = dtm_matrix
     end
@@ -354,13 +355,16 @@ end
     merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where {T}
 
 Merge one DocumentTermMatrix instance into another. Documents are appended to the end. Terms are re-sorted.
+For efficiency, this may result in modifications to dtm2 as well.
 """
 function merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where {T}
-    # add space for new rows columns to dtm1
+    (length(dtm2.dtm) == 0) && (return dtm1)
+
     ncombined_docs = size(dtm1.dtm,1) + size(dtm2.dtm,1)
     termset1 = Set(dtm1.terms)
     termset2 = Set(dtm2.terms)
     termset = union(termset1, termset2)
+
     if termset1 == termset
         # no new terms added
         combined_terms = dtm1.terms
@@ -371,27 +375,64 @@ function merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where 
     end
 
     function permute_terms!(dtm_to_permute, terms)
-        terms_perm = indexin(terms, combined_terms)
-        append!(terms_perm, setdiff(1:ncombined_terms, terms_perm))
-        permute!(combined_dtm, 1:ncombined_docs, convert(Vector{Int},terms_perm))
+        (length(dtm_to_permute) == 0) && (return dtm_to_permute)
+        terms_perm = map(x->(x===nothing) ? 0 : x, indexin(combined_terms, terms))
+        remaining_cols = setdiff(1:ncombined_terms, terms_perm)
+        for idx in 1:length(terms_perm)
+            if terms_perm[idx] == 0
+                terms_perm[idx] = popfirst!(remaining_cols)
+            end
+        end
+        permute!(dtm_to_permute, 1:size(dtm_to_permute,1), terms_perm)
+    end
+    function expand_columns(S, n)
+        (S.n == n) && (return S)
+        @assert (n > S.n)
+        colptr = S.colptr
+        resize!(colptr, n+1)
+        colptr[(S.n+2):(n+1)] .= colptr[S.n+1]
+        SparseMatrixCSC(S.m, n, colptr, S.rowval, S.nzval)
+    end
+    function row_append(A, B)
+        @assert size(A,2) == size(B,2)
+        (length(A) == 0) && (return B)
+        (length(B) == 0) && (return A)
+
+        C_colptr = similar(A.colptr)
+        C_rowvals = similar(A.rowval, length(A.rowval) + length(B.rowval))
+        C_nzval = similar(A.nzval, length(A.nzval) + length(B.nzval))
+
+        offset = 0
+        rowval_pos = 0
+        nzval_pos = 0
+        for col in 1:(length(C_colptr)-1)
+            colptr_pos = C_colptr[col] = A.colptr[col] + offset
+            # first copy from A
+            nvalsA = A.colptr[col+1] - A.colptr[col]
+            if nvalsA > 0
+                C_rowvals[colptr_pos:(colptr_pos+nvalsA-1)] .= A.rowval[A.colptr[col]:(A.colptr[col+1]-1)]
+                C_nzval[colptr_pos:(colptr_pos+nvalsA-1)] .= A.nzval[A.colptr[col]:(A.colptr[col+1]-1)]
+                colptr_pos += nvalsA
+            end
+            # then copy from B
+            nvalsB = B.colptr[col+1] - B.colptr[col]
+            if nvalsB > 0
+                C_rowvals[colptr_pos:(colptr_pos+nvalsB-1)] .= (B.rowval[B.colptr[col]:(B.colptr[col+1]-1)] .+ size(A,1))
+                C_nzval[colptr_pos:(colptr_pos+nvalsB-1)] .= B.nzval[B.colptr[col]:(B.colptr[col+1]-1)]
+                offset += nvalsB
+                colptr_pos += nvalsB
+            end
+        end
+        C_colptr[end] = length(C_rowvals)+1
+        SparseMatrixCSC(size(A,1) + size(B,1), size(A,2), C_colptr, C_rowvals, C_nzval)
     end
 
-    combined_dtm = spzeros(Int, ncombined_docs, ncombined_terms)
-    dtm1_indices = CartesianIndices((1:size(dtm1.dtm,1),1:size(dtm1.dtm,2)))
-    copyto!(combined_dtm, dtm1_indices, dtm1.dtm, dtm1_indices)
-    (combined_terms !== dtm1.terms) && permute_terms!(combined_dtm, dtm1.terms) # permute only if we need to
-
-    # append entries from dtm2
-    resized_dtm2 = spzeros(Int, size(dtm2.dtm,1), ncombined_terms)
-    dtm2_indices = CartesianIndices((1:size(dtm2.dtm,1), 1:size(dtm2.dtm,2)))
-    copyto!(resized_dtm2, dtm2_indices, dtm2.dtm, dtm2_indices)
-    permute_terms!(resized_dtm2, dtm2.terms)
-    dtm1_indices = CartesianIndices(((size(dtm1.dtm,1)+1):ncombined_docs, 1:ncombined_terms))
-    dtm2_indices = CartesianIndices((1:size(resized_dtm2,1), 1:size(resized_dtm2,2)))
-    copyto!(combined_dtm, dtm1_indices, resized_dtm2, dtm2_indices)
+    dtm1_matrix = (combined_terms === dtm1.terms) ? dtm1.dtm : permute_terms!(expand_columns(dtm1.dtm, ncombined_terms), dtm1.terms)
+    dtm2_matrix = permute_terms!(expand_columns(dtm2.dtm, ncombined_terms), dtm2.terms)
+    combined_matrix = row_append(dtm1_matrix, dtm2_matrix)
 
     # set new terms and recompute column_indices
-    dtm1.dtm = combined_dtm
+    dtm1.dtm = combined_matrix
     dtm1.terms = combined_terms
     dtm1.column_indices = Dict{T,Int}(term => idx for (idx,term) in enumerate(combined_terms))
 
