@@ -6,10 +6,7 @@
     doc3 = ""
     doc4 = "another another text text text text"
 
-    # TODO: this should work!
-    # crps = Corpus(map(StringDocument, [doc1 doc2 doc3 doc4]))
-
-    crps = Corpus(Any[StringDocument(doc1), StringDocument(doc2), StringDocument(doc3), StringDocument(doc4)])
+    crps = Corpus(StringDocument.([doc1, doc2, doc3, doc4]))
 
     update_lexicon!(crps)
     m = DocumentTermMatrix(crps)
@@ -76,7 +73,7 @@
         doc3 = ""
         doc4 = "another another text text text text"
 
-        crps = Corpus(Any[StringDocument(doc1), StringDocument(doc2), StringDocument(doc3), StringDocument(doc4)])
+        crps = Corpus(StringDocument.([doc1, doc2, doc3, doc4]))
 
         update_lexicon!(crps)
         m = DocumentTermMatrix(crps)
@@ -119,5 +116,21 @@
         @test eltype(myweights) == typeof(1.0)
 
         @test_throws MethodError bm_25!(DocumentTermMatrix(crps))
+    end
+
+	@testset "cosine similarity `cos_similarity()`" begin
+		crps = Corpus( StringDocument.([
+		    "to be or not to be",
+		    "to sing or not to sing",
+		    "to talk or to silence"]) )
+		update_lexicon!(crps)
+		d = dtm(crps)
+		tfm = tf_idf(d)
+		cs = cos_similarity(tfm)
+		@test cs==[
+			1.0                  0.03293177886245518  0.0;
+			0.03293177886245518  1.0                  0.0;
+			0.0                  0.0                  1.0
+		]
     end
 end
