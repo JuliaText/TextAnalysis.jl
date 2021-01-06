@@ -303,9 +303,9 @@ function tf_bm25!(dtm::AbstractMatrix{T}, tf::AbstractMatrix{F}
 end
 
 """
-    function cos_similarity(tfidf::AbstractMatrix)
+    function cos_similarity(tfm::AbstractMatrix)
 
-`cos_similarity` calculates the cosine similarity from a term matrix (typically the tf-idf matrix).
+`cos_similarity` calculates the cosine similarity from a term frequency matrix (typically the tf-idf matrix).
 
 # Example
 ```
