@@ -301,3 +301,33 @@ function tf_bm25!(dtm::AbstractMatrix{T}, tf::AbstractMatrix{F}
     end
     return tf
 end
+
+"""
+    function cos_similarity(tfm::AbstractMatrix)
+
+`cos_similarity` calculates the cosine similarity from a term frequency matrix (typically the tf-idf matrix).
+
+# Example
+```
+crps = Corpus( StringDocument.([
+    "to be or not to be",
+    "to sing or not to sing",
+    "to talk or to silence"]) )
+update_lexicon!(crps)
+d = dtm(crps)
+tfm = tf_idf(d)
+cs = cos_similarity(tfm)
+Matrix(cs)
+    # 3×3 Array{Float64,2}:
+    #  1.0        0.0329318  0.0
+    #  0.0329318  1.0        0.0
+    #  0.0        0.0        1.0
+```
+"""
+function cos_similarity(tfm::AbstractMatrix)
+    cs = tfm * tfm'
+    d = sqrt.(diag(cs))
+    # prevent division by zero  (only occurs for empty documents)
+    d[findall(iszero, d)] .= 1
+    cs ./ (d * d')
+end

@@ -48,7 +48,7 @@ module TextAnalysis
     export hash_dtv, each_hash_dtv, hash_dtm, hash_tdm
     export CooMatrix, coom
     export standardize!
-    export tf, tf_idf, bm_25, lsa, lda, summarize
+    export tf, tf_idf, bm_25, lsa, lda, summarize, cos_similarity
     export tf!, tf_idf!, bm_25!, lda!
     export remove_patterns!, remove_patterns
     export prune!
@@ -61,7 +61,7 @@ module TextAnalysis
     export tag_scheme!
     export rouge_l_summary, rouge_l_sentence, rouge_n
     export PerceptronTagger, fit!, predict
-    
+
     export Vocabulary, lookup, update
     export everygram, padding_ngram
     export maskedscore, logscore, entropy, perplexity
@@ -93,14 +93,14 @@ module TextAnalysis
     include("coom.jl")
 
 
-    
+
     # Lang_model
     include("LM/vocab.jl")
-    include("LM/langmodel.jl") 
+    include("LM/langmodel.jl")
     include("LM/api.jl")
     include("LM/counter.jl")
     include("LM/preprocessing.jl")
-    
+
 
 
     function __init__()
