@@ -8,8 +8,9 @@ A Julia package for working with text.
 
 ## Introduction
 
-TextAnalysis provides support for standard tools and models for working with textual data and natural languages in the Julia langauges. Please see the [documentation](https://juliahub.com/docs/TextAnalysis/5Mwet) for more.
+TextAnalysis provides support for standard tools and models for working with textual data and natural languages in the Julia langauges. 
 
+- **Documentation** :  [Documentation for stable released version](https://juliahub.com/docs/TextAnalysis/5Mwet)
 - **License** : [MIT License](https://github.com/JuliaText/TextAnalysis.jl/blob/master/LICENSE.md)
 
 ## Features
@@ -26,7 +27,7 @@ This package also incorporates features from the [Languages](https://juliahub.co
 
 ## TextModels
 
-The [TextModels](https://github.com/JuliaText/TextModels.jl) package enhances this library with the additon of practical neural network based models. Some of that code used to live in this package, but was moved to simplify installation and dependencies. 
+The [TextModels](https://github.com/JuliaText/TextModels.jl) package enhances this library with the additon of practical neural network based models. Some of that code used to live in this package, but was moved to simplify installation and reduce the number of dependencies. 
 
 ## Installation
 
