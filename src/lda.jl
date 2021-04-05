@@ -22,19 +22,23 @@ Topic() = Topic(0, Dict{Int, Int}())
 end
 
 """
-    ϕ, θ = lda(dtm::DocumentTermMatrix, ntopics::Int, iterations::Int, α::Float64, β::Float64)
+    ϕ, θ = lda(dtm::DocumentTermMatrix, ntopics::Int, iterations::Int, α::Float64, β::Float64; kwargs...)
 
 Perform [Latent Dirichlet allocation](https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation).
 
-# Arguments
+# Required Positional Arguments
 - `α` Dirichlet dist. hyperparameter for topic distribution per document. `α<1` yields a sparse topic mixture for each document. `α>1` yields a more uniform topic mixture for each document.
 - `β` Dirichlet dist. hyperparameter for word distribution per topic. `β<1` yields a sparse word mixture for each topic. `β>1` yields a more uniform word mixture for each topic.
 
-# Return values
+# Optional Keyword Arguments
+- `showprogress::Bool`. Show a progress bar during the Gibbs sampling. Default value: `true`.
+
+# Return Values
 - `ϕ`: `ntopics × nwords` Sparse matrix of probabilities s.t. `sum(ϕ, 1) == 1`
 - `θ`: `ntopics × ndocs` Dense matrix of probabilities s.t. `sum(θ, 1) == 1`
 """
-function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float64, beta::Float64)
+function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int,
+             alpha::Float64, beta::Float64; showprogress::Bool = true)
 
     number_of_documents, number_of_words = size(dtm.dtm)
     docs = [Lda.TopicBasedDocument(ntopics) for _ in 1:number_of_documents]
@@ -61,8 +65,11 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float
     end
 
     probs = Vector{Float64}(undef, ntopics)
+
+    wait_time = showprogress ? 1.0 : Inf
+
     # Gibbs sampling
-    for _ in 1:iteration
+    @showprogress wait_time for _ in 1:iteration
         for doc in docs
             for (i, word) in enumerate(doc.text)
                 topicid_current = doc.topic[i]

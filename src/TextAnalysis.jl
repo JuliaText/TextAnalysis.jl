@@ -6,11 +6,12 @@ module TextAnalysis
     using Languages
     using WordTokenizers
     using Snowball
-   
+
     using Tables
     using DataStructures
     using Statistics
     using Serialization
+    using ProgressMeter
 
     import Base: depwarn, merge!
     import Serialization: serialize, deserialize
