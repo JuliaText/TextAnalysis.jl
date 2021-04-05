@@ -483,7 +483,7 @@ function remove_patterns(s::SubString{T}, rex::Regex) where T <: String
         len = m.match.offset-ibegin+1
 	next = nextind(s, lastindex(m.match)+m.match.offset)
         if len > 0
-            write(iob, SubString(data, ibegin+ioffset, ibegin+ioffset+len))
+            write(iob, SubString(s, ibegin, ibegin+len))
             if  next != length(s)+1
             	write(iob, ' ')
 	    end
@@ -491,7 +491,7 @@ function remove_patterns(s::SubString{T}, rex::Regex) where T <: String
         ibegin = next
     end
     len = lastindex(s) - ibegin + 1
-    (len > 0) && write(iob, SubString(data, ibegin+ioffset, ibegin+ioffset+len))
+    (len > 0) && write(iob, SubString(s, ibegin, ibegin+len))
     String(take!(iob))
 end
 
