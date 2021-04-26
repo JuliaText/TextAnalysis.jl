@@ -8,7 +8,7 @@ A Julia package for working with text.
 
 ## Introduction
 
-TextAnalysis provides support for standard tools and models for working with textual data and natural languages in the Julia langauges. 
+TextAnalysis provides support for standard tools and models for working with textual data and natural languages in the Julia language. 
 
 - **Documentation** :  [Documentation for stable released version](https://juliahub.com/docs/TextAnalysis/5Mwet)
 - **License** : [MIT License](https://github.com/JuliaText/TextAnalysis.jl/blob/master/LICENSE.md)
