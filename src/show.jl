@@ -13,7 +13,7 @@ function Base.summary(d::AbstractDocument)
     if typeof(d) <: Union{TokenDocument, NGramDocument}
         o *= " * Snippet: ***SAMPLE TEXT NOT AVAILABLE***"
     else
-        sample_text = replace(text(d)[1:min(50, length(text(d)))], r"\s+" => " ")
+        sample_text = replace(first(text(d), 50), r"\s+" => " ")
         o *= " * Snippet: $(sample_text)"
     end
     return o
