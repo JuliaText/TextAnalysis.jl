@@ -47,8 +47,8 @@ function tag_scheme!(tags, current_scheme::String, new_scheme::String)
         error("Invalid tagging scheme")
     end
 
-    current_scheme = eval(Symbol(current_scheme))()
-    new_scheme = eval(Symbol(new_scheme))()
+    current_scheme = getfield(Main, Symbol(current_scheme))()
+    new_scheme = getfield(Main, Symbol(new_scheme))()
 
     tag_scheme!(tags, current_scheme, new_scheme)
 end
