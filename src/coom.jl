@@ -62,11 +62,12 @@ coo_matrix(::Type{T}, doc::Vector{<:AbstractString}, vocab::Dict{<:AbstractStrin
 
 
 
-function coo_matrix_forward(::Type{T},
+function coo_matrix(::Type{T},
     doc::Vector{<:AbstractString},
     vocab::OrderedDict{<:AbstractString, Int},
     window::Int,
-    normalize::Bool=true; direction::Bool) where T<:AbstractFloat
+    direction::Bool,
+    normalize::Bool=true) where T<:AbstractFloat
     if direction
         n = length(vocab)
         m = length(doc)
@@ -87,10 +88,10 @@ function coo_matrix_forward(::Type{T},
                 end
             end
         end
+        return coom
     else
         coo_matrix(T, doc, vocab, window, normalize)
     end
-    return coom
 end
 
 """
