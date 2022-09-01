@@ -60,6 +60,38 @@ coo_matrix(::Type{T}, doc::Vector{<:AbstractString}, vocab::Dict{<:AbstractStrin
                     window::Int, normalize::Bool=true) where T<:AbstractFloat =
             coo_matrix(T, doc, OrderedDict(vocab), window, normalize)
 
+
+
+function coo_matrix_forward(::Type{T},
+    doc::Vector{<:AbstractString},
+    vocab::OrderedDict{<:AbstractString, Int},
+    window::Int,
+    normalize::Bool=true; direction::Bool) where T<:AbstractFloat
+    if direction
+        n = length(vocab)
+        m = length(doc)
+        coom = spzeros(T, n, n)
+        # Count co-occurrences
+        for (i, token) in enumerate(doc)
+            # looking forward
+            @inbounds for j in i:min(m, i+window)
+            # @inbounds for j in max(1, i-window):min(m, i+window)
+                wtoken = doc[j]
+                nm = T(ifelse(normalize, abs(i-j), 1))
+                row = get(vocab, token, nothing)
+                col = get(vocab, wtoken, nothing)
+                if i!=j && row != nothing && col != nothing
+                    coom[row, col] += one(T)/nm
+                    # avoiding to create a symmetric matrix and keep the forward looking coocurrence from above.
+                    # coom[col, row] = coom[row, col]
+                end
+            end
+        end
+    else
+        coo_matrix(T, doc, vocab, window, normalize)
+    return coom
+end
+
 """
 Basic Co-occurrence Matrix (COOM) type.
 # Fields
