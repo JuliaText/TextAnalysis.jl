@@ -89,6 +89,7 @@ function coo_matrix_forward(::Type{T},
         end
     else
         coo_matrix(T, doc, vocab, window, normalize)
+    end
     return coom
 end
 
