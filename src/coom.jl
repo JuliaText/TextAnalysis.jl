@@ -60,8 +60,6 @@ coo_matrix(::Type{T}, doc::Vector{<:AbstractString}, vocab::Dict{<:AbstractStrin
                     window::Int, normalize::Bool=true) where T<:AbstractFloat =
             coo_matrix(T, doc, OrderedDict(vocab), window, normalize)
 
-
-
 function coo_matrix(::Type{T},
     doc::Vector{<:AbstractString},
     vocab::OrderedDict{<:AbstractString, Int},
