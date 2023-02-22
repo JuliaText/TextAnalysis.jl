@@ -557,7 +557,7 @@ end
 function _build_regex_patterns(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) where T <: AbstractString
     #((flags & strip_whitespace) > 0) && push!(patterns, "\\s+")
     if (flags & strip_non_letters) > 0
-        push!(patterns, "[^a-zA-Z\\s]")
+	push!(patterns, "[^\p{L}\\s]")
     else
         ((flags & strip_punctuation) > 0) && push!(patterns, "[-.,:;,!?'\"\\[\\]\\(\\)\\{\\}|\\`#\$%@^&*_+<>“”—’‘/]+")
         ((flags & strip_numbers) > 0) && push!(patterns, "\\d+")
