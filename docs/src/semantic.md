@@ -42,7 +42,7 @@ julia> update_lexicon!(crps)
 julia> m = DocumentTermMatrix(crps)
 ```
 
-Latent Dirchlet Allocation has two hyper parameters -
+Latent Dirichlet Allocation has two hyper parameters -
 * _α_ : The hyperparameter for topic distribution per document. `α<1` yields a sparse topic mixture for each document. `α>1` yields a more uniform topic mixture for each document.
 - _β_ : The hyperparameter for word distribution per topic. `β<1` yields a sparse word mixture for each topic. `β>1` yields a more uniform word mixture for each topic.
 
