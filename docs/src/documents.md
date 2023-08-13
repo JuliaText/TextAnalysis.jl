@@ -9,7 +9,7 @@ allows one to work with documents stored in a variety of formats:
 * _NGramDocument_ : A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
 
 !!! note
-    These formats represent a hierarchy: you can always move down the hierachy, but can generally not move up the hierachy. A `FileDocument` can easily become a `StringDocument`, but an `NGramDocument` cannot easily become a `FileDocument`.
+    These formats represent a hierarchy: you can always move down the hierarchy, but can generally not move up the hierarchy. A `FileDocument` can easily become a `StringDocument`, but an `NGramDocument` cannot easily become a `FileDocument`.
 
 Creating any of the four basic types of documents is very easy:
 
