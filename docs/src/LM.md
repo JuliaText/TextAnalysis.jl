@@ -31,9 +31,9 @@ Arguments:
 
  * `unk_cutoff`: Tokens with counts greater than or equal to the cutoff value will be considered part of the vocabulary.
 
- * `unk_label`: token for unkown labels 
+ * `unk_label`: token for unknown labels 
 
- *  `gamma`: smoothing arugment gamma 
+ *  `gamma`: smoothing argument gamma 
 
  * `discount`:  discounting factor for `KneserNeyInterpolated`
 
