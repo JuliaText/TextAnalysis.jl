@@ -2,7 +2,7 @@ using DataStructures
 
 """
     counter is used to make conditional distribution, which is used by score functions to 
-    calculate conditonal frequency distribution
+    calculate conditional frequency distribution
 """
 function counter2(data, min::Integer, max::Integer)
     data = everygram(data, min_len=min, max_len=max)
