@@ -209,7 +209,7 @@ end
 """
     remove_words!(doc, words::Vector{AbstractString})
     remove_words!(crps, words::Vector{AbstractString})
-Remove the occurences of words from `doc` or `crps`.
+Remove the occurrences of words from `doc` or `crps`.
 # Example
 ```julia-repl
 julia> str="The quick brown fox jumps over the lazy dog"
@@ -247,7 +247,7 @@ end
 
 """
     sparse_terms(crps, alpha=0.05])
-Find the sparse terms from Corpus, occuring in less than `alpha` percentage of the documents.
+Find the sparse terms from Corpus, occurring in less than `alpha` percentage of the documents.
 # Example
 ```
 julia> crps = Corpus([StringDocument("This is Document 1"),
@@ -282,7 +282,7 @@ end
 
 """
     frequent_terms(crps, alpha=0.95)
-Find the frequent terms from Corpus, occuring more than `alpha` percentage of the documents.
+Find the frequent terms from Corpus, occurring more than `alpha` percentage of the documents.
 # Example
 ```
 julia> crps = Corpus([StringDocument("This is Document 1"),
@@ -318,7 +318,7 @@ end
 
 """
     remove_sparse_terms!(crps, alpha=0.05)
-Remove sparse terms in crps, occuring less than `alpha` percent of documents.
+Remove sparse terms in crps, occurring less than `alpha` percent of documents.
 # Example
 ```julia-repl
 julia> crps = Corpus([StringDocument("This is Document 1"),
@@ -342,7 +342,7 @@ remove_sparse_terms!(crps::Corpus, alpha::Real = alpha_sparse) = remove_words!(c
 
 """
     remove_frequent_terms!(crps, alpha=0.95)
-Remove terms in `crps`, occuring more than `alpha` percent of documents.
+Remove terms in `crps`, occurring more than `alpha` percent of documents.
 # Example
 ```julia-repl
 julia> crps = Corpus([StringDocument("This is Document 1"),
