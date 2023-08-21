@@ -76,7 +76,7 @@ end
 """
 	score(m::gammamodel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)	
 
-score is used to output probablity of word given that context 
+score is used to output probability of word given that context 
 
 Add-one smoothing to Lidstone or Laplace(gammamodel) models
         
@@ -96,7 +96,7 @@ end
 """
 To get probability of word given that context
 
-In otherwords, for given context calculate frequency distribution of word
+In other words, for given context calculate frequency distribution of word
   
 """
 function prob(m::Langmodel, templ_lm::DefaultDict, word, context=nothing)
@@ -120,7 +120,7 @@ end
 """
 	score(m::MLE, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)	
 
-score is used to output probablity of word given that context in MLE
+score is used to output probability of word given that context in MLE
         
 """
 function score(m::MLE, temp_lm::DefaultDict, word, context=nothing)
@@ -179,7 +179,7 @@ end
 """
 	score(m::InterpolatedLanguageModel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)	
 
-score is used to output probablity of word given that context in InterpolatedLanguageModel
+score is used to output probability of word given that context in InterpolatedLanguageModel
 
 Apply Kneserney and WittenBell smoothing
 depending upon the sub-Type
