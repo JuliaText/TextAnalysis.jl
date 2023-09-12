@@ -145,7 +145,7 @@ function CooMatrix{T}(doc; window::Int=5, normalize::Bool=true) where T<:Abstrac
     CooMatrix{T}(doc, terms, window=window, normalize=normalize)
 end
 
-CooMatrix(doc; window::Int=5, normalize::Bool=true) where T<:AbstractFloat =
+CooMatrix(doc; window::Int=5, normalize::Bool=true) =
     CooMatrix{Float64}(doc, window=window, normalize=normalize)
 
 """
