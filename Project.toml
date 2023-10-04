@@ -23,6 +23,7 @@ WordTokenizers = "796a5d58-b03d-544a-977e-18100b691f6e"
 
 [compat]
 DataStructures = "0.17, 0.18"
+DelimitedFiles = "1"
 JSON = "0.21"
 Languages = "0.4"
 ProgressMeter = "1.5"
