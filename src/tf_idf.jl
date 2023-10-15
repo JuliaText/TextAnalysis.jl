@@ -113,10 +113,10 @@ function tf_idf!(dtm::AbstractMatrix{T1}, tfidf::AbstractMatrix{T2}) where {T1 <
     idf = log.(n ./ documents_containing_term)
 
     # TF-IDF is the product of TF and IDF
-    for i in 1:n
-        for j in 1:p
-           tfidf[i, j] = tfidf[i, j] * idf[j]
-        end
+    for i in 1:n,
+        j in 1:p
+
+        tfidf[i, j] *= idf[j]
     end
 
     return tfidf

@@ -1,23 +1,33 @@
 #TO DO 
 # Doc string
-function maskedscore(m::Langmodel, temp_lm::DefaultDict, word, context)
-   score(m, temp_lm, lookup(m.vocab, [word])[1], lookup(m.vocab, [context])[1])
+"""
+$(TYPEDSIGNATURES)
+"""
+function maskedscore(m::Langmodel, temp_lm::DefaultDict, word, context)::Float64
+   score(m, temp_lm, lookup(m.vocab, [word])[begin], lookup(m.vocab, [context])[begin])
 end
 
-function logscore(m::Langmodel, temp_lm::DefaultDict, word, context)
+"""
+$(TYPEDSIGNATURES)
+"""
+function logscore(m::Langmodel, temp_lm::DefaultDict, word, context)::Float64
     log2(maskedscore(m, temp_lm, word, context))
 end
 
-function entropy(m::Langmodel, lm::DefaultDict, text_ngram)
-    local log_set=Float64[]
-    for ngram in text_ngram
+"""
+$(TYPEDSIGNATURES)
+"""
+function entropy(m::Langmodel, lm::DefaultDict, text_ngram::AbstractVector)::Float64
+    n_sum = sum(text_ngram) do ngram
         ngram = split(ngram)
-        push!(log_set, logscore(m, lm, ngram[end], join(ngram[1:end-1], " ")))
-        #println(logscore(m,lm,ngram[end],ngram[1:end-1]))
+        logscore(m, lm, ngram[end], join(ngram[begin:end-1], " "))
     end
-    return(sum(log_set)/length(log_set))
+    return n_sum / length(text_ngram)
 end
 
-function perplexity(m::Langmodel, lm::DefaultDict, text_ngram)
-    return(2^(entropy(m, lm, text_ngram)))
+"""
+$(TYPEDSIGNATURES)
+"""
+function perplexity(m::Langmodel, lm::DefaultDict, text_ngram::AbstractVector)::Float64
+    return 2^(entropy(m, lm, text_ngram))
 end

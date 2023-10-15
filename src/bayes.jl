@@ -5,9 +5,11 @@ export NaiveBayesClassifier
 simpleTokenise(s) = WordTokenizers.tokenize(lowercase(replace(s, "."=>"")))
 
 """
+$(TYPEDSIGNATURES)
+
 Create a dict that maps elements in input array to their frequencies.
 """
-function frequencies(xs)
+function frequencies(xs::AbstractVector{T})::Dict{T,Int} where {T<:Any}
     frequencies = Dict{eltype(xs),Int}()
     for x in xs
         frequencies[x] = get(frequencies, x, 0) + 1
@@ -16,13 +18,13 @@ function frequencies(xs)
 end
 
 """
-    features(::AbstractDict, dict)
+$(TYPEDSIGNATURES)
 
 Compute an Array, mapping the value corresponding to elements of `dict` to the input `AbstractDict`.
 """
-function features(fs::AbstractDict, dict)
-    bag = zeros(Int, size(dict))
-    for i = 1:length(dict)
+function features(fs::AbstractDict, dict::AbstractVector)::Vector{Int}
+    bag = Vector{Int}(undef, size(dict))
+    for i = eachindex(dict)
         bag[i] = get(fs, dict[i], 0)
     end
     return bag

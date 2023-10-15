@@ -69,11 +69,8 @@ function remove_corrupt_utf8!(d::NGramDocument)
     new_ngrams = Dict{AbstractString, Int}()
     for token in keys(d.ngrams)
         new_token = remove_corrupt_utf8(token)
-        if haskey(new_ngrams, new_token)
-            new_ngrams[new_token] = new_ngrams[new_token] + 1
-        else
-            new_ngrams[new_token] = 1
-        end
+        count = get(new_ngrams, new_token, 0)
+        new_ngrams[new_token] = count + 1
     end
     d.ngrams = new_ngrams
 end
@@ -130,11 +127,8 @@ function remove_case!(d::NGramDocument)
     new_ngrams = Dict{AbstractString, Int}()
     for token in keys(d.ngrams)
         new_token = remove_case(token)
-        if haskey(new_ngrams, new_token)
-            new_ngrams[new_token] = new_ngrams[new_token] + 1
-        else
-            new_ngrams[new_token] = 1
-        end
+        count = get(new_ngrams, new_token, 0)
+        new_ngrams[new_token] = count + 1
     end
     d.ngrams = new_ngrams
 end
@@ -474,24 +468,22 @@ function remove_patterns(s::AbstractString, rex::Regex)
     return replace(s, rex => "")
 end
 
-function remove_patterns(s::SubString{T}, rex::Regex) where T <: String
+function remove_patterns(s::SubString{T}, rex::Regex) where {T<:String}
     iob = IOBuffer()
-    ioffset = s.offset
-    data = codeunits(s.string)
     ibegin = 1
     for m in eachmatch(rex, s)
-        len = m.match.offset-ibegin
-	next = nextind(s, lastindex(m.match)+m.match.offset)
+        len = m.match.offset - ibegin
+        next = nextind(s, lastindex(m.match) + m.match.offset)
         if len > 0
-            write(iob, SubString(s, ibegin, ibegin+len))
-            if  next != length(s)+1
-            	write(iob, ' ')
-	    end
+            write(iob, SubString(s, ibegin, ibegin + len))
+            if next != length(s) + 1
+                write(iob, ' ')
+            end
         end
         ibegin = next
     end
-    len = lastindex(s) - ibegin 
-    (len > 0) && write(iob, SubString(s, ibegin, ibegin+len))
+    len = lastindex(s) - ibegin
+    (len > 0) && write(iob, SubString(s, ibegin, ibegin + len))
     String(take!(iob))
 end
 
@@ -519,11 +511,8 @@ function remove_patterns!(d::NGramDocument, rex::Regex)
     new_ngrams = Dict{AbstractString, Int}()
     for token in keys(d.ngrams)
         new_token = remove_patterns(token, rex)
-        if haskey(new_ngrams, new_token)
-            new_ngrams[new_token] = new_ngrams[new_token] + 1
-        else
-            new_ngrams[new_token] = 1
-        end
+        count = get(new_ngrams, new_token, 0)
+        new_ngrams[new_token] = count + 1 
     end
     d.ngrams = new_ngrams
     nothing
