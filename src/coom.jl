@@ -42,15 +42,19 @@ function coo_matrix(::Type{T},
     coom = spzeros(T, n, n)
     # Count co-occurrences
     for (i, token) in enumerate(doc)
-        @inbounds for j in max(1, i-window):min(m, i+window)
+        row = get(vocab, token, nothing)
+        isnothing(row) && continue
+
+        @inbounds for j in max(1, i - window):min(m, i + window)
+            i == j && continue
+
             wtoken = doc[j]
-            nm = T(ifelse(normalize, abs(i-j), 1))
-            row = get(vocab, token, nothing)
             col = get(vocab, wtoken, nothing)
-            if i!=j && row != nothing && col != nothing
-                coom[row, col] += one(T)/nm
-                coom[col, row] = coom[row, col]
-            end
+            isnothing(col) && continue
+
+            nm = T(ifelse(normalize, abs(i - j), 1))
+            coom[row, col] += one(T) / nm
+            coom[col, row] = coom[row, col]
         end
     end
     return coom
