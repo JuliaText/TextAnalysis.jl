@@ -37,7 +37,7 @@ jobs:
           - {arch: 'x86', version: '1.6'}
           - {arch: 'x86', version: 'nightly'}
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.version }}
@@ -50,7 +50,7 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
         with:
           version: '1.9'
