@@ -60,7 +60,10 @@ module TextAnalysis
 
     export NaiveBayesClassifier
     export tag_scheme!
-    export rouge_l_summary, rouge_l_sentence, rouge_n
+
+    export rouge_l_summary, rouge_l_sentence, rouge_n, Score, average, argmax
+    export bleu_score
+
     export PerceptronTagger, fit!, predict
 
     export Vocabulary, lookup, update
