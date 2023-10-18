@@ -11,13 +11,13 @@ function weighted_lcs(X, Y, weighted=true, f=sqrt)
 end
 
 function weighted_lcs_tokens(X, Y, weighted=true, f=sqrt)
-    m, n, c_table, w_table = weighted_lcs_inner(X, Y, weighted, f)
+    m, n, c_table, _w_table = weighted_lcs_inner(X, Y, weighted, f)
 
     # if weighted == true 
     #     lcs_length = c_table[m, n]^(2) # ?....
     # end
     lcs_length = m
-    lcs = ["" for i in 1:(lcs_length+1)]
+    lcs = String["" for i in 1:(lcs_length+1)]
     i = m + 1
     j = n + 1
 

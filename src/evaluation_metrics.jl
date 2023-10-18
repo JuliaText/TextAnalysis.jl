@@ -1,14 +1,23 @@
 """
-A score with precision, recall and fmeasure
+$(TYPEDEF)
+$(TYPEDFIELDS)
 """
 struct Score
     precision::Float32
     recall::Float32
     fmeasure::Float32
 
+    @doc """
+    $(TYPEDSIGNATURES)
+
+    Stores a result of evaluation
+    """
     Score(precision::AbstractFloat, recall::AbstractFloat, fmeasure::AbstractFloat) =
         new(precision, recall, fmeasure)
 
+    @doc """
+    $(TYPEDSIGNATURES)
+    """
     Score(; precision=0.0, recall=0.0, fmeasure=0.0) =
         new(precision, recall, fmeasure)
 end
@@ -25,7 +34,9 @@ Base.show(io::IO, score::Score) = Base.write(io,
 """
     average(scores::Vector{Score})::Score
 
-Returns average values of scores by precision/recall/fmeasure separately
+* scores - vector of [`Score`](@ref)
+
+Returns average values of scores as a [`Score`](@ref) with precision/recall/fmeasure
 """
 function average(scores::Vector{Score})::Score
     res = reduce(scores, init=zeros(Float32, 3)) do acc, i
@@ -41,14 +52,30 @@ end
 """
     argmax(scores::Vector{Score})::Score
 
-Returns maximum by precision value
+* scores - vector of [`Score`](@ref)
+
+Returns maximum by precision fiels of each [`Score`](@ref)
 """
 Base.argmax(scores::Vector{Score})::Score = argmax(s -> s.fmeasure, scores)
 
 """
-    rouge_n(references::Vector{<:AbstractString}, candidate::AbstractString, n::Int; lang::Language)
+    rouge_n(
+        references::Vector{<:AbstractString}, 
+        candidate::AbstractString, 
+        n::Int; 
+        lang::Language
+    )::Vector{Score}
 
 Compute n-gram recall between `candidate` and the `references` summaries.
+
+The function takes the following arguments -
+
+* `references::Vector{T} where T<: AbstractString` = The list of reference summaries.
+* `candidate::AbstractString` = Input candidate summary, to be scored against reference summaries.
+* `n::Integer` = Order of NGrams
+* `lang::Language` = Language of the text, useful while generating N-grams. Defaults value is Languages.English()
+
+Returns a vector of [`Score`](@ref)
 
 See [Rouge: A package for automatic evaluation of summaries](http://www.aclweb.org/anthology/W04-1013)
 
@@ -82,22 +109,29 @@ function rouge_match_score(ref, candidate::Dict)
 end
 
 """
-    rouge_l_sentence(references::Vector{<:AbstractString}, candidate::AbstractString, β=8; weighted=false)
+    rouge_l_sentence(
+        references::Vector{<:AbstractString}, candidate::AbstractString, β=8;
+        weighted=false, lang=Languages.English()
+    )::Vector{Score}
 
 Calculate the ROUGE-L score between `references` and `candidate` at sentence level.
+
+Returns a vector of [`Score`](@ref)
 
 See [Rouge: A package for automatic evaluation of summaries](http://www.aclweb.org/anthology/W04-1013)
 
 See also: [`rouge_n`](@ref), [`rouge_l_summary`](@ref)
 """
-function rouge_l_sentence(references::Vector{<:AbstractString}, candidate::AbstractString, β=8; weighted=true)
-    ngram_cand = tokenize(Languages.English(), candidate)
+function rouge_l_sentence(references::Vector{<:AbstractString}, candidate::AbstractString, β=8;
+    weighted=false, lang=Languages.English())::Vector{Score}
+    ngram_cand = tokenize(lang, candidate)
     rouge_l_list = Score[]
 
     for ref in references
-        ngram_ref = tokenize(Languages.English(), ref)
-        r_lcs = weighted_lcs(ngram_ref, ngram_cand, weighted, sqrt) / length(ngram_ref)
-        p_lcs = weighted_lcs(ngram_ref, ngram_cand, weighted, sqrt) / length(ngram_cand)
+        ngram_ref = tokenize(lang, ref)
+        lcs = weighted_lcs(ngram_ref, ngram_cand, weighted, sqrt)
+        r_lcs = lcs / length(ngram_ref)
+        p_lcs = lcs / length(ngram_cand)
         fmeasure = fmeasure_lcs(r_lcs, p_lcs, β)
         push!(rouge_l_list, Score(p_lcs, r_lcs, fmeasure))
     end
@@ -106,19 +140,25 @@ function rouge_l_sentence(references::Vector{<:AbstractString}, candidate::Abstr
 end
 
 """
-    rouge_l_summary(references, candidate, β)
+    rouge_l_summary(
+        references::Vector{<:AbstractString}, candidate::AbstractString, β::Int;
+        lang=Languages.English()
+    )::Vector{Score}
 
 Calculate the ROUGE-L score between `references` and `candidate` at summary level.
 
+Returns a vector of [`Score`](@ref)
+
 See [Rouge: A package for automatic evaluation of summaries](http://www.aclweb.org/anthology/W04-1013)
 
-See also: [`rouge_l_sentence()`](@ref), [`rouge_l_summary`](@ref)
+See also: [`rouge_l_sentence()`](@ref), [`rouge_n`](@ref)
 """
-function rouge_l_summary(references::Vector{<:AbstractString}, candidate::AbstractString, β::Int)::Vector{Score}
+function rouge_l_summary(references::Vector{<:AbstractString}, candidate::AbstractString, β::Int;
+    lang=Languages.English())::Vector{Score}
     rouge_l_list = Score[]
     ref_sent_tokens = map(references) do ref_sents
         map(split_sentences(ref_sents)) do ref_sent
-            tokenize(Languages.English(), ref_sent)
+            tokenize(lang, ref_sent)
         end
     end
 
@@ -128,7 +168,7 @@ function rouge_l_summary(references::Vector{<:AbstractString}, candidate::Abstra
 
     cand_sent_list = split_sentences(candidate)
     cand_sent_tokens = map(cand_sent_list) do cand_sent
-        tokenize(Languages.English(), cand_sent)
+        tokenize(lang, cand_sent)
     end
 
     cand_total_tokens_length = sum(length, cand_sent_tokens)
@@ -137,9 +177,8 @@ function rouge_l_summary(references::Vector{<:AbstractString}, candidate::Abstra
         sum_value = 0
 
         for ref_sent in ref_sent_tokens[i]
-            l_ = []
-            for cand_sent in cand_sent_tokens
-                append!(l_, weighted_lcs_tokens(ref_sent, cand_sent, false))
+            l_ = reduce(cand_sent_tokens, init=String[]) do acc, cand_sent
+                append!(acc, weighted_lcs_tokens(ref_sent, cand_sent, false))
             end
             sum_value += count(!isempty, unique(l_))
         end
