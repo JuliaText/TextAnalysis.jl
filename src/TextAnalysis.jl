@@ -94,6 +94,7 @@ module TextAnalysis
     include("utils.jl")
 
     include("evaluation_metrics.jl")
+    include("translate_evaluation/bleu_score.jl")
     include("coom.jl")
 
 

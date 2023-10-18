@@ -3,14 +3,14 @@
 A Julia package for working with text.
 
 [![CI](https://github.com/juliatext/TextAnalysis.jl/workflows/CI/badge.svg?event=push&branch=master)](https://github.com/JuliaText/TextAnalysis.jl/actions?query=workflow%3ACI)
-[![version](https://juliahub.com/docs/TextAnalysis/version.svg)](https://juliahub.com/ui/Packages/TextAnalysis/5Mwet)
-[![docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliahub.com/docs/TextAnalysis/5Mwet) 
+[![version](https://juliahub.com/docs/TextAnalysis/version.svg)](https://juliahub.com/ui/Packages/General/TextAnalysis/)
+[![docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://docs.juliahub.com/TextAnalysis/) 
 
 ## Introduction
 
 TextAnalysis provides support for standard tools and models for working with textual data and natural languages in the Julia language. 
 
-- **Documentation** :  [Documentation for stable released version](https://juliahub.com/docs/TextAnalysis/5Mwet)
+- **Documentation** :  [Documentation for stable released version](https://docs.juliahub.com/TextAnalysis)
 - **License** : [MIT License](https://github.com/JuliaText/TextAnalysis.jl/blob/master/LICENSE.md)
 
 ## Features
