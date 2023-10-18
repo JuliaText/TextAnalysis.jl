@@ -12,6 +12,7 @@ module TextAnalysis
     using Statistics
     using Serialization
     using ProgressMeter
+    using DocStringExtensions
 
     import Base: depwarn, merge!
     import Serialization: serialize, deserialize
