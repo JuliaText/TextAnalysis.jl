@@ -37,7 +37,7 @@ end
         @test argmax(rouge_n(reference_sentences, candidate_sentence, 2)).fmeasure >= 0.349
         @test argmax(rouge_n(reference_sentences, candidate_sentence, 1)).fmeasure >= 0.666
 
-        @test argmax(rouge_l_sentence(reference_summaries, candidate_summary, 8, weighted=true)).recall >= 0.2
+        @test argmax(rouge_l_sentence(reference_summaries, candidate_summary, 8, weighted=true)).recall >= 0.285
 
         @test argmax(rouge_l_summary(reference_summaries, candidate_summary, 8)).recall >= 0.23
     end

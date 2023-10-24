@@ -111,7 +111,8 @@ end
 """
     rouge_l_sentence(
         references::Vector{<:AbstractString}, candidate::AbstractString, β=8;
-        weighted=false, lang=Languages.English()
+        weighted=false, weight_func=sqrt,
+        lang=Languages.English()
     )::Vector{Score}
 
 Calculate the ROUGE-L score between `references` and `candidate` at sentence level.
@@ -120,16 +121,19 @@ Returns a vector of [`Score`](@ref)
 
 See [Rouge: A package for automatic evaluation of summaries](http://www.aclweb.org/anthology/W04-1013)
 
+Note: the `weighted` argument enables weighting of values when calculating the longest common subsequence.
+Initial implementation ROUGE-1.5.5.pl contains a power function. The function `weight_func` here has a power of 0.5 by default.
+
 See also: [`rouge_n`](@ref), [`rouge_l_summary`](@ref)
 """
 function rouge_l_sentence(references::Vector{<:AbstractString}, candidate::AbstractString, β=8;
-    weighted=false, lang=Languages.English())::Vector{Score}
+    weighted=false, weight_func=sqrt, lang=Languages.English())::Vector{Score}
     ngram_cand = tokenize(lang, candidate)
     rouge_l_list = Score[]
 
     for ref in references
         ngram_ref = tokenize(lang, ref)
-        lcs = weighted_lcs(ngram_ref, ngram_cand, weighted, sqrt)
+        lcs = weighted_lcs(ngram_ref, ngram_cand, weighted, weight_func)
         r_lcs = lcs / length(ngram_ref)
         p_lcs = lcs / length(ngram_cand)
         fmeasure = fmeasure_lcs(r_lcs, p_lcs, β)
