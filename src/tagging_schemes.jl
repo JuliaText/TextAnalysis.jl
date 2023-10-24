@@ -2,13 +2,15 @@
 # https://en.wikipedia.org/wiki/Inside%E2%80%93outside%E2%80%93beginning_(tagging)
 # https://chameleonmetadata.com/Education/NLP-3/ref_nlp_encoding_schemes_list.php
 
+using InteractiveUtils: subtypes
+
 abstract type tag_scheme end
 
 struct BIO1 <: tag_scheme end # BIO
 struct BIO2 <: tag_scheme end
 struct BIOES <: tag_scheme end
 
-const available_schemes = ["BIO1", "BIO2", "BIOES"]
+const available_schemes = Dict(string(nameof(type)) => type for type in subtypes(tag_scheme))
 
 """
     tag_scheme!(tags, current_scheme::String, new_scheme::String)
@@ -41,16 +43,14 @@ julia> tags
 function tag_scheme!(tags, current_scheme::String, new_scheme::String)
     current_scheme = uppercase(current_scheme)
     new_scheme = uppercase(new_scheme)
-    (length(tags) == 0 || current_scheme == new_scheme) && return
+    (isempty(tags) || isequal(current_scheme, new_scheme)) && return
 
-    if new_scheme ∉ available_schemes || current_scheme ∉ available_schemes
-        error("Invalid tagging scheme")
-    end
+    current_scheme = get(available_schemes, current_scheme, nothing)
+    new_scheme = get(available_schemes, new_scheme, nothing)
 
-    current_scheme = eval(Symbol(current_scheme))()
-    new_scheme = eval(Symbol(new_scheme))()
+    (isnothing(current_scheme) || isnothing(new_scheme)) && error("Invalid tagging scheme")
 
-    tag_scheme!(tags, current_scheme, new_scheme)
+    tag_scheme!(tags, current_scheme(), new_scheme())
 end
 
 function tag_scheme!(tags, current_scheme::BIO1, new_scheme::BIO2)
