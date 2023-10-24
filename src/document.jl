@@ -5,10 +5,10 @@
 ##############################################################################
 
 mutable struct DocumentMetadata
-    language
-    title::String
-    author::String
-    timestamp::String
+    language::Language
+    title::AbstractString
+    author::AbstractString
+    timestamp::AbstractString
     custom::Any
 end
 DocumentMetadata() = DocumentMetadata(
