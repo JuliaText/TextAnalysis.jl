@@ -10,14 +10,35 @@ mutable struct DocumentMetadata
     author::AbstractString
     timestamp::AbstractString
     custom::Any
+
+    @doc """
+        DocumentMetadata(
+            language::Language,
+            title::String,
+            author::String,
+            timestamp::String,
+            custom::Any
+        )
+
+    Stores basic metadata about Document.
+
+    ...
+    # Arguments
+    - `language`: What language is the document in? Defaults to Languages.English(), a Language instance defined by the Languages package.
+    - `title::String` : What is the title of the document? Defaults to "Untitled Document".
+    - `author::String` : Who wrote the document? Defaults to "Unknown Author".
+    - `timestamp::String` : When was the document written? Defaults to "Unknown Time".
+    - `custom` : user specific data field. Defaults to nothing.
+    ...
+    """
+    DocumentMetadata(
+        language::Language=Languages.English(),
+        title::AbstractString="Untitled Document",
+        author::AbstractString="Unknown Author",
+        timestamp::AbstractString="Unknown Time",
+        custom::Any=nothing
+    ) = new(language, title, author, timestamp, custom)
 end
-DocumentMetadata() = DocumentMetadata(
-    Languages.English(),
-    "Untitled Document",
-    "Unknown Author",
-    "Unknown Time",
-    nothing
-)
 
 ##############################################################################
 #
