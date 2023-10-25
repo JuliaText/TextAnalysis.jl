@@ -2,13 +2,20 @@ module TextAnalysis
     using SparseArrays
     using Printf
     using LinearAlgebra
-
+    using StatsBase: countmap,addcounts!
     using Languages
-    using DataFrames
     using WordTokenizers
+    using Snowball
 
-    import DataFrames.DataFrame
-    import Base.depwarn
+    using Tables
+    using DataStructures
+    using Statistics
+    using Serialization
+    using ProgressMeter
+    using DocStringExtensions
+
+    import Base: depwarn, merge!
+    import Serialization: serialize, deserialize
 
     export AbstractDocument, Document
     export FileDocument, StringDocument, TokenDocument, NGramDocument
@@ -41,15 +48,31 @@ module TextAnalysis
     export dtv, each_dtv, dtm, tdm
     export TextHashFunction, index_hash, cardinality, hash_function, hash_function!
     export hash_dtv, each_hash_dtv, hash_dtm, hash_tdm
+    export CooMatrix, coom
     export standardize!
-    export tf, tf_idf, lsa, lda, summarize
-    export tf!, tf_idf!, lsa!, lda!
+    export tf, tf_idf, bm_25, lsa, lda, summarize, cos_similarity
+    export tf!, tf_idf!, bm_25!, lda!
     export remove_patterns!, remove_patterns
+    export prune!
 
     export strip_patterns, strip_corrupt_utf8, strip_case, stem_words, tag_part_of_speech, strip_whitespace, strip_punctuation
     export strip_numbers, strip_non_letters, strip_indefinite_articles, strip_definite_articles, strip_articles
     export strip_prepositions, strip_pronouns, strip_stopwords, strip_sparse_terms, strip_frequent_terms, strip_html_tags
-    export SentimentAnalyzer
+
+    export NaiveBayesClassifier
+    export tag_scheme!
+
+    export rouge_l_summary, rouge_l_sentence, rouge_n, Score, average, argmax
+    export bleu_score
+
+    export PerceptronTagger, fit!, predict
+
+    export Vocabulary, lookup, update
+    export everygram, padding_ngram
+    export maskedscore, logscore, entropy, perplexity
+    export MLE, Lidstone, Laplace, WittenBellInterpolated, KneserNeyInterpolated, score
+
+    export tokenize #imported from WordTokenizers
 
     include("tokenizer.jl")
     include("ngramizer.jl")
@@ -58,12 +81,6 @@ module TextAnalysis
     include("corpus.jl")
     include("metadata.jl")
     include("preprocessing.jl")
-    # Load libstemmer from our deps.jl
-    const depsjl_path = joinpath(dirname(@__FILE__), "..", "deps", "deps.jl")
-    if !isfile(depsjl_path)
-        error("Snowball Stemmer not installed properly, run Pkg.build(\"TextAnalysis\"), restart Julia and try again")
-    end
-    include(depsjl_path)
 
     include("stemmer.jl")
     include("dtm.jl")
@@ -72,7 +89,27 @@ module TextAnalysis
     include("lda.jl")
     include("summarizer.jl")
     include("show.jl")
-    include("sentiment.jl")
     include("bayes.jl")
     include("deprecations.jl")
+    include("tagging_schemes.jl")
+    include("utils.jl")
+
+    include("evaluation_metrics.jl")
+    include("translate_evaluation/bleu_score.jl")
+    include("coom.jl")
+
+
+
+    # Lang_model
+    include("LM/vocab.jl")
+    include("LM/langmodel.jl")
+    include("LM/api.jl")
+    include("LM/counter.jl")
+    include("LM/preprocessing.jl")
+
+
+
+    function __init__()
+
+    end
 end

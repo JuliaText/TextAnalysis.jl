@@ -123,7 +123,7 @@ by each term. This can be done by finding the term frequency function
 
     tf(dtm)
 
-The paramter, `dtm` can be of the types - `DocumentTermMatrix` , `SparseMatrixCSC` or `Matrix`
+The parameter, `dtm` can be of the types - `DocumentTermMatrix` , `SparseMatrixCSC` or `Matrix`
 
 ```julia
 julia> crps = Corpus([StringDocument("To be or not to be"),
@@ -195,16 +195,145 @@ As you can see, TF-IDF has the effect of inserting 0's into the columns of
 words that occur in all documents. This is a useful way to avoid having to
 remove those words during preprocessing.
 
-## Sentiment Analyzer
+## Okapi BM-25
 
-It can be used to find the sentiment score (between 0 and 1) of a word, sentence or a Document.
-A trained model (using Flux) on IMDB word corpus with weights saved are used to calculate the sentiments.
+From the document term matparamterix, [Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) document-word statistic can be created.
 
-    model = SentimentAnalyzer(doc)
-    model = SentimentAnalyzer(doc, handle_unknown)
+    bm_25(dtm::AbstractMatrix; κ, β)
+    bm_25(dtm::DocumentTermMatrixm, κ, β)
 
-*  doc              = Input Document for calculating document (AbstractDocument type)
-*  handle_unknown   = A function for handling unknown words. Should return an array (default (x)->[])
+It can also be used via the following methods Overwrite the `bm25` with calculated weights.
+
+    bm_25!(dtm, bm25, κ, β)
+
+The inputs matrices can also be a `Sparse Matrix`.
+The parameters κ and β default to 2 and 0.75 respectively.
+
+Here is an example usage -
+
+```julia
+julia> crps = Corpus([StringDocument("a a a sample text text"), StringDocument("another example example text text"), StringDocument(""), StringDocument("another another text text text text")])
+
+julia> update_lexicon!(crps)
+
+julia> m = DocumentTermMatrix(crps)
+
+julia> bm_25(m)
+4×5 SparseArrays.SparseMatrixCSC{Float64,Int64} with 8 stored entries:
+  [1, 1]  =  1.29959
+  [2, 2]  =  0.882404
+  [4, 2]  =  1.40179
+  [2, 3]  =  1.54025
+  [1, 4]  =  1.89031
+  [1, 5]  =  0.405067
+  [2, 5]  =  0.405067
+  [4, 5]  =  0.676646
+```
+
+## Co occurrence matrix (COOM)
+
+The elements of the Co occurrence matrix indicate how many times two words co-occur
+in a (sliding) word window of a given size.
+The COOM can be calculated for objects of type `Corpus`,
+`AbstractDocument` (with the exception of `NGramDocument`).
+
+    CooMatrix(crps; window, normalize)
+    CooMatrix(doc; window, normalize)
+
+It takes following keyword arguments:
+
+* `window::Integer` -length of the Window size, defaults to `5`. The actual size of the sliding window is 2 * window + 1, with the keyword argument window specifying how many words to consider to the left and right of the center one
+* `normalize::Bool` -normalizes counts to distance between words, defaults to `true`
+
+It returns the `CooMatrix` structure from which
+the matrix can be extracted using `coom(::CooMatrix)`.
+The `terms` can also be extracted from this.
+Here is an example usage -
+
+```julia
+
+julia> crps = Corpus([StringDocument("this is a string document"),
+
+julia> C = CooMatrix(crps, window=1, normalize=false)
+CooMatrix{Float64}(
+  [2, 1]  =  2.0
+  [6, 1]  =  2.0
+  [1, 2]  =  2.0
+  [3, 2]  =  2.0
+  [2, 3]  =  2.0
+  [6, 3]  =  2.0
+  [5, 4]  =  4.0
+  [4, 5]  =  4.0
+  [6, 5]  =  4.0
+  [1, 6]  =  2.0
+  [3, 6]  =  2.0
+  [5, 6]  =  4.0, ["string", "document", "token", "this", "is", "a"], OrderedDict("string"=>1,"document"=>2,"token"=>3,"this"=>4,"is"=>5,"a"=>6))
+
+julia> coom(C)
+6×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 12 stored entries:
+  [2, 1]  =  2.0
+  [6, 1]  =  2.0
+  [1, 2]  =  2.0
+  [3, 2]  =  2.0
+  [2, 3]  =  2.0
+  [6, 3]  =  2.0
+  [5, 4]  =  4.0
+  [4, 5]  =  4.0
+  [6, 5]  =  4.0
+  [1, 6]  =  2.0
+  [3, 6]  =  2.0
+  [5, 6]  =  4.0
+
+julia> C.terms
+6-element Array{String,1}:
+ "string"
+ "document"
+ "token"
+ "this"
+ "is"
+ "a"
+
+```
+
+It can also be called to calculate the terms for
+a specific list of words / terms in the document.
+In other cases it calculates the the co occurrence elements
+for all the terms.
+
+    CooMatrix(crps, terms; window, normalize)
+    CooMatrix(doc, terms; window, normalize)
+
+```julia
+julia> C = CooMatrix(crps, ["this", "is", "a"], window=1, normalize=false)
+CooMatrix{Float64}(
+  [2, 1]  =  4.0
+  [1, 2]  =  4.0
+  [3, 2]  =  4.0
+  [2, 3]  =  4.0, ["this", "is", "a"], OrderedCollections.OrderedDict("this"=>1,"is"=>2,"a"=>3))
+
+```
+
+The type can also be specified for `CooMatrix`
+with the weights of type `T`. `T` defaults to `Float64`.
+
+    CooMatrix{T}(crps; window, normalize) where T <: AbstractFloat
+    CooMatrix{T}(doc; window, normalize) where T <: AbstractFloat
+    CooMatrix{T}(crps, terms; window, normalize) where T <: AbstractFloat
+    CooMatrix{T}(doc, terms; window, normalize) where T <: AbstractFloat
+
+Remarks:
+
+* The sliding window used to count co-occurrences does not take into consideration sentence stops however, it does with documents i.e. does not span across documents
+* The co-occurrence matrices of the documents in a corpus are summed up when calculating the matrix for an entire corpus
+
+!!! note
+    The Co occurrence matrix does not work for `NGramDocument`,
+    or a Corpus containing an `NGramDocument`.
+
+```julia
+julia> C = CooMatrix(NGramDocument("A document"), window=1, normalize=false) # fails, documents are NGramDocument
+ERROR: The tokens of an NGramDocument cannot be reconstructed
+```
 
 ## Summarizer
 
@@ -225,3 +354,4 @@ julia> summarize(s, ns=2)
  "Assume this Short Document as an example."
  "This has too foo sentences."
 ```
+

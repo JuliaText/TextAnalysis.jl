@@ -22,46 +22,54 @@ Topic() = Topic(0, Dict{Int, Int}())
 end
 
 """
-    ϕ, θ = lda(dtm::DocumentTermMatrix, ntopics::Int, iterations::Int, α::Float64, β::Float64)
+    ϕ, θ = lda(dtm::DocumentTermMatrix, ntopics::Int, iterations::Int, α::Float64, β::Float64; kwargs...)
 
 Perform [Latent Dirichlet allocation](https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation).
 
-# Arguments
+# Required Positional Arguments
 - `α` Dirichlet dist. hyperparameter for topic distribution per document. `α<1` yields a sparse topic mixture for each document. `α>1` yields a more uniform topic mixture for each document.
 - `β` Dirichlet dist. hyperparameter for word distribution per topic. `β<1` yields a sparse word mixture for each topic. `β>1` yields a more uniform word mixture for each topic.
 
-# Return values
+# Optional Keyword Arguments
+- `showprogress::Bool`. Show a progress bar during the Gibbs sampling. Default value: `true`.
+
+# Return Values
 - `ϕ`: `ntopics × nwords` Sparse matrix of probabilities s.t. `sum(ϕ, 1) == 1`
 - `θ`: `ntopics × ndocs` Dense matrix of probabilities s.t. `sum(θ, 1) == 1`
 """
-function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int, alpha::Float64, beta::Float64)
+function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int,
+             alpha::Float64, beta::Float64; showprogress::Bool = true)
 
     number_of_documents, number_of_words = size(dtm.dtm)
-    docs = Vector{Lda.TopicBasedDocument}(undef, number_of_documents)
+    docs = [Lda.TopicBasedDocument(ntopics) for _ in 1:number_of_documents]
     topics = Vector{Lda.Topic}(undef, ntopics)
     for i in 1:ntopics
         topics[i] = Lda.Topic()
     end
 
-    for i in 1:number_of_documents
-        topic_base_document = Lda.TopicBasedDocument(ntopics)
-        for wordid in 1:number_of_words
-            for _ in 1:dtm.dtm[i,wordid]
+    for wordid in 1:number_of_words
+        nzdocs_idxs = nzrange(dtm.dtm, wordid)
+        for docid in dtm.dtm.rowval[nzdocs_idxs]
+            for _ in 1:dtm.dtm[docid, wordid]
                 topicid = rand(1:ntopics)
                 update_target_topic = topics[topicid]
                 update_target_topic.count += 1
                 update_target_topic.wordcount[wordid] = get(update_target_topic.wordcount, wordid, 0) + 1
                 topics[topicid] = update_target_topic
+                topic_base_document = docs[docid]
                 push!(topic_base_document.topic, topicid)
                 push!(topic_base_document.text, wordid)
-                topic_base_document.topicidcount[topicid] =  get(topic_base_document.topicidcount, topicid, 0) + 1
+                topic_base_document.topicidcount[topicid] += 1
             end
         end
-        docs[i] = topic_base_document
     end
+
     probs = Vector{Float64}(undef, ntopics)
+
+    wait_time = showprogress ? 1.0 : Inf
+
     # Gibbs sampling
-    for _ in 1:iteration
+    @showprogress wait_time for _ in 1:iteration
         for doc in docs
             for (i, word) in enumerate(doc.text)
                 topicid_current = doc.topic[i]

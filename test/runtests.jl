@@ -1,14 +1,13 @@
-module TestTextAnalysis
 using SparseArrays
 using Test
 using Languages
 using TextAnalysis
-
-
-# @testset "TextAnalysis" begin
+using WordTokenizers
+using Serialization
 
 println("Running tests:")
 
+include("coom.jl")
 include("tokenizer.jl")
 include("ngramizer.jl")
 include("document.jl")
@@ -19,12 +18,10 @@ include("dtm.jl")
 include("stemmer.jl")
 include("tf_idf.jl")
 include("lda.jl")
+include("lsa.jl")
 include("summarizer.jl")
-include("sentiment.jl")
 include("bayes.jl")
-
-
-
-# end
-end
-
+include("taggingschemes.jl")
+include("evaluation_metrics.jl")
+include("LM.jl")
+include("translate_evaluation.jl")

@@ -9,7 +9,7 @@ allows one to work with documents stored in a variety of formats:
 * _NGramDocument_ : A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
 
 !!! note
-    These formats represent a hierarchy: you can always move down the hierachy, but can generally not move up the hierachy. A `FileDocument` can easily become a `StringDocument`, but an `NGramDocument` cannot easily become a `FileDocument`.
+    These formats represent a hierarchy: you can always move down the hierarchy, but can generally not move up the hierarchy. A `FileDocument` can easily become a `StringDocument`, but an `NGramDocument` cannot easily become a `FileDocument`.
 
 Creating any of the four basic types of documents is very easy:
 
@@ -224,6 +224,24 @@ Dict{AbstractString,Int64} with 13 entries:
   "not to"  => 1
   "to be.." => 1
   "be.. ."  => 1
+```
+
+The `ngrams()` function can also be called with multiple arguments:
+
+```julia
+julia> ngrams(sd, 2, 3)
+Dict{AbstractString,Int64} with 11 entries:
+  "or not to"   => 1
+  "be or"       => 1
+  "not to"      => 1
+  "be or not"   => 1
+  "not to be.." => 1
+  "To be"       => 1
+  "or not"      => 1
+  "to be.. ."   => 1
+  "to be.."     => 1
+  "be.. ."      => 1
+  "To be or"    => 1
 ```
 
 If you have a `NGramDocument`, you can determine whether an `NGramDocument`

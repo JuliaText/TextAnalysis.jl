@@ -1,9 +1,3 @@
-##############################################################################
-#
-# Basic Corpus type
-#
-##############################################################################
-
 mutable struct Corpus{T <: AbstractDocument}
     documents::Vector{T}
     total_terms::Int
@@ -12,6 +6,25 @@ mutable struct Corpus{T <: AbstractDocument}
     h::TextHashFunction
 end
 
+"""
+    Corpus(docs::Vector{T}) where {T <: AbstractDocument}
+
+Collections of documents are represented using the Corpus type.
+
+# Example
+```julia-repl
+julia> crps = Corpus([StringDocument("Document 1"),
+		              StringDocument("Document 2")])
+A Corpus with 2 documents:
+ * 2 StringDocument's
+ * 0 FileDocument's
+ * 0 TokenDocument's
+ * 0 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
+```
+"""
 function Corpus(docs::Vector{T}) where {T <: AbstractDocument}
     Corpus(
         docs,
@@ -24,12 +37,11 @@ end
 
 Corpus(docs::Vector{Any}) = Corpus(convert(Array{GenericDocument,1}, docs))
 
-##############################################################################
-#
-# Construct a Corpus from a directory of text files
-#
-##############################################################################
+"""
+    DirectoryCorpus(dirname::AbstractString)
 
+Construct a Corpus from a directory of text files.
+"""
 function DirectoryCorpus(dirname::AbstractString)
     # Recursive descent of directory
     # Add all non-hidden files to Corpus
@@ -71,30 +83,17 @@ Base.length(crps::Corpus) = length(crps.documents)
 
 ##############################################################################
 #
-# Convert a Corpus to a DataFrame
+# Treat a corpus as a Table
 #
 ##############################################################################
 
-function Base.convert(::Type{DataFrame}, crps::Corpus)
-    df = DataFrame()
-    n = length(crps)
-    df[:Language] = Array{Union{String,Missing}}(n)
-    df[:Title] = Array{Union{String,Missing}}(n)
-    df[:Author] = Array{Union{String,Missing}}(n)
-    df[:TimeStamp] = Array{Union{String,Missing}}(n)
-    df[:Length] = Array{Union{Int,Missing}}(n)
-    df[:Text] = Array{Union{String,Missing}}(n)
-    for i in 1:n
-        d = crps.documents[i]
-        df[i, :Language] = string(language(d))
-        df[i, :Title] = title(d)
-        df[i, :Author] = author(d)
-        df[i, :TimeStamp] = timestamp(d)
-        df[i, :Length] = length(d)
-        df[i, :Text] = text(d)
-    end
-    return df
-end
+Tables.columnnames(x::AbstractDocument) = (:Language, :Title, :Author, :Timestamp, :Length, :Text)
+Tables.getcolumn(d::AbstractDocument, nm::Symbol) = nm === :Language ? string(language(d)) : nm === :Title ? title(d) : nm === :Author ? author(d) : nm === :Timestamp ? timestamp(d) : nm === :Length ? length(d) : nm === :Text ? text(d) : error("invalid column name for document: $nm")
+Tables.getcolumn(d::AbstractDocument, i::Int) = Tables.getcolumn(d, Tables.columnnames(d)[i])
+
+Tables.isrowtable(x::Corpus) = true
+Tables.rows(x::Corpus) = x
+Tables.schema(x::Corpus) = Tables.Schema((:Language, :Title, :Author, :Timestamp, :Length, :Text), (Union{String, Missing}, Union{String, Missing}, Union{String, Missing}, Union{String, Missing}, Union{Int, Missing}, Union{String, Missing}))
 
 ##############################################################################
 #
@@ -156,7 +155,30 @@ end
 # TODO: Offer progressive update that only changes based on current document
 #
 ##############################################################################
+"""
+    lexicon(crps::Corpus)
 
+Shows the lexicon of the corpus.
+
+Lexicon of a corpus consists of all the terms that occur in any document in the corpus.
+
+# Example
+```julia-repl
+julia> crps = Corpus([StringDocument("Name Foo"),
+                          StringDocument("Name Bar")])
+A Corpus with 2 documents:
+* 2 StringDocument's
+* 0 FileDocument's
+* 0 TokenDocument's
+* 0 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
+
+julia> lexicon(crps)
+Dict{String,Int64} with 0 entries
+```
+"""
 lexicon(crps::Corpus) = crps.lexicon
 
 function update_lexicon!(crps::Corpus, doc::AbstractDocument)
@@ -175,7 +197,18 @@ function update_lexicon!(crps::Corpus)
     end
 end
 
+"""
+    lexicon_size(crps::Corpus)
+
+Tells the total number of terms in a lexicon.
+"""
 lexicon_size(crps::Corpus) = length(keys(crps.lexicon))
+
+"""
+    lexical_frequency(crps::Corpus, term::AbstractString)
+
+Tells us how often a term occurs across all of the documents.
+"""
 lexical_frequency(crps::Corpus, term::AbstractString) =
     (get(crps.lexicon, term, 0) / crps.total_terms)
 
@@ -186,7 +219,14 @@ lexical_frequency(crps::Corpus, term::AbstractString) =
 # TODO: offer progressive update that only changes based on current document
 #
 ##############################################################################
+"""
+    inverse_index(crps::Corpus)
 
+Shows the inverse index of a corpus.
+
+If we are interested in a specific term, we often want to know which documents in a corpus
+contain that term. The inverse index tells us this and therefore provides a simplistic sort of search algorithm.
+"""
 inverse_index(crps::Corpus) = crps.inverse_index
 
 function update_inverse_index!(crps::Corpus)
@@ -221,12 +261,39 @@ index_size(crps::Corpus) = length(crps.inverse_index)
 hash_function(crps::Corpus) = crps.h
 hash_function!(crps::Corpus, f::TextHashFunction) = (crps.h = f; nothing)
 
-##############################################################################
-#
-# Standardize the documents in a Corpus to a common type
-#
-##############################################################################
+"""
+    standardize!(crps::Corpus, ::Type{T}) where T <: AbstractDocument
 
+Standardize the documents in a Corpus to a common type.
+
+# Example
+```julia-repl
+julia> crps = Corpus([StringDocument("Document 1"),
+		              TokenDocument("Document 2"),
+		              NGramDocument("Document 3")])
+A Corpus with 3 documents:
+ * 1 StringDocument's
+ * 0 FileDocument's
+ * 1 TokenDocument's
+ * 1 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
+
+
+julia> standardize!(crps, NGramDocument)
+
+julia> crps
+A Corpus with 3 documents:
+ * 0 StringDocument's
+ * 0 FileDocument's
+ * 0 TokenDocument's
+ * 3 NGramDocument's
+
+Corpus's lexicon contains 0 tokens
+Corpus's index contains 0 tokens
+```
+"""
 function standardize!(crps::Corpus, ::Type{T}) where T <: AbstractDocument
     for i in 1:length(crps)
         crps.documents[i] = convert(T, crps.documents[i])

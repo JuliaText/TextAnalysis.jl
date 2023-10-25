@@ -4,10 +4,7 @@ makedocs(
     modules = [TextAnalysis],
     sitename = "TextAnalysis",
     format = Documenter.HTML(
-        canonical = "https://juliatext.github.io/TextAnalysis.jl/stable/",
-        #prettyurls = false,
     ),
-    assets = ["assets/custom.css", "assets/custom.js"],
     pages = [
         "Home" => "index.md",
         "Documents" => "documents.md",
@@ -15,8 +12,10 @@ makedocs(
         "Features" => "features.md",
         "Semantic Analysis" => "semantic.md",
         "Classifier" => "classify.md",
-        "Extended Example" => "example.md"
+        "Extended Example" => "example.md",
+        "Evaluation Metrics" => "evaluation_metrics.md",
+        "Statistical Language Model" => "LM.md",
+        "API References" => "APIReference.md"
     ],
 )
 
-deploydocs(repo = "github.com/JuliaText/TextAnalysis.jl.git")

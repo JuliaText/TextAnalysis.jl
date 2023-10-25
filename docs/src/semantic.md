@@ -1,10 +1,34 @@
 ## LSA: Latent Semantic Analysis
 
-Often we want to think about documents from the perspective of semantic
-content. One standard approach to doing this is to perform Latent Semantic
-Analysis or LSA on the corpus. You can do this using the `lsa` function:
+Often we want to think about documents
+from the perspective of semantic content.
+One standard approach to doing this,
+is to perform Latent Semantic Analysis or LSA on the corpus.
 
     lsa(crps)
+    lsa(dtm)
+
+lsa uses `tf_idf` for statistics.
+
+```julia
+julia> crps = Corpus([StringDocument("this is a string document"), TokenDocument("this is a token document")])
+
+julia> F1.lsa(crps)
+LinearAlgebra.SVD{Float64,Float64,Array{Float64,2}}([1.0 0.0; 0.0 1.0], [0.138629, 0.138629], [0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 1.0])
+```
+
+lsa can also be performed on a `DocumentTermMatrix`.
+
+```julia
+julia> update_lexicon!(crps)
+
+julia> m = DocumentTermMatrix(crps)
+A 2 X 6 DocumentTermMatrix
+
+julia> F2 = lsa(m)
+SVD{Float64,Float64,Array{Float64,2}}([1.0 0.0; 0.0 1.0], [0.138629, 0.138629], [0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 1.0])
+```
+
 
 ## LDA: Latent Dirichlet Allocation
 
@@ -18,7 +42,7 @@ julia> update_lexicon!(crps)
 julia> m = DocumentTermMatrix(crps)
 ```
 
-Latent Dirchlet Allocation has two hyper parameters -
+Latent Dirichlet Allocation has two hyper parameters -
 * _α_ : The hyperparameter for topic distribution per document. `α<1` yields a sparse topic mixture for each document. `α>1` yields a more uniform topic mixture for each document.
 - _β_ : The hyperparameter for word distribution per topic. `β<1` yields a sparse word mixture for each topic. `β>1` yields a more uniform word mixture for each topic.
 
