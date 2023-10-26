@@ -168,14 +168,15 @@ tdm(crps::Corpus) = dtm(crps)' #'
 
 function dtm_entries(d::AbstractDocument, lex::Dict{T, Int}) where T
     ngs = ngrams(d)
-    indices = Array{Int}(undef, 0)
-    values = Array{Int}(undef, 0)
-    terms = sort(collect(keys(lex)))
+    indices = Int[]
+    values = Int[]
+    terms = sort!(collect(keys(lex)))
     column_indices = columnindices(terms)
 
     for ngram in keys(ngs)
-        if haskey(column_indices, ngram)
-            push!(indices, column_indices[ngram])
+        key = get(column_indices, ngram, nothing)
+        if !isnothing(key)
+            push!(indices, key)
             push!(values, ngs[ngram])
         end
     end
