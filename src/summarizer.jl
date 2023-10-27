@@ -2,6 +2,11 @@
     summarize(doc [, ns])
 
 Summarizes the document and returns `ns` number of sentences.
+It takes 2 arguments:
+
+* `d` : A document of type `StringDocument`, `FileDocument` or `TokenDocument`
+* `ns` : (Optional) Mention the number of sentences in the Summary, defaults to `5` sentences.
+
 By default `ns` is set to the value 5.
 
 # Example

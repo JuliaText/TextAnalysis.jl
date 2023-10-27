@@ -43,5 +43,5 @@ Contributions, in the form of bug-reports, pull requests, additional documentati
 
 ## Support
 
-Feel free to ask for help on the [Julia Discourse forum](https://discourse.julialang.org/), or in the `#natural-language` channel on [julia-slack](https://julialang.slack.com). (Which you can [join here](https://slackinvite.julialang.org/)). You can also raise issues in this repository to request new features and/or improvements to the documentation and codebase.
+Feel free to ask for help on the [Julia Discourse forum](https://discourse.julialang.org/), or in the `#natural-language` channel on [julia-slack](https://julialang.slack.com). (Which you can [join here](https://julialang.org/slack/)). Or, [select what do you like here](https://julialang.org/community/). You can also raise issues in this repository to request new features and/or improvements to the documentation and codebase.
 
