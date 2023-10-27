@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Features · TextAnalysis</title><link rel="canonical" href="https://juliatext.github.io/TextAnalysis.jl/stable/features/"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">TextAnalysis</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../documents/">Documents</a></li><li><a class="tocitem" href="../corpus/">Corpus</a></li><li class="is-active"><a class="tocitem" href>Features</a><ul class="internal"><li><a class="tocitem" href="#Creating-a-Document-Term-Matrix"><span>Creating a Document Term Matrix</span></a></li><li><a class="tocitem" href="#Creating-Individual-Rows-of-a-Document-Term-Matrix"><span>Creating Individual Rows of a Document Term Matrix</span></a></li><li><a class="tocitem" href="#The-Hash-Trick"><span>The Hash Trick</span></a></li><li><a class="tocitem" href="#TF-(Term-Frequency)"><span>TF (Term Frequency)</span></a></li><li><a class="tocitem" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)"><span>TF-IDF (Term Frequency - Inverse Document Frequency)</span></a></li><li><a class="tocitem" href="#Okapi-BM-25"><span>Okapi BM-25</span></a></li><li><a class="tocitem" href="#Co-occurrence-matrix-(COOM)"><span>Co occurrence matrix (COOM)</span></a></li><li><a class="tocitem" href="#Sentiment-Analyzer"><span>Sentiment Analyzer</span></a></li><li><a class="tocitem" href="#Summarizer"><span>Summarizer</span></a></li><li><a class="tocitem" href="#Tagging_schemes"><span>Tagging_schemes</span></a></li><li><a class="tocitem" href="#Parts-of-Speech-Tagging"><span>Parts of Speech Tagging</span></a></li><li><a class="tocitem" href="#Average-Perceptron-Part-of-Speech-Tagger"><span>Average Perceptron Part of Speech Tagger</span></a></li><li><a class="tocitem" href="#Neural-Model-for-Part-of-Speech-tagging-using-LSTMs,-CNN-and-CRF"><span>Neural Model for Part of Speech tagging using LSTMs, CNN and CRF</span></a></li></ul></li><li><a class="tocitem" href="../semantic/">Semantic Analysis</a></li><li><a class="tocitem" href="../classify/">Classifier</a></li><li><a class="tocitem" href="../example/">Extended Example</a></li><li><a class="tocitem" href="../evaluation_metrics/">Evaluation Metrics</a></li><li><a class="tocitem" href="../crf/">Conditional Random Fields</a></li><li><a class="tocitem" href="../ner/">Named Entity Recognition</a></li><li><a class="tocitem" href="../ULMFiT/">ULMFiT</a></li><li><a class="tocitem" href="../LM/">Statistical Language Model</a></li><li><a class="tocitem" href="../APIReference/">API References</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Features</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Features</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaText/TextAnalysis.jl/blob/master/docs/src/features.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h2 id="Creating-a-Document-Term-Matrix"><a class="docs-heading-anchor" href="#Creating-a-Document-Term-Matrix">Creating a Document Term Matrix</a><a id="Creating-a-Document-Term-Matrix-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-a-Document-Term-Matrix" title="Permalink"></a></h2><p>Often we want to represent documents as a matrix of word counts so that we can apply linear algebra operations and statistical techniques. Before we do this, we need to update the lexicon:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
-                             StringDocument(&quot;To become or not to become&quot;)])
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Features · TextAnalysis</title><meta name="title" content="Features · TextAnalysis"/><meta property="og:title" content="Features · TextAnalysis"/><meta property="twitter:title" content="Features · TextAnalysis"/><meta name="description" content="Documentation for TextAnalysis."/><meta property="og:description" content="Documentation for TextAnalysis."/><meta property="twitter:description" content="Documentation for TextAnalysis."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">TextAnalysis</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../documents/">Documents</a></li><li><a class="tocitem" href="../corpus/">Corpus</a></li><li class="is-active"><a class="tocitem" href>Features</a><ul class="internal"><li><a class="tocitem" href="#Creating-a-Document-Term-Matrix"><span>Creating a Document Term Matrix</span></a></li><li><a class="tocitem" href="#Creating-Individual-Rows-of-a-Document-Term-Matrix"><span>Creating Individual Rows of a Document Term Matrix</span></a></li><li><a class="tocitem" href="#The-Hash-Trick"><span>The Hash Trick</span></a></li><li><a class="tocitem" href="#TF-(Term-Frequency)"><span>TF (Term Frequency)</span></a></li><li><a class="tocitem" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)"><span>TF-IDF (Term Frequency - Inverse Document Frequency)</span></a></li><li><a class="tocitem" href="#Okapi-BM-25"><span>Okapi BM-25</span></a></li><li><a class="tocitem" href="#Co-occurrence-matrix-(COOM)"><span>Co occurrence matrix (COOM)</span></a></li><li><a class="tocitem" href="#Summarizer"><span>Summarizer</span></a></li></ul></li><li><a class="tocitem" href="../semantic/">Semantic Analysis</a></li><li><a class="tocitem" href="../classify/">Classifier</a></li><li><a class="tocitem" href="../example/">Extended Example</a></li><li><a class="tocitem" href="../evaluation_metrics/">Evaluation Metrics</a></li><li><a class="tocitem" href="../LM/">Statistical Language Model</a></li><li><a class="tocitem" href="../APIReference/">API References</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Features</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Features</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaText/TextAnalysis.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaText/TextAnalysis.jl/blob/master/docs/src/features.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h2 id="Creating-a-Document-Term-Matrix"><a class="docs-heading-anchor" href="#Creating-a-Document-Term-Matrix">Creating a Document Term Matrix</a><a id="Creating-a-Document-Term-Matrix-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-a-Document-Term-Matrix" title="Permalink"></a></h2><p>Often we want to represent documents as a matrix of word counts so that we can apply linear algebra operations and statistical techniques. Before we do this, we need to update the lexicon:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TextAnalysis</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
+                      StringDocument(&quot;To become or not to become&quot;)])</code><code class="nohighlight hljs ansi" style="display:block;">A Corpus with 2 documents:
+ * 2 StringDocument&#39;s
+ * 0 FileDocument&#39;s
+ * 0 TokenDocument&#39;s
+ * 0 NGramDocument&#39;s
 
-julia&gt; update_lexicon!(crps)
-
-julia&gt; m = DocumentTermMatrix(crps)
-A 2 X 6 DocumentTermMatrix</code></pre><p>A <code>DocumentTermMatrix</code> object is a special type. If you would like to use a simple sparse matrix, call <code>dtm()</code> on this object:</p><pre><code class="language-julia">julia&gt; dtm(m)
+Corpus&#39;s lexicon contains 0 tokens
+Corpus&#39;s index contains 0 tokens</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; update_lexicon!(crps)</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; m = DocumentTermMatrix(crps)</code><code class="nohighlight hljs ansi" style="display:block;">A 2 X 6 DocumentTermMatrix</code></pre><p>A <code>DocumentTermMatrix</code> object is a special type. If you would like to use a simple sparse matrix, call <code>dtm()</code> on this object:</p><pre><code class="language-julia hljs">julia&gt; dtm(m)
 2×6 SparseArrays.SparseMatrixCSC{Int64,Int64} with 10 stored entries:
   [1, 1]  =  1
   [2, 1]  =  1
@@ -16,27 +18,29 @@ A 2 X 6 DocumentTermMatrix</code></pre><p>A <code>DocumentTermMatrix</code> obje
   [1, 5]  =  1
   [2, 5]  =  1
   [1, 6]  =  1
-  [2, 6]  =  1</code></pre><p>If you would like to use a dense matrix instead, you can pass this as an argument to the <code>dtm</code> function:</p><pre><code class="language-julia">julia&gt; dtm(m, :dense)
+  [2, 6]  =  1</code></pre><p>If you would like to use a dense matrix instead, you can pass this as an argument to the <code>dtm</code> function:</p><pre><code class="language-julia hljs">julia&gt; dtm(m, :dense)
 2×6 Array{Int64,2}:
  1  2  0  1  1  1
- 1  0  2  1  1  1</code></pre><h2 id="Creating-Individual-Rows-of-a-Document-Term-Matrix"><a class="docs-heading-anchor" href="#Creating-Individual-Rows-of-a-Document-Term-Matrix">Creating Individual Rows of a Document Term Matrix</a><a id="Creating-Individual-Rows-of-a-Document-Term-Matrix-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-Individual-Rows-of-a-Document-Term-Matrix" title="Permalink"></a></h2><p>In many cases, we don&#39;t need the entire document term matrix at once: we can make do with just a single row. You can get this using the <code>dtv</code> function. Because individual&#39;s document do not have a lexicon associated with them, we have to pass in a lexicon as an additional argument:</p><pre><code class="language-julia">julia&gt; dtv(crps[1], lexicon(crps))
+ 1  0  2  1  1  1</code></pre><h2 id="Creating-Individual-Rows-of-a-Document-Term-Matrix"><a class="docs-heading-anchor" href="#Creating-Individual-Rows-of-a-Document-Term-Matrix">Creating Individual Rows of a Document Term Matrix</a><a id="Creating-Individual-Rows-of-a-Document-Term-Matrix-1"></a><a class="docs-heading-anchor-permalink" href="#Creating-Individual-Rows-of-a-Document-Term-Matrix" title="Permalink"></a></h2><p>In many cases, we don&#39;t need the entire document term matrix at once: we can make do with just a single row. You can get this using the <code>dtv</code> function. Because individual&#39;s document do not have a lexicon associated with them, we have to pass in a lexicon as an additional argument:</p><pre><code class="language-julia hljs">julia&gt; dtv(crps[1], lexicon(crps))
 1×6 Array{Int64,2}:
- 1  2  0  1  1  1</code></pre><h2 id="The-Hash-Trick"><a class="docs-heading-anchor" href="#The-Hash-Trick">The Hash Trick</a><a id="The-Hash-Trick-1"></a><a class="docs-heading-anchor-permalink" href="#The-Hash-Trick" title="Permalink"></a></h2><p>The need to create a lexicon before we can construct a document term matrix is often prohibitive. We can often employ a trick that has come to be called the &quot;Hash Trick&quot; in which we replace terms with their hashed valued using a hash function that outputs integers from 1 to N. To construct such a hash function, you can use the <code>TextHashFunction(N)</code> constructor:</p><pre><code class="language-julia">julia&gt; h = TextHashFunction(10)
-TextHashFunction(hash, 10)</code></pre><p>You can see how this function maps strings to numbers by calling the <code>index_hash</code> function:</p><pre><code class="language-julia">julia&gt; index_hash(&quot;a&quot;, h)
+ 1  2  0  1  1  1</code></pre><h2 id="The-Hash-Trick"><a class="docs-heading-anchor" href="#The-Hash-Trick">The Hash Trick</a><a id="The-Hash-Trick-1"></a><a class="docs-heading-anchor-permalink" href="#The-Hash-Trick" title="Permalink"></a></h2><p>The need to create a lexicon before we can construct a document term matrix is often prohibitive. We can often employ a trick that has come to be called the &quot;Hash Trick&quot; in which we replace terms with their hashed valued using a hash function that outputs integers from 1 to N. To construct such a hash function, you can use the <code>TextHashFunction(N)</code> constructor:</p><pre><code class="language-julia hljs">julia&gt; h = TextHashFunction(10)
+TextHashFunction(hash, 10)</code></pre><p>You can see how this function maps strings to numbers by calling the <code>index_hash</code> function:</p><pre><code class="language-julia hljs">julia&gt; index_hash(&quot;a&quot;, h)
 8
 
 julia&gt; index_hash(&quot;b&quot;, h)
-7</code></pre><p>Using a text hash function, we can represent a document as a vector with N entries by calling the <code>hash_dtv</code> function:</p><pre><code class="language-julia">julia&gt; hash_dtv(crps[1], h)
+7</code></pre><p>Using a text hash function, we can represent a document as a vector with N entries by calling the <code>hash_dtv</code> function:</p><pre><code class="language-julia hljs">julia&gt; hash_dtv(crps[1], h)
 1×10 Array{Int64,2}:
- 0  2  0  0  1  3  0  0  0  0</code></pre><p>This can be done for a corpus as a whole to construct a DTM without defining a lexicon in advance:</p><pre><code class="language-julia">julia&gt; hash_dtm(crps, h)
+ 0  2  0  0  1  3  0  0  0  0</code></pre><p>This can be done for a corpus as a whole to construct a DTM without defining a lexicon in advance:</p><pre><code class="language-julia hljs">julia&gt; hash_dtm(crps, h)
 2×10 Array{Int64,2}:
  0  2  0  0  1  3  0  0  0  0
- 0  2  0  0  1  1  0  0  2  0</code></pre><p>Every corpus has a hash function built-in, so this function can be called using just one argument:</p><pre><code class="language-julia">julia&gt; hash_dtm(crps)
+ 0  2  0  0  1  1  0  0  2  0</code></pre><p>Every corpus has a hash function built-in, so this function can be called using just one argument:</p><pre><code class="language-julia hljs">julia&gt; hash_dtm(crps)
 2×100 Array{Int64,2}:
  0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
- 0  0  0  0  0  0  0  0  2  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0</code></pre><p>Moreover, if you do not specify a hash function for just one row of the hash DTM, a default hash function will be constructed for you:</p><pre><code class="language-julia">julia&gt; hash_dtv(crps[1])
+ 0  0  0  0  0  0  0  0  2  0  0  0  0     0  0  0  0  0  0  0  0  0  0  0  0</code></pre><p>Moreover, if you do not specify a hash function for just one row of the hash DTM, a default hash function will be constructed for you:</p><pre><code class="language-julia hljs">julia&gt; hash_dtv(crps[1])
 1×100 Array{Int64,2}:
- 0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0</code></pre><h2 id="TF-(Term-Frequency)"><a class="docs-heading-anchor" href="#TF-(Term-Frequency)">TF (Term Frequency)</a><a id="TF-(Term-Frequency)-1"></a><a class="docs-heading-anchor-permalink" href="#TF-(Term-Frequency)" title="Permalink"></a></h2><p>Often we need to find out the proportion of a document is contributed by each term. This can be done by finding the term frequency function</p><pre><code class="language-none">tf(dtm)</code></pre><p>The parameter, <code>dtm</code> can be of the types - <code>DocumentTermMatrix</code> , <code>SparseMatrixCSC</code> or <code>Matrix</code></p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
+ 0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0</code></pre><h2 id="TF-(Term-Frequency)"><a class="docs-heading-anchor" href="#TF-(Term-Frequency)">TF (Term Frequency)</a><a id="TF-(Term-Frequency)-1"></a><a class="docs-heading-anchor-permalink" href="#TF-(Term-Frequency)" title="Permalink"></a></h2><p>Often we need to find out the proportion of a document is contributed by each term. This can be done by finding the term frequency function</p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="TextAnalysis.tf" href="#TextAnalysis.tf"><code>TextAnalysis.tf</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">tf(dtm::DocumentTermMatrix)
+tf(dtm::SparseMatrixCSC{Real})
+tf(dtm::Matrix{Real})</code></pre><p>Compute the <code>term-frequency</code> of the input.</p><p><strong>Example</strong></p><pre><code class="language-julia-repl hljs">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
               StringDocument(&quot;To become or not to become&quot;)])
 
 julia&gt; update_lexicon!(crps)
@@ -54,23 +58,24 @@ julia&gt; tf(m)
   [1, 5]  =  0.166667
   [2, 5]  =  0.166667
   [1, 6]  =  0.166667
-  [2, 6]  =  0.166667</code></pre><h2 id="TF-IDF-(Term-Frequency-Inverse-Document-Frequency)"><a class="docs-heading-anchor" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)">TF-IDF (Term Frequency - Inverse Document Frequency)</a><a id="TF-IDF-(Term-Frequency-Inverse-Document-Frequency)-1"></a><a class="docs-heading-anchor-permalink" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)" title="Permalink"></a></h2><pre><code class="language-none">tf_idf(dtm)</code></pre><p>In many cases, raw word counts are not appropriate for use because:</p><ul><li>(A) Some documents are longer than other documents</li><li>(B) Some words are more frequent than other words</li></ul><p>You can work around this by performing TF-IDF on a DocumentTermMatrix:</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
+  [2, 6]  =  0.166667</code></pre><p>See also: <a href="../APIReference/#TextAnalysis.tf!-Union{Tuple{F}, Tuple{T}, Tuple{SparseArrays.SparseMatrixCSC{T}, SparseArrays.SparseMatrixCSC{F}}} where {T&lt;:Real, F&lt;:AbstractFloat}"><code>tf!</code></a>, <a href="#TextAnalysis.tf_idf"><code>tf_idf</code></a>, <a href="../APIReference/#TextAnalysis.tf_idf!-Union{Tuple{AbstractMatrix{T}}, Tuple{T}} where T&lt;:Real"><code>tf_idf!</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaText/TextAnalysis.jl/blob/cc7aac7ce43a28cedc4629f54a47b70e5198adc9/src/tf_idf.jl#L57-L89">source</a></section></article><p>The parameter, <code>dtm</code> can be of the types - <code>DocumentTermMatrix</code> , <code>SparseMatrixCSC</code> or <code>Matrix</code></p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TextAnalysis</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
+                      StringDocument(&quot;To become or not to become&quot;)])</code><code class="nohighlight hljs ansi" style="display:block;">A Corpus with 2 documents:
+ * 2 StringDocument&#39;s
+ * 0 FileDocument&#39;s
+ * 0 TokenDocument&#39;s
+ * 0 NGramDocument&#39;s
+
+Corpus&#39;s lexicon contains 0 tokens
+Corpus&#39;s index contains 0 tokens</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; update_lexicon!(crps)</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; m = DocumentTermMatrix(crps)</code><code class="nohighlight hljs ansi" style="display:block;">A 2 X 6 DocumentTermMatrix</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; tf(m)</code><code class="nohighlight hljs ansi" style="display:block;">2×6 SparseArrays.SparseMatrixCSC{Float64, Int64} with 10 stored entries:
+ 0.166667  0.333333   ⋅        0.166667  0.166667  0.166667
+ 0.166667   ⋅        0.333333  0.166667  0.166667  0.166667</code></pre><h2 id="TF-IDF-(Term-Frequency-Inverse-Document-Frequency)"><a class="docs-heading-anchor" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)">TF-IDF (Term Frequency - Inverse Document Frequency)</a><a id="TF-IDF-(Term-Frequency-Inverse-Document-Frequency)-1"></a><a class="docs-heading-anchor-permalink" href="#TF-IDF-(Term-Frequency-Inverse-Document-Frequency)" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="TextAnalysis.tf_idf" href="#TextAnalysis.tf_idf"><code>TextAnalysis.tf_idf</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">tf(dtm::DocumentTermMatrix)
+tf(dtm::SparseMatrixCSC{Real})
+tf(dtm::Matrix{Real})</code></pre><p>Compute <code>tf-idf</code> value (Term Frequency - Inverse Document Frequency) for the input.</p><p>In many cases, raw word counts are not appropriate for use because:</p><ul><li>Some documents are longer than other documents</li><li>Some words are more frequent than other words</li></ul><p>A simple workaround this can be done by performing <code>TF-IDF</code> on a <code>DocumentTermMatrix</code></p><p><strong>Example</strong></p><pre><code class="language-julia-repl hljs">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
               StringDocument(&quot;To become or not to become&quot;)])
 
 julia&gt; update_lexicon!(crps)
 
 julia&gt; m = DocumentTermMatrix(crps)
-DocumentTermMatrix(
-  [1, 1]  =  1
-  [2, 1]  =  1
-  [1, 2]  =  2
-  [2, 3]  =  2
-  [1, 4]  =  1
-  [2, 4]  =  1
-  [1, 5]  =  1
-  [2, 5]  =  1
-  [1, 6]  =  1
-  [2, 6]  =  1, [&quot;To&quot;, &quot;be&quot;, &quot;become&quot;, &quot;not&quot;, &quot;or&quot;, &quot;to&quot;], Dict(&quot;or&quot;=&gt;5,&quot;not&quot;=&gt;4,&quot;to&quot;=&gt;6,&quot;To&quot;=&gt;1,&quot;be&quot;=&gt;2,&quot;become&quot;=&gt;3))
 
 julia&gt; tf_idf(m)
 2×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 10 stored entries:
@@ -83,209 +88,65 @@ julia&gt; tf_idf(m)
   [1, 5]  =  0.0
   [2, 5]  =  0.0
   [1, 6]  =  0.0
-  [2, 6]  =  0.0</code></pre><p>As you can see, TF-IDF has the effect of inserting 0&#39;s into the columns of words that occur in all documents. This is a useful way to avoid having to remove those words during preprocessing.</p><h2 id="Okapi-BM-25"><a class="docs-heading-anchor" href="#Okapi-BM-25">Okapi BM-25</a><a id="Okapi-BM-25-1"></a><a class="docs-heading-anchor-permalink" href="#Okapi-BM-25" title="Permalink"></a></h2><p>From the document term matparamterix, <a href="https://en.wikipedia.org/wiki/Okapi_BM25">Okapi BM25</a> document-word statistic can be created.</p><pre><code class="language-none">bm_25(dtm::AbstractMatrix; κ, β)
-bm_25(dtm::DocumentTermMatrixm, κ, β)</code></pre><p>It can also be used via the following methods Overwrite the <code>bm25</code> with calculated weights.</p><pre><code class="language-none">bm_25!(dtm, bm25, κ, β)</code></pre><p>The inputs matrices can also be a <code>Sparse Matrix</code>. The parameters κ and β default to 2 and 0.75 respectively.</p><p>Here is an example usage -</p><pre><code class="language-julia">julia&gt; crps = Corpus([StringDocument(&quot;a a a sample text text&quot;), StringDocument(&quot;another example example text text&quot;), StringDocument(&quot;&quot;), StringDocument(&quot;another another text text text text&quot;)])
+  [2, 6]  =  0.0</code></pre><p>See also: <a href="../APIReference/#TextAnalysis.tf!-Union{Tuple{F}, Tuple{T}, Tuple{SparseArrays.SparseMatrixCSC{T}, SparseArrays.SparseMatrixCSC{F}}} where {T&lt;:Real, F&lt;:AbstractFloat}"><code>tf!</code></a>, <a href="#TextAnalysis.tf_idf"><code>tf_idf</code></a>, <a href="../APIReference/#TextAnalysis.tf_idf!-Union{Tuple{AbstractMatrix{T}}, Tuple{T}} where T&lt;:Real"><code>tf_idf!</code></a></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaText/TextAnalysis.jl/blob/cc7aac7ce43a28cedc4629f54a47b70e5198adc9/src/tf_idf.jl#L172-L211">source</a></section></article><p>In many cases, raw word counts are not appropriate for use because:</p><ul><li>(A) Some documents are longer than other documents</li><li>(B) Some words are more frequent than other words</li></ul><p>You can work around this by performing TF-IDF on a DocumentTermMatrix:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TextAnalysis</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; crps = Corpus([StringDocument(&quot;To be or not to be&quot;),
+                      StringDocument(&quot;To become or not to become&quot;)])</code><code class="nohighlight hljs ansi" style="display:block;">A Corpus with 2 documents:
+ * 2 StringDocument&#39;s
+ * 0 FileDocument&#39;s
+ * 0 TokenDocument&#39;s
+ * 0 NGramDocument&#39;s
 
-julia&gt; update_lexicon!(crps)
+Corpus&#39;s lexicon contains 0 tokens
+Corpus&#39;s index contains 0 tokens</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; update_lexicon!(crps)</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; m = DocumentTermMatrix(crps)</code><code class="nohighlight hljs ansi" style="display:block;">A 2 X 6 DocumentTermMatrix</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; tf_idf(m)</code><code class="nohighlight hljs ansi" style="display:block;">2×6 SparseArrays.SparseMatrixCSC{Float64, Int64} with 10 stored entries:
+ 0.0  0.231049   ⋅        0.0  0.0  0.0
+ 0.0   ⋅        0.231049  0.0  0.0  0.0</code></pre><p>As you can see, TF-IDF has the effect of inserting 0&#39;s into the columns of words that occur in all documents. This is a useful way to avoid having to remove those words during preprocessing.</p><h2 id="Okapi-BM-25"><a class="docs-heading-anchor" href="#Okapi-BM-25">Okapi BM-25</a><a id="Okapi-BM-25-1"></a><a class="docs-heading-anchor-permalink" href="#Okapi-BM-25" title="Permalink"></a></h2><p>From the document term matparamterix, <a href="https://en.wikipedia.org/wiki/Okapi_BM25">Okapi BM25</a> document-word statistic can be created.</p><pre><code class="nohighlight hljs">bm_25(dtm::AbstractMatrix; κ, β)
+bm_25(dtm::DocumentTermMatrixm, κ, β)</code></pre><p>It can also be used via the following methods Overwrite the <code>bm25</code> with calculated weights.</p><pre><code class="nohighlight hljs">bm_25!(dtm, bm25, κ, β)</code></pre><p>The inputs matrices can also be a <code>Sparse Matrix</code>. The parameters κ and β default to 2 and 0.75 respectively.</p><p>Here is an example usage -</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TextAnalysis</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; crps = Corpus([
+         StringDocument(&quot;a a a sample text text&quot;),
+         StringDocument(&quot;another example example text text&quot;),
+         StringDocument(&quot;&quot;),
+         StringDocument(&quot;another another text text text text&quot;)
+       ])</code><code class="nohighlight hljs ansi" style="display:block;">A Corpus with 4 documents:
+ * 4 StringDocument&#39;s
+ * 0 FileDocument&#39;s
+ * 0 TokenDocument&#39;s
+ * 0 NGramDocument&#39;s
 
-julia&gt; m = DocumentTermMatrix(crps)
+Corpus&#39;s lexicon contains 0 tokens
+Corpus&#39;s index contains 0 tokens</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; update_lexicon!(crps)</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; m = DocumentTermMatrix(crps)</code><code class="nohighlight hljs ansi" style="display:block;">A 4 X 5 DocumentTermMatrix</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; bm_25(m)</code><code class="nohighlight hljs ansi" style="display:block;">4×5 SparseArrays.SparseMatrixCSC{Float64, Int64} with 8 stored entries:
+ 1.29959   ⋅         ⋅       1.89031  0.405067
+  ⋅       0.882404  1.54025   ⋅       0.405067
+  ⋅        ⋅         ⋅        ⋅        ⋅
+  ⋅       1.40179    ⋅        ⋅       0.676646</code></pre><h2 id="Co-occurrence-matrix-(COOM)"><a class="docs-heading-anchor" href="#Co-occurrence-matrix-(COOM)">Co occurrence matrix (COOM)</a><a id="Co-occurrence-matrix-(COOM)-1"></a><a class="docs-heading-anchor-permalink" href="#Co-occurrence-matrix-(COOM)" title="Permalink"></a></h2><p>The elements of the Co occurrence matrix indicate how many times two words co-occur in a (sliding) word window of a given size. The COOM can be calculated for objects of type <code>Corpus</code>, <code>AbstractDocument</code> (with the exception of <code>NGramDocument</code>).</p><pre><code class="nohighlight hljs">CooMatrix(crps; window, normalize)
+CooMatrix(doc; window, normalize)</code></pre><p>It takes following keyword arguments:</p><ul><li><code>window::Integer</code> -length of the Window size, defaults to <code>5</code>. The actual size of the sliding window is 2 * window + 1, with the keyword argument window specifying how many words to consider to the left and right of the center one</li><li><code>normalize::Bool</code> -normalizes counts to distance between words, defaults to <code>true</code></li></ul><p>It returns the <code>CooMatrix</code> structure from which the matrix can be extracted using <code>coom(::CooMatrix)</code>. The <code>terms</code> can also be extracted from this. Here is an example usage -</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using TextAnalysis</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; crps = Corpus([StringDocument(&quot;this is a string document&quot;)])</code><code class="nohighlight hljs ansi" style="display:block;">A Corpus with 1 documents:
+ * 1 StringDocument&#39;s
+ * 0 FileDocument&#39;s
+ * 0 TokenDocument&#39;s
+ * 0 NGramDocument&#39;s
 
-julia&gt; bm_25(m)
-4×5 SparseArrays.SparseMatrixCSC{Float64,Int64} with 8 stored entries:
-  [1, 1]  =  1.29959
-  [2, 2]  =  0.882404
-  [4, 2]  =  1.40179
-  [2, 3]  =  1.54025
-  [1, 4]  =  1.89031
-  [1, 5]  =  0.405067
-  [2, 5]  =  0.405067
-  [4, 5]  =  0.676646</code></pre><h2 id="Co-occurrence-matrix-(COOM)"><a class="docs-heading-anchor" href="#Co-occurrence-matrix-(COOM)">Co occurrence matrix (COOM)</a><a id="Co-occurrence-matrix-(COOM)-1"></a><a class="docs-heading-anchor-permalink" href="#Co-occurrence-matrix-(COOM)" title="Permalink"></a></h2><p>The elements of the Co occurrence matrix indicate how many times two words co-occur in a (sliding) word window of a given size. The COOM can be calculated for objects of type <code>Corpus</code>, <code>AbstractDocument</code> (with the exception of <code>NGramDocument</code>).</p><pre><code class="language-none">CooMatrix(crps; window, normalize)
-CooMatrix(doc; window, normalize)</code></pre><p>It takes following keyword arguments:</p><ul><li><code>window::Integer</code> -length of the Window size, defaults to <code>5</code>. The actual size of the sliding window is 2 * window + 1, with the keyword argument window specifying how many words to consider to the left and right of the center one</li><li><code>normalize::Bool</code> -normalizes counts to distance between words, defaults to <code>true</code></li></ul><p>It returns the <code>CooMatrix</code> structure from which the matrix can be extracted using <code>coom(::CooMatrix)</code>. The <code>terms</code> can also be extracted from this. Here is an example usage -</p><pre><code class="language-julia">
-julia&gt; crps = Corpus([StringDocument(&quot;this is a string document&quot;),
-
-julia&gt; C = CooMatrix(crps, window=1, normalize=false)
-CooMatrix{Float64}(
-  [2, 1]  =  2.0
-  [6, 1]  =  2.0
-  [1, 2]  =  2.0
-  [3, 2]  =  2.0
-  [2, 3]  =  2.0
-  [6, 3]  =  2.0
-  [5, 4]  =  4.0
-  [4, 5]  =  4.0
-  [6, 5]  =  4.0
-  [1, 6]  =  2.0
-  [3, 6]  =  2.0
-  [5, 6]  =  4.0, [&quot;string&quot;, &quot;document&quot;, &quot;token&quot;, &quot;this&quot;, &quot;is&quot;, &quot;a&quot;], OrderedDict(&quot;string&quot;=&gt;1,&quot;document&quot;=&gt;2,&quot;token&quot;=&gt;3,&quot;this&quot;=&gt;4,&quot;is&quot;=&gt;5,&quot;a&quot;=&gt;6))
-
-julia&gt; coom(C)
-6×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 12 stored entries:
-  [2, 1]  =  2.0
-  [6, 1]  =  2.0
-  [1, 2]  =  2.0
-  [3, 2]  =  2.0
-  [2, 3]  =  2.0
-  [6, 3]  =  2.0
-  [5, 4]  =  4.0
-  [4, 5]  =  4.0
-  [6, 5]  =  4.0
-  [1, 6]  =  2.0
-  [3, 6]  =  2.0
-  [5, 6]  =  4.0
-
-julia&gt; C.terms
-6-element Array{String,1}:
+Corpus&#39;s lexicon contains 0 tokens
+Corpus&#39;s index contains 0 tokens</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; C = CooMatrix(crps, window=1, normalize=false)</code><code class="nohighlight hljs ansi" style="display:block;">CooMatrix{Float64}(sparse([2, 5, 1, 4, 3, 5, 1, 4], [1, 1, 2, 3, 4, 4, 5, 5], [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0], 5, 5), [&quot;string&quot;, &quot;document&quot;, &quot;this&quot;, &quot;is&quot;, &quot;a&quot;], OrderedCollections.OrderedDict(&quot;string&quot; =&gt; 1, &quot;document&quot; =&gt; 2, &quot;this&quot; =&gt; 3, &quot;is&quot; =&gt; 4, &quot;a&quot; =&gt; 5))</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; coom(C)</code><code class="nohighlight hljs ansi" style="display:block;">5×5 SparseArrays.SparseMatrixCSC{Float64, Int64} with 8 stored entries:
+  ⋅   2.0   ⋅    ⋅   2.0
+ 2.0   ⋅    ⋅    ⋅    ⋅
+  ⋅    ⋅    ⋅   2.0   ⋅
+  ⋅    ⋅   2.0   ⋅   2.0
+ 2.0   ⋅    ⋅   2.0   ⋅</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; C.terms</code><code class="nohighlight hljs ansi" style="display:block;">5-element Vector{String}:
  &quot;string&quot;
  &quot;document&quot;
- &quot;token&quot;
  &quot;this&quot;
  &quot;is&quot;
- &quot;a&quot;
-</code></pre><p>It can also be called to calculate the terms for a specific list of words / terms in the document. In other cases it calculates the the co occurrence elements for all the terms.</p><pre><code class="language-none">CooMatrix(crps, terms; window, normalize)
-CooMatrix(doc, terms; window, normalize)</code></pre><pre><code class="language-julia">julia&gt; C = CooMatrix(crps, [&quot;this&quot;, &quot;is&quot;, &quot;a&quot;], window=1, normalize=false)
+ &quot;a&quot;</code></pre><p>It can also be called to calculate the terms for a specific list of words / terms in the document. In other cases it calculates the the co occurrence elements for all the terms.</p><pre><code class="nohighlight hljs">CooMatrix(crps, terms; window, normalize)
+CooMatrix(doc, terms; window, normalize)</code></pre><pre><code class="language-julia hljs">julia&gt; C = CooMatrix(crps, [&quot;this&quot;, &quot;is&quot;, &quot;a&quot;], window=1, normalize=false)
 CooMatrix{Float64}(
   [2, 1]  =  4.0
   [1, 2]  =  4.0
   [3, 2]  =  4.0
   [2, 3]  =  4.0, [&quot;this&quot;, &quot;is&quot;, &quot;a&quot;], OrderedCollections.OrderedDict(&quot;this&quot;=&gt;1,&quot;is&quot;=&gt;2,&quot;a&quot;=&gt;3))
-</code></pre><p>The type can also be specified for <code>CooMatrix</code> with the weights of type <code>T</code>. <code>T</code> defaults to <code>Float64</code>.</p><pre><code class="language-none">CooMatrix{T}(crps; window, normalize) where T &lt;: AbstractFloat
+</code></pre><p>The type can also be specified for <code>CooMatrix</code> with the weights of type <code>T</code>. <code>T</code> defaults to <code>Float64</code>.</p><pre><code class="nohighlight hljs">CooMatrix{T}(crps; window, normalize) where T &lt;: AbstractFloat
 CooMatrix{T}(doc; window, normalize) where T &lt;: AbstractFloat
 CooMatrix{T}(crps, terms; window, normalize) where T &lt;: AbstractFloat
-CooMatrix{T}(doc, terms; window, normalize) where T &lt;: AbstractFloat</code></pre><p>Remarks:</p><ul><li>The sliding window used to count co-occurrences does not take into consideration sentence stops however, it does with documents i.e. does not span across documents</li><li>The co-occurrence matrices of the documents in a corpus are summed up when calculating the matrix for an entire corpus</li></ul><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The Co occurrence matrix does not work for <code>NGramDocument</code>, or a Corpus containing an <code>NGramDocument</code>.</p></div></div><pre><code class="language-julia">julia&gt; C = CooMatrix(NGramDocument(&quot;A document&quot;), window=1, normalize=false) # fails, documents are NGramDocument
-ERROR: The tokens of an NGramDocument cannot be reconstructed</code></pre><h2 id="Sentiment-Analyzer"><a class="docs-heading-anchor" href="#Sentiment-Analyzer">Sentiment Analyzer</a><a id="Sentiment-Analyzer-1"></a><a class="docs-heading-anchor-permalink" href="#Sentiment-Analyzer" title="Permalink"></a></h2><p>It can be used to find the sentiment score (between 0 and 1) of a word, sentence or a Document. A trained model (using Flux) on IMDB word corpus with weights saved are used to calculate the sentiments.</p><pre><code class="language-none">model = SentimentAnalyzer()
-model(doc)
-model(doc, handle_unknown)</code></pre><ul><li>doc              = Input Document for calculating document (AbstractDocument type)</li><li>handle_unknown   = A function for handling unknown words. Should return an array (default (x)-&gt;[])</li></ul><h2 id="Summarizer"><a class="docs-heading-anchor" href="#Summarizer">Summarizer</a><a id="Summarizer-1"></a><a class="docs-heading-anchor-permalink" href="#Summarizer" title="Permalink"></a></h2><p>TextAnalysis offers a simple text-rank based summarizer for its various document types.</p><pre><code class="language-none">summarize(d, ns)</code></pre><p>It takes 2 arguments:</p><ul><li><code>d</code> : A document of type <code>StringDocument</code>, <code>FileDocument</code> or <code>TokenDocument</code></li><li><code>ns</code> : (Optional) Mention the number of sentences in the Summary, defaults to <code>5</code> sentences.</li></ul><pre><code class="language-julia">julia&gt; s = StringDocument(&quot;Assume this Short Document as an example. Assume this as an example summarizer. This has too foo sentences.&quot;)
+CooMatrix{T}(doc, terms; window, normalize) where T &lt;: AbstractFloat</code></pre><p>Remarks:</p><ul><li>The sliding window used to count co-occurrences does not take into consideration sentence stops however, it does with documents i.e. does not span across documents</li><li>The co-occurrence matrices of the documents in a corpus are summed up when calculating the matrix for an entire corpus</li></ul><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The Co occurrence matrix does not work for <code>NGramDocument</code>, or a Corpus containing an <code>NGramDocument</code>.</p></div></div><pre><code class="language-julia hljs">julia&gt; C = CooMatrix(NGramDocument(&quot;A document&quot;), window=1, normalize=false) # fails, documents are NGramDocument
+ERROR: The tokens of an NGramDocument cannot be reconstructed</code></pre><h2 id="Summarizer"><a class="docs-heading-anchor" href="#Summarizer">Summarizer</a><a id="Summarizer-1"></a><a class="docs-heading-anchor-permalink" href="#Summarizer" title="Permalink"></a></h2><p>TextAnalysis offers a simple text-rank based summarizer for its various document types.</p><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="TextAnalysis.summarize" href="#TextAnalysis.summarize"><code>TextAnalysis.summarize</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">summarize(doc [, ns])</code></pre><p>Summarizes the document and returns <code>ns</code> number of sentences. It takes 2 arguments:</p><ul><li><code>d</code> : A document of type <code>StringDocument</code>, <code>FileDocument</code> or <code>TokenDocument</code></li><li><code>ns</code> : (Optional) Mention the number of sentences in the Summary, defaults to <code>5</code> sentences.</li></ul><p>By default <code>ns</code> is set to the value 5.</p><p><strong>Example</strong></p><pre><code class="language-julia-repl hljs">julia&gt; s = StringDocument(&quot;Assume this Short Document as an example. Assume this as an example summarizer. This has too foo sentences.&quot;)
 
 julia&gt; summarize(s, ns=2)
 2-element Array{SubString{String},1}:
  &quot;Assume this Short Document as an example.&quot;
- &quot;This has too foo sentences.&quot;</code></pre><h2 id="Tagging_schemes"><a class="docs-heading-anchor" href="#Tagging_schemes">Tagging_schemes</a><a id="Tagging_schemes-1"></a><a class="docs-heading-anchor-permalink" href="#Tagging_schemes" title="Permalink"></a></h2><p>There are many tagging schemes used for sequence labelling. TextAnalysis currently offers functions for conversion between these tagging format.</p><ul><li>BIO1</li><li>BIO2</li><li>BIOES</li></ul><pre><code class="language-julia">julia&gt; tags = [&quot;I-LOC&quot;, &quot;O&quot;, &quot;I-PER&quot;, &quot;B-MISC&quot;, &quot;I-MISC&quot;, &quot;B-PER&quot;, &quot;I-PER&quot;, &quot;I-PER&quot;]
-
-julia&gt; tag_scheme!(tags, &quot;BIO1&quot;, &quot;BIOES&quot;)
-
-julia&gt; tags
-8-element Array{String,1}:
- &quot;S-LOC&quot;
- &quot;O&quot;
- &quot;S-PER&quot;
- &quot;B-MISC&quot;
- &quot;E-MISC&quot;
- &quot;B-PER&quot;
- &quot;I-PER&quot;
- &quot;E-PER&quot;</code></pre><h2 id="Parts-of-Speech-Tagging"><a class="docs-heading-anchor" href="#Parts-of-Speech-Tagging">Parts of Speech Tagging</a><a id="Parts-of-Speech-Tagging-1"></a><a class="docs-heading-anchor-permalink" href="#Parts-of-Speech-Tagging" title="Permalink"></a></h2><p>This package provides with two different Part of Speech Tagger.</p><h2 id="Average-Perceptron-Part-of-Speech-Tagger"><a class="docs-heading-anchor" href="#Average-Perceptron-Part-of-Speech-Tagger">Average Perceptron Part of Speech Tagger</a><a id="Average-Perceptron-Part-of-Speech-Tagger-1"></a><a class="docs-heading-anchor-permalink" href="#Average-Perceptron-Part-of-Speech-Tagger" title="Permalink"></a></h2><p>This tagger can be used to find the POS tag of a word or token in a given sentence. It is a based on <code>Average Perceptron Algorithm</code>. The model can be trained from scratch and weights are saved in specified location. The pretrained model can also be loaded and can be used directly to predict tags.</p><h3 id="To-train-model:"><a class="docs-heading-anchor" href="#To-train-model:">To train model:</a><a id="To-train-model:-1"></a><a class="docs-heading-anchor-permalink" href="#To-train-model:" title="Permalink"></a></h3><pre><code class="language-julia">julia&gt; tagger = PerceptronTagger(false) #we can use tagger = PerceptronTagger()
-julia&gt; fit!(tagger, [[(&quot;today&quot;,&quot;NN&quot;),(&quot;is&quot;,&quot;VBZ&quot;),(&quot;good&quot;,&quot;JJ&quot;),(&quot;day&quot;,&quot;NN&quot;)]])
-iteration : 1
-iteration : 2
-iteration : 3
-iteration : 4
-iteration : 5</code></pre><h3 id="To-load-pretrained-model:"><a class="docs-heading-anchor" href="#To-load-pretrained-model:">To load pretrained model:</a><a id="To-load-pretrained-model:-1"></a><a class="docs-heading-anchor-permalink" href="#To-load-pretrained-model:" title="Permalink"></a></h3><pre><code class="language-julia">julia&gt; tagger = PerceptronTagger(true)
-loaded successfully
-PerceptronTagger(AveragePerceptron(Set(Any[&quot;JJS&quot;, &quot;NNP_VBZ&quot;, &quot;NN_NNS&quot;, &quot;CC&quot;, &quot;NNP_NNS&quot;, &quot;EX&quot;, &quot;NNP_TO&quot;, &quot;VBD_DT&quot;, &quot;LS&quot;, (&quot;Council&quot;, &quot;NNP&quot;)  …  &quot;NNPS&quot;, &quot;NNP_LS&quot;, &quot;VB&quot;, &quot;NNS_NN&quot;, &quot;NNP_SYM&quot;, &quot;VBZ&quot;, &quot;VBZ_JJ&quot;, &quot;UH&quot;, &quot;SYM&quot;, &quot;NNP_NN&quot;, &quot;CD&quot;]), Dict{Any,Any}(&quot;i+2 word wetlands&quot;=&gt;Dict{Any,Any}(&quot;NNS&quot;=&gt;0.0,&quot;JJ&quot;=&gt;0.0,&quot;NN&quot;=&gt;0.0),&quot;i-1 tag+i word NNP basic&quot;=&gt;Dict{Any,Any}(&quot;JJ&quot;=&gt;0.0,&quot;IN&quot;=&gt;0.0),&quot;i-1 tag+i word DT chloride&quot;=&gt;Dict{Any,Any}(&quot;JJ&quot;=&gt;0.0,&quot;NN&quot;=&gt;0.0),&quot;i-1 tag+i word NN choo&quot;=&gt;Dict{Any,Any}(&quot;NNP&quot;=&gt;0.0,&quot;NN&quot;=&gt;0.0),&quot;i+1 word antarctica&quot;=&gt;Dict{Any,Any}(&quot;FW&quot;=&gt;0.0,&quot;NN&quot;=&gt;0.0),&quot;i-1 tag+i word -START- appendix&quot;=&gt;Dict{Any,Any}(&quot;NNP&quot;=&gt;0.0,&quot;NNPS&quot;=&gt;0.0,&quot;NN&quot;=&gt;0.0),&quot;i-1 word wahoo&quot;=&gt;Dict{Any,Any}(&quot;JJ&quot;=&gt;0.0,&quot;VBD&quot;=&gt;0.0),&quot;i-1 tag+i word DT children&#39;s&quot;=&gt;Dict{Any,Any}(&quot;NNS&quot;=&gt;0.0,&quot;NN&quot;=&gt;0.0),&quot;i word dnipropetrovsk&quot;=&gt;Dict{Any,Any}(&quot;NNP&quot;=&gt;0.003,&quot;NN&quot;=&gt;-0.003),&quot;i suffix hla&quot;=&gt;Dict{Any,Any}(&quot;JJ&quot;=&gt;0.0,&quot;NN&quot;=&gt;0.0)…), DefaultDict{Any,Any,Int64}(), DefaultDict{Any,Any,Int64}(), 1, [&quot;-START-&quot;, &quot;-START2-&quot;]), Dict{Any,Any}(&quot;is&quot;=&gt;&quot;VBZ&quot;,&quot;at&quot;=&gt;&quot;IN&quot;,&quot;a&quot;=&gt;&quot;DT&quot;,&quot;and&quot;=&gt;&quot;CC&quot;,&quot;for&quot;=&gt;&quot;IN&quot;,&quot;by&quot;=&gt;&quot;IN&quot;,&quot;Retrieved&quot;=&gt;&quot;VBN&quot;,&quot;was&quot;=&gt;&quot;VBD&quot;,&quot;He&quot;=&gt;&quot;PRP&quot;,&quot;in&quot;=&gt;&quot;IN&quot;…), Set(Any[&quot;JJS&quot;, &quot;NNP_VBZ&quot;, &quot;NN_NNS&quot;, &quot;CC&quot;, &quot;NNP_NNS&quot;, &quot;EX&quot;, &quot;NNP_TO&quot;, &quot;VBD_DT&quot;, &quot;LS&quot;, (&quot;Council&quot;, &quot;NNP&quot;)  …  &quot;NNPS&quot;, &quot;NNP_LS&quot;, &quot;VB&quot;, &quot;NNS_NN&quot;, &quot;NNP_SYM&quot;, &quot;VBZ&quot;, &quot;VBZ_JJ&quot;, &quot;UH&quot;, &quot;SYM&quot;, &quot;NNP_NN&quot;, &quot;CD&quot;]), [&quot;-START-&quot;, &quot;-START2-&quot;], [&quot;-END-&quot;, &quot;-END2-&quot;], Any[])</code></pre><h3 id="To-predict-tags:"><a class="docs-heading-anchor" href="#To-predict-tags:">To predict tags:</a><a id="To-predict-tags:-1"></a><a class="docs-heading-anchor-permalink" href="#To-predict-tags:" title="Permalink"></a></h3><p>The perceptron tagger can predict tags over various document types-</p><pre><code class="language-none">predict(tagger, sentence::String)
-predict(tagger, Tokens::Array{String, 1})
-predict(tagger, sd::StringDocument)
-predict(tagger, fd::FileDocument)
-predict(tagger, td::TokenDocument)</code></pre><p>This can also be done by -     tagger(input)</p><pre><code class="language-julia">julia&gt; predict(tagger, [&quot;today&quot;, &quot;is&quot;])
-2-element Array{Any,1}:
- (&quot;today&quot;, &quot;NN&quot;)
- (&quot;is&quot;, &quot;VBZ&quot;)
-
-julia&gt; tagger([&quot;today&quot;, &quot;is&quot;])
-2-element Array{Any,1}:
- (&quot;today&quot;, &quot;NN&quot;)
- (&quot;is&quot;, &quot;VBZ&quot;)</code></pre><p><code>PerceptronTagger(load::Bool)</code></p><ul><li>load      = Boolean argument if <code>true</code> then pretrained model is loaded</li></ul><p><code>fit!(self::PerceptronTagger, sentences::Vector{Vector{Tuple{String, String}}}, save_loc::String, nr_iter::Integer)</code></p><ul><li>self      = <code>PerceptronTagger</code> object</li><li>sentences = <code>Vector</code> of <code>Vector</code> of <code>Tuple</code> of pair of word or token and its POS tag [see above example]</li><li>save_loc  = location of file to save the trained weights</li><li>nr_iter   = Number of iterations to pass the <code>sentences</code> to train the model ( default 5)</li></ul><p><code>predict(self::PerceptronTagger, tokens)</code></p><ul><li>self      = PerceptronTagger</li><li>tokens    = <code>Vector</code> of words or tokens for which to predict tags</li></ul><h2 id="Neural-Model-for-Part-of-Speech-tagging-using-LSTMs,-CNN-and-CRF"><a class="docs-heading-anchor" href="#Neural-Model-for-Part-of-Speech-tagging-using-LSTMs,-CNN-and-CRF">Neural Model for Part of Speech tagging using LSTMs, CNN and CRF</a><a id="Neural-Model-for-Part-of-Speech-tagging-using-LSTMs,-CNN-and-CRF-1"></a><a class="docs-heading-anchor-permalink" href="#Neural-Model-for-Part-of-Speech-tagging-using-LSTMs,-CNN-and-CRF" title="Permalink"></a></h2><p>The API provided is a pretrained model for tagging Part of Speech. The current model tags all the POS Tagging is done based on <a href="https://www.ling.upenn.edu/courses/Fall_2003/ling001/penn_treebank_pos.html">convention used in Penn Treebank</a>, with 36 different Part of Speech tags excludes punctuation.</p><p>To use the API, we first load the model weights into an instance of tagger. The function also accepts the path of model<em>weights and model</em>dicts (for character and word embeddings)</p><pre><code class="language-none">PoSTagger()
-PoSTagger(dicts_path, weights_path)</code></pre><pre><code class="language-julia">julia&gt; pos = PoSTagger()
-</code></pre><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>When you call <code>PoSTagger()</code> for the first time, the package will request permission for download the <code>Model_dicts</code> and <code>Model_weights</code>. Upon downloading, these are store locally and managed by <code>DataDeps</code>. So, on subsequent uses the weights will not need to be downloaded again.</p></div></div><p>Once we create an instance, we can call it to tag a String (sentence), sequence of tokens, <code>AbstractDocument</code> or <code>Corpus</code>.</p><pre><code class="language-none">(pos::PoSTagger)(sentence::String)
-(pos::PoSTagger)(tokens::Array{String, 1})
-(pos::PoSTagger)(sd::StringDocument)
-(pos::PoSTagger)(fd::FileDocument)
-(pos::PoSTagger)(td::TokenDocument)
-(pos::PoSTagger)(crps::Corpus)</code></pre><pre><code class="language-julia">
-julia&gt; sentence = &quot;This package is maintained by John Doe.&quot;
-&quot;This package is maintained by John Doe.&quot;
-
-julia&gt; tags = pos(sentence)
-8-element Array{String,1}:
- &quot;DT&quot;
- &quot;NN&quot;
- &quot;VBZ&quot;
- &quot;VBN&quot;
- &quot;IN&quot;
- &quot;NNP&quot;
- &quot;NNP&quot;
- &quot;.&quot;
-</code></pre><p>The API tokenizes the input sentences via the default tokenizer provided by <code>WordTokenizers</code>, this currently being set to the multilingual <code>TokTok Tokenizer.</code></p><pre><code class="language-none">
-julia&gt; using WordTokenizers
-
-julia&gt; collect(zip(WordTokenizers.tokenize(sentence), tags))
-8-element Array{Tuple{String,String},1}:
- (&quot;This&quot;, &quot;DT&quot;)
- (&quot;package&quot;, &quot;NN&quot;)
- (&quot;is&quot;, &quot;VBZ&quot;)
- (&quot;maintained&quot;, &quot;VBN&quot;)
- (&quot;by&quot;, &quot;IN&quot;)
- (&quot;John&quot;, &quot;NNP&quot;)
- (&quot;Doe&quot;, &quot;NNP&quot;)
- (&quot;.&quot;, &quot;.&quot;)
-</code></pre><p>For tagging a multisentence text or document, once can use <code>split_sentences</code> from <code>WordTokenizers.jl</code> package and run the pos model on each.</p><pre><code class="language-julia">julia&gt; sentences = &quot;Rabinov is winding up his term as ambassador. He will be replaced by Eliahu Ben-Elissar, a former Israeli envoy to Egypt and right-wing Likud party politiian.&quot; # Sentence taken from CoNLL 2003 Dataset
-
-julia&gt; splitted_sents = WordTokenizers.split_sentences(sentences)
-
-julia&gt; tag_sequences = pos.(splitted_sents)
-2-element Array{Array{String,1},1}:
- [&quot;NNP&quot;, &quot;VBZ&quot;, &quot;VBG&quot;, &quot;RP&quot;, &quot;PRP\$&quot;, &quot;NN&quot;, &quot;IN&quot;, &quot;NN&quot;, &quot;.&quot;]
- [&quot;PRP&quot;, &quot;MD&quot;, &quot;VB&quot;, &quot;VBN&quot;, &quot;IN&quot;, &quot;NNP&quot;, &quot;NNP&quot;, &quot;,&quot;, &quot;DT&quot;, &quot;JJ&quot;, &quot;JJ&quot;, &quot;NN&quot;, &quot;TO&quot;, &quot;NNP&quot;, &quot;CC&quot;, &quot;JJ&quot;, &quot;NNP&quot;, &quot;NNP&quot;, &quot;NNP&quot;, &quot;.&quot;]
-
-julia&gt; zipped = [collect(zip(tag_sequences[i], WordTokenizers.tokenize(splitted_sents[i]))) for i in eachindex(splitted_sents)]
-
-julia&gt; zipped[1]
-9-element Array{Tuple{String,String},1}:
- (&quot;NNP&quot;, &quot;Rabinov&quot;)
- (&quot;VBZ&quot;, &quot;is&quot;)
- (&quot;VBG&quot;, &quot;winding&quot;)
- (&quot;RP&quot;, &quot;up&quot;)
- (&quot;PRP\$&quot;, &quot;his&quot;)
- (&quot;NN&quot;, &quot;term&quot;)
- (&quot;IN&quot;, &quot;as&quot;)
- (&quot;NN&quot;, &quot;ambassador&quot;)
- (&quot;.&quot;, &quot;.&quot;)
-
-julia&gt; zipped[2]
-20-element Array{Tuple{String,String},1}:
- (&quot;PRP&quot;, &quot;He&quot;)
- (&quot;MD&quot;, &quot;will&quot;)
- (&quot;VB&quot;, &quot;be&quot;)
- (&quot;VBN&quot;, &quot;replaced&quot;)
- (&quot;IN&quot;, &quot;by&quot;)
- (&quot;NNP&quot;, &quot;Eliahu&quot;)
- (&quot;NNP&quot;, &quot;Ben-Elissar&quot;)
- (&quot;,&quot;, &quot;,&quot;)
- (&quot;DT&quot;, &quot;a&quot;)
- (&quot;JJ&quot;, &quot;former&quot;)
- (&quot;JJ&quot;, &quot;Israeli&quot;)
- (&quot;NN&quot;, &quot;envoy&quot;)
- (&quot;TO&quot;, &quot;to&quot;)
- (&quot;NNP&quot;, &quot;Egypt&quot;)
- (&quot;CC&quot;, &quot;and&quot;)
- (&quot;JJ&quot;, &quot;right-wing&quot;)
- (&quot;NNP&quot;, &quot;Likud&quot;)
- (&quot;NNP&quot;, &quot;party&quot;)
- (&quot;NNP&quot;, &quot;politiian&quot;)
- (&quot;.&quot;, &quot;.&quot;)
-</code></pre><p>Since the tagging the Part of Speech is done on sentence level, the text of <code>AbstractDocument</code> is sentence_tokenized and then labelled for over sentence. However is not possible for <code>NGramDocument</code> as text cannot be recreated. For <code>TokenDocument</code>, text is approximated for splitting into sentences, hence the following throws a warning when tagging the <code>Corpus</code>.</p><pre><code class="language-julia">
-julia&gt; crps = Corpus([StringDocument(&quot;We aRE vErY ClOSE tO ThE HEaDQuarTeRS.&quot;), TokenDocument(&quot;this is Bangalore.&quot;)])
-A Corpus with 2 documents:
- * 1 StringDocument&#39;s
- * 0 FileDocument&#39;s
- * 1 TokenDocument&#39;s
- * 0 NGramDocument&#39;s
-
-Corpus&#39;s lexicon contains 0 tokens
-Corpus&#39;s index contains 0 tokens
-
-julia&gt; pos(crps)
-┌ Warning: TokenDocument&#39;s can only approximate the original text
-└ @ TextAnalysis ~/.julia/dev/TextAnalysis/src/document.jl:220
-2-element Array{Array{Array{String,1},1},1}:
- [[&quot;PRP&quot;, &quot;VBP&quot;, &quot;RB&quot;, &quot;JJ&quot;, &quot;TO&quot;, &quot;DT&quot;, &quot;NN&quot;, &quot;.&quot;]]
- [[&quot;DT&quot;, &quot;VBZ&quot;, &quot;NNP&quot;, &quot;.&quot;]]
-</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../corpus/">« Corpus</a><a class="docs-footer-nextpage" href="../semantic/">Semantic Analysis »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 6 September 2020 16:05">Sunday 6 September 2020</span>. Using Julia version 1.0.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ &quot;This has too foo sentences.&quot;</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/JuliaText/TextAnalysis.jl/blob/cc7aac7ce43a28cedc4629f54a47b70e5198adc9/src/summarizer.jl#L1-L21">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../corpus/">« Corpus</a><a class="docs-footer-nextpage" href="../semantic/">Semantic Analysis »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Friday 27 October 2023 23:39">Friday 27 October 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
