@@ -45,20 +45,25 @@ end
 
 A Naive Bayes Classifier for classifying documents.
 
+It takes two arguments:
+* `classes`: An array of possible classes that the concerned data could belong to.
+* `dict`:(Optional Argument) An Array of possible tokens (words). This is automatically updated if a new token is detected in the Step 2) or 3)
+
 # Example
 ```julia-repl
 julia> using TextAnalysis: NaiveBayesClassifier, fit!, predict
+
 julia> m = NaiveBayesClassifier([:spam, :non_spam])
-NaiveBayesClassifier{Symbol}(String[], Symbol[:spam, :non_spam], Array{Int64}(0,2))
+NaiveBayesClassifier{Symbol}(String[], [:spam, :non_spam], Matrix{Int64}(undef, 0, 2))
 
 julia> fit!(m, "this is spam", :spam)
-NaiveBayesClassifier{Symbol}(["this", "is", "spam"], Symbol[:spam, :non_spam], [2 1; 2 1; 2 1])
+NaiveBayesClassifier{Symbol}(["this", "is", "spam"], [:spam, :non_spam], [2 1; 2 1; 2 1])
 
 julia> fit!(m, "this is not spam", :non_spam)
-NaiveBayesClassifier{Symbol}(["this", "is", "spam", "not"], Symbol[:spam, :non_spam], [2 2; 2 2; 2 2; 1 2])
+NaiveBayesClassifier{Symbol}(["this", "is", "spam", "not"], [:spam, :non_spam], [2 2; 2 2; 2 2; 1 2])
 
 julia> predict(m, "is this a spam")
-Dict{Symbol,Float64} with 2 entries:
+Dict{Symbol, Float64} with 2 entries:
   :spam     => 0.59883
   :non_spam => 0.40117
 ```

@@ -280,6 +280,8 @@ Corpus's index contains 0 tokens
 
 julia> standardize!(crps, NGramDocument)
 
+# After this step, you can check that the corpus only contains NGramDocument's:
+
 julia> crps
 A Corpus with 3 documents:
  * 0 StringDocument's

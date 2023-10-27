@@ -44,7 +44,7 @@ padding _ngram is used to pad both left and right of sentence and out putting ng
 ```julia-repl
 julia> example = ["1","2","3","4","5"]
 
-julia> padding_ngrams(example,2,pad_left=true,pad_right=true)
+julia> padding_ngram(example,2,pad_left=true,pad_right=true)
  6-element Array{Any,1}:
   "<s> 1" 
   "1 2"   

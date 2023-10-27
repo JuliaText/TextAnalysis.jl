@@ -3,58 +3,18 @@
 Working with isolated documents gets boring quickly. We typically want to
 work with a collection of documents. We represent collections of documents
 using the Corpus type:
-
-```julia
-julia> crps = Corpus([StringDocument("Document 1"),
-                      StringDocument("Document 2")])
-A Corpus with 2 documents:
- * 2 StringDocument's
- * 0 FileDocument's
- * 0 TokenDocument's
- * 0 NGramDocument's
-
-Corpus's lexicon contains 0 tokens
-Corpus's index contains 0 tokens
+```@docs
+Corpus
 ```
 
 ## Standardizing a Corpus
 
-A `Corpus` may contain many different types of documents:
-
-```julia
-julia> crps = Corpus([StringDocument("Document 1"),
-                          TokenDocument("Document 2"),
-                          NGramDocument("Document 3")])
-A Corpus with 3 documents:
- * 1 StringDocument's
- * 0 FileDocument's
- * 1 TokenDocument's
- * 1 NGramDocument's
-
-Corpus's lexicon contains 0 tokens
-Corpus's index contains 0 tokens
-```
-
-It is generally more convenient to standardize all of the documents in a
+A `Corpus` may contain many different types of documents. It is generally more convenient to standardize all of the documents in a
 corpus using a single type. This can be done using the `standardize!`
 function:
 
-```julia
-julia> standardize!(crps, NGramDocument)
-```
-
-After this step, you can check that the corpus only contains `NGramDocument`'s:
-
-```julia
-julia> crps
-A Corpus with 3 documents:
- * 0 StringDocument's
- * 0 FileDocument's
- * 0 TokenDocument's
- * 3 NGramDocument's
-
-Corpus's lexicon contains 0 tokens
-Corpus's index contains 0 tokens
+```@docs
+standardize!
 ```
 
 ## Processing a Corpus
@@ -62,17 +22,13 @@ Corpus's index contains 0 tokens
 We can apply the same sort of preprocessing steps that are defined for
 individual documents to an entire corpus at once:
 
-```julia
-julia> crps = Corpus([StringDocument("Document ..!!"),
-                          StringDocument("Document ..!!")])
-
-julia> prepare!(crps, strip_punctuation)
-
-julia> text(crps[1])
-"Document "
-
-julia> text(crps[2])
-"Document "
+```@repl
+using TextAnalysis
+crps = Corpus([StringDocument("Document ..!!"),
+               StringDocument("Document ..!!")])
+prepare!(crps, strip_punctuation)
+text(crps[1])
+text(crps[2])
 ```
 
 These operations are run on each document in the corpus individually.
@@ -109,7 +65,7 @@ Dict{String,Int64} with 3 entries:
 
 But once this work is done, you can easier address lots of interesting
 questions about a corpus:
-```
+```julia
 julia> lexical_frequency(crps, "Name")
 0.5
 
