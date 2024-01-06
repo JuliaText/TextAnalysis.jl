@@ -34,9 +34,10 @@ julia> using TextAnalysis, DataStructures
 """
 function coo_matrix(::Type{T},
     doc::Vector{<:AbstractString},
-    vocab::OrderedDict{<:AbstractString,Int},
+    vocab::OrderedDict{<:AbstractString,
+        Int},
     window::Int,
-    normalize::Bool;
+    normalize::Bool=true,
     mode::Symbol=:default) where {T<:AbstractFloat}
     # Initializations
     n = length(vocab)
@@ -160,12 +161,12 @@ end
 CooMatrix(doc, terms::Vector{String}; window::Int=5, normalize::Bool=true, mode::Symbol=:default) =
     CooMatrix{Float64}(doc, terms, window=window, normalize=normalize, mode=mode)
 
-function CooMatrix{T}(doc; window::Int=5, normalize::Bool=true) where {T<:AbstractFloat}
+function CooMatrix{T}(doc; window::Int=5, normalize::Bool=true, mode::Symbol=:default) where {T<:AbstractFloat}
     terms = unique(String.(tokens(doc)))
     CooMatrix{T}(doc, terms, window=window, normalize=normalize, mode=mode)
 end
 
-CooMatrix(doc; window::Int=5, normalize::Bool=true, mode::Symbol=:default) where {T<:AbstractFloat} =
+CooMatrix(doc; window::Int=5, normalize::Bool=true, mode::Symbol=:default) =
     CooMatrix{Float64}(doc, window=window, normalize=normalize, mode=mode)
 
 """

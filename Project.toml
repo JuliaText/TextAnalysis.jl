@@ -7,6 +7,7 @@ version = "0.7.4"
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+InteractiveCodeSearch = "54eb57ff-b09b-5185-b2f4-7a93509e494f"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 Languages = "8ef0a80b-9436-5d2c-a485-80b904378c43"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
