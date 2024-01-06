@@ -45,32 +45,22 @@ function coo_matrix(::Type{T},
     coom = spzeros(T, n, n)
     # Count co-occurrences
     for (i, token) in enumerate(doc)
-        if mode == :directional
-            # looking forward
-            @inbounds for j in i:min(m, i + window)
-                wtoken = doc[j]
-                nm = T(ifelse(normalize, abs(i - j), 1))
-                row = get(vocab, token, nothing)
-                col = get(vocab, wtoken, nothing)
-                if i != j && row != nothing && col != nothing
-                    coom[row, col] += one(T) / nm
-                    # avoiding to create a symmetric matrix and keep the forward looking coocurrence from above.
-                    # coom[col, row] = coom[row, col]
-                end
-            end
+        inner_range = if mode == :directional
+            i:min(m, i + window)
         else
-            @inbounds for j in max(1, i - window):min(m, i + window)
-                wtoken = doc[j]
-                nm = T(ifelse(normalize, abs(i - j), 1))
-                row = get(vocab, token, nothing)
-                col = get(vocab, wtoken, nothing)
-                if i != j && row != nothing && col != nothing
-                    coom[row, col] += one(T) / nm
-                    coom[col, row] = coom[row, col]
-                end
+            max(1, i - window):min(m, i + window)
+        end
+        # looking forward
+        @inbounds for j in inner_range
+            wtoken = doc[j]
+            nm = T(ifelse(normalize, abs(i - j), 1))
+            row = get(vocab, token, nothing)
+            col = get(vocab, wtoken, nothing)
+            if i != j && row != nothing && col != nothing
+                coom[row, col] += one(T) / nm
+                coom[col, row] = coom[row, col]
             end
         end
-
     end
     return coom
 end
