@@ -76,7 +76,7 @@ end
 """
 	score(m::gammamodel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)	
 
-score is used to output probablity of word given that context 
+score is used to output probability of word given that context 
 
 Add-one smoothing to Lidstone or Laplace(gammamodel) models
         
@@ -96,15 +96,13 @@ end
 """
 To get probability of word given that context
 
-In otherwords, for given context calculate frequency distribution of word
+In other words, for given context calculate frequency distribution of word
   
 """
-function prob(m::Langmodel, templ_lm::DefaultDict, word, context=nothing)
-    if context == nothing || context == ""
-        return(1/float(length(templ_lm))) #provide distribution 
-    else
-        accum = templ_lm[context]
-    end
+function prob(m::Langmodel, templ_lm::DefaultDict, word, context=nothing)::Float64
+    (isnothing(context) || isempty(context)) && return 1.0/length(templ_lm) #provide distribution
+
+    accum = templ_lm[context]
     s = float(sum(accum)) 
     for (text, count) in accum
         if text == word
@@ -112,7 +110,7 @@ function prob(m::Langmodel, templ_lm::DefaultDict, word, context=nothing)
         end
     end
     if context in keys(m.vocab.vocab)
-        return(0)
+        return 0.0
     end
     return(Inf)
 end
@@ -120,7 +118,7 @@ end
 """
 	score(m::MLE, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)	
 
-score is used to output probablity of word given that context in MLE
+score is used to output probability of word given that context in MLE
         
 """
 function score(m::MLE, temp_lm::DefaultDict, word, context=nothing)
@@ -179,16 +177,15 @@ end
 """
 	score(m::InterpolatedLanguageModel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)	
 
-score is used to output probablity of word given that context in InterpolatedLanguageModel
+score is used to output probability of word given that context in InterpolatedLanguageModel
 
 Apply Kneserney and WittenBell smoothing
 depending upon the sub-Type
         
 """
 function score(m::InterpolatedLanguageModel, temp_lm::DefaultDict, word, context=nothing)
-    if context == nothing || context == ""
-        return prob(m, temp_lm, word, context)
-    end
+    (isnothing(context) || isempty(context)) && return prob(m, temp_lm, word)
+
     if context in keys(temp_lm)
         alpha,gamma = alpha_gammma(m, temp_lm, word, context)
         return (alpha + gamma*score(m, temp_lm, word, context_reduce(context)))
@@ -242,5 +239,3 @@ function alpha_gammma(m::KneserNeyInterpolated, templ_lm::DefaultDict, word, con
     gamma = (m.discount * count_non_zero_vals(accum) /s)
     return alpha, gamma
 end
-
-

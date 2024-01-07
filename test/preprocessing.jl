@@ -1,11 +1,11 @@
 
 @testset "Preprocessing" begin
 
-    sample_text1 = "This is 1 MESSED υπ string!"
-    sample_text1_wo_punctuation = "This is 1 MESSED υπ string"
-    sample_text1_wo_punctuation_numbers = "This is  MESSED υπ string"
-    sample_text1_wo_punctuation_numbers_case = "this is  messed υπ string"
-    sample_text1_wo_punctuation_numbers_case_az = "this is  messed  string"
+    sample_text1 = "This is 1 MESSED 1 string!"
+    sample_text1_wo_punctuation = "This is 1 MESSED   string"
+    sample_text1_wo_punctuation_numbers = "This is  MESSED  string"
+    sample_text1_wo_punctuation_numbers_case = "this is  messed string"
+    sample_text1_wo_punctuation_numbers_case_az = "this is  messed 1 string"
 
     sample_texts = [
         sample_text1,
@@ -141,4 +141,19 @@
     crps = Corpus([StringDocument("     Hi     there    !     ")])
     prepare!(crps, strip_html_tags | strip_whitespace | strip_non_letters)
     @test isequal(crps[1].text, "Hi there")
+end
+
+@testset "strip_non_letters with Unicode" begin
+    samples = [
+        ("   Wörterbuch  für  Ärzte!     ", ["Wörterbuch", "für", "Ärzte"])
+        ("   Проверим     прочие алфавиты: αλφάβητο 字母 !  ", ["Проверим", "прочие", "алфавиты", "αλφάβητο", "字母"])
+        ("123 الأبجدية  456", ["الأبجدية"])
+        # ("  वर्णमाला  ! ", "वर्णमाला")
+    ]
+
+    for (sample, expected) in samples
+        crps = Corpus([StringDocument(sample)])
+        prepare!(crps, strip_html_tags | strip_whitespace | strip_non_letters)
+        @test isequal(crps[1].text, join(expected, ' '))
+    end
 end

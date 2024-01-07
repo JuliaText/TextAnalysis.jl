@@ -10,8 +10,8 @@
 """
     coo_matrix(::Type{T}, doc::Vector{AbstractString}, vocab::OrderedDict{AbstractString, Int}, window::Int, normalize::Bool)
 
-Basic low-level function that calculates the co-occurence matrix of a document.
-Returns a sparse co-occurence matrix sized `n × n` where `n = length(vocab)`
+Basic low-level function that calculates the co-occurrence matrix of a document.
+Returns a sparse co-occurrence matrix sized `n × n` where `n = length(vocab)`
 with elements of type `T`. The document `doc` is represented by a vector of its
 terms (in order)`. The keywords `window` and `normalize` indicate the size of the
 sliding word window in which co-occurrences are counted and whether to normalize

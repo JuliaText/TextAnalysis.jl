@@ -12,6 +12,7 @@ module TextAnalysis
     using Statistics
     using Serialization
     using ProgressMeter
+    using DocStringExtensions
 
     import Base: depwarn, merge!
     import Serialization: serialize, deserialize
@@ -60,7 +61,10 @@ module TextAnalysis
 
     export NaiveBayesClassifier
     export tag_scheme!
-    export rouge_l_summary, rouge_l_sentence, rouge_n
+
+    export rouge_l_summary, rouge_l_sentence, rouge_n, Score, average, argmax
+    export bleu_score
+
     export PerceptronTagger, fit!, predict
 
     export Vocabulary, lookup, update
@@ -91,6 +95,7 @@ module TextAnalysis
     include("utils.jl")
 
     include("evaluation_metrics.jl")
+    include("translate_evaluation/bleu_score.jl")
     include("coom.jl")
 
 

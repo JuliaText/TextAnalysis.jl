@@ -21,8 +21,8 @@ julia> a = everygram(seq,min_len=1, max_len=-1)
 ```
    
 """
-function everygram(seq::Vector{T}; min_len::Int=1, max_len::Int=-1) where { T <: AbstractString}
-    ngram = []
+function everygram(seq::Vector{T}; min_len::Int=1, max_len::Int=-1)::Vector{String} where {T<:AbstractString}
+    ngram = String[]
     if max_len == -1
         max_len = length(seq)
     end
@@ -30,7 +30,7 @@ function everygram(seq::Vector{T}; min_len::Int=1, max_len::Int=-1) where { T <:
         temp = ngramizenew(seq, n)
         ngram = append!(ngram, temp)
     end
-    return(ngram)
+    return ngram
 end
 
 """
@@ -44,7 +44,7 @@ padding _ngram is used to pad both left and right of sentence and out putting ng
 ```julia-repl
 julia> example = ["1","2","3","4","5"]
 
-julia> padding_ngrams(example,2,pad_left=true,pad_right=true)
+julia> padding_ngram(example,2,pad_left=true,pad_right=true)
  6-element Array{Any,1}:
   "<s> 1" 
   "1 2"   
@@ -54,16 +54,18 @@ julia> padding_ngrams(example,2,pad_left=true,pad_right=true)
   "5 </s>"
 ```
 """
-function padding_ngram(word::Vector{T}, n=1; pad_left=false, pad_right=false, left_pad_symbol="<s>", right_pad_symbol ="</s>") where { T <: AbstractString}
+function padding_ngram(
+    word::Vector{T}, n=1;
+    pad_left=false, pad_right=false,
+    left_pad_symbol="<s>", right_pad_symbol="</s>"
+) where {T<:AbstractString}
     local seq
     seq = word
-    if pad_left == true
-        prepend!(seq, [left_pad_symbol])
-    end 
-    if pad_right == true
-        push!(seq, right_pad_symbol)
-    end
-    return  ngramizenew(seq, n)
+
+    pad_left == true && prepend!(seq, [left_pad_symbol])
+    pad_right == true && push!(seq, right_pad_symbol)
+
+    return ngramizenew(seq, n)
 end
 
 """
@@ -85,16 +87,16 @@ julia> ngramizenew(seq ,2)
   "To not"
 ```
 """
-function ngramizenew(words::Vector{T}, nlist::Integer...) where { T <: AbstractString}
+function ngramizenew(words::Vector{T}, nlist::Integer...)::Vector{String} where {T<:AbstractString}
     n_words = length(words)
 
-    tokens = []
+    tokens = String[]
 
-    for n in nlist
-        for index in 1:(n_words - n + 1)
-            token = join(words[index:(index + n - 1)], " ")
-            push!(tokens,token)
-        end
+    for n in nlist,
+        index in 1:(n_words-n+1)
+
+        token = join(words[index:(index+n-1)], " ")
+        push!(tokens, token)
     end
     return tokens
 end

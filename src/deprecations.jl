@@ -1,7 +1,7 @@
 
 ## Deprecations for Languages
 
-function WordTokenizers.tokenize(::Type{S}, s::T) where {S <: Language, T <: AbstractString}
+function tokenize(::Type{S}, s::T) where {S <: Language, T <: AbstractString}
     depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
     tokenize(S(), s)
 end

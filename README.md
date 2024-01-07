@@ -3,14 +3,14 @@
 A Julia package for working with text.
 
 [![CI](https://github.com/juliatext/TextAnalysis.jl/workflows/CI/badge.svg?event=push&branch=master)](https://github.com/JuliaText/TextAnalysis.jl/actions?query=workflow%3ACI)
-[![version](https://juliahub.com/docs/TextAnalysis/version.svg)](https://juliahub.com/ui/Packages/TextAnalysis/5Mwet)
-[![docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliahub.com/docs/TextAnalysis/5Mwet) 
+[![version](https://juliahub.com/docs/TextAnalysis/version.svg)](https://juliahub.com/ui/Packages/General/TextAnalysis/)
+[![docs](https://img.shields.io/badge/docs-stable-blue.svg)](https://docs.juliahub.com/TextAnalysis/) 
 
 ## Introduction
 
 TextAnalysis provides support for standard tools and models for working with textual data and natural languages in the Julia language. 
 
-- **Documentation** :  [Documentation for stable released version](https://juliahub.com/docs/TextAnalysis/5Mwet)
+- **Documentation** :  [Documentation for stable released version](https://docs.juliahub.com/TextAnalysis)
 - **License** : [MIT License](https://github.com/JuliaText/TextAnalysis.jl/blob/master/LICENSE.md)
 
 ## Features
@@ -19,7 +19,7 @@ TextAnalysis provides support for standard tools and models for working with tex
 * DocumentTermMatrix and TF/IDF
 * LSA/LDA
 * Vocabulary and statistical Language Model
-* Co-occurance matrix
+* Co-occurrence matrix
 * NaiveBayes classifier
 * ROUGE evaluation metrics
 
@@ -27,7 +27,7 @@ This package also incorporates features from the [Languages](https://juliahub.co
 
 ## TextModels
 
-The [TextModels](https://github.com/JuliaText/TextModels.jl) package enhances this library with the additon of practical neural network based models. Some of that code used to live in this package, but was moved to simplify installation and reduce the number of dependencies. 
+The [TextModels](https://github.com/JuliaText/TextModels.jl) package enhances this library with the addition of practical neural network based models. Some of that code used to live in this package, but was moved to simplify installation and reduce the number of dependencies. 
 
 ## Installation
 
@@ -43,5 +43,5 @@ Contributions, in the form of bug-reports, pull requests, additional documentati
 
 ## Support
 
-Feel free to ask for help on the [Julia Discourse forum](https://discourse.julialang.org/), or in the `#natural-language` channel on [julia-slack](https://julialang.slack.com). (Which you can [join here](https://slackinvite.julialang.org/)). You can also raise issues in this repository to request new features and/or improvements to the documentation and codebase.
+Feel free to ask for help on the [Julia Discourse forum](https://discourse.julialang.org/), or in the `#natural-language` channel on [julia-slack](https://julialang.slack.com). (Which you can [join here](https://julialang.org/slack/)). Or, [select what do you like here](https://julialang.org/community/). You can also raise issues in this repository to request new features and/or improvements to the documentation and codebase.
 

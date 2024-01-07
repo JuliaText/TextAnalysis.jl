@@ -19,3 +19,6 @@ makedocs(
     ],
 )
 
+deploydocs(;
+    repo="github.com/JuliaText/TextAnalysis.jl",
+)

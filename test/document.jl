@@ -1,6 +1,18 @@
 
 @testset "Document" begin
 
+    dmeta = TextAnalysis.DocumentMetadata(Languages.English(), "test title", "test author", "test time", Dict(:k1=>"v1", :k2=>"v2"))
+    @test (dmeta.language == Languages.English()) && 
+        (dmeta.title == "test title") && 
+        (dmeta.author == "test author") && 
+        (dmeta.timestamp == "test time") && 
+        (get(dmeta.custom, :k1, "") == "v1") && 
+        (get(dmeta.custom, :k2, "") == "v2")
+
+    # mutability
+    dmeta.custom = nothing
+    @test isnothing(dmeta.custom)
+
     sample_text1 = "This is a string"
     sample_text2 = "This is also a string"
     sample_file = joinpath(dirname(@__FILE__), "data", "poem.txt")
