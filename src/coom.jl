@@ -8,14 +8,14 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 """
-    coo_matrix(::Type{T}, doc::Vector{AbstractString}, vocab::OrderedDict{AbstractString, Int}, window::Int, normalize::Bool)
+    coo_matrix(::Type{T}, doc::Vector{AbstractString}, vocab::OrderedDict{AbstractString, Int}, window::Int, normalize::Bool, mode::Symbol)
 
 Basic low-level function that calculates the co-occurence matrix of a document.
 Returns a sparse co-occurence matrix sized `n × n` where `n = length(vocab)`
 with elements of type `T`. The document `doc` is represented by a vector of its
 terms (in order)`. The keywords `window` and `normalize` indicate the size of the
 sliding word window in which co-occurrences are counted and whether to normalize
-of not the counts by the distance between word positions.
+of not the counts by the distance between word positions. The `mode` keyword can be either `:default` or `:directional` and indicates whether the co-occurrence  matrix should be directional or not. This means that if `mode` is `:directional` then the co-occurrence matrix will be a `n × n` matrix where `n = length(vocab)` and `coom[i,j]` will be the number of times `vocab[i]` co-occurs with `vocab[j]` in the document `doc`. If `mode` is `:default` then the co-occurrence matrix will be a `n × n` matrix where `n = length(vocab)` and `coom[i,j]` will be twice the number of times `vocab[i]` co-occurs with `vocab[j]` in the document `doc` (once for each direction, from i to j + from j to i).
 
 # Example
 ```
@@ -30,6 +30,18 @@ julia> using TextAnalysis, DataStructures
   [1, 2]  =  2.0
   [3, 2]  =  0.3999
   [2, 3]  =  0.3999
+
+julia> using TextAnalysis, DataStructures
+       doc = StringDocument("This is a text about an apple. There are many texts about apples.")
+       docv = TextAnalysis.tokenize(language(doc), text(doc))
+       vocab = OrderedDict("This"=>1, "is"=>2, "apple."=>3)
+       TextAnalysis.coo_matrix(Float16, docv, vocab, 5, true, :directional)
+
+3×3 SparseArrays.SparseMatrixCSC{Float16,Int64} with 4 stored entries:
+  [2, 1]  =  1.0
+  [1, 2]  =  1.0
+  [3, 2]  =  0.1999
+  [2, 3]  =  0.1999
 ```
 """
 function coo_matrix(::Type{T},
@@ -50,13 +62,14 @@ function coo_matrix(::Type{T},
         else
             max(1, i - window):min(m, i + window)
         end
+
+        row = get(vocab, token, nothing)
         # looking forward
         @inbounds for j in inner_range
             wtoken = doc[j]
             nm = T(ifelse(normalize, abs(i - j), 1))
-            row = get(vocab, token, nothing)
             col = get(vocab, wtoken, nothing)
-            if i != j && row != nothing && col != nothing
+            if i != j && !isnothing(row) && !isnothing(col)
                 coom[row, col] += one(T) / nm
                 coom[col, row] = coom[row, col]
             end

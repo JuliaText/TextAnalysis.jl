@@ -8,6 +8,7 @@
     crps = Corpus([sd, td])
     T = Float16
     # Results for window = 5, all terms in document used
+    # expected_result_C is the expected matrix for the normalized and default mode case.
     expected_result_C = [ # for window == 5
         0.0 2.0 1.0 2/3 0.5 0.4 0.0 0.0
         2.0 0.0 2.0 1.0 2/3 0.5 0.4 0.0
@@ -18,6 +19,7 @@
         0.0 0.4 0.5 2/3 1.0 2.0 0.0 2.0
         0.0 0.0 0.4 0.5 2/3 1.0 2.0 0.0]
 
+    # expected_result_D is the expected matrix for the normalized and directional mode case.
     expected_result_D = [ # for window == 5
         0.0 1.0 0.5 1/3 0.25 0.2 0.0 0.0
         1.0 0.0 1.0 0.5 1/3 0.25 0.2 0.0
