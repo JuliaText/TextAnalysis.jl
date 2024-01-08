@@ -70,9 +70,9 @@ function coo_matrix(::Type{T},
             i == j && continue
 
             wtoken = doc[j]
-            nm = T(ifelse(normalize, abs(i - j), 1))
             col = get(vocab, wtoken, nothing)
             isnothing(col) && continue
+            nm = T(ifelse(normalize, abs(i - j), 1))
             coom[row, col] += one(T) / nm
             coom[col, row] = coom[row, col]
         end
