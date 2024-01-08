@@ -64,12 +64,13 @@ function coo_matrix(::Type{T},
         end
 
         row = get(vocab, token, nothing)
+
         # looking forward
         @inbounds for j in inner_range
             wtoken = doc[j]
             nm = T(ifelse(normalize, abs(i - j), 1))
             col = get(vocab, wtoken, nothing)
-            if i != j && !isnothing(row) && !isnothing(col)
+            if i !== j && !isnothing(row) && !isnothing(col)
                 coom[row, col] += one(T) / nm
                 coom[col, row] = coom[row, col]
             end
