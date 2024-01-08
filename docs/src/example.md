@@ -4,6 +4,7 @@ To show you how text analysis might work in practice, we're going to work with
 a text corpus composed of political speeches from American presidents given
 as part of the State of the Union Address tradition.
 
+```julia
     using TextAnalysis, MultivariateStats, Clustering
 
     crps = DirectoryCorpus("sotu")
@@ -27,4 +28,4 @@ as part of the State of the Union Address tradition.
     T = tf_idf(D)
 
     cl = kmeans(T, 5)
-
+```

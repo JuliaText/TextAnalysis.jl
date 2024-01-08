@@ -6,32 +6,64 @@ As of now TextAnalysis provides the following evaluation metrics.
 * [ROUGE-N](https://en.wikipedia.org/wiki/ROUGE_(metric))
 * [ROUGE-L](https://en.wikipedia.org/wiki/ROUGE_(metric))
 
-## ROUGE-N
-This metric evaluatrion based on the overlap of N-grams
+* [BLEU (bilingual evaluation understudy)](https://en.wikipedia.org/wiki/BLEU)
+
+## ROUGE-N, ROUGE-L, ROUGE-L-Summary
+This metric evaluation based on the overlap of N-grams
 between the system and reference summaries.
 
-    rouge_n(references, candidate, n; avg, lang)
+```@docs
+argmax
+average
+rouge_n
+rouge_l_sentence
+rouge_l_summary
+```
 
-The function takes the following arguments -
+```@example
+using TextAnalysis
 
-* `references::Array{T} where T<: AbstractString` = The list of reference summaries.
-* `candidate::AbstractString` = Input candidate summary, to be scored against reference summaries.
-* `n::Integer` = Order of NGrams
-* `avg::Bool` = Setting this parameter to `true`, applies jackkniving the calculated scores. Defaults to `true`
-* `lang::Language` = Language of the text, usefule while generating N-grams. Defaults to English i.e. Languages.English()
+candidate_summary =  "Brazil, Russia, China and India are growing nations. They are all an important part of BRIC as well as regular part of G20 summits."
+reference_summaries = ["Brazil, Russia, India and China are the next big political powers in the global economy. Together referred to as BRIC(S) along with South Korea.", "Brazil, Russia, India and China are together known as the  BRIC(S) and have been invited to the G20 summit."]
 
-```julia
-julia> candidate_summary =  "Brazil, Russia, China and India are growing nations. They are all an important part of BRIC as well as regular part of G20 summits."
-"Brazil, Russia, China and India are growing nations. They are all an important part of BRIC as well as regular part of G20 summits."
+results = [
+    rouge_n(reference_summaries, candidate_summary, 2),
+    rouge_n(reference_summaries, candidate_summary, 1)
+] .|> argmax
+```
 
-julia> reference_summaries = ["Brazil, Russia, India and China are the next big poltical powers in the global economy. Together referred to as BRIC(S) along with South Korea.", "Brazil, Russia, India and China are together known as the  BRIC(S) and have been invited to the G20 summit."]
-2-element Array{String,1}:
- "Brazil, Russia, India and China are the next big poltical powers in the global economy. Together referred to as BRIC(S) along with South Korea."
- "Brazil, Russia, India and China are together known as the  BRIC(S) and have been invited to the G20 summit."                                    
+## BLEU (bilingual evaluation understudy)
 
-julia> rouge_n(reference_summaries, candidate_summary, 2, avg=true)
-0.1317241379310345
+```@docs
+bleu_score
+```
 
-julia> rouge_n(reference_summaries, candidate_summary, 1, avg=true)
-0.5051282051282051
+[NLTK sample](https://www.nltk.org/api/nltk.translate.bleu_score.html)
+```@example
+    using TextAnalysis
+
+    reference1 = [
+        "It", "is", "a", "guide", "to", "action", "that",
+        "ensures", "that", "the", "military", "will", "forever",
+        "heed", "Party", "commands"
+    ]
+    reference2 = [
+        "It", "is", "the", "guiding", "principle", "which",
+        "guarantees", "the", "military", "forces", "always",
+        "being", "under", "the", "command", "of", "the",
+        "Party"
+    ]
+    reference3 = [
+        "It", "is", "the", "practical", "guide", "for", "the",
+        "army", "always", "to", "heed", "the", "directions",
+        "of", "the", "party"
+    ]
+
+    hypothesis1 = [
+        "It", "is", "a", "guide", "to", "action", "which",
+        "ensures", "that", "the", "military", "always",
+        "obeys", "the", "commands", "of", "the", "party"
+    ]
+
+    score = bleu_score([[reference1, reference2, reference3]], [hypothesis1])
 ```

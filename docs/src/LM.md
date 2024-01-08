@@ -31,9 +31,9 @@ Arguments:
 
  * `unk_cutoff`: Tokens with counts greater than or equal to the cutoff value will be considered part of the vocabulary.
 
- * `unk_label`: token for unkown labels 
+ * `unk_label`: token for unknown labels 
 
- *  `gamma`: smoothing arugment gamma 
+ *  `gamma`: smoothing argument gamma 
 
  * `discount`:  discounting factor for `KneserNeyInterpolated`
 
@@ -84,8 +84,8 @@ julia> masked_score = maskedscore(model,fit,"is","alien")
 
 used to evaluate the probability of word given context (*P(word | context)*)
 
-```julia
-score(m::gammamodel, temp_lm::DefaultDict, word::AbstractString, context::AbstractString)
+```@docs
+score
 ```
 
 Arguments:
@@ -100,91 +100,51 @@ Arguments:
 - In Interpolated language model, provide `Kneserney` and `WittenBell` smoothing 
 
 ### `maskedscore` 
+```@docs
+maskedscore
+```
 
-- It is used to evaluate *score* with masks out of vocabulary words
+### `logscore`
+```@docs
+logscore
+```
 
-- The arguments are the same as for `score`
-
-### `logscore` 
-
-- Evaluate the log score of this word in this context.
-
-- The arguments are the same as for `score` and `maskedscore`
 
 ### `entropy`
 
-```julia
-entropy(m::Langmodel,lm::DefaultDict,text_ngram::word::Vector{T}) where { T <: AbstractString}
+```@docs
+entropy
 ```
 
-- Calculate *cross-entropy* of model for given evaluation text.
-
-- Input text must be Array of ngram of same lengths
-
-### `perplexity`  
-
-- Calculates the perplexity of the given text.
-
-- This is simply 2 ** cross-entropy(`entropy`) for the text, so the arguments are the same as `entropy`.
+### `perplexity`
+```@docs
+perplexity
+```
 
 ##  Preprocessing
 
  For Preprocessing following functions:
-
-1. `everygram`: Return all possible ngrams generated from sequence of items, as an Array{String,1}
-
-```julia
-julia> seq = ["To","be","or","not"]
-julia> a = everygram(seq,min_len=1, max_len=-1)
- 10-element Array{Any,1}:
-  "or"
-  "not"
-  "To"
-  "be"
-  "or not" 
-  "be or"
-  "be or not"
-  "To be or"
-  "To be or not"
+```@docs
+everygram
+padding_ngram
 ```
 
-2. `padding_ngrams`: padding _ngram is used to pad both left and right of sentence and out putting ngrmas of order n
-
-   It also pad the original input Array of string 
-
-```julia
-julia> example = ["1","2","3","4","5"]
-julia> padding_ngrams(example,2,pad_left=true,pad_right=true)
- 6-element Array{Any,1}:
-  "<s> 1" 
-  "1 2"
-  "2 3"
-  "3 4"
-  "4 5"
-  "5 </s>"
-```
 ## Vocabulary 
 
 Struct to store Language models vocabulary
 
 checking membership and filters items by comparing their counts to a cutoff value
 
-It also Adds a special "unkown" tokens which unseen words are mapped to
+It also Adds a special "unknown" tokens which unseen words are mapped to
 
-```julia
-julia> words = ["a", "c", "-", "d", "c", "a", "b", "r", "a", "c", "d"]
-
-julia> vocabulary = Vocabulary(words, 2) 
- Vocabulary(Dict("<unk>"=>1,"c"=>3,"a"=>3,"d"=>2), 2, "<unk>") 
+```@repl
+using TextAnalysis
+words = ["a", "c", "-", "d", "c", "a", "b", "r", "a", "c", "d"]
+vocabulary = Vocabulary(words, 2) 
 
 # lookup a sequence or words in the vocabulary
-julia> word = ["a", "-", "d", "c", "a"]
 
-julia> lookup(vocabulary ,word)
- 5-element Array{Any,1}:
-  "a"
-  "<unk>"
-  "d"
-  "c"
-  "a"
+word = ["a", "-", "d", "c", "a"]
+
+lookup(vocabulary ,word)
 ```

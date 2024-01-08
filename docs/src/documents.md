@@ -9,111 +9,33 @@ allows one to work with documents stored in a variety of formats:
 * _NGramDocument_ : A document represented as a bag of n-grams, which are UTF8 n-grams that map to counts
 
 !!! note
-    These formats represent a hierarchy: you can always move down the hierachy, but can generally not move up the hierachy. A `FileDocument` can easily become a `StringDocument`, but an `NGramDocument` cannot easily become a `FileDocument`.
+    These formats represent a hierarchy: you can always move down the hierarchy, but can generally not move up the hierarchy. A `FileDocument` can easily become a `StringDocument`, but an `NGramDocument` cannot easily become a `FileDocument`.
 
 Creating any of the four basic types of documents is very easy:
 
-```julia
-julia> str = "To be or not to be..."
-"To be or not to be..."
-
-julia> sd = StringDocument(str)
-A StringDocument{String}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: To be or not to be...
-
-julia> pathname = "/usr/share/dict/words"
-"/usr/share/dict/words"
-
-julia> fd = FileDocument(pathname)
-A FileDocument
- * Language: Languages.English()
- * Title: /usr/share/dict/words
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: A A's AMD AMD's AOL AOL's Aachen Aachen's Aaliyah
-
-julia> my_tokens = String["To", "be", "or", "not", "to", "be..."]
-6-element Array{String,1}:
- "To"   
- "be"   
- "or"   
- "not"  
- "to"   
- "be..."
-
-julia> td = TokenDocument(my_tokens)
-A TokenDocument{String}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
-
-
-julia> my_ngrams = Dict{String, Int}("To" => 1, "be" => 2,
-                                    "or" => 1, "not" => 1,
-                                    "to" => 1, "be..." => 1)
-Dict{String,Int64} with 6 entries:
-  "or"    => 1
-  "be..." => 1
-  "not"   => 1
-  "to"    => 1
-  "To"    => 1
-  "be"    => 2
-
-julia> ngd = NGramDocument(my_ngrams)
-A NGramDocument{AbstractString}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
+```@docs
+StringDocument
+FileDocument
+TokenDocument
+NGramDocument
 ```
 
 An NGramDocument consisting of bigrams or any higher order representation `N`
 can be easily created by passing the parameter `N` to `NGramDocument`
 
-```julia
-julia> NGramDocument("To be or not to be ...", 2)
-A NGramDocument{AbstractString}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
+```@repl
+using TextAnalysis
+NGramDocument("To be or not to be ...", 2)
 ```
 
 For every type of document except a `FileDocument`, you can also construct a
 new document by simply passing in a string of text:
 
-```julia
-julia> sd = StringDocument("To be or not to be...")
-A StringDocument{String}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: To be or not to be...
-
-julia> td = TokenDocument("To be or not to be...")
-A TokenDocument{String}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
-
-julia> ngd = NGramDocument("To be or not to be...")
-A NGramDocument{String}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
+```@repl
+using TextAnalysis
+sd = StringDocument("To be or not to be...")
+td = TokenDocument("To be or not to be...")
+ngd = NGramDocument("To be or not to be...")
 ```
 
 The system will automatically perform tokenization or n-gramization in order
@@ -165,18 +87,12 @@ This constructor is very convenient for working in the REPL, but should be avoid
 Once you've created a document object, you can work with it in many ways. The
 most obvious thing is to access its text using the `text()` function:
 
-```julia
-julia> sd = StringDocument("To be or not to be...")
-A StringDocument{String}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: To be or not to be...
-
-julia> text(sd)
-"To be or not to be..."
+```@repl
+using TextAnalysis
+sd = StringDocument("To be or not to be...");
+text(sd)
 ```
+
 !!! note
     This function works without warnings on `StringDocument`'s and
     `FileDocument`'s. For `TokenDocument`'s it is not possible to know if the
@@ -189,75 +105,38 @@ julia> text(sd)
 Instead of working with the text itself, you can work with the tokens or
 n-grams of a document using the `tokens()` and `ngrams()` functions:
 
-```julia
-julia> tokens(sd)
-7-element Array{String,1}:
- "To"  
- "be"  
- "or"  
- "not"
- "to"  
- "be.."
- "."   
-
- julia> ngrams(sd)
- Dict{String,Int64} with 7 entries:
-  "or"   => 1
-  "not"  => 1
-  "to"   => 1
-  "To"   => 1
-  "be"   => 1
-  "be.." => 1
-  "."    => 1
+```@repl
+using TextAnalysis
+sd = StringDocument("To be or not to be...");
+tokens(sd)
+ngrams(sd)
 ```
 
 By default the `ngrams()` function produces unigrams. If you would like to
 produce bigrams or trigrams, you can specify that directly using a numeric
 argument to the `ngrams()` function:
 
-```julia
-julia> ngrams(sd, 2)
-Dict{AbstractString,Int64} with 13 entries:
-  "To be"   => 1
-  "or not"  => 1
-  "be or"   => 1
-  "not to"  => 1
-  "to be.." => 1
-  "be.. ."  => 1
+```@repl
+using TextAnalysis
+sd = StringDocument("To be or not to be...");
+ngrams(sd, 2)
 ```
 
 The `ngrams()` function can also be called with multiple arguments:
 
-```julia
-julia> ngrams(sd, 2, 3)
-Dict{AbstractString,Int64} with 11 entries:
-  "or not to"   => 1
-  "be or"       => 1
-  "not to"      => 1
-  "be or not"   => 1
-  "not to be.." => 1
-  "To be"       => 1
-  "or not"      => 1
-  "to be.. ."   => 1
-  "to be.."     => 1
-  "be.. ."      => 1
-  "To be or"    => 1
+```@repl
+using TextAnalysis
+sd = StringDocument("To be or not to be...");
+ngrams(sd, 2, 3)
 ```
 
 If you have a `NGramDocument`, you can determine whether an `NGramDocument`
 contains unigrams, bigrams or a higher-order representation using the `ngram_complexity()` function:
 
-```julia
-julia> ngd = NGramDocument("To be or not to be ...", 2)
-A NGramDocument{AbstractString}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: ***SAMPLE TEXT NOT AVAILABLE***
-
-julia> ngram_complexity(ngd)
-2
+```@repl
+using TextAnalysis
+ngd = NGramDocument("To be or not to be ...", 2);
+ngram_complexity(ngd)
 ```
 
 This information is not available for other types of `Document` objects
@@ -278,43 +157,25 @@ including the following pieces of information:
 Try these functions out on a `StringDocument` to see how the defaults work
 in practice:
 
-```julia
-julia> StringDocument("This document has too foo words")
-A StringDocument{String}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: This document has too foo words
-
-julia> language(sd)
-Languages.English()
-
-julia> title(sd)
-"Untitled Document"
-
-julia> author(sd)
-"Unknown Author"
-
-julia> timestamp(sd)
-"Unknown Time"
+```@repl
+using TextAnalysis
+sd = StringDocument("This document has too foo words")
+language(sd)
+title(sd)
+author(sd)
+timestamp(sd)
 ```
 
 If you need reset these fields, you can use the mutating versions of the same
 functions:
 
-```julia
-julia> language!(sd, Languages.Spanish())
-Languages.Spanish()
-
-julia> title!(sd, "El Cid")
-"El Cid"
-
-julia> author!(sd, "Desconocido")
-"Desconocido"
-
-julia> timestamp!(sd, "Desconocido")
-"Desconocido"
+```@repl
+using TextAnalysis, Languages
+sd = StringDocument("This document has too foo words")
+language!(sd, Languages.Spanish())
+title!(sd, "El Cid")
+author!(sd, "Desconocido")
+timestamp!(sd, "Desconocido")
 ```
 
 ## Preprocessing Documents
@@ -325,44 +186,33 @@ important, but most text analysis tasks require some amount of preprocessing.
 At a minimum, your text source may contain corrupt characters. You can remove
 these using the `remove_corrupt_utf8!()` function:
 
-    remove_corrupt_utf8!(sd)
+```@docs
+remove_corrupt_utf8!
+```
 
 Alternatively, you may want to edit the text to remove items that are hard
 to process automatically. For example, our sample text sentence taken from Hamlet
 has three periods that we might like to discard. We can remove this kind of
 punctuation using the `prepare!()` function:
 
-```julia
-julia> str = StringDocument("here are some punctuations !!!...")
-
-julia> prepare!(str, strip_punctuation)
-
-julia> text(str)
-"here are some punctuations "
+```@repl
+using TextAnalysis
+str = StringDocument("here are some punctuations !!!...")
+prepare!(str, strip_punctuation)
+text(str)
 ```
 
 * To remove case distinctions, use `remove_case!()` function:
 * At times you'll want to remove specific words from a document like a person's
 name. To do that, use the `remove_words!()` function:
 
-```julia
-julia> sd = StringDocument("Lear is mad")
-A StringDocument{String}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: Lear is mad
-
-julia> remove_case!(sd)
-
-julia> text(sd)
-"lear is mad"
-
-julia> remove_words!(sd, ["lear"])
-
-julia> text(sd)
-" is mad"
+```@repl
+using TextAnalysis
+sd = StringDocument("Lear is mad")
+remove_case!(sd)
+text(sd)
+remove_words!(sd, ["lear"])
+text(sd)
 ```
 
 At other times, you'll want to remove whole classes of words. To make this
@@ -381,12 +231,12 @@ These special classes can all be removed using specially-named parameters:
 * `prepare!(sd, strip_articles)`
 * `prepare!(sd, strip_indefinite_articles)`
 * `prepare!(sd, strip_definite_articles)`
-* `prepare!(sd, strip_preposition)`
+* `prepare!(sd, strip_prepositions)`
 * `prepare!(sd, strip_pronouns)`
 * `prepare!(sd, strip_stopwords)`
 * `prepare!(sd, strip_numbers)`
 * `prepare!(sd, strip_non_letters)`
-* `prepare!(sd, strip_spares_terms)`
+* `prepare!(sd, strip_sparse_terms)`
 * `prepare!(sd, strip_frequent_terms)`
 * `prepare!(sd, strip_html_tags)`
 
@@ -401,17 +251,9 @@ closely related like "dog" and "dogs" and stem them in order to produce a
 smaller set of words for analysis. We can do this using the `stem!()`
 function:
 
-```julia
-julia> sd = StringDocument("They write, it writes")
-A StringDocument{String}
- * Language: Languages.English()
- * Title: Untitled Document
- * Author: Unknown Author
- * Timestamp: Unknown Time
- * Snippet: They write, it writes
-
-julia> stem!(sd)
-
-julia> text(sd)
-"They write , it write"
+```@repl
+using TextAnalysis
+sd = StringDocument("They write, it writes")
+stem!(sd)
+text(sd)
 ```

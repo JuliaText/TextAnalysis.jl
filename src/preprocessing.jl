@@ -69,11 +69,8 @@ function remove_corrupt_utf8!(d::NGramDocument)
     new_ngrams = Dict{AbstractString, Int}()
     for token in keys(d.ngrams)
         new_token = remove_corrupt_utf8(token)
-        if haskey(new_ngrams, new_token)
-            new_ngrams[new_token] = new_ngrams[new_token] + 1
-        else
-            new_ngrams[new_token] = 1
-        end
+        count = get(new_ngrams, new_token, 0)
+        new_ngrams[new_token] = count + 1
     end
     d.ngrams = new_ngrams
 end
@@ -130,11 +127,8 @@ function remove_case!(d::NGramDocument)
     new_ngrams = Dict{AbstractString, Int}()
     for token in keys(d.ngrams)
         new_token = remove_case(token)
-        if haskey(new_ngrams, new_token)
-            new_ngrams[new_token] = new_ngrams[new_token] + 1
-        else
-            new_ngrams[new_token] = 1
-        end
+        count = get(new_ngrams, new_token, 0)
+        new_ngrams[new_token] = count + 1
     end
     d.ngrams = new_ngrams
 end
@@ -209,7 +203,7 @@ end
 """
     remove_words!(doc, words::Vector{AbstractString})
     remove_words!(crps, words::Vector{AbstractString})
-Remove the occurences of words from `doc` or `crps`.
+Remove the occurrences of words from `doc` or `crps`.
 # Example
 ```julia-repl
 julia> str="The quick brown fox jumps over the lazy dog"
@@ -247,7 +241,7 @@ end
 
 """
     sparse_terms(crps, alpha=0.05])
-Find the sparse terms from Corpus, occuring in less than `alpha` percentage of the documents.
+Find the sparse terms from Corpus, occurring in less than `alpha` percentage of the documents.
 # Example
 ```
 julia> crps = Corpus([StringDocument("This is Document 1"),
@@ -282,7 +276,7 @@ end
 
 """
     frequent_terms(crps, alpha=0.95)
-Find the frequent terms from Corpus, occuring more than `alpha` percentage of the documents.
+Find the frequent terms from Corpus, occurring more than `alpha` percentage of the documents.
 # Example
 ```
 julia> crps = Corpus([StringDocument("This is Document 1"),
@@ -318,7 +312,7 @@ end
 
 """
     remove_sparse_terms!(crps, alpha=0.05)
-Remove sparse terms in crps, occuring less than `alpha` percent of documents.
+Remove sparse terms in crps, occurring less than `alpha` percent of documents.
 # Example
 ```julia-repl
 julia> crps = Corpus([StringDocument("This is Document 1"),
@@ -342,7 +336,7 @@ remove_sparse_terms!(crps::Corpus, alpha::Real = alpha_sparse) = remove_words!(c
 
 """
     remove_frequent_terms!(crps, alpha=0.95)
-Remove terms in `crps`, occuring more than `alpha` percent of documents.
+Remove terms in `crps`, occurring more than `alpha` percent of documents.
 # Example
 ```julia-repl
 julia> crps = Corpus([StringDocument("This is Document 1"),
@@ -474,24 +468,22 @@ function remove_patterns(s::AbstractString, rex::Regex)
     return replace(s, rex => "")
 end
 
-function remove_patterns(s::SubString{T}, rex::Regex) where T <: String
+function remove_patterns(s::SubString{T}, rex::Regex) where {T<:String}
     iob = IOBuffer()
-    ioffset = s.offset
-    data = codeunits(s.string)
     ibegin = 1
     for m in eachmatch(rex, s)
-        len = m.match.offset-ibegin
-	next = nextind(s, lastindex(m.match)+m.match.offset)
+        len = m.match.offset - ibegin
+        next = nextind(s, lastindex(m.match) + m.match.offset)
         if len > 0
-            write(iob, SubString(s, ibegin, ibegin+len))
-            if  next != length(s)+1
-            	write(iob, ' ')
-	    end
+            write(iob, SubString(s, ibegin, ibegin + len))
+            if next != length(s) + 1
+                write(iob, ' ')
+            end
         end
         ibegin = next
     end
-    len = lastindex(s) - ibegin 
-    (len > 0) && write(iob, SubString(s, ibegin, ibegin+len))
+    len = lastindex(s) - ibegin
+    (len > 0) && write(iob, SubString(s, ibegin, ibegin + len))
     String(take!(iob))
 end
 
@@ -519,11 +511,8 @@ function remove_patterns!(d::NGramDocument, rex::Regex)
     new_ngrams = Dict{AbstractString, Int}()
     for token in keys(d.ngrams)
         new_token = remove_patterns(token, rex)
-        if haskey(new_ngrams, new_token)
-            new_ngrams[new_token] = new_ngrams[new_token] + 1
-        else
-            new_ngrams[new_token] = 1
-        end
+        count = get(new_ngrams, new_token, 0)
+        new_ngrams[new_token] = count + 1 
     end
     d.ngrams = new_ngrams
     nothing
@@ -557,7 +546,7 @@ end
 function _build_regex_patterns(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) where T <: AbstractString
     #((flags & strip_whitespace) > 0) && push!(patterns, "\\s+")
     if (flags & strip_non_letters) > 0
-        push!(patterns, "[^a-zA-Z\\s]")
+	push!(patterns, "[^\\p{L}\\s]")
     else
         ((flags & strip_punctuation) > 0) && push!(patterns, "[-.,:;,!?'\"\\[\\]\\(\\)\\{\\}|\\`#\$%@^&*_+<>“”—’‘/]+")
         ((flags & strip_numbers) > 0) && push!(patterns, "\\d+")

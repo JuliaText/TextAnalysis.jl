@@ -4,14 +4,12 @@ Often we want to represent documents as a matrix of word counts so that we
 can apply linear algebra operations and statistical techniques. Before
 we do this, we need to update the lexicon:
 
-```julia
-julia> crps = Corpus([StringDocument("To be or not to be"),
-                             StringDocument("To become or not to become")])
-
-julia> update_lexicon!(crps)
-
-julia> m = DocumentTermMatrix(crps)
-A 2 X 6 DocumentTermMatrix
+```@repl
+using TextAnalysis
+crps = Corpus([StringDocument("To be or not to be"),
+               StringDocument("To become or not to become")])
+update_lexicon!(crps)
+m = DocumentTermMatrix(crps)
 ```
 
 A `DocumentTermMatrix` object is a special type. If you would like to use
@@ -121,36 +119,26 @@ julia> hash_dtv(crps[1])
 Often we need to find out the proportion of a document is contributed
 by each term. This can be done by finding the term frequency function
 
-    tf(dtm)
+```@docs
+tf
+```
 
 The parameter, `dtm` can be of the types - `DocumentTermMatrix` , `SparseMatrixCSC` or `Matrix`
 
-```julia
-julia> crps = Corpus([StringDocument("To be or not to be"),
-              StringDocument("To become or not to become")])
-
-julia> update_lexicon!(crps)
-
-julia> m = DocumentTermMatrix(crps)
-
-julia> tf(m)
-2×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 10 stored entries:
-  [1, 1]  =  0.166667
-  [2, 1]  =  0.166667
-  [1, 2]  =  0.333333
-  [2, 3]  =  0.333333
-  [1, 4]  =  0.166667
-  [2, 4]  =  0.166667
-  [1, 5]  =  0.166667
-  [2, 5]  =  0.166667
-  [1, 6]  =  0.166667
-  [2, 6]  =  0.166667
+```@repl
+using TextAnalysis
+crps = Corpus([StringDocument("To be or not to be"),
+               StringDocument("To become or not to become")])
+update_lexicon!(crps)
+m = DocumentTermMatrix(crps)
+tf(m)
 ```
 
 ## TF-IDF (Term Frequency - Inverse Document Frequency)
 
-    tf_idf(dtm)
-
+```@docs
+tf_idf
+```
 In many cases, raw word counts are not appropriate for use because:
 
 * (A) Some documents are longer than other documents
@@ -158,37 +146,13 @@ In many cases, raw word counts are not appropriate for use because:
 
 You can work around this by performing TF-IDF on a DocumentTermMatrix:
 
-```julia
-julia> crps = Corpus([StringDocument("To be or not to be"),
-              StringDocument("To become or not to become")])
-
-julia> update_lexicon!(crps)
-
-julia> m = DocumentTermMatrix(crps)
-DocumentTermMatrix(
-  [1, 1]  =  1
-  [2, 1]  =  1
-  [1, 2]  =  2
-  [2, 3]  =  2
-  [1, 4]  =  1
-  [2, 4]  =  1
-  [1, 5]  =  1
-  [2, 5]  =  1
-  [1, 6]  =  1
-  [2, 6]  =  1, ["To", "be", "become", "not", "or", "to"], Dict("or"=>5,"not"=>4,"to"=>6,"To"=>1,"be"=>2,"become"=>3))
-
-julia> tf_idf(m)
-2×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 10 stored entries:
-  [1, 1]  =  0.0
-  [2, 1]  =  0.0
-  [1, 2]  =  0.231049
-  [2, 3]  =  0.231049
-  [1, 4]  =  0.0
-  [2, 4]  =  0.0
-  [1, 5]  =  0.0
-  [2, 5]  =  0.0
-  [1, 6]  =  0.0
-  [2, 6]  =  0.0
+```@repl
+using TextAnalysis
+crps = Corpus([StringDocument("To be or not to be"),
+               StringDocument("To become or not to become")])
+update_lexicon!(crps)
+m = DocumentTermMatrix(crps)
+tf_idf(m)
 ```
 
 As you can see, TF-IDF has the effect of inserting 0's into the columns of
@@ -211,23 +175,18 @@ The parameters κ and β default to 2 and 0.75 respectively.
 
 Here is an example usage -
 
-```julia
-julia> crps = Corpus([StringDocument("a a a sample text text"), StringDocument("another example example text text"), StringDocument(""), StringDocument("another another text text text text")])
+```@repl
+using TextAnalysis
+crps = Corpus([
+  StringDocument("a a a sample text text"), 
+  StringDocument("another example example text text"), 
+  StringDocument(""), 
+  StringDocument("another another text text text text")
+])
+update_lexicon!(crps)
+m = DocumentTermMatrix(crps)
 
-julia> update_lexicon!(crps)
-
-julia> m = DocumentTermMatrix(crps)
-
-julia> bm_25(m)
-4×5 SparseArrays.SparseMatrixCSC{Float64,Int64} with 8 stored entries:
-  [1, 1]  =  1.29959
-  [2, 2]  =  0.882404
-  [4, 2]  =  1.40179
-  [2, 3]  =  1.54025
-  [1, 4]  =  1.89031
-  [1, 5]  =  0.405067
-  [2, 5]  =  0.405067
-  [4, 5]  =  0.676646
+bm_25(m)
 ```
 
 ## Co occurrence matrix (COOM)
@@ -250,49 +209,12 @@ the matrix can be extracted using `coom(::CooMatrix)`.
 The `terms` can also be extracted from this.
 Here is an example usage -
 
-```julia
-
-julia> crps = Corpus([StringDocument("this is a string document"),
-
-julia> C = CooMatrix(crps, window=1, normalize=false)
-CooMatrix{Float64}(
-  [2, 1]  =  2.0
-  [6, 1]  =  2.0
-  [1, 2]  =  2.0
-  [3, 2]  =  2.0
-  [2, 3]  =  2.0
-  [6, 3]  =  2.0
-  [5, 4]  =  4.0
-  [4, 5]  =  4.0
-  [6, 5]  =  4.0
-  [1, 6]  =  2.0
-  [3, 6]  =  2.0
-  [5, 6]  =  4.0, ["string", "document", "token", "this", "is", "a"], OrderedDict("string"=>1,"document"=>2,"token"=>3,"this"=>4,"is"=>5,"a"=>6))
-
-julia> coom(C)
-6×6 SparseArrays.SparseMatrixCSC{Float64,Int64} with 12 stored entries:
-  [2, 1]  =  2.0
-  [6, 1]  =  2.0
-  [1, 2]  =  2.0
-  [3, 2]  =  2.0
-  [2, 3]  =  2.0
-  [6, 3]  =  2.0
-  [5, 4]  =  4.0
-  [4, 5]  =  4.0
-  [6, 5]  =  4.0
-  [1, 6]  =  2.0
-  [3, 6]  =  2.0
-  [5, 6]  =  4.0
-
-julia> C.terms
-6-element Array{String,1}:
- "string"
- "document"
- "token"
- "this"
- "is"
- "a"
-
+```@repl
+using TextAnalysis
+crps = Corpus([StringDocument("this is a string document")])
+C = CooMatrix(crps, window=1, normalize=false)
+coom(C)
+C.terms
 ```
 
 It can also be called to calculate the terms for
@@ -339,19 +261,6 @@ ERROR: The tokens of an NGramDocument cannot be reconstructed
 
 TextAnalysis offers a simple text-rank based summarizer for its various document types.
 
-    summarize(d, ns)
-
-It takes 2 arguments:
-
-* `d` : A document of type `StringDocument`, `FileDocument` or `TokenDocument`
-* `ns` : (Optional) Mention the number of sentences in the Summary, defaults to `5` sentences.
-
-```julia
-julia> s = StringDocument("Assume this Short Document as an example. Assume this as an example summarizer. This has too foo sentences.")
-
-julia> summarize(s, ns=2)
-2-element Array{SubString{String},1}:
- "Assume this Short Document as an example."
- "This has too foo sentences."
+```@docs
+summarize
 ```
-

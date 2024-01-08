@@ -21,5 +21,5 @@ before every snippet of code.
 
 ## TextModels
 
-The [TextModels](https://github.com/JuliaText/TextModels.jl) package enhances this library with the additon of practical neural network based models. Some of that code used to live in this package, but was moved to simplify installation and dependencies. 
+The [TextModels](https://github.com/JuliaText/TextModels.jl) package enhances this library with the addition of practical neural network based models. Some of that code used to live in this package, but was moved to simplify installation and dependencies. 
 

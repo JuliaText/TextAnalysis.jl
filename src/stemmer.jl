@@ -37,11 +37,8 @@ function stem!(stemmer::Stemmer, d::NGramDocument)
     for token in keys(d.ngrams)
         new_token = stem(stemmer, token)
         if new_token != token
-            if haskey(d.ngrams, new_token)
-                d.ngrams[new_token] = d.ngrams[new_token] + d.ngrams[token]
-            else
-                d.ngrams[new_token] = d.ngrams[token]
-            end
+            count = get(d.ngrams, new_token, 0)
+            d.ngrams[new_token] = count + d.ngrams[token]
             delete!(d.ngrams, token)
         end
     end

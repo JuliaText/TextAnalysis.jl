@@ -236,11 +236,8 @@ function update_inverse_index!(crps::Corpus)
         ngram_arr = isa(doc, NGramDocument) ? collect(keys(ngrams(doc))) : tokens(doc)
         ngram_arr = convert(Array{String,1}, ngram_arr)
         for ngram in ngram_arr
-            if haskey(idx, ngram)
-                push!(idx[ngram], i)
-            else
-                idx[ngram] = [i]
-            end
+            key = get!(() -> [], idx, ngram)
+            push!(key, i)
         end
     end
     for key in keys(idx)
@@ -282,6 +279,8 @@ Corpus's index contains 0 tokens
 
 
 julia> standardize!(crps, NGramDocument)
+
+# After this step, you can check that the corpus only contains NGramDocument's:
 
 julia> crps
 A Corpus with 3 documents:

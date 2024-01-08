@@ -80,7 +80,8 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int,
 
                 for target_topicid in 1:ntopics
                     topicprob = (doc.topicidcount[target_topicid] + beta) / (document_lenth + beta * ntopics)
-                    wordprob = (get(topics[target_topicid].wordcount, word, 0)+ alpha) / (topics[target_topicid].count + alpha * number_of_words)
+                    topic = topics[target_topicid]
+                    wordprob = (get(topic.wordcount, word, 0)+ alpha) / (topic.count + alpha * number_of_words)
                     probs[target_topicid] = topicprob * wordprob
                 end
                 normalize_probs = sum(probs)
