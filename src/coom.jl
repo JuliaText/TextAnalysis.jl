@@ -62,9 +62,7 @@ function coo_matrix(::Type{T},
         else
             max(1, i - window):min(m, i + window)
         end
-
         row = get(vocab, token, nothing)
-
         # looking forward
         @inbounds for j in inner_range
             wtoken = doc[j]
