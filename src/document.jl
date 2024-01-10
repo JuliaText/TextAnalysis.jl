@@ -308,7 +308,7 @@ Create an ordered dictionary from a `StringDocument` or a `Vector` of strings (u
   and the value is the index of that string in the original input.
 
 # Examples
-```julia
+```julia-repl
 julia> doc = StringDocument("This is a sample sentence of a sample document.");
        ordered_vocab(doc) 
 
