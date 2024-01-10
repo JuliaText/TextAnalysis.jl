@@ -46,7 +46,7 @@ end
 #
 ##############################################################################
 
-abstract type AbstractDocument; end
+abstract type AbstractDocument end
 
 
 mutable struct FileDocument <: AbstractDocument
@@ -142,7 +142,7 @@ A TokenDocument{String}
 function TokenDocument(txt::AbstractString, dm::DocumentMetadata)
     TokenDocument(tokenize(dm.language, String(txt)), dm)
 end
-function TokenDocument(tkns::Vector{T}) where T <: AbstractString
+function TokenDocument(tkns::Vector{T}) where {T<:AbstractString}
     TokenDocument(tkns, DocumentMetadata())
 end
 TokenDocument(txt::AbstractString) = TokenDocument(String(txt), DocumentMetadata())
@@ -189,7 +189,7 @@ end
 function NGramDocument(txt::AbstractString, n::Integer...=1)
     NGramDocument(txt, DocumentMetadata(), n...)
 end
-function NGramDocument(ng::Dict{T, Int}, n::Integer...=1) where T <: AbstractString
+function NGramDocument(ng::Dict{T,Int}, n::Integer...=1) where {T<:AbstractString}
     NGramDocument(merge(Dict{AbstractString,Int}(), ng), (length(n) == 1) ? Int(first(n)) : Int[n...], DocumentMetadata())
 end
 
@@ -270,16 +270,82 @@ julia> tokens(sd)
     "."
 ```
 """
-tokens(d::(Union{FileDocument, StringDocument})) = tokenize(language(d), text(d))
+tokens(d::(Union{FileDocument,StringDocument})) = tokenize(language(d), text(d))
 tokens(d::TokenDocument) = d.tokens
 function tokens(d::NGramDocument)
     error("The tokens of an NGramDocument cannot be reconstructed")
 end
 
-tokens!(d::TokenDocument, new_tokens::Vector{T}) where {T <: AbstractString} = (d.tokens = new_tokens)
-function tokens!(d::AbstractDocument, new_tokens::Vector{T}) where T <: AbstractString
+tokens!(d::TokenDocument, new_tokens::Vector{T}) where {T<:AbstractString} = (d.tokens = new_tokens)
+function tokens!(d::AbstractDocument, new_tokens::Vector{T}) where {T<:AbstractString}
     error("The tokens of a $(typeof(d)) cannot be directly edited")
 end
+
+
+##############################################################################
+#
+# vocab() / vocab!(): Access to document text as a vocabulary
+#
+# to_string_vector(): Helper function for creating a vocabulary from a StringDocument or a Vector{String}
+#
+##############################################################################
+# Converts a StringDocument to Vector{String}
+to_string_vector(doc::StringDocument) = tokens(doc)
+# Identity function for Vector{String}
+to_string_vector(vec::Vector{String}) = vec
+
+"""
+    vocab(input::Union{StringDocument, Vector{String}}) -> OrderedDict{String, Int}
+
+Create an ordered dictionary from a `StringDocument` or a `Vector` of strings (useful for creating cooccurrence matrices with coo_matrix() (cf. example below). The dictionary maps each unique string to its corresponding index.
+
+# Arguments
+- `input::Union{StringDocument, Vector{String}}`: Input can be either a `StringDocument` or a `Vector{String}`. 
+  For `StringDocument`, the tokens are extracted and used. For `Vector{String}`, the vector itself is used.
+
+# Returns
+- `OrderedDict{String, Int}`: An ordered dictionary where each key is a unique string from the input, 
+  and the value is the index of that string in the original input.
+
+# Examples
+```julia
+julia> doc = StringDocument("This is a sample sentence of a sample document.");
+       vocab(doc) 
+
+OrderedDict{String, Int64} with 8 entries:
+  "This"     => 1
+  "is"       => 2
+  "a"        => 3
+  "sample"   => 4
+  "sentence" => 5
+  ⋮          => ⋮
+
+julia> str_vec = ["This", "is", "a", "sample", "sentence", "of", "a", "sample", "document"];
+       vocab(str_vec)
+       
+OrderedDict{String, Int64} with 7 entries:
+  "This"     => 1
+  "is"       => 2
+  "a"        => 3
+  "sample"   => 4
+  "sentence" => 5
+  ⋮          => ⋮
+"""
+function vocab(input::Union{StringDocument,Vector{String}})
+    string_vector = to_string_vector(input)
+    string_vector = length(string_vector) != length(unique(string_vector)) ? unique(string_vector) : string_vector
+
+    # preallocating the ordered dictionary with the size of the string_vector
+    ordered_dict = OrderedDict{String,Int}()
+    sizehint!(ordered_dict, length(string_vector))
+
+    # reverse the order of the keys and values in the enumerate iterator to get an ordered dict.
+    for (index, key) in enumerate(string_vector)
+        ordered_dict[key] = index
+    end
+    return ordered_dict
+end
+
 
 ##############################################################################
 #
@@ -322,7 +388,7 @@ ngrams(d::AbstractDocument, n::Integer...) = ngramize(language(d), tokens(d), n.
 ngrams(d::NGramDocument) = d.ngrams
 ngrams(d::AbstractDocument) = ngrams(d, 1)
 
-ngrams!(d::NGramDocument, new_ngrams::Dict{AbstractString, Int}) = (d.ngrams = new_ngrams)
+ngrams!(d::NGramDocument, new_ngrams::Dict{AbstractString,Int}) = (d.ngrams = new_ngrams)
 function ngrams!(d::AbstractDocument, new_ngrams::Dict)
     error("The n-grams of $(typeof(d)) cannot be directly edited")
 end
@@ -371,8 +437,8 @@ const GenericDocument = Union{
 ##############################################################################
 
 Document(str::AbstractString) = isfile(str) ? FileDocument(str) : StringDocument(str)
-Document(tkns::Vector{T}) where {T <: AbstractString} = TokenDocument(tkns)
-Document(ng::Dict{String, Int}) = NGramDocument(ng)
+Document(tkns::Vector{T}) where {T<:AbstractString} = TokenDocument(tkns)
+Document(ng::Dict{String,Int}) = NGramDocument(ng)
 
 ##############################################################################
 #
@@ -383,11 +449,11 @@ Document(ng::Dict{String, Int}) = NGramDocument(ng)
 function Base.convert(::Type{StringDocument}, d::FileDocument)
     StringDocument(text(d), d.metadata)
 end
-function Base.convert(::Type{TokenDocument}, d::(Union{FileDocument, StringDocument}))
+function Base.convert(::Type{TokenDocument}, d::(Union{FileDocument,StringDocument}))
     TokenDocument(tokens(d), d.metadata)
 end
 function Base.convert(::Type{NGramDocument},
-            d::(Union{FileDocument, StringDocument, TokenDocument}))
+    d::(Union{FileDocument,StringDocument,TokenDocument}))
     NGramDocument(ngrams(d), 1, d.metadata)
 end
 Base.convert(::Type{TokenDocument}, d::TokenDocument) = d
