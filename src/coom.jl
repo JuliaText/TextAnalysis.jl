@@ -22,7 +22,7 @@ of not the counts by the distance between word positions. The `mode` keyword can
 julia> using TextAnalysis, DataStructures
        doc = StringDocument("This is a text about an apple. There are many texts about apples.")
        docv = TextAnalysis.tokenize(language(doc), text(doc))
-       vocab = OrderedDict("This"=>1, "is"=>2, "apple."=>3)
+       vocab = ordered_vocab(doc)
        TextAnalysis.coo_matrix(Float16, docv, vocab, 5, true)
 
 3×3 SparseArrays.SparseMatrixCSC{Float16,Int64} with 4 stored entries:
@@ -37,7 +37,7 @@ julia> using TextAnalysis, DataStructures
 julia> using TextAnalysis, DataStructures
        doc = StringDocument("This is a text about an apple. There are many texts about apples.")
        docv = TextAnalysis.tokenize(language(doc), text(doc))
-       vocab = vocab(doc)
+       vocab = ordered_vocab(doc)
        TextAnalysis.coo_matrix(Float16, docv, vocab, 5, true, :directional)
 
 13×13 SparseArrays.SparseMatrixCSC{Float16, Int64} with 106 stored entries:

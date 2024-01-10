@@ -1,3 +1,4 @@
+using DataStructures: OrderedDict
 
 @testset "Document" begin
 

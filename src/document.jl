@@ -295,7 +295,7 @@ to_string_vector(doc::StringDocument) = tokens(doc)
 to_string_vector(vec::Vector{String}) = vec
 
 """
-    vocab(input::Union{StringDocument, Vector{String}}) -> OrderedDict{String, Int}
+    ordered_vocab(input::Union{StringDocument, Vector{String}}) -> OrderedDict{String, Int}
 
 Create an ordered dictionary from a `StringDocument` or a `Vector` of strings (useful for creating cooccurrence matrices with coo_matrix() (cf. example below). The dictionary maps each unique string to its corresponding index.
 
@@ -310,7 +310,7 @@ Create an ordered dictionary from a `StringDocument` or a `Vector` of strings (u
 # Examples
 ```julia
 julia> doc = StringDocument("This is a sample sentence of a sample document.");
-       vocab(doc) 
+       ordered_vocab(doc) 
 
 OrderedDict{String, Int64} with 8 entries:
   "This"     => 1
@@ -321,8 +321,8 @@ OrderedDict{String, Int64} with 8 entries:
   ⋮          => ⋮
 
 julia> str_vec = ["This", "is", "a", "sample", "sentence", "of", "a", "sample", "document"];
-       vocab(str_vec)
-       
+       ordered_vocab(str_vec)
+
 OrderedDict{String, Int64} with 7 entries:
   "This"     => 1
   "is"       => 2
@@ -332,14 +332,13 @@ OrderedDict{String, Int64} with 7 entries:
   ⋮          => ⋮
 """
 function vocab(input::Union{StringDocument,Vector{String}})
-    string_vector = to_string_vector(input)
-    string_vector = length(string_vector) != length(unique(string_vector)) ? unique(string_vector) : string_vector
+    string_vector = to_string_vector(input) |> unique
 
     # preallocating the ordered dictionary with the size of the string_vector
     ordered_dict = OrderedDict{String,Int}()
     sizehint!(ordered_dict, length(string_vector))
 
-    # reverse the order of the keys and values in the enumerate iterator to get an ordered dict.
+    # populating the ordered dictionary
     for (index, key) in enumerate(string_vector)
         ordered_dict[key] = index
     end
