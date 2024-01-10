@@ -331,7 +331,7 @@ OrderedDict{String, Int64} with 7 entries:
   "sentence" => 5
   ⋮          => ⋮
 """
-function vocab(input::Union{StringDocument,Vector{String}})
+function ordered_vocab(input::Union{StringDocument,Vector{String}})
     string_vector = to_string_vector(input) |> unique
 
     # preallocating the ordered dictionary with the size of the string_vector

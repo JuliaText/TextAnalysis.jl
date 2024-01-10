@@ -35,8 +35,8 @@ using DataStructures: OrderedDict
     @test "a" in keys(ngrams(sd, 1))
     @test "string" in keys(ngrams(sd, 1))
 
-    @test vocab(sd) == OrderedDict("This" => 1, "is" => 2, "a" => 3, "string" => 4)
-    @test vocab(["This", "is", "a", "string"]) == OrderedDict("This" => 1, "is" => 2, "a" => 3, "string" => 4)
+    @test ordered_vocab(sd) == OrderedDict("This" => 1, "is" => 2, "a" => 3, "string" => 4)
+    @test ordered_vocab(["This", "is", "a", "string"]) == OrderedDict("This" => 1, "is" => 2, "a" => 3, "string" => 4)
 
     @test length(sd) == 16
 
