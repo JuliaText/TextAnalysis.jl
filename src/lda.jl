@@ -69,7 +69,7 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int,
     wait_time = showprogress ? 1.0 : Inf
 
     # Gibbs sampling
-    @showprogress wait_time for _ in 1:iteration
+    @showprogress dt=wait_time for _ in 1:iteration
         for doc in docs
             for (i, word) in enumerate(doc.text)
                 topicid_current = doc.topic[i]
