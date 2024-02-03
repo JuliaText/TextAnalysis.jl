@@ -89,7 +89,7 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int,
                 # select new topic
                 select = rand()
                 sum_of_prob = 0.0
-                new_topicid = 0
+                new_topicid = 1
                 for (selected_topicid, prob) in enumerate(probs)
                     sum_of_prob += prob / normalize_probs
                     if select < sum_of_prob
