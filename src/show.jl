@@ -10,7 +10,7 @@ function Base.summary(d::AbstractDocument)
     o *= " * Author: $(author(d))\n"
     o *= " * Timestamp: $(timestamp(d))\n"
 
-    if typeof(d) <: Union{TokenDocument, NGramDocument}
+    if typeof(d) <: Union{TokenDocument,NGramDocument}
         o *= " * Snippet: ***SAMPLE TEXT NOT AVAILABLE***"
     else
         sample_text = replace(first(text(d), 50), r"\s+" => " ")

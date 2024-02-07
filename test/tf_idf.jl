@@ -12,10 +12,12 @@
     m = DocumentTermMatrix(crps)
 
     # Terms are in alphabetical ordering
-    correctweights =[0.5  0.0  0.0  1/6  1/3
-                     0.0  0.2  0.4  0.0  0.4
-                     0.0  0.0  0.0  0.0  0.0
-                     0.0  1/3  0.0  0.0  2/3]
+    correctweights = [
+        0.5 0.0 0.0 1/6 1/3
+        0.0 0.2 0.4 0.0 0.4
+        0.0 0.0 0.0 0.0 0.0
+        0.0 1/3 0.0 0.0 2/3
+    ]
 
     myweights = tf(m)
     @test myweights == correctweights
@@ -29,21 +31,23 @@
     @test myweights ≈ correctweights
     @test typeof(myweights) <: Matrix
 
-    myweights = float(dtm(m));
+    myweights = float(dtm(m))
     tf!(myweights)
     @test myweights ≈ correctweights
     @test typeof(myweights) <: SparseMatrixCSC
 
-    myweights = float(dtm(m, :dense));
+    myweights = float(dtm(m, :dense))
     tf!(myweights)
     @test myweights ≈ correctweights
     @test typeof(myweights) <: Matrix
 
     # Terms are in alphabetical ordering
-    correctweights = [0.6931471805599453 0.0 0.0 0.23104906018664842 0.09589402415059362
-	              0.0 0.13862943611198905 0.5545177444479562 0.0 0.11507282898071235
-	              0.0 0.0 0.0 0.0 0.0
-	              0.0 0.23104906018664842  0.0 0.0 0.19178804830118723]
+    correctweights = [
+        0.6931471805599453 0.0 0.0 0.23104906018664842 0.09589402415059362
+        0.0 0.13862943611198905 0.5545177444479562 0.0 0.11507282898071235
+        0.0 0.0 0.0 0.0 0.0
+        0.0 0.23104906018664842 0.0 0.0 0.19178804830118723
+    ]
 
     myweights = tf_idf(m)
     @test myweights ≈ correctweights
@@ -57,12 +61,12 @@
     @test myweights ≈ correctweights
     @test typeof(myweights) <: Matrix
 
-    myweights = float(dtm(m));
+    myweights = float(dtm(m))
     tf_idf!(myweights)
     @test myweights ≈ correctweights
     @test typeof(myweights) <: SparseMatrixCSC
 
-    myweights = float(dtm(m, :dense));
+    myweights = float(dtm(m, :dense))
     tf_idf!(myweights)
     @test myweights ≈ correctweights
     @test typeof(myweights) <: Matrix
@@ -80,15 +84,16 @@
 
         max_tol = 1e-5
         approx_eq(m1::AbstractMatrix{T}, m2::AbstractMatrix{T}; tol=1e-6
-                ) where T = begin
-            t = all(abs.(m1-m2) .<= tol)
+        ) where {T} = begin
+            t = all(abs.(m1 - m2) .<= tol)
             return t
         end
 
-        correctweights = [1.29959 0.0 0.0 1.89031 0.405067;
-                          0.0 0.882404 1.54025 0.0 0.405067;
-                          0.0 0.0 0.0 0.0 0.0;
-                          0.0 1.40179 0.0 0.0 0.676646]
+        correctweights = [
+            1.29959 0.0 0.0 1.89031 0.405067;
+            0.0 0.882404 1.54025 0.0 0.405067;
+            0.0 0.0 0.0 0.0 0.0;
+            0.0 1.40179 0.0 0.0 0.676646]
 
         myweights = bm_25(m)
 
@@ -109,7 +114,7 @@
         @test typeof(myweights) <: SparseMatrixCSC
         @test eltype(myweights) == typeof(1.0)
 
-        myweights = float(Matrix(dtm(crps)));
+        myweights = float(Matrix(dtm(crps)))
         myweights = bm_25(myweights)
         @test approx_eq(Float64.(myweights), correctweights, tol=max_tol)
         @test typeof(myweights) <: Matrix
@@ -118,19 +123,19 @@
         @test_throws MethodError bm_25!(DocumentTermMatrix(crps))
     end
 
-	@testset "cosine similarity `cos_similarity()`" begin
-		crps = Corpus( StringDocument.([
-		    "to be or not to be",
-		    "to sing or not to sing",
-		    "to talk or to silence"]) )
-		update_lexicon!(crps)
-		d = dtm(crps)
-		tfm = tf_idf(d)
-		cs = cos_similarity(tfm)
-		@test cs==[
-			1.0                  0.03293177886245518  0.0;
-			0.03293177886245518  1.0                  0.0;
-			0.0                  0.0                  1.0
-		]
+    @testset "cosine similarity `cos_similarity()`" begin
+        crps = Corpus(StringDocument.([
+            "to be or not to be",
+            "to sing or not to sing",
+            "to talk or to silence"]))
+        update_lexicon!(crps)
+        d = dtm(crps)
+        tfm = tf_idf(d)
+        cs = cos_similarity(tfm)
+        @test cs == [
+            1.0 0.03293177886245518 0.0;
+            0.03293177886245518 1.0 0.0;
+            0.0 0.0 1.0
+        ]
     end
 end

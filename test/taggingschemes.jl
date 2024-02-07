@@ -12,10 +12,12 @@
     end
 
     @testset "BIO1 and BIOES" begin
-        tags_BIO1 = ["I-LOC", "O", "I-PER", "B-MISC", "I-MISC", "B-PER",
-                                                        "I-PER", "I-PER"]
-        tags_BIOES = ["S-LOC", "O", "S-PER", "B-MISC", "E-MISC", "B-PER",
-                                                        "I-PER", "E-PER"]
+        tags_BIO1 = [
+            "I-LOC", "O", "I-PER", "B-MISC", "I-MISC", "B-PER",
+            "I-PER", "I-PER"]
+        tags_BIOES = [
+            "S-LOC", "O", "S-PER", "B-MISC", "E-MISC", "B-PER",
+            "I-PER", "E-PER"]
 
         output_tags = deepcopy(tags_BIO1)
         tag_scheme!(tags_BIO1, "BIO1", "BIOES")
@@ -26,10 +28,12 @@
     end
 
     @testset "BIO2 and BIOES" begin
-        tags_BIO2 = ["B-LOC", "O", "B-PER", "B-MISC", "I-MISC", "B-PER",
-                                                        "I-PER", "I-PER"]
-        tags_BIOES = ["S-LOC", "O", "S-PER", "B-MISC", "E-MISC", "B-PER",
-                                                        "I-PER", "E-PER"]
+        tags_BIO2 = [
+            "B-LOC", "O", "B-PER", "B-MISC", "I-MISC", "B-PER",
+            "I-PER", "I-PER"]
+        tags_BIOES = [
+            "S-LOC", "O", "S-PER", "B-MISC", "E-MISC", "B-PER",
+            "I-PER", "E-PER"]
 
         output_tags = deepcopy(tags_BIO2)
         tag_scheme!(tags_BIO2, "BIO2", "BIOES")

@@ -2,7 +2,7 @@ using WordTokenizers
 
 export NaiveBayesClassifier
 
-simpleTokenise(s) = WordTokenizers.tokenize(lowercase(replace(s, "."=>"")))
+simpleTokenise(s) = WordTokenizers.tokenize(lowercase(replace(s, "." => "")))
 
 """
 $(TYPEDSIGNATURES)
@@ -70,11 +70,11 @@ Dict{Symbol, Float64} with 2 entries:
 """
 NaiveBayesClassifier(dict, classes) =
     NaiveBayesClassifier(dict, classes,
-             ones(Int, length(dict), length(classes)))
+        ones(Int, length(dict), length(classes)))
 
 NaiveBayesClassifier(classes) = NaiveBayesClassifier(String[], classes)
 
-probabilities(c::NaiveBayesClassifier) = c.weights ./ sum(c.weights, dims = 1)
+probabilities(c::NaiveBayesClassifier) = c.weights ./ sum(c.weights, dims=1)
 
 """
     extend!(model::NaiveBayesClassifier, dictElement)
@@ -121,7 +121,7 @@ fit!(c::NaiveBayesClassifier, s::String, class) = fit!(c, StringDocument(s), cla
 Predict probabilities for each class on the input Features or String.
 """
 function predict(c::NaiveBayesClassifier, x::Features)
-    ps = prod(probabilities(c) .^ x, dims = 1)
+    ps = prod(probabilities(c) .^ x, dims=1)
     ps ./= sum(ps)
     Dict(c.classes[i] => ps[i] for i = 1:length(c.classes))
 end

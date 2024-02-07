@@ -1,11 +1,11 @@
 using Documenter, TextAnalysis
 
 makedocs(
-    modules = [TextAnalysis],
-    sitename = "TextAnalysis",
-    format = Documenter.HTML(
+    modules=[TextAnalysis],
+    sitename="TextAnalysis",
+    format=Documenter.HTML(
     ),
-    pages = [
+    pages=[
         "Home" => "index.md",
         "Documents" => "documents.md",
         "Corpus" => "corpus.md",

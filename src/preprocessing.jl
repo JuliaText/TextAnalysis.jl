@@ -26,7 +26,7 @@ const strip_html_tags               = UInt32(0x1) << 20
 const alpha_sparse      = 0.05
 const alpha_frequent    = 0.95
 
-const regex_cache = Dict{AbstractString, Regex}()
+const regex_cache = Dict{AbstractString,Regex}()
 function mk_regex(regex_string)
     d = haskey(regex_cache, regex_string) ?
             regex_cache[regex_string] :
@@ -42,7 +42,7 @@ Remove corrupt UTF8 characters in `str`.
 See also: [`remove_corrupt_utf8!`](@ref)
 """
 function remove_corrupt_utf8(s::AbstractString)
-    return map(x->isvalid(x) ? x : ' ', s)
+    return map(x -> isvalid(x) ? x : ' ', s)
 end
 
 remove_corrupt_utf8!(d::FileDocument) = error("FileDocument cannot be modified")
@@ -66,7 +66,7 @@ function remove_corrupt_utf8!(d::TokenDocument)
 end
 
 function remove_corrupt_utf8!(d::NGramDocument)
-    new_ngrams = Dict{AbstractString, Int}()
+    new_ngrams = Dict{AbstractString,Int}()
     for token in keys(d.ngrams)
         new_token = remove_corrupt_utf8(token)
         count = get(new_ngrams, new_token, 0)
@@ -86,7 +86,7 @@ end
 Convert `str` to lowercase.
 See also: [`remove_case!`](@ref)
 """
-remove_case(s::T) where {T <: AbstractString} = lowercase(s)
+remove_case(s::T) where {T<:AbstractString} = lowercase(s)
 
 
 """
@@ -124,7 +124,7 @@ function remove_case!(d::TokenDocument)
 end
 
 function remove_case!(d::NGramDocument)
-    new_ngrams = Dict{AbstractString, Int}()
+    new_ngrams = Dict{AbstractString,Int}()
     for token in keys(d.ngrams)
         new_token = remove_case(token)
         count = get(new_ngrams, new_token, 0)
@@ -215,10 +215,10 @@ julia> sd.text
 ```
 """
 function remove_words!(entity::(Union{AbstractDocument,Corpus}),
-               words::Vector{T}) where T <: AbstractString
+    words::Vector{T}) where {T<:AbstractString}
     skipwords = Set{AbstractString}()
     union!(skipwords, words)
-    prepare!(entity, strip_patterns, skip_words = skipwords)
+    prepare!(entity, strip_patterns, skip_words=skipwords)
 end
 
 
@@ -229,7 +229,7 @@ end
 #
 ##############################################################################
 
-function tag_pos!(entity::Union{Corpus, TokenDocument, StringDocument})
+function tag_pos!(entity::Union{Corpus,TokenDocument,StringDocument})
     @warn "tag_pos! is deprecated, Use Perceptrontagger instead"
     tagger = PerceptronTagger(true)
     if typeof(entity) == Corpus
@@ -260,7 +260,7 @@ julia> sparse_terms(crps, 0.5)
 ```
 See also: [`remove_sparse_terms!`](@ref), [`frequent_terms`](@ref)
 """
-function sparse_terms(crps::Corpus, alpha::Real = alpha_sparse)
+function sparse_terms(crps::Corpus, alpha::Real=alpha_sparse)
     update_lexicon!(crps)
     update_inverse_index!(crps)
     res = Array{String}(undef, 0)
@@ -296,7 +296,7 @@ julia> frequent_terms(crps)
 ```
 See also: [`remove_frequent_terms!`](@ref), [`sparse_terms`](@ref)
 """
-function frequent_terms(crps::Corpus, alpha::Real = alpha_frequent)
+function frequent_terms(crps::Corpus, alpha::Real=alpha_frequent)
     update_lexicon!(crps)
     update_inverse_index!(crps)
     res = Array{String}(undef, 0)
@@ -332,7 +332,7 @@ julia> crps[2].text
 ```
 See also: [`remove_frequent_terms!`](@ref), [`sparse_terms`](@ref)
 """
-remove_sparse_terms!(crps::Corpus, alpha::Real = alpha_sparse) = remove_words!(crps, sparse_terms(crps, alpha))
+remove_sparse_terms!(crps::Corpus, alpha::Real=alpha_sparse) = remove_words!(crps, sparse_terms(crps, alpha))
 
 """
     remove_frequent_terms!(crps, alpha=0.95)
@@ -356,7 +356,7 @@ julia> text(crps[2])
 ```
 See also: [`remove_sparse_terms!`](@ref), [`frequent_terms`](@ref)
 """
-remove_frequent_terms!(crps::Corpus, alpha::Real = alpha_frequent) = remove_words!(crps, frequent_terms(crps, alpha))
+remove_frequent_terms!(crps::Corpus, alpha::Real=alpha_frequent) = remove_words!(crps, frequent_terms(crps, alpha))
 
 
 """
@@ -396,7 +396,10 @@ julia> text(doc)
 "This is   document of "
 ```
 """
-function prepare!(crps::Corpus, flags::UInt32; skip_patterns = Set{AbstractString}(), skip_words = Set{AbstractString}())
+function prepare!(
+    crps::Corpus, flags::UInt32;
+    skip_patterns=Set{AbstractString}(), skip_words=Set{AbstractString}()
+)
     ((flags & strip_sparse_terms) > 0) && union!(skip_words, sparse_terms(crps))
     ((flags & strip_frequent_terms) > 0) && union!(skip_words, frequent_terms(crps))
 
@@ -415,7 +418,10 @@ function prepare!(crps::Corpus, flags::UInt32; skip_patterns = Set{AbstractStrin
     nothing
 end
 
-function prepare!(d::AbstractDocument, flags::UInt32; skip_patterns = Set{AbstractString}(), skip_words = Set{AbstractString}())
+function prepare!(
+    d::AbstractDocument, flags::UInt32;
+    skip_patterns=Set{AbstractString}(), skip_words=Set{AbstractString}()
+)
     ((flags & strip_corrupt_utf8) > 0) && remove_corrupt_utf8!(d)
     ((flags & strip_case) > 0) && remove_case!(d)
     ((flags & strip_html_tags) > 0) && remove_html_tags!(d)
@@ -431,16 +437,18 @@ end
 
 """
     remove_whitespace(str)
+
 Squash multiple whitespaces to a single one.
 And remove all leading and trailing whitespaces.
 See also: [`remove_whitespace!`](@ref)
 """
-remove_whitespace(str::AbstractString) = replace(strip(str), r"\s+"=>" ")
+remove_whitespace(str::AbstractString) = replace(strip(str), r"\s+" => " ")
 
 
 """
     remove_whitespace!(doc)
     remove_whitespace!(crps)
+
 Squash multiple whitespaces to a single space and remove all leading and trailing whitespaces in document or crps.
 Does no-op for `FileDocument`, `TokenDocument` or `NGramDocument`.
 See also: [`remove_whitespace`](@ref)
@@ -461,6 +469,7 @@ end
 
 """
     remove_patterns(str, rex::Regex)
+
 Remove the part of str matched by rex.
 See also: [`remove_patterns!`](@ref)
 """
@@ -490,6 +499,7 @@ end
 """
     remove_patterns!(doc, rex::Regex)
     remove_patterns!(crps, rex::Regex)
+
 Remove patterns matched by `rex` in document or Corpus.
 Does not modify `FileDocument` or Corpus containing `FileDocument`.
 See also: [`remove_patterns`](@ref)
@@ -508,7 +518,7 @@ function remove_patterns!(d::TokenDocument, rex::Regex)
 end
 
 function remove_patterns!(d::NGramDocument, rex::Regex)
-    new_ngrams = Dict{AbstractString, Int}()
+    new_ngrams = Dict{AbstractString,Int}()
     for token in keys(d.ngrams)
         new_token = remove_patterns(token, rex)
         count = get(new_ngrams, new_token, 0)
@@ -528,9 +538,9 @@ end
 # internal helper methods
 
 _build_regex(lang, flags::UInt32) = _build_regex(lang, flags, Set{AbstractString}(), Set{AbstractString}())
-_build_regex(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) where {T <: AbstractString} = _combine_regex(_build_regex_patterns(lang, flags, patterns, words))
+_build_regex(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) where {T<:AbstractString} = _combine_regex(_build_regex_patterns(lang, flags, patterns, words))
 
-function _combine_regex(regex_parts::Set{T}) where T <: AbstractString
+function _combine_regex(regex_parts::Set{T}) where {T<:AbstractString}
     l = length(regex_parts)
     (0 == l) && return r""
     (1 == l) && return mk_regex(pop!(regex_parts))
@@ -543,7 +553,7 @@ function _combine_regex(regex_parts::Set{T}) where T <: AbstractString
     mk_regex(String(take!(iob)))
 end
 
-function _build_regex_patterns(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) where T <: AbstractString
+function _build_regex_patterns(lang, flags::UInt32, patterns::Set{T}, words::Set{T}) where {T<:AbstractString}
     #((flags & strip_whitespace) > 0) && push!(patterns, "\\s+")
     if (flags & strip_non_letters) > 0
 	push!(patterns, "[^\\p{L}\\s]")
@@ -566,7 +576,7 @@ function _build_regex_patterns(lang, flags::UInt32, patterns::Set{T}, words::Set
     patterns
 end
 
-function _build_words_pattern(words::Vector{T}) where T <: AbstractString
+function _build_words_pattern(words::Vector{T}) where {T<:AbstractString}
     isempty(words) && return ""
 
     iob = IOBuffer()

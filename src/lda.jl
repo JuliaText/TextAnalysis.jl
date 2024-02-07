@@ -15,9 +15,9 @@ TopicBasedDocument(ntopics) = TopicBasedDocument(Vector{Int}(), Vector{Int}(), z
 
 mutable struct Topic
     count::Int
-    wordcount::Dict{Int, Int}
+    wordcount::Dict{Int,Int}
 end
-Topic() = Topic(0, Dict{Int, Int}())
+Topic() = Topic(0, Dict{Int,Int}())
 
 end
 
@@ -37,8 +37,10 @@ Perform [Latent Dirichlet allocation](https://en.wikipedia.org/wiki/Latent_Diric
 - `ϕ`: `ntopics × nwords` Sparse matrix of probabilities s.t. `sum(ϕ, 1) == 1`
 - `θ`: `ntopics × ndocs` Dense matrix of probabilities s.t. `sum(θ, 1) == 1`
 """
-function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int,
-             alpha::Float64, beta::Float64; showprogress::Bool = true)
+function lda(
+    dtm::DocumentTermMatrix, ntopics::Int, iteration::Int,
+    alpha::Float64, beta::Float64; showprogress::Bool=true
+)
 
     number_of_documents, number_of_words = size(dtm.dtm)
     docs = [Lda.TopicBasedDocument(ntopics) for _ in 1:number_of_documents]
@@ -69,7 +71,7 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int,
     wait_time = showprogress ? 1.0 : Inf
 
     # Gibbs sampling
-    @showprogress dt=wait_time for _ in 1:iteration
+    @showprogress dt = wait_time for _ in 1:iteration
         for doc in docs
             for (i, word) in enumerate(doc.text)
                 topicid_current = doc.topic[i]
@@ -81,7 +83,7 @@ function lda(dtm::DocumentTermMatrix, ntopics::Int, iteration::Int,
                 for target_topicid in 1:ntopics
                     topicprob = (doc.topicidcount[target_topicid] + beta) / (document_lenth + beta * ntopics)
                     topic = topics[target_topicid]
-                    wordprob = (get(topic.wordcount, word, 0)+ alpha) / (topic.count + alpha * number_of_words)
+                    wordprob = (get(topic.wordcount, word, 0) + alpha) / (topic.count + alpha * number_of_words)
                     probs[target_topicid] = topicprob * wordprob
                 end
                 normalize_probs = sum(probs)

@@ -24,7 +24,7 @@ function summarize(d::AbstractDocument; ns=5)
     num_sentences = length(sentences)
     s = StringDocument.(sentences)
     c = Corpus(s)
-    prepare!(c, strip_case | strip_stopwords | stem_words )
+    prepare!(c, strip_case | strip_stopwords | stem_words)
     update_lexicon!(c)
     t = tf_idf(dtm(c))
     T = t * t'
@@ -32,19 +32,19 @@ function summarize(d::AbstractDocument; ns=5)
     return sentences[sort(sortperm(vec(p), rev=true)[1:min(ns, num_sentences)])]
 end
 
-function pagerank( A; Niter=20, damping=.15)
-         Nmax = size(A, 1)
-         r = rand(1,Nmax);              # Generate a random starting rank.
-         r = r ./ norm(r,1);            # Normalize
-         a = (1-damping) ./ Nmax;       # Create damping vector
+function pagerank(A; n_iter=20, damping=0.15)
+    nmax = size(A, 1)
+    r = rand(1, nmax)              # Generate a random starting rank.
+    r = r ./ norm(r, 1)            # Normalize
+    a = (1 - damping) ./ nmax      # Create damping vector
 
-         for i=1:Niter
-             s = r * A
-             rmul!(s, damping)
-             r = s .+ (a * sum(r, dims=2));   # Compute PageRank.
-         end
+    for _ = 1:n_iter
+        s = r * A
+        rmul!(s, damping)
+        r = s .+ (a * sum(r, dims=2))   # Compute PageRank.
+    end
 
-         r = r./norm(r,1);
+    r = r ./ norm(r, 1)
 
-         return r
+    return r
 end

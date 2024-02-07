@@ -64,7 +64,7 @@ function tag_scheme!(tags, current_scheme::BIO1, new_scheme::BIO2)
         if tags[i][1] == 'I'
             if i == 1
                 tags[i] = 'B' * tags[i][2:end]
-            elseif tags[i - 1] == "O" || tags[i - 1][2:end] != tags[i][2:end]
+            elseif tags[i-1] == "O" || tags[i-1][2:end] != tags[i][2:end]
                 tags[i] = 'B' * tags[i][2:end]
             else
                 continue
@@ -86,7 +86,7 @@ function tag_scheme!(tags, current_scheme::BIO2, new_scheme::BIO1)
         if tags[i][1] == 'B'
             if i == length(tags)
                 tags[i] = 'I' * tags[i][2:end]
-            elseif tags[i + 1] == "O" || tags[i + 1][2:end] != tags[i][2:end]
+            elseif tags[i+1] == "O" || tags[i+1][2:end] != tags[i][2:end]
                 tags[i] = 'I' * tags[i][2:end]
             else
                 continue
@@ -108,7 +108,7 @@ function tag_scheme!(tags, current_scheme::BIO2, new_scheme::BIOES)
                                  tags[i+1][2:end] != tags[i][2:end])
             tags[i] = 'E' * tags[i][2:end]
         elseif tags[i][1] == 'B' && (i == length(tags) ||
-                                 tags[i+1][2:end] != tags[i][2:end])
+                                     tags[i+1][2:end] != tags[i][2:end])
             tags[i] = 'S' * tags[i][2:end]
         else
             (tags[i][1] == 'I' || tags[i][1] == 'B') && continue

@@ -11,16 +11,16 @@ using Test
     @test s.precision ≈ p && s.fmeasure ≈ f
 
     @test argmax([
-        Score(0., 1., 2.),
-        Score(3., 0., 0.),
-        Score(0., 6., 1.)
-    ]) == Score(0., 1., 2.)
+        Score(0.0, 1.0, 2.0),
+        Score(3.0, 0.0, 0.0),
+        Score(0.0, 6.0, 1.0)
+    ]) == Score(0.0, 1.0, 2.0)
 
     @test average([
-        Score(1., 10., 100.),
-        Score(2., 20., 200.),
-        Score(3., 30., 300.)
-    ]) == Score(2., 20., 200.)
+        Score(1.0, 10.0, 100.0),
+        Score(2.0, 20.0, 200.0),
+        Score(3.0, 30.0, 300.0)
+    ]) == Score(2.0, 20.0, 200.0)
 end
 
 @testset "Evaluation Metrics" begin

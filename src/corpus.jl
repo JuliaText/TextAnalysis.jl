@@ -1,8 +1,8 @@
-mutable struct Corpus{T <: AbstractDocument}
+mutable struct Corpus{T<:AbstractDocument}
     documents::Vector{T}
     total_terms::Int
-    lexicon::Dict{String, Int}
-    inverse_index::Dict{String, Vector{Int}}
+    lexicon::Dict{String,Int}
+    inverse_index::Dict{String,Vector{Int}}
     h::TextHashFunction
 end
 
@@ -25,12 +25,12 @@ Corpus's lexicon contains 0 tokens
 Corpus's index contains 0 tokens
 ```
 """
-function Corpus(docs::Vector{T}) where {T <: AbstractDocument}
+function Corpus(docs::Vector{T}) where {T<:AbstractDocument}
     Corpus(
         docs,
         0,
-        Dict{String, Int}(),
-        Dict{String, Vector{Int}}(),
+        Dict{String,Int}(),
+        Dict{String,Vector{Int}}(),
         TextHashFunction()
     )
 end
@@ -93,7 +93,7 @@ Tables.getcolumn(d::AbstractDocument, i::Int) = Tables.getcolumn(d, Tables.colum
 
 Tables.isrowtable(x::Corpus) = true
 Tables.rows(x::Corpus) = x
-Tables.schema(x::Corpus) = Tables.Schema((:Language, :Title, :Author, :Timestamp, :Length, :Text), (Union{String, Missing}, Union{String, Missing}, Union{String, Missing}, Union{String, Missing}, Union{Int, Missing}, Union{String, Missing}))
+Tables.schema(x::Corpus) = Tables.Schema((:Language, :Title, :Author, :Timestamp, :Length, :Text), (Union{String,Missing}, Union{String,Missing}, Union{String,Missing}, Union{String,Missing}, Union{Int,Missing}, Union{String,Missing}))
 
 ##############################################################################
 #
@@ -103,7 +103,7 @@ Tables.schema(x::Corpus) = Tables.Schema((:Language, :Title, :Author, :Timestamp
 
 function Base.iterate(crps::Corpus, ind=1)
     ind > length(crps.documents) && return nothing
-    crps.documents[ind], ind+1
+    crps.documents[ind], ind + 1
 end
 
 ##############################################################################
@@ -133,7 +133,7 @@ Base.delete!(crps::Corpus, index::Integer) = delete!(crps.documents, index)
 ##############################################################################
 
 Base.getindex(crps::Corpus, ind::Real) = crps.documents[ind]
-Base.getindex(crps::Corpus, inds::Vector{T}) where {T <: Real} = crps.documents[inds]
+Base.getindex(crps::Corpus, inds::Vector{T}) where {T<:Real} = crps.documents[inds]
 Base.getindex(crps::Corpus, r::AbstractRange) = crps.documents[r]
 Base.getindex(crps::Corpus, term::AbstractString) = get(crps.inverse_index, term, Int[])
 
@@ -230,7 +230,7 @@ contain that term. The inverse index tells us this and therefore provides a simp
 inverse_index(crps::Corpus) = crps.inverse_index
 
 function update_inverse_index!(crps::Corpus)
-    idx = Dict{String, Array{Int, 1}}()
+    idx = Dict{String,Array{Int,1}}()
     for i in 1:length(crps)
         doc = crps.documents[i]
         ngram_arr = isa(doc, NGramDocument) ? collect(keys(ngrams(doc))) : tokens(doc)
@@ -293,7 +293,7 @@ Corpus's lexicon contains 0 tokens
 Corpus's index contains 0 tokens
 ```
 """
-function standardize!(crps::Corpus, ::Type{T}) where T <: AbstractDocument
+function standardize!(crps::Corpus, ::Type{T}) where {T<:AbstractDocument}
     for i in 1:length(crps)
         crps.documents[i] = convert(T, crps.documents[i])
     end
