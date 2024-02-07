@@ -1,18 +1,18 @@
 
 ## Deprecations for Languages
 
-function tokenize(::Type{S}, s::T) where {S <: Language, T <: AbstractString}
-    depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
+function tokenize(::Type{S}, s::T) where {S<:Language,T<:AbstractString}
+    depwarn("Use of Languages as types is deprecated. Use instances.", Symbol(S))
     tokenize(S(), s)
 end
 
-function ngramize(::Type{S}, words::Vector{T}, n::Int) where {S <: Language, T <: AbstractString}
-    depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
+function ngramize(::Type{S}, words::Vector{T}, n::Int) where {S<:Language,T<:AbstractString}
+    depwarn("Use of Languages as types is deprecated. Use instances.", Symbol(S))
     ngramize(S(), words, n)
 end
 
-function onegramize(::Type{S}, words::Vector{T}) where {S <: Language, T <: AbstractString}
-    depwarn("Use of Languages as types is deprecated. Use instances.",  Symbol(S))
+function onegramize(::Type{S}, words::Vector{T}) where {S<:Language,T<:AbstractString}
+    depwarn("Use of Languages as types is deprecated. Use instances.", Symbol(S))
     onegramize(S(), words)
 end
 

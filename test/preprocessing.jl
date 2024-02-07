@@ -82,22 +82,22 @@
     @test "Hello world" == strip(d.text)
 
     style_html_doc = StringDocument(
-      """
-        <html>
-            <head>
-                <script language=\"javascript\"> x = 20; </script>
-            </head>
-            <body>
-                <style>
-                  .fake-style {
-                    color: #00ff00;
-                  }
-                </style>
-                <h1>Hello</h1><a href=\"world\"> world</a>
-            </body>
-        </html>
-      """
-     )
+        """
+          <html>
+              <head>
+                  <script language=\"javascript\"> x = 20; </script>
+              </head>
+              <body>
+                  <style>
+                    .fake-style {
+                      color: #00ff00;
+                    }
+                  </style>
+                  <h1>Hello</h1><a href=\"world\"> world</a>
+              </body>
+          </html>
+        """
+    )
     remove_html_tags!(style_html_doc)
     @test "Hello world" == strip(style_html_doc.text)
 
@@ -107,8 +107,8 @@
 
     #Test frequent_terms sparse_terms
     crps = Corpus(StringDocument.(sample_texts))
-    @test isempty(setdiff(frequent_terms(crps),["string","is"]))
-    @test isempty(setdiff(sparse_terms(crps,0.3),["!"]))
+    @test isempty(setdiff(frequent_terms(crps), ["string", "is"]))
+    @test isempty(setdiff(sparse_terms(crps, 0.3), ["!"]))
 
     #Tests strip_punctuation regex conditions
     str = Document("These punctuations should be removed [-.,:;,!?'\"[](){}|\`#\$%@^&*_+<>")
@@ -131,9 +131,9 @@
     @test isequal(doc.text, "this is sample text")
 
     crps = Corpus(
-            [StringDocument("         Document      1"),
-            StringDocument("       Document      2              ")]
-           )
+        [StringDocument("         Document      1"),
+        StringDocument("       Document      2              ")]
+    )
     prepare!(crps, strip_whitespace)
     @test isequal(crps[1].text, "Document 1")
     @test isequal(crps[2].text, "Document 2")

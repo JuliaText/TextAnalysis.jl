@@ -7,7 +7,7 @@ Works correctly if `dtm` and `tf` are same matrix.
 
 See also: [`tf`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
 """
-function tf!(dtm::AbstractMatrix{T1}, tf::AbstractMatrix{T2}) where {T1 <: Real, T2 <: AbstractFloat}
+function tf!(dtm::AbstractMatrix{T1}, tf::AbstractMatrix{T2}) where {T1<:Real,T2<:AbstractFloat}
     n, p = size(dtm)
 
     # TF tells us what proportion of a document is defined by a term
@@ -31,28 +31,28 @@ Overwrite `tf` with the term frequency of the `dtm`.
 
 See also: [`tf`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
 """
-function tf!(dtm::SparseMatrixCSC{T}, tf::SparseMatrixCSC{F}) where {T <: Real, F <: AbstractFloat}
+function tf!(dtm::SparseMatrixCSC{T}, tf::SparseMatrixCSC{F}) where {T<:Real,F<:AbstractFloat}
     rows = rowvals(dtm)
     dtmvals = nonzeros(dtm)
     tfvals = nonzeros(tf)
     @assert size(dtmvals) == size(tfvals)
 
     # TF tells us what proportion of a document is defined by a term
-    words_in_documents = sum(dtm,dims=2)
+    words_in_documents = sum(dtm, dims=2)
 
     n, p = size(dtm)
     for i = 1:p
-       for j in nzrange(dtm, i)
-          row = rows[j]
-          tfvals[j] = dtmvals[j] / max(words_in_documents[row], one(T))
-       end
+        for j in nzrange(dtm, i)
+            row = rows[j]
+            tfvals[j] = dtmvals[j] / max(words_in_documents[row], one(T))
+        end
     end
     return tf
 end
 
-tf!(dtm::AbstractMatrix{T}) where {T <: Real} = tf!(dtm, dtm)
+tf!(dtm::AbstractMatrix{T}) where {T<:Real} = tf!(dtm, dtm)
 
-tf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf!(dtm, dtm)
+tf!(dtm::SparseMatrixCSC{T}) where {T<:Real} = tf!(dtm, dtm)
 
 """
     tf(dtm::DocumentTermMatrix)
@@ -89,9 +89,9 @@ See also: [`tf!`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
 """
 tf(dtm::DocumentTermMatrix) = tf(dtm.dtm)
 
-tf(dtm::Matrix{T}) where {T <: Real} = tf!(dtm, Array{Float64}(undef, size(dtm)...))
+tf(dtm::Matrix{T}) where {T<:Real} = tf!(dtm, Array{Float64}(undef, size(dtm)...))
 
-tf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf!(dtm, similar(dtm, Float64))
+tf(dtm::SparseMatrixCSC{T}) where {T<:Real} = tf!(dtm, similar(dtm, Float64))
 
 """
     tf_idf!(dtm::AbstractMatrix{Real}, tf_idf::AbstractMatrix{AbstractFloat})
@@ -102,7 +102,7 @@ Overwrite `tf_idf` with the tf-idf (Term Frequency - Inverse Doc Frequency) of t
 
 See also: [`tf`](@ref), [`tf!`](@ref) , [`tf_idf`](@ref)
 """
-function tf_idf!(dtm::AbstractMatrix{T1}, tfidf::AbstractMatrix{T2}) where {T1 <: Real, T2 <: AbstractFloat}
+function tf_idf!(dtm::AbstractMatrix{T1}, tfidf::AbstractMatrix{T2}) where {T1<:Real,T2<:AbstractFloat}
     n, p = size(dtm)
 
     # TF tells us what proportion of a document is defined by a term
@@ -131,7 +131,7 @@ The arguments must have same number of nonzeros.
 
 See also: [`tf`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
 """
-function tf_idf!(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F}) where {T <: Real, F <: AbstractFloat}
+function tf_idf!(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F}) where {T<:Real,F<:AbstractFloat}
     rows = rowvals(dtm)
     dtmvals = nonzeros(dtm)
     tfidfvals = nonzeros(tfidf)
@@ -148,10 +148,10 @@ function tf_idf!(dtm::SparseMatrixCSC{T}, tfidf::SparseMatrixCSC{F}) where {T <:
     idf = log.(n ./ documents_containing_term)
 
     for i = 1:p
-       for j in nzrange(dtm, i)
-          row = rows[j]
-          tfidfvals[j] = dtmvals[j] / max(words_in_documents[row], oneval) * idf[i]
-       end
+        for j in nzrange(dtm, i)
+            row = rows[j]
+            tfidfvals[j] = dtmvals[j] / max(words_in_documents[row], oneval) * idf[i]
+        end
     end
 
     return tfidf
@@ -162,9 +162,9 @@ end
 
 Compute tf-idf for `dtm`
 """
-tf_idf!(dtm::AbstractMatrix{T}) where {T <: Real} = tf_idf!(dtm, dtm)
+tf_idf!(dtm::AbstractMatrix{T}) where {T<:Real} = tf_idf!(dtm, dtm)
 
-tf_idf!(dtm::SparseMatrixCSC{T}) where {T <: Real} = tf_idf!(dtm, dtm)
+tf_idf!(dtm::SparseMatrixCSC{T}) where {T<:Real} = tf_idf!(dtm, dtm)
 
 # This does not make sense, since DocumentTermMatrix is based on an array of integers
 #tf_idf!(dtm::DocumentTermMatrix) = tf_idf!(dtm.dtm)
@@ -211,15 +211,16 @@ See also: [`tf!`](@ref), [`tf_idf`](@ref), [`tf_idf!`](@ref)
 """
 tf_idf(dtm::DocumentTermMatrix) = tf_idf(dtm.dtm)
 
-tf_idf(dtm::SparseMatrixCSC{T}) where {T <: Real} =  tf_idf!(dtm, similar(dtm, Float64))
+tf_idf(dtm::SparseMatrixCSC{T}) where {T<:Real} = tf_idf!(dtm, similar(dtm, Float64))
 
-tf_idf(dtm::Matrix{T}) where {T <: Real} = tf_idf!(dtm, Array{Float64}(undef, size(dtm)...))
+tf_idf(dtm::Matrix{T}) where {T<:Real} = tf_idf!(dtm, Array{Float64}(undef, size(dtm)...))
 
-function bm_25!(dtm::AbstractMatrix{T},
-                bm25::AbstractMatrix{F};
-                κ::Int=2,
-                β::Float64=0.75
-               ) where {T<:Real, F<:AbstractFloat}
+function bm_25!(
+    dtm::AbstractMatrix{T},
+    bm25::AbstractMatrix{F};
+    κ::Int=2,
+    β::Float64=0.75
+) where {T<:Real,F<:AbstractFloat}
     @assert size(dtm) == size(bm25)
     # Initializations
     k = F(κ)
@@ -228,7 +229,7 @@ function bm_25!(dtm::AbstractMatrix{T},
     oneval = one(F)
     # TF tells us what proportion of a document is defined by a term
     words_in_documents = F.(sum(dtm, dims=1))
-    ln = words_in_documents./mean(words_in_documents)
+    ln = words_in_documents ./ mean(words_in_documents)
     # IDF tells us how rare a term is in the corpus
     documents_containing_term = vec(sum(dtm .> 0, dims=2)) .+ one(T)
     idf = log.(n ./ documents_containing_term) .+ oneval
@@ -237,18 +238,19 @@ function bm_25!(dtm::AbstractMatrix{T},
     @inbounds @simd for i in 1:n
         for j in 1:p
             bm25[j, i] = idf[j] *
-                ((k + 1) * bm25[j, i]) /
-                (k * (oneval - b + b * ln[i]) + bm25[j, i])
+                         ((k + 1) * bm25[j, i]) /
+                         (k * (oneval - b + b * ln[i]) + bm25[j, i])
         end
     end
     return bm25
 end
 
-function bm_25!(dtm::SparseMatrixCSC{T},
-                bm25::SparseMatrixCSC{F};
-                κ::Int=2,
-                β::Float64=0.75
-               ) where {T<:Real, F<:AbstractFloat}
+function bm_25!(
+    dtm::SparseMatrixCSC{T},
+    bm25::SparseMatrixCSC{F};
+    κ::Int=2,
+    β::Float64=0.75
+) where {T<:Real,F<:AbstractFloat}
     @assert size(dtm) == size(bm25)
     # Initializations
     k = F(κ)
@@ -260,26 +262,26 @@ function bm_25!(dtm::SparseMatrixCSC{T},
     p, n = size(dtm)
     # TF tells us what proportion of a document is defined by a term
     words_in_documents = F.(sum(dtm, dims=1))
-    ln = words_in_documents./mean(words_in_documents)
+    ln = words_in_documents ./ mean(words_in_documents)
     oneval = one(F)
     # IDF tells us how rare a term is in the corpus
     documents_containing_term = vec(sum(dtm .> 0, dims=2)) .+ one(T)
     idf = log.(n ./ documents_containing_term) .+ oneval
     for i = 1:n
-       for j in nzrange(dtm, i)
-          row = rows[j]
-          tf = sqrt.(dtmvals[j] / max(words_in_documents[i], oneval))
-          bm25vals[j] = idf[row] * ((k + 1) * tf) /
-                        (k * (oneval - b + b * ln[i]) + tf)
-       end
+        for j in nzrange(dtm, i)
+            row = rows[j]
+            tf = sqrt.(dtmvals[j] / max(words_in_documents[i], oneval))
+            bm25vals[j] = idf[row] * ((k + 1) * tf) /
+                          (k * (oneval - b + b * ln[i]) + tf)
+        end
     end
     return bm25
 end
 
-bm_25(dtm::AbstractMatrix{T}; κ::Int=2, β::Float64=0.75) where T<:Integer =
+bm_25(dtm::AbstractMatrix{T}; κ::Int=2, β::Float64=0.75) where {T<:Integer} =
     bm_25!(dtm, similar(dtm, Float64), κ=κ, β=β)
 
-bm_25(dtm::AbstractMatrix{T}; κ::Int=2, β::Float64=0.75) where T<:AbstractFloat =
+bm_25(dtm::AbstractMatrix{T}; κ::Int=2, β::Float64=0.75) where {T<:AbstractFloat} =
     bm_25!(dtm, similar(dtm, T), κ=κ, β=β)
 
 bm_25(dtm::DocumentTermMatrix; κ::Int=2, β::Float64=0.75) =
@@ -291,7 +293,7 @@ bm_25!(dtm::DocumentTermMatrix; κ::Int=2, β::Float64=0.75) =
 # The score was modified according to for bm25:
 #   https://opensourceconnections.com/blog/2015/10/16/bm25-the-next-generation-of-lucene-relevation/
 function tf_bm25!(dtm::AbstractMatrix{T}, tf::AbstractMatrix{F}
-            ) where {T<:Real, F<:AbstractFloat}
+) where {T<:Real,F<:AbstractFloat}
     @assert size(dtm) == size(tf)
     p, n = size(dtm)
     # TF tells us what proportion of a document is defined by a term

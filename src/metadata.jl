@@ -129,7 +129,7 @@ See also: [`timestamps!`](@ref), [`timestamp`](@ref), [`timestamp!`](@ref)
 timestamps(c::Corpus) = map(d -> timestamp(d), documents(c))
 
 titles!(c::Corpus, nv::AbstractString) = title!.(documents(c), nv)
-languages!(c::Corpus, nv::T) where {T <: Language} = language!.(documents(c), Ref(nv)) #Ref to force scalar broadcast
+languages!(c::Corpus, nv::T) where {T<:Language} = language!.(documents(c), Ref(nv)) #Ref to force scalar broadcast
 authors!(c::Corpus, nv::AbstractString) = author!.(documents(c), Ref(nv))
 timestamps!(c::Corpus, nv::AbstractString) = timestamp!.(documents(c), Ref(nv))
 
@@ -160,7 +160,7 @@ If the input is a Vector, then language of the `i`th document is set to the `i`t
 
 See also: [`languages`](@ref), [`language!`](@ref), [`language`](@ref)
 """
-function languages!(c::Corpus, nvs::Vector{T}) where T <: Language
+function languages!(c::Corpus, nvs::Vector{T}) where {T<:Language}
     length(c) == length(nvs) || throw(DimensionMismatch("dimensions must match"))
     for (i, d) in pairs(IndexLinear(), documents(c))
         language!(d, nvs[i])

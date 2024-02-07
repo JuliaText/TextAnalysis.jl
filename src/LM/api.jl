@@ -6,7 +6,7 @@ It is used to evaluate score with masks out of vocabulary words
 The arguments are the same as for [`score`](@ref)
 """
 function maskedscore(m::Langmodel, temp_lm::DefaultDict, word, context)::Float64
-   score(m, temp_lm, lookup(m.vocab, [word])[begin], lookup(m.vocab, [context])[begin])
+    score(m, temp_lm, lookup(m.vocab, [word])[begin], lookup(m.vocab, [context])[begin])
 end
 
 """

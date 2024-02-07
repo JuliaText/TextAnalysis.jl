@@ -1,7 +1,7 @@
 mutable struct DocumentTermMatrix{T}
-    dtm::SparseMatrixCSC{Int, Int}
+    dtm::SparseMatrixCSC{Int,Int}
     terms::Vector{T}
-    column_indices::Dict{T, Int}
+    column_indices::Dict{T,Int}
 end
 
 function serialize(io::AbstractSerializer, dtm::DocumentTermMatrix{T}) where {T}
@@ -15,7 +15,7 @@ end
 function deserialize(io::AbstractSerializer, ::Type{DocumentTermMatrix{T}}) where {T}
     dtm = deserialize(io)
     terms = deserialize(io)
-    column_indices = Dict{T,Int}(term => idx for (idx,term) in enumerate(terms))
+    column_indices = Dict{T,Int}(term => idx for (idx, term) in enumerate(terms))
     DocumentTermMatrix{T}(dtm, terms, column_indices)
 end
 
@@ -24,8 +24,8 @@ end
 
 Creates a column index lookup dictionary from a vector of terms.
 """
-function columnindices(terms::Vector{T}) where T
-    column_indices = Dict{T, Int}()
+function columnindices(terms::Vector{T}) where {T}
+    column_indices = Dict{T,Int}()
     for i in 1:length(terms)
         term = terms[i]
         column_indices[term] = i
@@ -68,7 +68,7 @@ julia> m.dtm
   [2, 6]  =  1
 ```
 """
-function DocumentTermMatrix(crps::Corpus, terms::Vector{T}) where T
+function DocumentTermMatrix(crps::Corpus, terms::Vector{T}) where {T}
     column_indices = columnindices(terms)
 
     m = length(crps)
@@ -101,7 +101,7 @@ DocumentTermMatrix(crps::Corpus) = DocumentTermMatrix(crps, lexicon(crps))
 
 DocumentTermMatrix(crps::Corpus, lex::AbstractDict) = DocumentTermMatrix(crps, sort(collect(keys(lex))))
 
-DocumentTermMatrix(dtm::SparseMatrixCSC{Int, Int},terms::Vector{T}) where T = DocumentTermMatrix{T}(dtm, terms, columnindices(terms))
+DocumentTermMatrix(dtm::SparseMatrixCSC{Int,Int}, terms::Vector{T}) where {T} = DocumentTermMatrix{T}(dtm, terms, columnindices(terms))
 
 """
     dtm(crps::Corpus)
@@ -166,7 +166,7 @@ tdm(crps::Corpus) = dtm(crps)' #'
 #
 ##############################################################################
 
-function dtm_entries(d::AbstractDocument, lex::Dict{T, Int}) where T
+function dtm_entries(d::AbstractDocument, lex::Dict{T,Int}) where {T}
     ngs = ngrams(d)
     indices = Int[]
     values = Int[]
@@ -198,7 +198,7 @@ julia> dtv(crps[1], lexicon(crps))
  1  2  0  1  1  1
 ```
 """
-function dtv(d::AbstractDocument, lex::Dict{T, Int}) where T
+function dtv(d::AbstractDocument, lex::Dict{T,Int}) where {T}
     p = length(keys(lex))
     row = zeros(Int, 1, p)
     indices, values = dtm_entries(d, lex)
@@ -330,7 +330,7 @@ function prune!(dtm::DocumentTermMatrix{T}, document_positions; compact::Bool=tr
     end
 
     if compact
-        termcols_to_delete = map(x->x==0, sum(dtm_matrix, dims=(1,)))
+        termcols_to_delete = map(iszero, sum(dtm_matrix, dims=(1,)))
         if retain_terms !== nothing
             for idx in 1:length(termcols_to_delete)
                 (!termcols_to_delete[idx] || !(dtm.terms[idx] in retain_terms)) && continue
@@ -342,9 +342,9 @@ function prune!(dtm::DocumentTermMatrix{T}, document_positions; compact::Bool=tr
     end
 
     if any(termcols_to_delete)
-        dtm.dtm = dtm_matrix[:,[!termcols_to_delete[idx] for idx in 1:length(termcols_to_delete)]]
+        dtm.dtm = dtm_matrix[:, [!termcols_to_delete[idx] for idx in 1:length(termcols_to_delete)]]
         dtm.terms = [dtm.terms[idx] for idx in 1:length(dtm.terms) if !termcols_to_delete[idx]]
-        dtm.column_indices = Dict{T,Int}(term => idx for (idx,term) in enumerate(dtm.terms))
+        dtm.column_indices = Dict{T,Int}(term => idx for (idx, term) in enumerate(dtm.terms))
     else
         dtm.dtm = dtm_matrix
     end
@@ -361,7 +361,7 @@ For efficiency, this may result in modifications to dtm2 as well.
 function merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where {T}
     (length(dtm2.dtm) == 0) && (return dtm1)
 
-    ncombined_docs = size(dtm1.dtm,1) + size(dtm2.dtm,1)
+    ncombined_docs = size(dtm1.dtm, 1) + size(dtm2.dtm, 1)
     termset1 = Set(dtm1.terms)
     termset2 = Set(dtm2.terms)
     termset = union(termset1, termset2)
@@ -377,27 +377,27 @@ function merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where 
 
     function permute_terms!(dtm_to_permute, terms)
         (length(dtm_to_permute) == 0) && (return dtm_to_permute)
-        terms_perm = map(x->(x===nothing) ? 0 : x, indexin(combined_terms, terms))
+        terms_perm = map(x -> (x === nothing) ? 0 : x, indexin(combined_terms, terms))
         remaining_cols = setdiff(1:ncombined_terms, terms_perm)
         for idx in 1:length(terms_perm)
             if terms_perm[idx] == 0
                 terms_perm[idx] = popfirst!(remaining_cols)
             end
         end
-        permute!(dtm_to_permute, 1:size(dtm_to_permute,1), terms_perm)
+        permute!(dtm_to_permute, 1:size(dtm_to_permute, 1), terms_perm)
     end
     function expand_columns(S, n)
         (S.n == n) && (return S)
         @assert (n > S.n)
         colptr = S.colptr
-        resize!(colptr, n+1)
+        resize!(colptr, n + 1)
         colptr[(S.n+2):(n+1)] .= colptr[S.n+1]
         SparseMatrixCSC(S.m, n, colptr, S.rowval, S.nzval)
     end
-    function row_append(A, B)
-        @assert size(A,2) == size(B,2)
-        (length(A) == 0) && (return B)
-        (length(B) == 0) && (return A)
+    function row_append(A::AbstractMatrix, B::AbstractMatrix)
+        @assert size(A, 2) == size(B, 2)
+        isempty(A) && return B
+        isempty(B) && return A
 
         C_colptr = similar(A.colptr)
         C_rowvals = similar(A.rowval, length(A.rowval) + length(B.rowval))
@@ -418,14 +418,14 @@ function merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where 
             # then copy from B
             nvalsB = B.colptr[col+1] - B.colptr[col]
             if nvalsB > 0
-                C_rowvals[colptr_pos:(colptr_pos+nvalsB-1)] .= (B.rowval[B.colptr[col]:(B.colptr[col+1]-1)] .+ size(A,1))
+                C_rowvals[colptr_pos:(colptr_pos+nvalsB-1)] .= (B.rowval[B.colptr[col]:(B.colptr[col+1]-1)] .+ size(A, 1))
                 C_nzval[colptr_pos:(colptr_pos+nvalsB-1)] .= B.nzval[B.colptr[col]:(B.colptr[col+1]-1)]
                 offset += nvalsB
                 colptr_pos += nvalsB
             end
         end
-        C_colptr[end] = length(C_rowvals)+1
-        SparseMatrixCSC(size(A,1) + size(B,1), size(A,2), C_colptr, C_rowvals, C_nzval)
+        C_colptr[end] = length(C_rowvals) + 1
+        SparseMatrixCSC(size(A, 1) + size(B, 1), size(A, 2), C_colptr, C_rowvals, C_nzval)
     end
 
     dtm1_matrix = (combined_terms === dtm1.terms) ? dtm1.dtm : permute_terms!(expand_columns(dtm1.dtm, ncombined_terms), dtm1.terms)
@@ -435,7 +435,7 @@ function merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where 
     # set new terms and recompute column_indices
     dtm1.dtm = combined_matrix
     dtm1.terms = combined_terms
-    dtm1.column_indices = Dict{T,Int}(term => idx for (idx,term) in enumerate(combined_terms))
+    dtm1.column_indices = Dict{T,Int}(term => idx for (idx, term) in enumerate(combined_terms))
 
     dtm1
 end

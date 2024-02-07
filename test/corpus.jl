@@ -16,7 +16,7 @@
     documents(crps)
 
     for doc in crps
-    	@test isa(doc, AbstractDocument)
+        @test isa(doc, AbstractDocument)
     end
 
     lexicon(crps)
@@ -37,9 +37,9 @@
     standardize!(crps, StringDocument)
     remove_words!(crps, [""])
     update_lexicon!(crps)
-    answer = Dict("1"=> 2, "2"=> 1, "4"=> 1)
+    answer = Dict("1" => 2, "2" => 1, "4" => 1)
 
-     @test answer == lexicon(crps)
+    @test answer == lexicon(crps)
 end
 
 using DataFrames

@@ -9,8 +9,8 @@ using Snowball
         Snowball.release(stmr)
     end
 
-    test_cases = Dict{String, Any}(
-        "english" => Dict{AbstractString, AbstractString}(
+    test_cases = Dict{String,Any}(
+        "english" => Dict{AbstractString,AbstractString}(
             "working" => "work",
             "worker" => "worker",
             "aβc" => "aβc",
@@ -20,7 +20,7 @@ using Snowball
 
     for (alg, test_words) in test_cases
         stmr = Stemmer(alg)
-        for (n,v) in test_words
+        for (n, v) in test_words
             @test v == stem(stmr, n)
         end
     end
