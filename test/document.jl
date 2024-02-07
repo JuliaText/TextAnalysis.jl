@@ -1,13 +1,14 @@
+using DataStructures: OrderedDict
 
 @testset "Document" begin
 
-    dmeta = TextAnalysis.DocumentMetadata(Languages.English(), "test title", "test author", "test time", Dict(:k1=>"v1", :k2=>"v2"))
-    @test (dmeta.language == Languages.English()) && 
-        (dmeta.title == "test title") && 
-        (dmeta.author == "test author") && 
-        (dmeta.timestamp == "test time") && 
-        (get(dmeta.custom, :k1, "") == "v1") && 
-        (get(dmeta.custom, :k2, "") == "v2")
+    dmeta = TextAnalysis.DocumentMetadata(Languages.English(), "test title", "test author", "test time", Dict(:k1 => "v1", :k2 => "v2"))
+    @test (dmeta.language == Languages.English()) &&
+          (dmeta.title == "test title") &&
+          (dmeta.author == "test author") &&
+          (dmeta.timestamp == "test time") &&
+          (get(dmeta.custom, :k1, "") == "v1") &&
+          (get(dmeta.custom, :k2, "") == "v2")
 
     # mutability
     dmeta.custom = nothing
@@ -33,6 +34,9 @@
     @test "is" in keys(ngrams(sd, 1))
     @test "a" in keys(ngrams(sd, 1))
     @test "string" in keys(ngrams(sd, 1))
+
+    @test ordered_vocab(sd) == OrderedDict("This" => 1, "is" => 2, "a" => 3, "string" => 4)
+    @test ordered_vocab(["This", "is", "a", "string"]) == OrderedDict("This" => 1, "is" => 2, "a" => 3, "string" => 4)
 
     @test length(sd) == 16
 
@@ -79,8 +83,8 @@
     @test isequal(length(Document("this is text")), 12)
 
     # NGramDocument creation with multiple ngram complexity
-    let N=((), (2,), (Int32(2),), (1,2), (Int32(1), Int16(2))), C=(1, 2, 2, [1,2], [1,2]), L=(4, 3, 3, 7, 7)
-        for (n,c,l) in zip(N,C,L)
+    let N = ((), (2,), (Int32(2),), (1, 2), (Int32(1), Int16(2))), C = (1, 2, 2, [1, 2], [1, 2]), L = (4, 3, 3, 7, 7)
+        for (n, c, l) in zip(N, C, L)
             ngd = NGramDocument(sample_text1, n...)
             @test ngram_complexity(ngd) == c
             @test length(ngd.ngrams) == l

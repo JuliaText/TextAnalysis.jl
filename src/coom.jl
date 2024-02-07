@@ -22,26 +22,31 @@ of not the counts by the distance between word positions. The `mode` keyword can
 julia> using TextAnalysis, DataStructures
        doc = StringDocument("This is a text about an apple. There are many texts about apples.")
        docv = TextAnalysis.tokenize(language(doc), text(doc))
-       vocab = OrderedDict("This"=>1, "is"=>2, "apple."=>3)
+       vocab = ordered_vocab(doc)
        TextAnalysis.coo_matrix(Float16, docv, vocab, 5, true)
 
 3×3 SparseArrays.SparseMatrixCSC{Float16,Int64} with 4 stored entries:
-  [2, 1]  =  2.0
-  [1, 2]  =  2.0
-  [3, 2]  =  0.3999
-  [2, 3]  =  0.3999
+13×13 SparseArrays.SparseMatrixCSC{Float16, Int64} with 106 stored entries:
+  ⋅   2.0  1.0  0.6665  0.5     0.4      ⋅    ⋅      ⋅       ⋅    ⋅       ⋅    ⋅ 
+ 2.0   ⋅   2.0  1.0     0.6665  0.5     0.4   ⋅      ⋅       ⋅    ⋅       ⋅    ⋅ 
+ 1.0  2.0   ⋅   2.0     1.0     0.6665  0.5  0.4     ⋅       ⋅    ⋅       ⋅    ⋅ 
+ ⋮                              ⋮                                ⋮            
+  ⋅    ⋅    ⋅    ⋅      2.0      ⋅      0.4  1.166  0.6665  1.0  2.0      ⋅   1.0
+  ⋅    ⋅    ⋅    ⋅      2.0      ⋅       ⋅   2.0    0.4     0.5  0.6665  1.0   ⋅ 
 
 julia> using TextAnalysis, DataStructures
        doc = StringDocument("This is a text about an apple. There are many texts about apples.")
        docv = TextAnalysis.tokenize(language(doc), text(doc))
-       vocab = OrderedDict("This"=>1, "is"=>2, "apple."=>3)
+       vocab = ordered_vocab(doc)
        TextAnalysis.coo_matrix(Float16, docv, vocab, 5, true, :directional)
 
-3×3 SparseArrays.SparseMatrixCSC{Float16,Int64} with 4 stored entries:
-  [2, 1]  =  1.0
-  [1, 2]  =  1.0
-  [3, 2]  =  0.1999
-  [2, 3]  =  0.1999
+13×13 SparseArrays.SparseMatrixCSC{Float16, Int64} with 106 stored entries:
+  ⋅   1.0  0.5  0.3333  0.25    0.2      ⋅     ⋅      ⋅       ⋅     ⋅       ⋅    ⋅ 
+ 1.0   ⋅   1.0  0.5     0.3333  0.25    0.2    ⋅      ⋅       ⋅     ⋅       ⋅    ⋅ 
+ 0.5  1.0   ⋅   1.0     0.5     0.3333  0.25  0.2     ⋅       ⋅     ⋅       ⋅    ⋅ 
+ ⋮                              ⋮                                  ⋮            
+  ⋅    ⋅    ⋅    ⋅      1.0      ⋅      0.2   0.583  0.3333  0.5   1.0      ⋅   0.5
+  ⋅    ⋅    ⋅    ⋅      1.0      ⋅       ⋅    1.0    0.2     0.25  0.3333  0.5   ⋅ 
 ```
 """
 function coo_matrix(::Type{T},

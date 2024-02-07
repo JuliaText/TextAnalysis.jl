@@ -23,7 +23,7 @@ module TextAnalysis
     export Corpus, DirectoryCorpus
     export stemmer_types, Stemmer
     export DocumentTermMatrix
-    export text, tokens, ngrams
+    export text, tokens, ngrams, ordered_vocab
     export text!, tokens!, ngrams!
     export documents
     export language, title, author, timestamp
