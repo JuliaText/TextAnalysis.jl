@@ -84,13 +84,9 @@ Add-one smoothing to Lidstone or Laplace(gammamodel) models
 function score(m::gammamodel, temp_lm::DefaultDict, word, context) #score for gammamodel output probabl
     accum = temp_lm[context]
     #print(accum)
-    s = float(sum(accum)+(m.gamma)*length(m.vocab.vocab)) 
-    for (text, count) in accum
-        if text == word
-            return(float(count+m.gamma)/s)
-        end
-    end
-    return(float(m.gamma)/s)
+    s = float(sum(accum) + (m.gamma) * length(m.vocab.vocab))
+    idx = something(findfirst(isequal(word), accum), 0)
+    return float(idx + m.gamma) / s
 end
 
 """

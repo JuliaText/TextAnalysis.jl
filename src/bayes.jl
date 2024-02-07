@@ -96,6 +96,9 @@ Fit the weights for the model on the input data.
 """
 function fit!(c::NaiveBayesClassifier, x::Features, class)
     n = findfirst(==(class), c.classes)
+
+    @assert !isnothing(n) "class \"$class\" is not present in the list $(c.classes)"
+
     c.weights[:, n] .+= x
     return c
 end

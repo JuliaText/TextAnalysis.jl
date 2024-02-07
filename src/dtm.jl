@@ -330,7 +330,7 @@ function prune!(dtm::DocumentTermMatrix{T}, document_positions; compact::Bool=tr
     end
 
     if compact
-        termcols_to_delete = map(x->x==0, sum(dtm_matrix, dims=(1,)))
+        termcols_to_delete = map(iszero, sum(dtm_matrix, dims=(1,)))
         if retain_terms !== nothing
             for idx in 1:length(termcols_to_delete)
                 (!termcols_to_delete[idx] || !(dtm.terms[idx] in retain_terms)) && continue
@@ -395,9 +395,9 @@ function merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where 
         SparseMatrixCSC(S.m, n, colptr, S.rowval, S.nzval)
     end
     function row_append(A, B)
-        @assert size(A,2) == size(B,2)
-        (length(A) == 0) && (return B)
-        (length(B) == 0) && (return A)
+        @assert size(A, 2) == size(B, 2)
+        isempty(A) && return B
+        isempty(B) && return A
 
         C_colptr = similar(A.colptr)
         C_rowvals = similar(A.rowval, length(A.rowval) + length(B.rowval))
