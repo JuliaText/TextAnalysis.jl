@@ -68,10 +68,8 @@ function lda(
 
     probs = Vector{Float64}(undef, ntopics)
 
-    wait_time = showprogress ? 1.0 : Inf
-
     # Gibbs sampling
-    @showprogress dt = wait_time for _ in 1:iteration
+    @showprogress enabled = showprogress for _ in 1:iteration
         for doc in docs
             for (i, word) in enumerate(doc.text)
                 topicid_current = doc.topic[i]
