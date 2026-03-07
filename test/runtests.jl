@@ -4,6 +4,7 @@ using Languages
 using TextAnalysis
 using WordTokenizers
 using Serialization
+using OrderedCollections: OrderedDict
 
 tests = [
     "coom.jl"

@@ -109,4 +109,14 @@
     @test dtm2.terms == ["five", "four", "three", "two"]
     @test size(dtm2.dtm) == (2, 4)
     @test sum(dtm2.dtm, dims=(1,)) == [1 2 2 1]
+
+    # Test top_features
+    crps3 = Corpus([FileDocument(sample_file)])
+    update_lexicon!(crps3)
+    m3 = DocumentTermMatrix(crps3)
+    top = top_features(m3)
+    top5 = top_features(m3, 5)
+    @test top isa OrderedDict
+    @test top5 == first(keys(top), 5) == [",", "thou", "And", "and", ";"] 
+    @test first(values(top), 5) == [29, 6, 5, 5, 3]
 end

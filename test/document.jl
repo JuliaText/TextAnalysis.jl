@@ -66,6 +66,13 @@
     @test isa(ngd, NGramDocument)
     @test "To" in keys(ngrams(ngd))
 
+    # Test top features
+    top = top_features(sd)
+    @test top isa OrderedDict
+    @test collect(keys(top)) == ["be", "or", "not", "to", "To"]
+    @test collect(values(top)) == [2, 1, 1, 1, 1]
+    @test top_features(sd, 2) == ["be", "or"]
+
     sd = StringDocument(hamlet_text)
     td = TokenDocument(hamlet_text)
     ngd = NGramDocument(hamlet_text)

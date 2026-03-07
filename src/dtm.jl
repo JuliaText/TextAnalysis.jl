@@ -440,3 +440,16 @@ function merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where 
 
     dtm1
 end
+
+"""
+    top_features(x)
+    top_features(x, n)
+
+Return terms sorted in descending frequency. With `n`, return only the top `n` terms.
+Accepts a `Corpus`, `AbstractDocument`, lexicon `Dict`, or `DocumentTermMatrix`.
+"""
+top_features(D::DocumentTermMatrix, n::Int) = first(keys(top_features(D)), n)
+function top_features(D::DocumentTermMatrix)
+    counts = vec(sum(D.dtm; dims=1))
+    return sort!(OrderedDict(zip(D.terms, counts)); byvalue=true, rev=true)
+end

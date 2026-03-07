@@ -39,6 +39,9 @@
     update_lexicon!(crps)
     answer = Dict("1" => 2, "2" => 1, "4" => 1)
 
+    @test top_features(crps) == top_features(crps[1])
+    @test top_features(crps, 1) == top_features(crps[1], 1)
+
     @test answer == lexicon(crps)
 end
 

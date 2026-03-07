@@ -398,3 +398,12 @@ Base.convert(::Type{NGramDocument}, d::NGramDocument) = d
 ##############################################################################
 
 Base.getindex(d::AbstractDocument, term::AbstractString) = ngrams(d)[term]
+
+##############################################################################
+#
+# top_features() methods
+#
+##############################################################################
+
+top_features(d::AbstractDocument) = sort!(OrderedDict(countmap(tokens(d))); byvalue=true, rev=true)
+top_features(d::AbstractDocument, n::Int) = first(keys(top_features(d)), n)

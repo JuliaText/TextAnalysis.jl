@@ -298,3 +298,14 @@ function standardize!(crps::Corpus, ::Type{T}) where {T<:AbstractDocument}
         crps.documents[i] = convert(T, crps.documents[i])
     end
 end
+
+##############################################################################
+#
+# top_features() methods
+#
+##############################################################################
+
+top_features(lx::Dict{String,Int}) = sort!(OrderedDict(lx); byvalue=true, rev=true)
+top_features(lx::Dict{String,Int}, n::Int) = first(keys(top_features(lx)), n)
+top_features(crps::Corpus) = top_features(lexicon(crps))
+top_features(crps::Corpus, n::Int) = top_features(lexicon(crps), n)
