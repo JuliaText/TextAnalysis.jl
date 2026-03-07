@@ -447,6 +447,7 @@ end
 
 Return terms sorted in descending frequency. With `n`, return only the top `n` terms.
 Accepts a `Corpus`, `AbstractDocument`, lexicon `Dict`, or `DocumentTermMatrix`.
+Ties are sorted alphabetically.
 """
 top_features(D::DocumentTermMatrix, n::Int) = first(keys(top_features(D)), n)
 function top_features(D::DocumentTermMatrix)
