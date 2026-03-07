@@ -305,7 +305,7 @@ end
 #
 ##############################################################################
 
-top_features(lx::Dict{String,Int}) = sort!(OrderedDict(lx); byvalue=true, rev=true)
+top_features(lx::Dict{String,Int}) = sort!(sort!(OrderedDict(lx)); byvalue=true, rev=true) # double sort for key then value order
 top_features(lx::Dict{String,Int}, n::Int) = first(keys(top_features(lx)), n)
 top_features(crps::Corpus) = top_features(lexicon(crps))
 top_features(crps::Corpus, n::Int) = top_features(lexicon(crps), n)

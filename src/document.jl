@@ -405,5 +405,5 @@ Base.getindex(d::AbstractDocument, term::AbstractString) = ngrams(d)[term]
 #
 ##############################################################################
 
-top_features(d::AbstractDocument) = sort!(OrderedDict(countmap(tokens(d))); byvalue=true, rev=true)
+top_features(d::AbstractDocument) = sort!(sort!(OrderedDict(countmap(tokens(d)))); byvalue=true, rev=true) # double sort for key and value order
 top_features(d::AbstractDocument, n::Int) = first(keys(top_features(d)), n)

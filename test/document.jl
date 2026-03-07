@@ -69,9 +69,9 @@
     # Test top features
     top = top_features(sd)
     @test top isa OrderedDict
-    @test collect(keys(top)) == ["be", "or", "not", "to", "To"]
+    @test collect(keys(top)) == ["be", "To", "not", "or", "to"]
     @test collect(values(top)) == [2, 1, 1, 1, 1]
-    @test top_features(sd, 2) == ["be", "or"]
+    @test top_features(sd, 2) == ["be", "To"]
 
     sd = StringDocument(hamlet_text)
     td = TokenDocument(hamlet_text)

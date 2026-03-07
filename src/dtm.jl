@@ -451,5 +451,5 @@ Accepts a `Corpus`, `AbstractDocument`, lexicon `Dict`, or `DocumentTermMatrix`.
 top_features(D::DocumentTermMatrix, n::Int) = first(keys(top_features(D)), n)
 function top_features(D::DocumentTermMatrix)
     counts = vec(sum(D.dtm; dims=1))
-    return sort!(OrderedDict(zip(D.terms, counts)); byvalue=true, rev=true)
+    return sort!(sort!(OrderedDict(zip(D.terms, counts))); byvalue=true, rev=true) # double sort for key and value order
 end
