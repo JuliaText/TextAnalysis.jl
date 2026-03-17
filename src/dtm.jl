@@ -451,8 +451,10 @@ Ties are sorted alphabetically.
 """
 function top_terms(D::DocumentTermMatrix, ::Val{N}) where {N}
     counts = @view(sum(D.dtm; dims=1)[1, :])
-    n = min(N, length(counts))
-    idx = partialsortperm(counts, 1:n; rev=true)
-    OrderedDict(zip(D.terms[idx], counts[idx]))
+    D_pairs = D.terms .=> counts
+    n = min(N, length(D_pairs))
+    # Count decreasing, break ties alphabetically
+    idx = partialsortperm(D_pairs, 1:n; by = p -> (-p.second, p.first))
+    OrderedDict(D_pairs[idx])
 end
 top_terms(D::DocumentTermMatrix, n::Int) = top_terms(D, Val(n))
