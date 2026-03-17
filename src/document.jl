@@ -401,14 +401,15 @@ Base.getindex(d::AbstractDocument, term::AbstractString) = ngrams(d)[term]
 
 ##############################################################################
 #
-# top_features() methods
+# top_terms() methods
 #
 ##############################################################################
 
-function top_features(d::AbstractDocument, ::Val{N})  where {N}
+function top_terms(d::AbstractDocument, ::Val{N})  where {N}
     D_pairs = collect(pairs(countmap(tokens(d))))
     n = min(N, length(D_pairs))
+    # Count decreasing, break ties alphabetically
     idx = partialsortperm(D_pairs, 1:n; by = p -> (-p.second, p.first))
     OrderedDict(D_pairs[idx])
 end
-top_features(d::AbstractDocument, n::Int) = top_features(d, Val(n))
+top_terms(d::AbstractDocument, n::Int) = top_terms(d, Val(n))

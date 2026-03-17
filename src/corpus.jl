@@ -301,16 +301,16 @@ end
 
 ##############################################################################
 #
-# top_features() methods
+# top_terms() methods
 #
 ##############################################################################
 
-function top_features(lx::Dict{String,Int}, ::Val{N}) where {N}
+function top_terms(lx::Dict{String,Int}, ::Val{N}) where {N}
     D_pairs = collect(pairs(lx))
     n = min(N, length(D_pairs))
-    idx = partialsortperm(D_pairs, 1:n, by = p -> (-p.second, p.first))
+    # Count decreasing, break ties alphabetically
+    idx = partialsortperm(D_pairs, 1:n, by = p -> (-p.second, p.first)) 
     OrderedDict(D_pairs[idx])
 end
-top_features(lx::Dict{String,Int}, n::Int) = first.(top_features(lx), Val(n))
-top_features(crps::Corpus, n::Int) = top_features(lexicon(crps), Val(n))
-#top_features(crps::Corpus) = top_features(lexicon(crps))
+top_terms(lx::Dict{String,Int}, n::Int) = top_terms(lx, Val(n))
+top_terms(crps::Corpus, n::Int) = top_terms(lexicon(crps), Val(n))

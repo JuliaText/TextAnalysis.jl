@@ -110,11 +110,11 @@
     @test size(dtm2.dtm) == (2, 4)
     @test sum(dtm2.dtm, dims=(1,)) == [1 2 2 1]
 
-    # Test top_features
+    # Test top_terms
     crps3 = Corpus([FileDocument(sample_file)])
     update_lexicon!(crps3)
     m3 = DocumentTermMatrix(crps3)
-    top5 = top_features(m3, 5)
+    top5 = top_terms(m3, 5)
     @test top5 isa OrderedDict
     @test collect(keys(top5)) == [",", "thou", "And", "and", ";"] 
     @test collect(values(top5)) == [29, 6, 5, 5, 3]

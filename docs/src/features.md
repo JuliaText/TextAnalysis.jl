@@ -104,10 +104,10 @@ julia> hash_dtv(crps[1])
 
 ## Top Features
 
-We can use the function `top_features(x, n)` to quickly view the top features of a `Document`, `DocumentTermMatrix` or `Corpus`.
+We can use the function `top_terms(x, n)` to quickly view the top features of a `Document`, `DocumentTermMatrix` or `Corpus`.
 
 ```julia
-julia> top_features(m, 5)
+julia> top_terms(m, 5)
 OrderedCollections.OrderedDict{String, Int64} with 6 entries:
   "To"     => 2
   "be"     => 2

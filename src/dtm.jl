@@ -442,17 +442,17 @@ function merge!(dtm1::DocumentTermMatrix{T}, dtm2::DocumentTermMatrix{T}) where 
 end
 
 """
-    top_features(x)
-    top_features(x, n)
+    top_terms(x)
+    top_terms(x, n)
 
 Return terms sorted in descending frequency. With `n`, return only the top `n` terms.
 Accepts a `Corpus`, `AbstractDocument`, lexicon `Dict`, or `DocumentTermMatrix`.
 Ties are sorted alphabetically.
 """
-function top_features(D::DocumentTermMatrix, ::Val{N}) where {N}
+function top_terms(D::DocumentTermMatrix, ::Val{N}) where {N}
     counts = @view(sum(D.dtm; dims=1)[1, :])
     n = min(N, length(counts))
     idx = partialsortperm(counts, 1:n; rev=true)
     OrderedDict(zip(D.terms[idx], counts[idx]))
 end
-top_features(D::DocumentTermMatrix, n::Int) = top_features(D, Val(n))
+top_terms(D::DocumentTermMatrix, n::Int) = top_terms(D, Val(n))

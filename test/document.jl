@@ -67,10 +67,10 @@
     @test "To" in keys(ngrams(ngd))
 
     # Test top features
-    top = top_features(sd, 5)
+    top = top_terms(sd, 5)
     @test collect(keys(top)) == ["be", "To", "not", "or", "to"]
     @test collect(values(top)) == [2, 1, 1, 1, 1]
-    @test top_features(sd, 2) == OrderedDict("be" => 2, "To" => 1)
+    @test top_terms(sd, 2) == OrderedDict("be" => 2, "To" => 1)
 
     sd = StringDocument(hamlet_text)
     td = TokenDocument(hamlet_text)
