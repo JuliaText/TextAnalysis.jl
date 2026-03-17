@@ -449,8 +449,10 @@ Return terms sorted in descending frequency. With `n`, return only the top `n` t
 Accepts a `Corpus`, `AbstractDocument`, lexicon `Dict`, or `DocumentTermMatrix`.
 Ties are sorted alphabetically.
 """
-top_features(D::DocumentTermMatrix, n::Int) = first(keys(top_features(D)), n)
-function top_features(D::DocumentTermMatrix)
-    counts = vec(sum(D.dtm; dims=1))
-    return sort!(sort!(OrderedDict(zip(D.terms, counts))); byvalue=true, rev=true) # double sort for key and value order
+function top_features(D::DocumentTermMatrix, ::Val{N}) where {N}
+    counts = @view(sum(D.dtm; dims=1)[1, :])
+    n = min(N, length(counts))
+    idx = partialsortperm(counts, 1:n; rev=true)
+    OrderedDict(zip(D.terms[idx], counts[idx]))
 end
+top_features(D::DocumentTermMatrix, n::Int) = top_features(D, Val(n))

@@ -114,9 +114,8 @@
     crps3 = Corpus([FileDocument(sample_file)])
     update_lexicon!(crps3)
     m3 = DocumentTermMatrix(crps3)
-    top = top_features(m3)
     top5 = top_features(m3, 5)
-    @test top isa OrderedDict
-    @test top5 == first(keys(top), 5) == [",", "thou", "And", "and", ";"] 
-    @test first(values(top), 5) == [29, 6, 5, 5, 3]
+    @test top5 isa OrderedDict
+    @test collect(keys(top5)) == [",", "thou", "And", "and", ";"] 
+    @test collect(values(top5)) == [29, 6, 5, 5, 3]
 end

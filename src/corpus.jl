@@ -305,7 +305,12 @@ end
 #
 ##############################################################################
 
-top_features(lx::Dict{String,Int}) = sort!(sort!(OrderedDict(lx)); byvalue=true, rev=true) # double sort for key then value order
-top_features(lx::Dict{String,Int}, n::Int) = first(keys(top_features(lx)), n)
-top_features(crps::Corpus) = top_features(lexicon(crps))
-top_features(crps::Corpus, n::Int) = top_features(lexicon(crps), n)
+function top_features(lx::Dict{String,Int}, ::Val{N}) where {N}
+    D_pairs = collect(pairs(lx))
+    n = min(N, length(D_pairs))
+    idx = partialsortperm(D_pairs, 1:n, by = p -> (-p.second, p.first))
+    OrderedDict(D_pairs[idx])
+end
+top_features(lx::Dict{String,Int}, n::Int) = first.(top_features(lx), Val(n))
+top_features(crps::Corpus, n::Int) = top_features(lexicon(crps), Val(n))
+#top_features(crps::Corpus) = top_features(lexicon(crps))
