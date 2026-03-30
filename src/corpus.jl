@@ -310,7 +310,7 @@ function top_terms(lx::Dict{String,Int}, ::Val{N}) where {N}
     n = min(N, length(D_pairs))
     # Count decreasing, break ties alphabetically
     idx = partialsortperm(D_pairs, 1:n, by = p -> (-p.second, p.first)) 
-    OrderedDict(D_pairs[idx])
+    D_pairs[idx]
 end
 top_terms(lx::Dict{String,Int}, n::Int) = top_terms(lx, Val(n))
 top_terms(crps::Corpus, n::Int) = top_terms(lexicon(crps), Val(n))

@@ -3,7 +3,6 @@ using SparseArrays
 using Printf
 using LinearAlgebra
 using StatsBase: countmap, addcounts!
-using OrderedCollections: OrderedDict
 using Languages
 using WordTokenizers
 using Snowball

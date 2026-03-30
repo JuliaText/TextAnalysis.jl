@@ -108,12 +108,12 @@ We can use the function `top_terms(x, n)` to quickly view the top features of a 
 
 ```julia
 julia> top_terms(m, 5)
-OrderedCollections.OrderedDict{String, Int64} with 6 entries:
-  "To"     => 2
-  "be"     => 2
-  "become" => 2
-  "not"    => 2
-  "or"     => 2
+5-element Vector{Pair{String, Int64}}:
+     "To" => 2
+     "be" => 2
+ "become" => 2
+    "not" => 2
+     "or" => 2
 ```
 
 ## TF (Term Frequency)

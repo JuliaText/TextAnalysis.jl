@@ -455,6 +455,6 @@ function top_terms(D::DocumentTermMatrix, ::Val{N}) where {N}
     n = min(N, length(D_pairs))
     # Count decreasing, break ties alphabetically
     idx = partialsortperm(D_pairs, 1:n; by = p -> (-p.second, p.first))
-    OrderedDict(D_pairs[idx])
+    D_pairs[idx]
 end
 top_terms(D::DocumentTermMatrix, n::Int) = top_terms(D, Val(n))

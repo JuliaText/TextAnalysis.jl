@@ -405,11 +405,11 @@ Base.getindex(d::AbstractDocument, term::AbstractString) = ngrams(d)[term]
 #
 ##############################################################################
 
-function top_terms(d::AbstractDocument, ::Val{N})  where {N}
+function top_terms(d::AbstractDocument, ::Val{N}) where {N}
     D_pairs = collect(pairs(countmap(tokens(d))))
     n = min(N, length(D_pairs))
     # Count decreasing, break ties alphabetically
     idx = partialsortperm(D_pairs, 1:n; by = p -> (-p.second, p.first))
-    OrderedDict(D_pairs[idx])
+    D_pairs[idx]
 end
 top_terms(d::AbstractDocument, n::Int) = top_terms(d, Val(n))

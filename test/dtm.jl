@@ -115,7 +115,7 @@
     update_lexicon!(crps3)
     m3 = DocumentTermMatrix(crps3)
     top5 = top_terms(m3, 5)
-    @test top5 isa OrderedDict
-    @test collect(keys(top5)) == [",", "thou", "And", "and", ";"] 
-    @test collect(values(top5)) == [29, 6, 5, 5, 3]
+    @test top5 isa Vector{<:Pair}
+    @test [pair.first for pair in top5] == [",", "thou", "And", "and", ";"]
+    @test [pair.second for pair in top5] == [29, 6, 5, 5, 3]
 end
