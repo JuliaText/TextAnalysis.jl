@@ -109,4 +109,13 @@
     @test dtm2.terms == ["five", "four", "three", "two"]
     @test size(dtm2.dtm) == (2, 4)
     @test sum(dtm2.dtm, dims=(1,)) == [1 2 2 1]
+
+    # Test top_terms
+    crps3 = Corpus([FileDocument(sample_file)])
+    update_lexicon!(crps3)
+    m3 = DocumentTermMatrix(crps3)
+    top5 = top_terms(m3, 5)
+    @test top5 isa Vector{<:Pair}
+    @test [pair.first for pair in top5] == [",", "thou", "And", "and", ";"]
+    @test [pair.second for pair in top5] == [29, 6, 5, 5, 3]
 end

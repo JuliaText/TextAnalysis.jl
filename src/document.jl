@@ -398,3 +398,34 @@ Base.convert(::Type{NGramDocument}, d::NGramDocument) = d
 ##############################################################################
 
 Base.getindex(d::AbstractDocument, term::AbstractString) = ngrams(d)[term]
+
+"""
+    top_terms(d, n)
+
+Return the top `n` most frequent terms in an `AbstractDocument`.
+
+The document is tokenized with [`tokens`](@ref), terms are counted, and the
+result is returned as a vector of `Pair{String,Int}`-like values ordered by:
+
+1. descending term frequency
+2. alphabetical order to break ties
+
+# Arguments
+- `d::AbstractDocument`: document to analyze
+- `n::Int`: number of top terms to return
+
+# Returns
+A vector of term-count pairs containing up to `n` entries.
+
+# Notes
+If `n` is larger than the number of distinct tokens in `d`, all distinct terms
+are returned.
+"""
+function top_terms(d::AbstractDocument, ::Val{N}) where {N}
+    D_pairs = collect(pairs(countmap(tokens(d))))
+    n = min(N, length(D_pairs))
+    # Count decreasing, break ties alphabetically
+    idx = partialsortperm(D_pairs, 1:n; by = p -> (-p.second, p.first))
+    D_pairs[idx]
+end
+top_terms(d::AbstractDocument, n::Int) = top_terms(d, Val(n))

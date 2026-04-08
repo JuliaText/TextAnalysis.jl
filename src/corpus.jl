@@ -298,3 +298,45 @@ function standardize!(crps::Corpus, ::Type{T}) where {T<:AbstractDocument}
         crps.documents[i] = convert(T, crps.documents[i])
     end
 end
+
+
+"""
+    top_terms(x, n)
+
+Return the top `n` most frequent terms from a lexicon-like object.
+
+The function accepts:
+- `Dict{String,Int}`: a mapping of terms to their frequencies
+- `Corpus`: extracts its lexicon internally via `lexicon(crps)`
+
+Terms are sorted by:
+1. Descending frequency
+2. Alphabetical order (to break ties)
+
+# Arguments
+- `x`: A `Dict{String,Int}` or a `Corpus`
+- `n::Int`: Number of top terms to return
+
+# Returns
+A `Vector{Pair{String,Int}}` containing up to `n` term-frequency pairs.
+
+# Examples
+```julia
+julia> top_terms(m, 5)
+5-element Vector{Pair{String, Int64}}:
+     "To" => 2
+     "be" => 2
+ "become" => 2
+    "not" => 2
+     "or" => 2
+```
+"""
+function top_terms(lx::Dict{String,Int}, ::Val{N}) where {N}
+    D_pairs = collect(pairs(lx))
+    n = min(N, length(D_pairs))
+    # Count decreasing, break ties alphabetically
+    idx = partialsortperm(D_pairs, 1:n, by = p -> (-p.second, p.first)) 
+    D_pairs[idx]
+end
+top_terms(lx::Dict{String,Int}, n::Int) = top_terms(lx, Val(n))
+top_terms(crps::Corpus, n::Int) = top_terms(lexicon(crps), Val(n))

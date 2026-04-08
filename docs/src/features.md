@@ -102,6 +102,20 @@ julia> hash_dtv(crps[1])
  0  0  0  0  0  0  0  0  0  0  0  0  0  …  0  0  0  0  0  0  0  0  0  0  0  0
 ```
 
+## Top Features
+
+We can use the function `top_terms(x, n)` to quickly view the top features of a `Document`, `DocumentTermMatrix` or `Corpus`.
+
+```julia
+julia> top_terms(m, 5)
+5-element Vector{Pair{String, Int64}}:
+     "To" => 2
+     "be" => 2
+ "become" => 2
+    "not" => 2
+     "or" => 2
+```
+
 ## TF (Term Frequency)
 
 Often we need to find out what proportion of a document is contributed by each term. This can be done using the term frequency function:
